@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Lrw.Script.StatSystem
         
         private readonly Dictionary<object,StatModifyData> _modifyDict;
         
+        private readonly StatData _statData;
         public float Value { get; private set; }
         public float ModifyValue => Value - _baseValue;
         
@@ -17,10 +19,13 @@ namespace Lrw.Script.StatSystem
 
         public delegate void StatValueChanged(float newValue, float delta);
         
-        public Stat(float baseValue)
+        public Stat(StatData data,float baseValue)
         {
+            if(data == null) throw new Exception("Stat data cannot be null");
+            _statData = data;
             _baseValue = baseValue;
             _modifyDict = new();
+            UpdateValue();
         }
         
         public void AddModify(object key, StatModifyData modifyData)
@@ -44,8 +49,8 @@ namespace Lrw.Script.StatSystem
                 value = modifyData.GetValue(value);
             }
             
-            Value = value;
-
+            Value = Mathf.Clamp(value,_statData.ValueRange.x,_statData.ValueRange.y);
+            
             if (!Mathf.Approximately(prevValue, Value))
             {
                 OnValueChanged?.Invoke(Value,Value - prevValue);

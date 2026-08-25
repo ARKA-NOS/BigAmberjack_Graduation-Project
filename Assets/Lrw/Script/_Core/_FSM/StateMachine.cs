@@ -42,6 +42,7 @@ namespace Lrw.Script._Core._FSM
 
         public IState[] GetStates() => _states.Values.ToArray();
         public TK[] GetKeys() => _states.Keys.ToArray();
+        
         public void Update()
         {
             _currentState?.StateUpdate();

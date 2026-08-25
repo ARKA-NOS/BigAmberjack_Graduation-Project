@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace Lrw.Script._Core._Manager
 {
+    [DefaultExecutionOrder(-20)]
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private string[] managerTypeNames;
@@ -17,21 +17,20 @@ namespace Lrw.Script._Core._Manager
             RuntimeInitialize();
         }
         
-        [ContextMenu("EditorInitialize")]
         private void EditorInitialize()
         {
 #if UNITY_EDITOR
-            managerTypeNames = TypeCache.GetTypesDerivedFrom<AbstractManager>()
+            managerTypeNames = UnityEditor.TypeCache.GetTypesDerivedFrom<AbstractManager>()
                 .Where(type => type.IsClass && !type.IsAbstract).Select(x => x.FullName).ToArray();
 #endif
         }
 
         private void RuntimeInitialize()
         {
-            var managerTypes = managerTypeNames.Select(x => Type.GetType(x));
-            var managerObjects = managerTypes.Select(x => new GameObject(x.Name, x));
+            Type[] managerTypes = managerTypeNames.Select(x => Type.GetType(x)).ToArray();
+            GameObject[] managerObjects = managerTypes.Select(x => new GameObject(x.Name, x)).ToArray();
 
-            foreach (var obj in managerObjects)
+            foreach (GameObject obj in managerObjects)
             {
                 obj.transform.SetParent(transform);
             }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Lrw.Script._Core._Manager
 {
+    /// <summary>
+    /// GameManager는 실행시 자동 생성 됩니다.
+    /// </summary>
     [DefaultExecutionOrder(-20)]
     public class GameManager : MonoBehaviour
     {
@@ -48,6 +51,15 @@ namespace Lrw.Script._Core._Manager
         {
             GameObject manager = new GameObject("GameManager",typeof(GameManager));
         }
-        
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogError("GameManager를 수동으로 생성하지 마시오.");
+            }
+        }
+#endif
     }
 }

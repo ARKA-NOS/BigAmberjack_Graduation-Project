@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1f66be380504f54ab3cd825dfeaf9dc, type: 3}
+  m_Name: PlayerStateList
+  m_EditorClassIdentifier: Assembly-CSharp::Agents.FSM.StateListSo
+  generatePath: C:/Users/ASUS/OneDrive/Desktop/PictureGame/Assets/Scripts/Agents/Players/Enum
+  enumName: PlayerStateEnum
+  states:
+  - {fileID: 11400000, guid: 0dd8c1190f557464996289e948fcb536, type: 2}
+  - {fileID: 11400000, guid: 1d6c896e70d0f1842a2383ec8095dec5, type: 2}
+  - {fileID: 11400000, guid: bb524ee8078a4b6478aacdb4a8eb1b07, type: 2}
+  - {fileID: 11400000, guid: 82d5987182bdb004395521c12e61738e, type: 2}
+  - {fileID: 11400000, guid: 46a2f2c110934944db9b060f565a8fdb, type: 2}

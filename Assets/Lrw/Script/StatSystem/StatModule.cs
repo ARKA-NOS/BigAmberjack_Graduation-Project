@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Lrw.Script.StatSystem
 {
-    public class StatModule : Module
+    public class StatModule : Module, IStatModule
     {
         [SerializeField] private StatGroup baseStats;
         

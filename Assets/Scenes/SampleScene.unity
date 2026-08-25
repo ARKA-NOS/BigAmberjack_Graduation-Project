@@ -522,13 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c9a460acba483d8ce48f70ea98b66c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.StatSystem.StatModule
-  baseStats:
-  - <StatData>k__BackingField: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
-    <BaseValue>k__BackingField: 100
-  - <StatData>k__BackingField: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
-    <BaseValue>k__BackingField: 5
-  - <StatData>k__BackingField: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
-    <BaseValue>k__BackingField: 10
+  baseStats: {fileID: 11400000, guid: abce671106d9c944ea8c1d1461f67a68, type: 2}
 --- !u!4 &949754081 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1389134581402385000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}

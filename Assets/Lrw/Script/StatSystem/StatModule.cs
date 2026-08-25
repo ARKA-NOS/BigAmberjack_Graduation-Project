@@ -4,19 +4,21 @@ using UnityEngine;
 
 namespace Lrw.Script.StatSystem
 {
-    public class StatModule : Module
+    public class StatModule : Module, IStatModule
     {
-        [SerializeField] private StatOverride[] baseStats;
+        [SerializeField] private StatGroup baseStats;
         
         private Dictionary<StatData,Stat> _stats = new();
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-
-            foreach (StatOverride statOverride in baseStats)
+            
+            if(baseStats == null || baseStats.Stats == null) return;
+            
+            foreach (StatOverride statOverride in baseStats.Stats)
             {
-                if(statOverride == null || !statOverride.Check()) continue;
+                if(statOverride == null || statOverride.StatData == null) continue;
                 AddStat(statOverride.StatData, statOverride.BaseValue);
             }
         }
@@ -28,16 +30,20 @@ namespace Lrw.Script.StatSystem
                 stat.UpdateValue();
             }
         }
-
-        public Stat AddStat(StatData statData,float baseValue)
-        {
-            if (_stats.TryGetValue(statData, out Stat stat)) return stat;
-            Stat newStat = new Stat(baseValue);
-            _stats.Add(statData,newStat);
-            return newStat;
-        }
         
+        private Stat AddStat(StatData statData,float baseValue)
+        {
+            if (statData == null) return null;
+            if (_stats.TryGetValue(statData, out Stat stat)) return stat;
+            stat = new Stat(statData,baseValue);
+            _stats.Add(statData,stat);
+            return stat;
+        }
+
         public Stat GetStat(StatData statData, float baseValue = 0f)
-            => _stats.TryGetValue(statData, out Stat stat) ? stat : AddStat(statData, baseValue);
+        {
+            if(statData == null) return null;
+            return _stats.TryGetValue(statData, out Stat stat) ? stat : AddStat(statData, baseValue);
+        }
     }
 }

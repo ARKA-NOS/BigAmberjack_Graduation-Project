@@ -1,37 +1,24 @@
 using System;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace Lrw.Script._Core._Manager
 {
+    [DefaultExecutionOrder(-20)]
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private string[] managerTypeNames;
-        
         private AbstractManager[] _managers;
         
         private void Awake()
         {
-            EditorInitialize();
             RuntimeInitialize();
         }
         
-        [ContextMenu("EditorInitialize")]
-        private void EditorInitialize()
-        {
-#if UNITY_EDITOR
-            managerTypeNames = TypeCache.GetTypesDerivedFrom<AbstractManager>()
-                .Where(type => type.IsClass && !type.IsAbstract).Select(x => x.FullName).ToArray();
-#endif
-        }
-
         private void RuntimeInitialize()
         {
-            var managerTypes = managerTypeNames.Select(x => Type.GetType(x));
-            var managerObjects = managerTypes.Select(x => new GameObject(x.Name, x));
+            GameObject[] managerObjects = FindManagerTypes().Select(x => new GameObject(x.Name, x)).ToArray();
 
-            foreach (var obj in managerObjects)
+            foreach (GameObject obj in managerObjects)
             {
                 obj.transform.SetParent(transform);
             }
@@ -44,8 +31,23 @@ namespace Lrw.Script._Core._Manager
             }
         }
         
+        private static Type[] FindManagerTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type =>
+                    type.IsClass &&
+                    !type.IsAbstract &&
+                    !type.ContainsGenericParameters &&
+                    typeof(AbstractManager).IsAssignableFrom(type))
+                .ToArray();
+        }
         
-        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        public static void Init()
+        {
+            GameObject manager = new GameObject("GameManager",typeof(GameManager));
+        }
         
     }
 }

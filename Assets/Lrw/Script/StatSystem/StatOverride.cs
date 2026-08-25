@@ -8,8 +8,6 @@ namespace Lrw.Script.StatSystem
     {
         [field:SerializeField] public StatData StatData { get;private set; }
         [field:SerializeField] public float BaseValue { get;private set; }
-
-        public bool Check()
-            => StatData != null;    
+        
     }
 }

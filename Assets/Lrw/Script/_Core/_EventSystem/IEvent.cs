@@ -1,4 +1,4 @@
-namespace Script._Core._EventSystem
+namespace Lrw.Script._Core._EventSystem
 {
     public interface IEvent
     {

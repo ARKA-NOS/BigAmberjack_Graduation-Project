@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Script._Core._EventSystem
+namespace Lrw.Script._Core._EventSystem
 {
     [CreateAssetMenu(fileName = "Event Channel", menuName = "Core/Event/Event Channel", order = 0)]
     public class EventChannel : ScriptableObject

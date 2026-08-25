@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Script.StatSystem
+namespace Lrw.Script.StatSystem
 {
     [CreateAssetMenu(fileName = "Stat Data", menuName = "Stat/Stat Data", order = 0)]
     public class StatData : ScriptableObject

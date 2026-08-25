@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
-using Script.ModuleSystem;
+using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Script.StatSystem
+namespace Lrw.Script.StatSystem
 {
     public class StatModule : Module
     {

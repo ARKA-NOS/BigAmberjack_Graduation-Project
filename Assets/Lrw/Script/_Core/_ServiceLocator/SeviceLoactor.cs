@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Script._Core._ServiceLocator
+namespace Lrw.Script._Core._ServiceLocator
 {
     public static class ServiceLocator
     {

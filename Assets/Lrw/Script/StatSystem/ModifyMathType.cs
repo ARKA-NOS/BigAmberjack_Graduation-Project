@@ -1,4 +1,4 @@
-namespace Script.StatSystem
+namespace Lrw.Script.StatSystem
 {
     public enum ModifyMathType
     {

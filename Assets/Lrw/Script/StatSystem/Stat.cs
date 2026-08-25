@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Script.StatSystem
+namespace Lrw.Script.StatSystem
 {
     public class Stat
     {

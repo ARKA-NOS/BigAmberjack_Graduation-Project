@@ -57,7 +57,7 @@ namespace Lrw.Script._Core._Manager
         {
             if (!Application.isPlaying)
             {
-                Debug.LogError("GameManager를 수동으로 생성하지 마시오.");
+                FDebug.LogError("GameManager를 수동으로 생성하지 마시오.");
             }
         }
 #endif

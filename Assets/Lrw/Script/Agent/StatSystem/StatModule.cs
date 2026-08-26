@@ -24,14 +24,6 @@ namespace Lrw.Script.Agent.StatSystem
             }
         }
         
-        private void LateUpdate()
-        {
-            foreach (var stat in _stats.Values)
-            {
-                stat.UpdateValue();
-            }
-        }
-        
         private Stat AddStat(StatData statData,float baseValue)
         {
             if (statData == null) throw new Exception("StatData is null");

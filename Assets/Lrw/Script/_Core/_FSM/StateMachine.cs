@@ -14,7 +14,7 @@ namespace Lrw.Script._Core._FSM
         {
             if (!_states.TryAdd(key, state))
             {
-                Debug.LogError($"{state.GetType().Name} is already added!");
+                FDebug.LogError($"{state.GetType().Name} is already added!");
             }
         }
 
@@ -29,14 +29,14 @@ namespace Lrw.Script._Core._FSM
         {
             if (key == null)
             {
-                Debug.LogWarning("State Key is null");
+                FDebug.LogWarning("State Key is null");
                 return null;
             }
             
             if(_states.TryGetValue(key,out IState state))
                 return state;
             
-            Debug.LogWarning("State not found");
+            FDebug.LogWarning("State not found");
             return null;
         }
 

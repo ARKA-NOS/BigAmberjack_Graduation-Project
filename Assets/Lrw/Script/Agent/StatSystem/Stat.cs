@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Lrw.Script.StatSystem
+namespace Lrw.Script.Agent.StatSystem
 {
     public class Stat
     {
@@ -18,6 +18,8 @@ namespace Lrw.Script.StatSystem
         public event StatValueChanged OnValueChanged;
 
         public delegate void StatValueChanged(float newValue, float delta);
+
+        private StatModifyData[] _sortingStatModifyDatas;
         
         public Stat(StatData data,float baseValue)
         {
@@ -25,18 +27,24 @@ namespace Lrw.Script.StatSystem
             _statData = data;
             _baseValue = baseValue;
             _modifyDict = new();
+            _sortingStatModifyDatas = new StatModifyData[]{};
             UpdateValue();
         }
         
         public void AddModify(object key, StatModifyData modifyData)
         {
             _modifyDict[key] = modifyData;
+            SetSortingStatModifyData();
         }
         
         public void RemoveModify(object key)
         {
             _modifyDict.Remove(key);
+            SetSortingStatModifyData();
         }
+        
+        private void SetSortingStatModifyData()
+            => _sortingStatModifyDatas = _modifyDict.Values.OrderBy(data => data.Priority).ToArray();
         
         public void UpdateValue()
         {
@@ -44,7 +52,7 @@ namespace Lrw.Script.StatSystem
             
             float value = _baseValue;
             
-            foreach (StatModifyData modifyData in _modifyDict.Values.OrderBy(data => data.Priority))
+            foreach (StatModifyData modifyData in _sortingStatModifyDatas)
             {
                 value = modifyData.GetValue(value);
             }

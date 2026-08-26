@@ -10,6 +10,7 @@ namespace Agents.Players
         [SerializeField] private LayerMask whatIsGround;
         
         public event Action OnDashKeyPressed;
+        public event Action OnAttackKeyPressed;
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
 
@@ -46,6 +47,12 @@ namespace Agents.Players
                 OnJumpKeyPressed?.Invoke();            
             if (context.canceled)
                 OnJumpKeyReleased?.Invoke();
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            if (context.canceled)
+                OnAttackKeyPressed?.Invoke();
         }
 
         public void OnDash(InputAction.CallbackContext context)

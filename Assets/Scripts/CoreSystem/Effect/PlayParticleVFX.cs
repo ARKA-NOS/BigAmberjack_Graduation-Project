@@ -4,7 +4,7 @@ namespace CoreSystem.Effect
 {
     public class PlayParticleVFX : MonoBehaviour, IPlayableVFX
     {
-        [field: SerializeField] public AssetNameSO VfxName { get; private set; }
+        [field: SerializeField] public AssetNameSo VfxName { get; private set; }
         [field: SerializeField] public float VfxDuration { get; private set; }
         [SerializeField] private ParticleSystem[] particles;
         

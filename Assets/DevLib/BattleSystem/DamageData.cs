@@ -5,6 +5,7 @@ namespace DevLib.BattleSystem
 {
     public struct DamageData
     {
+        public AttackTypeEnum AttackTypeEnum;
         public float DamageAmount;
         public bool IsCritical;
         public ModuleOwner Dealer;

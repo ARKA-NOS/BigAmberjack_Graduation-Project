@@ -5,7 +5,7 @@ namespace CoreSystem.Effect
 {
     public class PlayGraphVfx : MonoBehaviour, IPlayableVFX
     {
-        [field: SerializeField]public AssetNameSO VfxName { get; private set; }
+        [field: SerializeField]public AssetNameSo VfxName { get; private set; }
         [field: SerializeField] public float VfxDuration { get; private set; }
         [SerializeField] private VisualEffect[] effects;
         

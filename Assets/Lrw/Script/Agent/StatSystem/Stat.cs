@@ -13,6 +13,7 @@ namespace Lrw.Script.Agent.StatSystem
         
         private readonly StatData _statData;
         public float Value { get; private set; }
+        //private float _value;
         public float ModifyValue => Value - _baseValue;
         
         public event StatValueChanged OnValueChanged;

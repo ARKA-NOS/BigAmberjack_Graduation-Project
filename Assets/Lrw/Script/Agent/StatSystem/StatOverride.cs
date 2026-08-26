@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Lrw.Script.StatSystem
+namespace Lrw.Script.Agent.StatSystem
 {
     [Serializable]
     public class StatOverride

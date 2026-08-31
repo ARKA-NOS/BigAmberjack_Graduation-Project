@@ -9,17 +9,17 @@ namespace Lrw.Script.UI
         {
             EventBus<UIOpenCloseEvent>.Event += OpenClose;
         }
-
+        
         private void OnDestroy()
         {
             EventBus<UIOpenCloseEvent>.Event -= OpenClose;
         }
-
+        
         public static void OpenCloseWindow(IWindow window)
             => EventBus<UIOpenCloseEvent>.Invoke(UIManagerEvents.UIOpenClose.Init(window));
         
-        
         private IWindow _currentWindow;
+        
         private void OpenClose(UIOpenCloseEvent evt)
         {
             if (_currentWindow != null)
@@ -27,12 +27,13 @@ namespace Lrw.Script.UI
                 _currentWindow.Close();
                 _currentWindow = null;
             }
-
+            
             if (evt.Window == null) return;
             
             _currentWindow = evt.Window;
             _currentWindow.Open();
         }
+        
         
     }
 }

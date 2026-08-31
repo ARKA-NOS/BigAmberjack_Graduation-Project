@@ -1,4 +1,4 @@
-namespace Lrw.Script.StatSystem
+namespace Lrw.Script.Agent.StatSystem
 {
     public readonly struct StatModifyData
     {
@@ -6,7 +6,7 @@ namespace Lrw.Script.StatSystem
         private readonly float _value;
         private readonly ModifyMathType _type;
 
-        public StatModifyData(int priority, float value, ModifyMathType type)
+        public StatModifyData(int priority, float value, ModifyMathType type = ModifyMathType.Add)
         {
             Priority = priority;
             _value = value;

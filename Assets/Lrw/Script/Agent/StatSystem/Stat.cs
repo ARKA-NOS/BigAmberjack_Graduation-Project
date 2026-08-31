@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Lrw.Script.StatSystem
+namespace Lrw.Script.Agent.StatSystem
 {
     public class Stat
     {
@@ -12,12 +12,14 @@ namespace Lrw.Script.StatSystem
         private readonly Dictionary<object,StatModifyData> _modifyDict;
         
         private readonly StatData _statData;
+
         public float Value { get; private set; }
         public float ModifyValue => Value - _baseValue;
         
         public event StatValueChanged OnValueChanged;
 
         public delegate void StatValueChanged(float newValue, float delta);
+        
         
         public Stat(StatData data,float baseValue)
         {
@@ -31,20 +33,23 @@ namespace Lrw.Script.StatSystem
         public void AddModify(object key, StatModifyData modifyData)
         {
             _modifyDict[key] = modifyData;
+            UpdateValue();
         }
         
         public void RemoveModify(object key)
         {
             _modifyDict.Remove(key);
+            UpdateValue();
         }
         
-        public void UpdateValue()
+        private void UpdateValue()
         {
             float prevValue = Value;
             
             float value = _baseValue;
             
-            foreach (StatModifyData modifyData in _modifyDict.Values.OrderBy(data => data.Priority))
+            var arr = _modifyDict.Values.OrderBy(data => data.Priority);
+            foreach (StatModifyData modifyData in arr)
             {
                 value = modifyData.GetValue(value);
             }
@@ -56,14 +61,6 @@ namespace Lrw.Script.StatSystem
                 OnValueChanged?.Invoke(Value,Value - prevValue);
             }
         }
-        
-        public float UpdateAndGetValue()
-        {
-            UpdateValue();
-            return Value;
-        }
-        
-        
 
     }
 }

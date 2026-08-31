@@ -22,7 +22,7 @@ namespace Agents.Players
         private IRenderer _renderer;
         private IGroundChecker _groundChecker;
         private IAfterImageEmitter _afterImageEmitter;
-        
+
         private Tween _dashTween;
         private float _lastDashTime = float.NegativeInfinity;
         private int _currentAirDashCount;
@@ -36,10 +36,12 @@ namespace Agents.Players
             _groundChecker = _owner.GetModule<IGroundChecker>();
             _playerRb = _owner.GetComponent<Rigidbody2D>();
             _afterImageEmitter = owner.GetModule<IAfterImageEmitter>();
+            _renderer = _owner.GetModule<IRenderer>();
 
             Debug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
             Debug.Assert(_groundChecker != null, "Player에는 IGroundChecker도 필요합니다.");
             Debug.Assert(_afterImageEmitter != null, "Player에는 IAfterImageEmitter 필요합니다.");
+            Debug.Assert(_renderer != null, "Player에는 IRenderer도 필요합니다.");
         }
 
 
@@ -79,7 +81,7 @@ namespace Agents.Players
 
             float rotationY = direction.x >= 0f ? 0f : 180f;
 
-            _owner.transform.rotation =
+            _renderer.Animator.transform.rotation =
                 Quaternion.Euler(0f, rotationY, 0f);
 
             Vector2 targetPosition =

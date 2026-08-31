@@ -5,18 +5,19 @@ namespace Lrw.Script.UI
 {
     public class UIManager : AbstractManager
     {
+        private static readonly object UIManagerKey = new();
         public override void Initialize()
         {
-            EventBus<UIOpenCloseEvent>.Event += OpenClose;
+            EventBus<UIOpenCloseEvent>.Subscribe(UIManagerKey,OpenClose);
         }
         
         private void OnDestroy()
         {
-            EventBus<UIOpenCloseEvent>.Event -= OpenClose;
+            EventBus<UIOpenCloseEvent>.UnSubscribe(UIManagerKey,OpenClose);
         }
         
         public static void OpenCloseWindow(IWindow window)
-            => EventBus<UIOpenCloseEvent>.Invoke(UIManagerEvents.UIOpenClose.Init(window));
+            => EventBus<UIOpenCloseEvent>.Raise(UIManagerKey,UIManagerEvents.UIOpenClose.Init(window));
         
         private IWindow _currentWindow;
         

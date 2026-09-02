@@ -14,10 +14,10 @@ namespace Lrw.Script._Core._Manager
         
         private void Awake()
         {
-            RuntimeInitialize();
+            Initialize();
         }
         
-        private void RuntimeInitialize()
+        private void Initialize()
         {
             GameObject[] managerObjects = FindManagerTypes().Select(x => new GameObject(x.Name, x)).ToArray();
 
@@ -46,10 +46,11 @@ namespace Lrw.Script._Core._Manager
                 .ToArray();
         }
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        public static void Init()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        public static void CreateManager()
         {
             GameObject manager = new GameObject("GameManager",typeof(GameManager));
+            DontDestroyOnLoad(manager);
         }
 
 #if UNITY_EDITOR

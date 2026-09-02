@@ -1,4 +1,6 @@
+using System.Collections;
 using Agents;
+using Agents.Players;
 using CTJ.Enemies.FSM;
 using DevLib.BattleSystem;
 using Lrw.Script._Core._FSM;
@@ -9,6 +11,8 @@ namespace CTJ.Enemies
     [RequireComponent(typeof(Rigidbody2D))]
     public abstract class EnemyBase : Agent, IDamageable
     {
+        private const float TargetSearchInterval = 0.2f;
+
         [Header("Target")]
         [SerializeField] private Transform target;
         [SerializeField, Min(0f)] private float detectionRange = 6f;
@@ -36,6 +40,14 @@ namespace CTJ.Enemies
             InitializeStateMachine();
         }
 
+        protected override void Start()
+        {
+            base.Start();
+
+            if (target == null)
+                StartCoroutine(FindTargetRoutine());
+        }
+
         private void Update()
         {
             _stateMachine.Update();
@@ -58,6 +70,23 @@ namespace CTJ.Enemies
         public void SetTarget(Transform newTarget)
         {
             target = newTarget;
+        }
+
+        private IEnumerator FindTargetRoutine()
+        {
+            WaitForSeconds searchDelay = new WaitForSeconds(TargetSearchInterval);
+
+            while (target == null)
+            {
+                PlayerController player = FindFirstObjectByType<PlayerController>();
+                if (player != null)
+                {
+                    target = player.transform;
+                    yield break;
+                }
+
+                yield return searchDelay;
+            }
         }
 
         internal void ChangeState(EnemyStateType stateType)

@@ -22,6 +22,11 @@ namespace Agents.Players
             _dashController = GetModule<IControlDasher>();
         }
 
+        private void OnDestroy()
+        {
+            PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
+        }
+
         private void HandleDashStateChange()
         {
             if (_dashController.CanDash())

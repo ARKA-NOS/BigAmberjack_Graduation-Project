@@ -9,7 +9,7 @@ namespace Lrw.Script._Core._EventSystem
         public delegate void Event(T value);
 
         private static readonly Dictionary<object, Event> Events = new();
-        private static readonly object Lock = new();
+        private static readonly object Lock = default(T);
 
         public static void Subscribe(object key, Event callback)
         {

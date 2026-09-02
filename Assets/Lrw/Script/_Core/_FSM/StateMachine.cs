@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,10 +7,10 @@ namespace Lrw.Script._Core._FSM
 {
     public class StateMachine<TK>
     {
-        private Dictionary<TK,IState> _states = new();
+        private readonly Dictionary<TK,IState> _states = new();
         
         private IState _currentState;
-        
+
         public void AddState(TK key, IState state)
         {
             if (!_states.TryAdd(key, state))
@@ -39,7 +40,9 @@ namespace Lrw.Script._Core._FSM
             FDebug.LogWarning("State not found");
             return null;
         }
-
+        
+        public bool CheckType<T>() where T : IState => _currentState is T;
+        
         public IState[] GetStates() => _states.Values.ToArray();
         public TK[] GetKeys() => _states.Keys.ToArray();
         

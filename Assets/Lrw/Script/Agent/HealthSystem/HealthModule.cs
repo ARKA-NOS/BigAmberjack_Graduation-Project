@@ -59,13 +59,14 @@ namespace Lrw.Script.Agent.HealthSystem
             
             CurrentHealth += Mathf.Max(delta,0f);
         }
-
+        
+        public override string ToString()
+            => $"[HealthModule] {CurrentHealth} / {MaxHealth}";
+        
 #if UNITY_EDITOR
         [ContextMenu("Debug HealthModule")]
-        private void Debug()
-        {
-            FDebug.Log($"[HealthModule] {CurrentHealth} / {MaxHealth}");
-        }
+        private void Debug() 
+            => FDebug.Log(this);
 #endif
         
     }

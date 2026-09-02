@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 106082934}
   - component: {fileID: 106082936}
   - component: {fileID: 106082935}
+  - component: {fileID: 106082937}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -181,6 +182,20 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 3d84267816fedb943a4c4628d6a0ee7a, type: 2}
   effectModule: {fileID: 1190431657}
   statData: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+--- !u!114 &106082937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106082933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c76c7a1d41914b7bb53be72f0981afe5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.TestDamage
+  healthModule: {fileID: 753261104}
+  value: 10
 --- !u!1 &192046918
 GameObject:
   m_ObjectHideFlags: 0

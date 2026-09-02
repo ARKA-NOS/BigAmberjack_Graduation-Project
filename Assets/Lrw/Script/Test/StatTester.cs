@@ -10,6 +10,8 @@ namespace Lrw.Script.Test
         
         [SerializeField] private StatModule statModule;
 
+        [SerializeField] private float changeValue;
+
         [ContextMenu("StatLog")]
         private void StatLog()
         {
@@ -17,5 +19,15 @@ namespace Lrw.Script.Test
             
             FDebug.Log(statModule.GetStat(statData).Value);
         }
+
+        [ContextMenu("ChangeValue")]
+        private void ChangeValue()
+        {
+            if(statModule == null || statData == null) return;
+            
+            statModule.GetStat(statData).AddModify(this,new StatModifyData(1,changeValue));
+        }
+        
+        
     }
 }

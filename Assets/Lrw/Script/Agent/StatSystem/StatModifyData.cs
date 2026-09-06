@@ -1,26 +1,20 @@
+using System;
+
 namespace Lrw.Script.Agent.StatSystem
 {
+    [Serializable]
     public readonly struct StatModifyData
     {
         public readonly int Priority;
-        private readonly float _value;
-        private readonly ModifyMathType _type;
+        public readonly float Value;
+        public readonly ModifyMathType Type;
 
         public StatModifyData(int priority, float value, ModifyMathType type = ModifyMathType.Add)
         {
             Priority = priority;
-            _value = value;
-            _type = type;
+            Value = value;
+            Type = type;
         }
-
-        public float GetValue(float originValue)
-        {
-            return _type switch
-            {
-                ModifyMathType.Add => originValue + _value,
-                ModifyMathType.Multiply => originValue * _value,
-                _ => originValue
-            };
-        }
+        
     }
 }

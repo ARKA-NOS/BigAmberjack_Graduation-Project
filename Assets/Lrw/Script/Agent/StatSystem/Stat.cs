@@ -46,13 +46,7 @@ namespace Lrw.Script.Agent.StatSystem
         {
             float prevValue = Value;
             
-            float value = _baseValue;
-            
-            var arr = _modifyDict.Values.OrderBy(data => data.Priority);
-            foreach (StatModifyData modifyData in arr)
-            {
-                value = modifyData.GetValue(value);
-            }
+            float value = ModifyCalculator.Calculate(_baseValue, _modifyDict.Values.ToArray());
             
             Value = Mathf.Clamp(value,_statData.ValueRange.x,_statData.ValueRange.y);
             

@@ -9,26 +9,23 @@ namespace DevLib.SkillSystem
     {
         public event Action<AbstractSkill> OnSkillEnd;
         [field: SerializeField] public SkillDataSo SkillData { get; private set; }
-
-        [SerializeField] protected EventChannelSO soundChannel;
-        [SerializeField] protected SoundClipSo skillSound;
         
         public float NormalizedCooldown
         {
             get
             {
                 if (SkillData == null || SkillData.cooldown <= 0f) return 0f;
-                return Mathf.Clamp01(1f - (Time.time - _lastUsedTime) / SkillData.cooldown);
+                return Mathf.Clamp01(1f - (Time.time - LastUsedTime) / SkillData.cooldown);
             }
         }
         public bool IsUsing { get; private set; }
 
-        protected AbstractSkillModule _skillModule;
-        protected float _lastUsedTime = float.NegativeInfinity;
+        protected ISkillModule SkillModule;
+        protected float LastUsedTime = float.NegativeInfinity;
         
         public virtual void InitializeSkill(ISkillModule skillModule)
         {
-            _skillModule = skillModule as AbstractSkillModule;
+            SkillModule = skillModule;
         }
 
         public abstract bool CanUseSkill(GameObject target = null);
@@ -40,12 +37,12 @@ namespace DevLib.SkillSystem
 
         public void StopSkill()
         {
-            CleanUPSkillData();
+            CleanUpSkillData();
         }
 
-        public virtual void CleanUPSkillData()
+        public virtual void CleanUpSkillData()
         {
-            _lastUsedTime = Time.time;
+            LastUsedTime = Time.time;
             IsUsing = false;
             OnSkillEnd?.Invoke(this);
         }

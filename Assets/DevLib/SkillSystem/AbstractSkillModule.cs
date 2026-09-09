@@ -11,8 +11,8 @@ namespace DevLib.SkillSystem
     {
         public event Action OnSkillEnd;
         public ModuleOwner Owner => _owner;
-        
-        protected Dictionary<int, AbstractSkill> _skillDict;
+
+        private Dictionary<int, AbstractSkill> _skillDict;
         
         public AbstractSkill CurrentSkill { get; protected set; }
 

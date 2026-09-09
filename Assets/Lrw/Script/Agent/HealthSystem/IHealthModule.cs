@@ -1,6 +1,4 @@
-﻿using DevLib.BattleSystem;
-
-namespace Lrw.Script.Agent.HealthSystem
+﻿namespace Lrw.Script.Agent.HealthSystem
 {
     public interface IHealthModule
     {

@@ -8,7 +8,8 @@ namespace DevLib.SkillSystem
     {
         event Action OnSkillEnd;
         ModuleOwner Owner { get; }
-        
+        AbstractSkill CurrentSkill { get; }
+
         bool CanUseSkill(int skillId, GameObject target = null);
         void UseSkill(int skillId, GameObject target = null);
         

@@ -26,7 +26,7 @@ namespace Lrw.Script.Agent.StatSystem
             
             float value = baseValue;
 
-            foreach (var group in groups)
+            foreach (ModifyGroup group in groups)
             {
                 value = group.GetValue(value);
             }

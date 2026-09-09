@@ -1,11 +1,7 @@
-using UnityEngine;
-
 namespace CTJ.Enemies.FSM
 {
     internal sealed class EnemyAttackState : EnemyState
     {
-        private float _attackTimer;
-
         public EnemyAttackState(EnemyBase enemy) : base(enemy)
         {
         }
@@ -13,11 +9,14 @@ namespace CTJ.Enemies.FSM
         public override void Enter()
         {
             Enemy.StopHorizontalMovement();
-            _attackTimer = 0f;
         }
 
         public override void StateUpdate()
         {
+            // 근접 공격의 준비/타격/후딜 동안은 정지 상태를 유지합니다.
+            if (Enemy.IsAttackInProgress)
+                return;
+
             if (!Enemy.IsTargetInRange(Enemy.DetectionRange))
             {
                 Enemy.ChangeState(EnemyStateType.Idle);
@@ -30,12 +29,7 @@ namespace CTJ.Enemies.FSM
                 return;
             }
 
-            _attackTimer -= Time.deltaTime;
-            if (_attackTimer > 0f)
-                return;
-
             Enemy.ExecuteAttack();
-            _attackTimer = Enemy.AttackInterval;
         }
 
         public override void StateFixedUpdate()

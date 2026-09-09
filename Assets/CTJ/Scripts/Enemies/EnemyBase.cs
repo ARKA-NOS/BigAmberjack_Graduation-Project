@@ -15,22 +15,26 @@ namespace CTJ.Enemies
 
         [Header("Target")]
         [SerializeField] private Transform target;
-        [SerializeField, Min(0f)] private float detectionRange = 6f;
-        [SerializeField, Min(0f)] private float attackRange = 1.5f;
+        [SerializeField, Min(0f)] protected float detectionRange = 6f;
+        [SerializeField, Min(0f)] protected float attackRange = 1.5f;
 
         [Header("Movement")]
         [SerializeField, Min(0f)] private float moveSpeed = 3f;
+        [Tooltip("오른쪽을 기본 방향으로 만든 비주얼 자식. 공격 판정과 발사 위치도 이 아래에 둡니다.")]
+        [SerializeField] private Transform facingRoot;
 
         [Header("Attack")]
         [SerializeField, Min(0.01f)] private float attackInterval = 1f;
 
         private Rigidbody2D _rigidbody;
         private StateMachine<EnemyStateType> _stateMachine;
+        private float _nextAttackTime;
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
         public float AttackRange => attackRange;
         public float AttackInterval => attackInterval;
+        public virtual bool IsAttackInProgress => false;
 
         protected override void Awake()
         {
@@ -129,11 +133,24 @@ namespace CTJ.Enemies
 
         internal void ExecuteAttack()
         {
+            if (IsAttackInProgress || Time.time < _nextAttackTime)
+                return;
+
+            // 상태를 나갔다 들어와도 공격 간격이 초기화되지 않습니다.
+            _nextAttackTime = Time.time + AttackInterval;
+            if (target != null)
+                OnMoveDirectionChanged(target.position.x - transform.position.x);
             Attack();
         }
 
         protected virtual void OnMoveDirectionChanged(float direction)
         {
+            if (facingRoot == null || facingRoot == transform || Mathf.Approximately(direction, 0f))
+                return;
+
+            Vector3 scale = facingRoot.localScale;
+            scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction);
+            facingRoot.localScale = scale;
         }
 
         protected abstract void Attack();

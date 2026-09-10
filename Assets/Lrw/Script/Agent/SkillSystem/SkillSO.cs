@@ -9,7 +9,9 @@ namespace Lrw.Script.Agent.SkillSystem
     {
         [field:SerializeField] public AbstractSkillUseCondition[] Conditions { get; private set; }
         [field:SerializeField] public AbstractSkillAction[] Actions { get; private set; }
+
+        [field: SerializeField] public bool IsCanReuseSkill { get; private set; } = false;
         
-        
+
     }
 }

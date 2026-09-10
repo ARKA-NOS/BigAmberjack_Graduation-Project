@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.SkillSystem
 {
-    public class SkillPlayer : MonoBehaviour, ISkillPlayer
+    public class BaseSkillPlayer : MonoBehaviour, ISkillPlayer
     {
         [field: SerializeField] public SkillSO Skill {get; private set;}
 

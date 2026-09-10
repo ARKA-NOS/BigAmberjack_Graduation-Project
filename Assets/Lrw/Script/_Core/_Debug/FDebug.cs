@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Lrw.Script._Core
+namespace Lrw.Script._Core._Debug
 {
     public static class FDebug
     {

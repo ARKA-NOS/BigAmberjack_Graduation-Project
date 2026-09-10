@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lrw.Script._Core._Debug;
 
 namespace Lrw.Script._Core._EventSystem
 {

@@ -1,5 +1,6 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
@@ -8,10 +9,10 @@ namespace Lrw.Script.Agent.HealthSystem
     public class HealthModule : Module, IHealthModule
     {
         [SerializeField] private StatData maxHpStatData;
-
+        
         [SerializeField] private float currentHealth;
 
-        public delegate void HealthChanged(float newValue, float delta);
+        public delegate void HealthChanged(float newValue, float delta, float max);
         
         public event HealthChanged OnHealthChanged;
         
@@ -23,7 +24,7 @@ namespace Lrw.Script.Agent.HealthSystem
                 float prevValue = currentHealth;
                 currentHealth = Mathf.Clamp(value, 0, MaxHealth);
                 if(Mathf.Approximately(currentHealth, prevValue)) return;
-                OnHealthChanged?.Invoke(currentHealth, currentHealth - prevValue);
+                OnHealthChanged?.Invoke(currentHealth, currentHealth - prevValue,MaxHealth);
             }
         }
         

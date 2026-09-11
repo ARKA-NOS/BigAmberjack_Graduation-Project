@@ -11,18 +11,32 @@ namespace SDW.Scripts.Maps
     public class Portal : InteractableBase
     {
         [SerializeField] private float arrivalOffset = 1.5f;
+        [Tooltip("방에 남은 적이 있을 때 통로를 막는 시각적 문. 비워두면 잠금 기능이 무시된다.")]
+        [SerializeField] private GameObject doorVisual;
+        [Tooltip("포탈 자체를 가리지 않도록, 문을 포탈에서 방 안쪽으로 얼마나 띄울지.")]
+        [SerializeField] private float doorOffsetDistance = 1f;
 
         public RoomDirection Direction { get; private set; }
         public RoomNode TargetRoom { get; private set; }
 
-        public override bool CanInteract => !_isTransitioning;
+        public override bool CanInteract => !_isTransitioning && !_locked;
 
         private DungeonGenerator _dungeonGenerator;
         private ScreenFader _screenFader;
         private Collider2D _col;
         private PlayerController _pendingPlayer;
+        private bool _locked;
 
         private static bool _isTransitioning;
+
+        // 방의 적이 남아있는 동안 문을 잠가 통로를 막는다. RoomEnemySpawner가 호출한다.
+        public void SetLocked(bool locked)
+        {
+            _locked = locked;
+
+            if (doorVisual != null)
+                doorVisual.SetActive(locked);
+        }
 
         public void Initialize(RoomDirection direction, RoomNode targetRoom, DungeonGenerator dungeonGenerator, ScreenFader screenFader)
         {
@@ -30,6 +44,19 @@ namespace SDW.Scripts.Maps
             TargetRoom = targetRoom;
             _dungeonGenerator = dungeonGenerator;
             _screenFader = screenFader;
+
+            PositionDoorVisual();
+        }
+
+        // 문을 포탈 위치가 아니라 방 안쪽으로 한 칸 띄워서 배치한다.
+        // 포탈 스프라이트 자체는 가리거나 건드리지 않고, 통로만 별도 오브젝트로 막기 위함.
+        private void PositionDoorVisual()
+        {
+            if (doorVisual == null)
+                return;
+
+            Vector2 inward = -Direction.ToVector2Int();
+            doorVisual.transform.localPosition = (Vector3)(inward * doorOffsetDistance);
         }
 
         private void Awake()
@@ -81,6 +108,7 @@ namespace SDW.Scripts.Maps
                     currentRoomInstance.SetActive(false);
 
                 targetInstance.SetActive(true);
+                targetInstance.GetComponent<RoomEnemySpawner>()?.SpawnIfNeeded();
 
                 player.transform.position = spawnPosition;
 

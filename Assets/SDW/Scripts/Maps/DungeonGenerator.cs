@@ -53,6 +53,7 @@ namespace SDW.Scripts.Maps
 
             InstantiateRooms();
             SpawnPlayer();
+            SpawnStartRoomEnemies();
 
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -152,6 +153,18 @@ namespace SDW.Scripts.Maps
             Rigidbody2D playerBody = _player.GetComponent<Rigidbody2D>();
             if (playerBody != null)
                 playerBody.position = spawnPosition;
+        }
+
+        // 시작 방은 Portal을 거치지 않고 곧바로 활성화되므로, 던전 생성 직후 별도로 적을 스폰한다.
+        private void SpawnStartRoomEnemies()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            if (!_roomInstances.TryGetValue(_layout.StartRoom, out GameObject startRoomInstance))
+                return;
+
+            startRoomInstance.GetComponent<RoomEnemySpawner>()?.SpawnIfNeeded();
         }
 
         private static Vector3 GetSpawnPosition(GameObject roomInstance)

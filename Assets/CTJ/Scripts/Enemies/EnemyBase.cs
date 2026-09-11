@@ -12,6 +12,7 @@ namespace CTJ.Enemies
     public abstract class EnemyBase : Agent, IDamageable
     {
         private const float TargetSearchInterval = 0.2f;
+        private static readonly int DeathStateHash = Animator.StringToHash("Base Layer.Death");
 
         [Header("Target")]
         [SerializeField] private Transform target;
@@ -26,6 +27,12 @@ namespace CTJ.Enemies
         [Header("Attack")]
         [SerializeField, Min(0.01f)] private float attackInterval = 1f;
 
+        [Header("Death")]
+        [Tooltip("선택 사항. 사망 시 Base Layer.Death 상태를 재생합니다.")]
+        [SerializeField] private Animator deathAnimator;
+        [Tooltip("사망 후 제거까지의 시간. 사망 클립 길이보다 길게 둡니다.")]
+        [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
+
         private Rigidbody2D _rigidbody;
         private StateMachine<EnemyStateType> _stateMachine;
         private float _nextAttackTime;
@@ -35,6 +42,7 @@ namespace CTJ.Enemies
         public float AttackRange => attackRange;
         public float AttackInterval => attackInterval;
         public virtual bool IsAttackInProgress => false;
+        public bool IsDead { get; private set; }
 
         protected override void Awake()
         {
@@ -42,24 +50,32 @@ namespace CTJ.Enemies
 
             _rigidbody = GetComponent<Rigidbody2D>();
             InitializeStateMachine();
+            if (HealthModule != null)
+            {
+                HealthModule.OnHealthChanged += HandleHealthChanged;
+                if (HealthModule.CurrentHealth <= 0f)
+                    Die();
+            }
         }
 
         protected override void Start()
         {
             base.Start();
 
-            if (target == null)
+            if (!IsDead && target == null)
                 StartCoroutine(FindTargetRoutine());
         }
 
         private void Update()
         {
-            _stateMachine.Update();
+            if (!IsDead)
+                _stateMachine.Update();
         }
 
         private void FixedUpdate()
         {
-            _stateMachine.FixedUpdate();
+            if (!IsDead)
+                _stateMachine.FixedUpdate();
         }
 
         private void InitializeStateMachine()
@@ -95,12 +111,13 @@ namespace CTJ.Enemies
 
         internal void ChangeState(EnemyStateType stateType)
         {
-            _stateMachine.ChangeState(stateType);
+            if (!IsDead)
+                _stateMachine.ChangeState(stateType);
         }
 
         internal bool IsTargetInRange(float range)
         {
-            if (target == null)
+            if (IsDead || target == null)
                 return false;
 
             Vector2 currentPosition = transform.position;
@@ -110,7 +127,7 @@ namespace CTJ.Enemies
 
         internal void MoveTowardsTarget()
         {
-            if (target == null)
+            if (IsDead || target == null)
             {
                 StopHorizontalMovement();
                 return;
@@ -133,7 +150,7 @@ namespace CTJ.Enemies
 
         internal void ExecuteAttack()
         {
-            if (IsAttackInProgress || Time.time < _nextAttackTime)
+            if (IsDead || IsAttackInProgress || Time.time < _nextAttackTime)
                 return;
 
             // 상태를 나갔다 들어와도 공격 간격이 초기화되지 않습니다.
@@ -155,11 +172,68 @@ namespace CTJ.Enemies
 
         protected abstract void Attack();
 
-        public abstract void ApplyDamage(
+        // 공용 Agent.ApplyDamage는 virtual이 아니므로 숨기고, CTJ의 IDamageable 구현으로 이 메서드를 사용합니다.
+        public new virtual void ApplyDamage(
             DamageData damageData,
             Vector2 hitPoint,
             Vector2 hitDirection,
-            Vector2 hitNormal);
+            Vector2 hitNormal)
+        {
+            float amount = damageData.DamageAmount;
+            if (IsDead || !isActiveAndEnabled || HealthModule == null ||
+                amount <= 0f || float.IsNaN(amount) || float.IsInfinity(amount))
+                return;
+
+            HealthModule.CurrentHealth -= amount;
+            OnHit?.Invoke();
+        }
+
+        private void HandleHealthChanged(float current, float delta, float max)
+        {
+            if (current <= 0f)
+                Die();
+        }
+
+        private void Die()
+        {
+            if (IsDead)
+                return;
+
+            // 외부 콜백이나 남은 Animation Event보다 먼저 사망 상태를 확정합니다.
+            IsDead = true;
+            StopAllCoroutines();
+            _rigidbody.linearVelocity = Vector2.zero;
+            _rigidbody.simulated = false;
+            foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
+                collider.enabled = false;
+
+            // MeleeEnemy.OnDisable이 진행 중인 공격과 타격 대상도 정리합니다.
+            enabled = false;
+            if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
+                deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
+            {
+                deathAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                deathAnimator.Play(DeathStateHash, 0, 0f);
+            }
+            Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay));
+        }
+
+        private void OnDestroy()
+        {
+            if (HealthModule != null)
+                HealthModule.OnHealthChanged -= HandleHealthChanged;
+        }
+
+#if UNITY_EDITOR
+        [ContextMenu("Test/Take 2 Damage (Play Mode)")]
+        protected void TestTakeDamage()
+        {
+            if (!Application.isPlaying)
+                return;
+            ((IDamageable)this).ApplyDamage(new DamageData { DamageAmount = 2f },
+                transform.position, Vector2.zero, Vector2.zero);
+        }
+#endif
 
         private void OnValidate()
         {

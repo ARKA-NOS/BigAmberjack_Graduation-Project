@@ -131,6 +131,8 @@ MonoBehaviour:
   moveSpeed: 2
   facingRoot: {fileID: 2368432189235151295}
   attackInterval: 1
+  deathAnimator: {fileID: 2391880773380209860}
+  deathDespawnDelay: 1.1
   attackAnimator: {fileID: 2391880773380209860}
   attackStateName: Base Layer.Attack
   attackHitbox: {fileID: 7373078564446817729}
@@ -148,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c9a460acba483d8ce48f70ea98b66c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatModule
-  baseStats: {fileID: 0}
+  baseStats: {fileID: 11400000, guid: 89aca48440d01e24ba499dd20bbe6ce3, type: 2}
 --- !u!114 &1001759245267349421
 MonoBehaviour:
   m_ObjectHideFlags: 0

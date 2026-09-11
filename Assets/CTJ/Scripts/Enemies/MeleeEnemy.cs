@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using DevLib.BattleSystem;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -104,11 +103,5 @@ namespace CTJ.Enemies
             OnAttackFinished();
         }
 
-        public override void ApplyDamage(DamageData damageData, Vector2 hitPoint,
-            Vector2 hitDirection, Vector2 hitNormal)
-        {
-            // 현재 적의 체력/사망 규칙은 정해지지 않아 기존 피격 알림만 전달합니다.
-            OnHit?.Invoke();
-        }
     }
 }

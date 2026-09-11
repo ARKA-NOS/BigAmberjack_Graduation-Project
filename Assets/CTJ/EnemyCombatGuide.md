@@ -8,7 +8,7 @@
 - 두 적 모두 Idle → Chase → Attack으로 움직인다. 플레이어의 지연 생성 탐색도 유지한다.
 - 근접 적은 공격 애니메이션 시작 시 이동과 방향을 고정한다. 타격 이벤트 순간에 Hitbox와 타깃 Collider가 겹쳐야 피해가 전달된다.
 - 원거리 적은 발사 시점의 플레이어 위치를 향해 직선 발사체를 발사한다. 발사 후 유도하지 않는다.
-- 피해 전달은 기존 `IDamageable.ApplyDamage()`를 호출한다. 적의 체력/사망/넉백 규칙은 추가하지 않았다. 적이 피해를 받으면 기존 `OnHit` UnityEvent만 호출한다.
+- 피해 전달은 기존 `IDamageable.ApplyDamage()`를 호출한다. 적의 피격은 EnemyBase에서 기존 HealthModule의 체력을 줄이고 OnHit을 알리며, 체력 0에서 행동/충돌 중단 → 사망 연출 → 제거로 처리한다. 넉백은 추가하지 않았다. 상세 테스트와 문법 설명은 `Assets/CTJ/Prototypes/EnemyDamageDeathGuide.md`를 참고한다.
 - 현재 `PlayerController`는 공용 `Agent`를 통해 `IDamageable`을 상속하고 HealthModule에 피해를 전달한다. 플레이어의 모듈 연결은 별도로 확인한다. 아래 `EnemyDamageProbe`는 별도 임시 타깃의 로그/횟수 검증용이며 체력 시스템이 아니다.
 - 공용 `AttackTypeEnum`에는 `Melee`만 있으므로 원거리 분류를 추가하지 않았다. 전달되는 `DamageData`의 분류는 현재 기본값이고, 피해량·공격자·방향만 활용한다.
 - 벽·절벽을 피하는 추적과 점프는 포함하지 않는다. Catto/Mad Ghost 프리팹에는 Idle/Move/Attack 애니메이션이 연결되어 있다. 첫 테스트는 평평한 발판에서 진행한다.
@@ -92,7 +92,7 @@ Console의 Collapse를 끄고 EnemyDamageProbe의 Received Hit Count/Total Damag
 
 ## 5. 사용한 문법과 선택 이유
 
-- `sealed class ... : EnemyBase`: 이미 필요한 근접/원거리 타입을 구현한다. 공통 이동/FSM은 상속받고 Attack과 ApplyDamage를 재정의한다.
+- `sealed class ... : EnemyBase`: 이미 필요한 근접/원거리 타입을 구현한다. 공통 이동/FSM/피격/사망은 상속받고 Attack을 재정의한다.
 - `virtual`/`override IsAttackInProgress`: 기본은 즉시 공격이고 근접만 애니메이션 종료까지 잠긴다. FSM이 현재 타입 이름을 직접 검사하지 않고 이 값으로 전환 여부를 판단한다.
 - `protected` 거리 필드와 `Reset()`: 파생 원거리 타입이 에디터 초기 거리(10/7)를 설정하도록 필요한 두 필드만 상속 클래스에 공개한다. Reset은 매 실행 초기화 함수가 아니다.
 - `Time.time` 기반 다음 공격 시각: 상태를 재진입해도 타이머가 초기화되어 공격 간격을 무시하지 않도록 한다.

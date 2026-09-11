@@ -12,7 +12,10 @@ namespace CTJ.Enemies
 
         public override void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
         {
+            if (IsDead)
+                return;
             Debug.Log($"{name}: Damage {damageData.DamageAmount}");
+            base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
         }
     }
 }

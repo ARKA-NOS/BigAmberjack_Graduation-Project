@@ -1,4 +1,3 @@
-using DevLib.BattleSystem;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -49,10 +48,5 @@ namespace CTJ.Enemies
                 attackAnimator.Play(AttackStateHash, 0, 0f);
         }
 
-        public override void ApplyDamage(DamageData damageData, Vector2 hitPoint,
-            Vector2 hitDirection, Vector2 hitNormal)
-        {
-            OnHit?.Invoke();
-        }
     }
 }

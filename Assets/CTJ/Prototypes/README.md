@@ -1,5 +1,7 @@
 # Catto · Mad Ghost 프로토타입 사용 안내
 
+피격·사망 기능도 연결되어 있다. 플레이어 공격 전달 경로, 에디터 피해 테스트 메뉴, 체력 설정과 이번 문법 설명은 `EnemyDamageDeathGuide.md`를 참고한다.
+
 ## 바로 테스트하기
 
 1. Unity에서 `Assets/CTJ/Prototypes/Scenes/EnemyArtTest.unity`를 연다. 기존 씬에 저장하지 않은 작업이 있다면 먼저 보존한다.
@@ -23,8 +25,9 @@
 | `Prefabs/Catto_Melee.prefab` | MeleeEnemy 기반 근접 몹. 이벤트·타격 판정 연결 완료 |
 | `Prefabs/MadGhost_Ranged.prefab` | RangedEnemy 기반 지상 원거리 몹. 총구·발사체 연결 완료 |
 | `Prefabs/MadGhostProjectile.prefab` | 기존 CTJ Projectile을 복제한 테스트 탄 |
-| `Animations/Catto.controller`, `MadGhost.controller` | 각각 Idle / Move / Attack 3개 상태 |
-| `Animations/*.anim` | 각 몹의 대기·이동·공격 클립, 총 6개 |
+| `Animations/Catto.controller`, `MadGhost.controller` | 각각 Idle / Move / Attack / Death 4개 상태 |
+| `Animations/*.anim` | 각 몹의 대기·이동·공격·사망 클립, 총 8개 |
+| `Stats/Catto_Stats.asset`, `MadGhost_Stats.asset` | 최대 체력 6 / 8을 가진 CTJ 전용 StatGroup |
 | `Sprites/Catto.png`, `MadGhost.png` | 원본 단일 행 시트를 복제하고 일정 크기로 분할한 시트 |
 | `Scenes/EnemyArtTest.unity` | 두 몹, 임시 피해 수신 타깃, 바닥, 카메라가 있는 독립 테스트 씬 |
 
@@ -43,7 +46,7 @@ Catto_Melee / MadGhost_Ranged
 
 몸체는 루트에 고정하고 Visual의 X Scale만 반전한다. 타격 판정과 발사 위치를 Visual 아래에 두었기 때문에 방향이 같이 바뀐다. 애니메이션은 SpriteRenderer.sprite만 바꾸고 Transform에는 키를 넣지 않았다.
 
-공용 `Agent.Awake()`는 HealthModule을 필수로 찾는다. 따라서 기존 `StatModule`과 `HealthModule`을 연결하고, Lrw의 기존 `MaxHealth.asset`을 읽기 전용으로 참조했다. StatModule의 Base Stats는 비워 두었으며 HealthModule이 최대 체력 스탯을 기본 100으로 초기화한다. 이 연결은 초기화 오류를 막기 위한 것이며, CTJ 적의 피격 메서드는 여전히 OnHit 알림만 보낸다. 적의 체력 감소·사망 처리는 이번 작업에 추가하지 않았다.
+공용 `Agent.Awake()`는 HealthModule을 필수로 찾는다. 기존 StatModule과 HealthModule을 연결하고 Lrw의 기존 MaxHealth.asset을 읽기 전용으로 참조한다. StatModule의 Base Stats에는 CTJ 전용 StatGroup을 연결했으며 Catto 최대 체력은 6, Mad Ghost는 8이다. EnemyBase가 피해를 받아 체력을 줄이고 0이 되면 행동/충돌을 멈춘 뒤 사망 연출 후 제거한다.
 
 ## 현재 공격 설정과 조정 지점
 
@@ -88,7 +91,7 @@ Catto_Melee / MadGhost_Ranged
 | Catto | 14–17, 앉은 대기, 6fps | 3–6, 걷기, 10fps | 18–23, 물기, 10fps |
 | Mad Ghost | 0–3, 대기, 6fps | 4–7, 이동, 10fps | 13–15, 낫 공격, 10fps |
 
-현재는 Catto의 일어서기/앉기/턴 동작과 Mad Ghost의 낫 꺼내기/집어넣기를 생략했다. 먼저 판정과 거리감을 확정한 다음 연결 동작을 추가하는 순서를 권한다. Hit/Death 프레임도 시트에 남아 있지만 상태에는 아직 연결하지 않았다.
+현재는 Catto의 일어서기/앉기/턴 동작과 Mad Ghost의 낫 꺼내기/집어넣기를 생략했다. 먼저 판정과 거리감을 확정한 다음 연결 동작을 추가하는 순서를 권한다. Death 프레임은 사망 상태에 연결했으며 Hit 프레임과 피격 경직은 아직 연결하지 않았다.
 
 ## 기존 맵과 플레이어에 붙이기
 
@@ -97,7 +100,7 @@ Catto_Melee / MadGhost_Ranged
 3. 임시 블록을 타깃으로 쓸 때는 직접 Target을 지정한다. 자동 탐색은 EnemyDamageProbe가 아니라 PlayerController를 찾는다.
 4. **현재 공용 PlayerController는 Agent를 통해 IDamageable을 상속한다.** 실제 플레이어의 StatModule/HealthModule이 구성되어 있다면 공용 ApplyDamage 경로로 피해를 받을 수 있다. 플레이어의 체력·죽음 처리까지 이번 테스트에서 검증한 것은 아니다.
 5. 실제 플레이어에는 EnemyDamageProbe를 추가하지 않는다. 같은 계층에 IDamageable 구현이 둘이면 피해 수신기가 모호해질 수 있다. Probe는 이번 씬의 별도 테스트 타깃에만 사용한다.
-6. 보스, 사망·넉백, 절벽 감지, 장애물 우회, 풀링은 이번 작업에 포함하지 않았다. 우선 평지에서 거리 → 공격 간격 → 타격/총구 위치 → 연결 애니메이션 순으로 조정하면 된다.
+6. 보스, 넉백, 절벽 감지, 장애물 우회, 풀링은 이번 작업에 포함하지 않았다. 우선 평지에서 거리 → 공격 간격 → 타격/총구 위치 → 연결 애니메이션 순으로 조정하면 된다.
 
 ## 이번에 사용한 문법과 이유
 
@@ -123,7 +126,7 @@ Catto_Melee / MadGhost_Ranged
 
 ## 검증 기록
 
-2026-09-11, Unity 6000.3.22f1:
+2026-09-11 초기 아트 연결 검증, Unity 6000.3.22f1 (이후 피격·사망 검증은 EnemyDamageDeathGuide.md 참고):
 
 - Unity 스크립트 재컴파일 완료, 컴파일 오류 없음.
 - 프리팹 3개, Animator 2개, 클립 6개, 전체 스프라이트 66개 및 Catto의 두 이벤트 검사.

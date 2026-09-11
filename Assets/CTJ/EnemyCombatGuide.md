@@ -1,5 +1,7 @@
 # CTJ 근접·원거리 적 설정과 테스트
 
+2026-09-11: Catto(근접), Mad Ghost(원거리)의 연결된 프리팹과 `Assets/CTJ/Prototypes/Scenes/EnemyArtTest.unity` 테스트 씬을 추가했다. 바로 실행하는 절차와 에셋별 값/문법 설명은 `Assets/CTJ/Prototypes/README.md`에 있다. 아래는 직접 구성할 때의 공통 안내다.
+
 ## 구현 범위
 
 - `MeleeEnemy`와 `RangedEnemy`는 `EnemyBase`를 상속하고 Lrw의 FSM을 그대로 사용한다.
@@ -7,18 +9,20 @@
 - 근접 적은 공격 애니메이션 시작 시 이동과 방향을 고정한다. 타격 이벤트 순간에 Hitbox와 타깃 Collider가 겹쳐야 피해가 전달된다.
 - 원거리 적은 발사 시점의 플레이어 위치를 향해 직선 발사체를 발사한다. 발사 후 유도하지 않는다.
 - 피해 전달은 기존 `IDamageable.ApplyDamage()`를 호출한다. 적의 체력/사망/넉백 규칙은 추가하지 않았다. 적이 피해를 받으면 기존 `OnHit` UnityEvent만 호출한다.
-- 현재 `PlayerController`는 `IDamageable`을 구현하지 않는다. 실제 플레이어 체력 감소는 수신기가 연결되어야 한다. 아래 `EnemyDamageProbe`는 로그/횟수 검증용이며 체력 시스템이 아니다.
+- 현재 `PlayerController`는 공용 `Agent`를 통해 `IDamageable`을 상속하고 HealthModule에 피해를 전달한다. 플레이어의 모듈 연결은 별도로 확인한다. 아래 `EnemyDamageProbe`는 별도 임시 타깃의 로그/횟수 검증용이며 체력 시스템이 아니다.
 - 공용 `AttackTypeEnum`에는 `Melee`만 있으므로 원거리 분류를 추가하지 않았다. 전달되는 `DamageData`의 분류는 현재 기본값이고, 피해량·공격자·방향만 활용한다.
-- 벽·절벽을 피하는 추적, 점프, 공격 애니메이션 외의 Idle/Run 연출은 포함하지 않는다. 첫 테스트는 평평한 발판에서 진행한다.
+- 벽·절벽을 피하는 추적과 점프는 포함하지 않는다. Catto/Mad Ghost 프리팹에는 Idle/Move/Attack 애니메이션이 연결되어 있다. 첫 테스트는 평평한 발판에서 진행한다.
 
 ## 1. 공통 테스트 환경
+
+공용 Agent는 HealthModule을 필수로 찾는다. 적을 직접 구성할 때 기존 Lrw의 StatModule과 HealthModule을 연결하고, HealthModule의 Max Hp Stat Data에 기존 MaxHealth StatData를 지정한다. 준비된 Catto/Mad Ghost 프리팹에는 이미 연결되어 있다. 공용 모듈이나 데이터 원본은 수정하지 않는다.
 
 1. `Assets/CTJ/Scenes/CTJ_MapTestScene.unity`에서 작업하거나 CTJ 안에 테스트 씬을 만든다.
 2. 바닥에 Collider2D가 있어야 한다. 적 루트에는 Rigidbody2D(Dynamic), 몸체 Collider2D(Trigger 끔)를 둔다. Freeze Rotation Z를 켠다.
 3. 한 오브젝트에는 EnemyPrototype/MeleeEnemy/RangedEnemy 중 하나만 붙인다. 테스트용 적을 복제했다면 EnemyPrototype을 제거한 뒤 새 타입을 붙인다.
 4. 적 아래에 `Visual` 자식을 만든다. 오른쪽을 바라보는 것을 기본으로 하고, 적의 `Facing Root`에 이 자식을 지정한다. 몸체 Collider와 Rigidbody는 루트에 그대로 둔다.
 5. Target은 플레이어 루트 Transform이다. 비워두면 기존 방식대로 PlayerController를 0.2초마다 찾아 연결한다. 테스트용 사각형 등 다른 타깃을 쓸 때는 직접 지정한다.
-6. 기존 동료 프리팹을 수정하지 않고 피해를 확인하려면 Play 모드에서 생성된 플레이어 루트에 `CTJ.Testing.EnemyDamageProbe`를 Add Component 한다. 플레이어 Collider가 자식이어도 부모 수신기를 찾는다. 플레이어에게 이미 IDamageable 수신기가 생겼다면 Probe를 중복으로 붙이지 않는다.
+6. 현재 플레이어는 이미 IDamageable을 상속하므로 EnemyDamageProbe를 중복으로 붙이지 않는다. 실제 플레이어는 HealthModule의 Current Health 변화를 확인하고, 별도 임시 타깃에는 `CTJ.Testing.EnemyDamageProbe`를 붙여 피해 로그를 확인한다. Collider가 자식이어도 부모 수신기를 찾는다.
 7. 플레이어 생성 시스템 없이 검사하려면 CTJ 씬에 Collider2D + EnemyDamageProbe를 가진 임시 Target을 만들어 적의 Target 필드에 지정한다. Target을 Scene 뷰에서 이동하여 거리/접촉을 검사할 수 있다.
 
 Play 모드에서 추가한 컴포넌트와 값은 종료하면 사라진다. 프리팹 원본에 Apply하지 않는다.

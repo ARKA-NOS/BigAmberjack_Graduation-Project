@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0d23ccc2212444e93beeaf78504f16b, type: 3}
-  m_Name: True Skill Condition
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Skills.TestCondition
+  m_Script: {fileID: 11500000, guid: 4925160ab20a49d299424707793bc60c, type: 3}
+  m_Name: Skill SO
+  m_EditorClassIdentifier: SkillSystemAssembly::Lrw.Script.Agent.SkillSystem.SkillSO
+  <BaseCooldown>k__BackingField: 10

@@ -7,6 +7,8 @@ namespace Lrw.Script.Agent.SkillSystem
     {
         [field: SerializeField] public float BaseCooldown { get; private set; } = 10f;
         
+        [Header("Reuse Setting")]
+        [field: SerializeField] public bool IsCooldownBackUpdate { get; private set; } = false;
         
     }
 }

@@ -12,6 +12,11 @@ namespace Lrw.Script.Agent.SkillSystem.ReuseSkill
         public override void InitSkill(ModuleOwner owner)
         {
             _reuseSkills = GetComponentsInChildren<IReuseSkill>(true);
+
+            foreach (IReuseSkill reuseSkill in _reuseSkills)
+            {
+                reuseSkill.InitReuseSkill(owner);
+            }
         }
 
         #region CanUseSkill
@@ -19,7 +24,7 @@ namespace Lrw.Script.Agent.SkillSystem.ReuseSkill
         public sealed override bool CanUseSkill()
         {
             if (IndexOut()) return false;
-            return _index == 0 ? base.CanUseSkill() && CanUseFirstSkill() : _reuseSkills[_index].CanUseSkill();
+            return _index == 0 ? base.CanUseSkill() && CanUseFirstSkill() : _reuseSkills[_index-1].CanUseReuseSkill();
         }
 
         protected abstract bool CanUseFirstSkill();
@@ -40,7 +45,7 @@ namespace Lrw.Script.Agent.SkillSystem.ReuseSkill
             }
             else
             {
-                _reuseSkills[_index].UseSkill();
+                _reuseSkills[_index-1].UseReuseSkill();
             }
 
             NextSkill();

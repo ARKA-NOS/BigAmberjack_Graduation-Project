@@ -2,13 +2,10 @@
 
 namespace Lrw.Script.Agent.SkillSystem
 {
-    public interface ISkill
+    public interface ISkill : ICooldown
     {
         void InitSkill(ModuleOwner owner);
         bool CanUseSkill();
         void UseSkill();
-        float NormalizeCooldown();
-        float GetRemainingCooldown();
-        float GetMaxCooldown();
     }
 }

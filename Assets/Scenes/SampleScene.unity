@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20ad452232d461996d63a803fa0712d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.SkillTester
-  skill: {fileID: 11400000, guid: 8d5197de093a66d49b72c5304e0aeef5, type: 2}
+  skill: {fileID: 11400000, guid: 1436516f0e7a5ca498f32b4fa5db5c61, type: 2}
   skillModule: {fileID: 1385921061}
 --- !u!1 &192046918
 GameObject:
@@ -350,6 +350,52 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &272834985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 272834986}
+  - component: {fileID: 272834987}
+  m_Layer: 0
+  m_Name: skill 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &272834986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272834985}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1035884655}
+  m_Father: {fileID: 1385921060}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &272834987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272834985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2e0ef3e6f9340f3b7ed1deb32ad0654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.Skill.TestReuseSkillOwner
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: c13b360b605cbd94480fce671f818b8d, type: 2}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,6 +746,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1389134581402385000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
   m_PrefabInstance: {fileID: 1974506778}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1035884654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1035884655}
+  - component: {fileID: 1035884656}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1035884655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035884654}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 272834986}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1035884656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035884654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0964d25b370545778405ed163ac14a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.Skill.TestReuseSkill
+  <ReuseSkillSo>k__BackingField: {fileID: 11400000, guid: 7659414ac7e32b84cb0d9f494b0654f3, type: 2}
 --- !u!1 &1190431655
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,6 +866,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1418843843}
+  - {fileID: 272834986}
   m_Father: {fileID: 949754081}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1385921061
@@ -830,10 +922,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1418843842}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b120bf5850c4886b3c195835c4049f5, type: 3}
+  m_Script: {fileID: 11500000, guid: b884b17227cb4d069a42309ca9afb20c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: SkillSystemAssembly::Lrw.Script.Agent.SkillSystem.SkillPlayer
-  <Skill>k__BackingField: {fileID: 11400000, guid: 8d5197de093a66d49b72c5304e0aeef5, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.Skill.TestNormalSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: 1436516f0e7a5ca498f32b4fa5db5c61, type: 2}
 --- !u!1001 &1974506778
 PrefabInstance:
   m_ObjectHideFlags: 0

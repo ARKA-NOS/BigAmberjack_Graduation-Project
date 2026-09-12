@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script._Core;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.SkillSystem.NormalSkill;
 
 namespace Lrw.Script.Agent.SkillSystem
 {
     public class SkillModule : Module, ISkillModule
     {
-        private Dictionary<SkillSO, ISkill> _skillPlayers = new();
+        private Dictionary<SkillSO, INormalSkill> _skillPlayers = new();
         
         public ModuleOwner Owner { get; private set; }
 
@@ -15,14 +15,14 @@ namespace Lrw.Script.Agent.SkillSystem
         {
             base.Initialize(owner);
             Owner = owner;
-            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<ISkill>());
+            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<INormalSkill>());
         }
 
-        private Dictionary<SkillSO, ISkill> GetSkillPlayers(ISkill[] skillPlayers)
+        private Dictionary<SkillSO, INormalSkill> GetSkillPlayers(INormalSkill[] skillPlayers)
         {
-            Dictionary<SkillSO, ISkill> skillDict = new();
+            Dictionary<SkillSO, INormalSkill> skillDict = new();
 
-            foreach (ISkill skillPlayer in skillPlayers)
+            foreach (INormalSkill skillPlayer in skillPlayers)
             {
                 if (skillPlayer.SkillSo == null)
                 {
@@ -45,13 +45,13 @@ namespace Lrw.Script.Agent.SkillSystem
         public bool CanUseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return false;
-            return _skillPlayers.TryGetValue(skillSo, out ISkill player) && player.CanUseSkill();
+            return _skillPlayers.TryGetValue(skillSo, out INormalSkill player) && player.CanUseSkill();
         }
 
         public void UseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return;
-            if (_skillPlayers.TryGetValue(skillSo, out ISkill player))
+            if (_skillPlayers.TryGetValue(skillSo, out INormalSkill player))
             {
                 player.UseSkill();
             }

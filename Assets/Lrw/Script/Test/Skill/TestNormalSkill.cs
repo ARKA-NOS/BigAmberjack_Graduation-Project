@@ -1,6 +1,6 @@
 ﻿using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
-using UnityEngine;
 
 namespace Lrw.Script.Test.Skill
 {
@@ -19,7 +19,7 @@ namespace Lrw.Script.Test.Skill
         public override void UseSkill()
         {
             base.UseSkill();
-            Debug.Log("123");
+            FDebug.Log("123");
         }
         
     }

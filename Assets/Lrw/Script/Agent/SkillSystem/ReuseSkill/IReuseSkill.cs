@@ -2,7 +2,7 @@
 
 namespace Lrw.Script.Agent.SkillSystem.ReuseSkill
 {
-    public interface IReuseSkill : ICooldown
+    public interface IReuseSkill
     {
         ReuseSkillSO ReuseSkillSo { get; }
         

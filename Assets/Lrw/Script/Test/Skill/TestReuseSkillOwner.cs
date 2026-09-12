@@ -1,5 +1,5 @@
-﻿using Lrw.Script.Agent.SkillSystem.ReuseSkill;
-using UnityEngine;
+﻿using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.SkillSystem.ReuseSkill;
 
 namespace Lrw.Script.Test.Skill
 {
@@ -17,7 +17,7 @@ namespace Lrw.Script.Test.Skill
 
         protected override void UseFirstSkill()
         {
-            Debug.Log("TestReuseSkillOwner");
+            FDebug.Log("TestReuseSkillOwner");
         }
     }
 }

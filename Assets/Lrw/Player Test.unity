@@ -685,21 +685,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2691101421626820447, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-      propertyPath: contactFilter.useLayerMask
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2691101421626820447, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-      propertyPath: contactFilter.layerMask.m_Bits
-      value: 384
-      objectReference: {fileID: 0}
     - target: {fileID: 3282547565697425842, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 444996015808175400, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}

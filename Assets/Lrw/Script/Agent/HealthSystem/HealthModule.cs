@@ -1,6 +1,4 @@
 ﻿using DevLib.ModuleSystem;
-using Lrw.Script._Core;
-using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 

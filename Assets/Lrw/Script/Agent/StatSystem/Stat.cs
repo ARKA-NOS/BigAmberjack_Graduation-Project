@@ -20,7 +20,6 @@ namespace Lrw.Script.Agent.StatSystem
 
         public delegate void StatValueChanged(float newValue, float delta);
         
-        
         public Stat(StatData data,float baseValue)
         {
             if(data == null) throw new Exception("Stat data cannot be null");
@@ -55,6 +54,7 @@ namespace Lrw.Script.Agent.StatSystem
                 OnValueChanged?.Invoke(Value,Value - prevValue);
             }
         }
-
+        
+        
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Agents
 {
-    public class Agent : ModuleOwner,IDamageable
+    public class Agent : ModuleOwner, IDamageable
     {
         [SerializeField] protected UnityEvent OnHit;
         

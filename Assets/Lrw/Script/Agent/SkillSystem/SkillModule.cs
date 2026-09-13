@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script._Core;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.SkillSystem.NormalSkill;
 
 namespace Lrw.Script.Agent.SkillSystem
 {
     public class SkillModule : Module, ISkillModule
     {
-        private Dictionary<SkillSO, ISkillPlayer> _skillPlayers = new();
+        private Dictionary<SkillSO, INormalSkill> _skillPlayers = new();
         
         public ModuleOwner Owner { get; private set; }
 
@@ -15,29 +15,28 @@ namespace Lrw.Script.Agent.SkillSystem
         {
             base.Initialize(owner);
             Owner = owner;
-            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<ISkillPlayer>());
+            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<INormalSkill>());
         }
 
-        private Dictionary<SkillSO, ISkillPlayer> GetSkillPlayers(ISkillPlayer[] skillPlayers)
+        private Dictionary<SkillSO, INormalSkill> GetSkillPlayers(INormalSkill[] skillPlayers)
         {
-            Dictionary<SkillSO, ISkillPlayer> skillDict = new();
+            Dictionary<SkillSO, INormalSkill> skillDict = new();
 
-            foreach (ISkillPlayer skillPlayer in skillPlayers)
+            foreach (INormalSkill skillPlayer in skillPlayers)
             {
-                if (skillPlayer.Skill == null)
+                if (skillPlayer.SkillSo == null)
                 {
-                    FDebug.LogError("Skill player doesn't have a skill.");
+                    FDebug.LogError($"[{skillPlayer}] Skill SO가 null 입니다.");
+                    continue;
+                }
+
+                if (!skillDict.TryAdd(skillPlayer.SkillSo, skillPlayer))
+                {
+                    FDebug.LogError($"[{skillPlayer}] 같은 Skill SO가 있습니다.");
                     continue;
                 }
                 
-                if (skillDict.TryAdd(skillPlayer.Skill, skillPlayer))
-                {
-                    skillPlayer.InitSkill(this);
-                }
-                else
-                {
-                    FDebug.LogError("Skill player doesn't have a skill.");
-                }
+                skillPlayer.InitSkill(_owner);
             }
 
             return skillDict;
@@ -46,13 +45,13 @@ namespace Lrw.Script.Agent.SkillSystem
         public bool CanUseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return false;
-            return _skillPlayers.TryGetValue(skillSo, out ISkillPlayer player) && player.CanUseSkill();
+            return _skillPlayers.TryGetValue(skillSo, out INormalSkill player) && player.CanUseSkill();
         }
 
         public void UseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return;
-            if (_skillPlayers.TryGetValue(skillSo, out ISkillPlayer player))
+            if (_skillPlayers.TryGetValue(skillSo, out INormalSkill player))
             {
                 player.UseSkill();
             }

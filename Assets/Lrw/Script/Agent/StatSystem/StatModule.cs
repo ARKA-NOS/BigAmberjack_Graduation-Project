@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DevLib.ModuleSystem;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.StatSystem
@@ -32,7 +33,8 @@ namespace Lrw.Script.Agent.StatSystem
             _stats.Add(statData,stat);
             return stat;
         }
-
+        
+        [NotNull]
         public Stat GetStat(StatData statData, float baseValue = 0f)
         {
             if (statData == null) throw new Exception("StatData is null");

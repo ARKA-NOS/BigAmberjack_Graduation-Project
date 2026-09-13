@@ -1,6 +1,7 @@
-using UnityEngine;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Lrw.Script._Core._Debug
+namespace UnityEngine
 {
     public static class FDebug
     {
@@ -16,11 +17,12 @@ namespace Lrw.Script._Core._Debug
 
         public static void LogError(object text)
             => Log(text, LogType.Error);
-        
-        public static void Assert(bool value,object text)
+    
+        public static void Assert([DoesNotReturnIf(false)] bool value,object text)
         {
             if(value) return;
-            Log(text, LogType.Assert);
+            if(text == null) throw new Exception("test is null");
+            throw new Exception(text.ToString());
         }
     }
 }

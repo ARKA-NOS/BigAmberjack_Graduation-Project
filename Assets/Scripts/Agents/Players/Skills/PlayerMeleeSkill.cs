@@ -1,62 +1,59 @@
-﻿using System.Collections;
-using CoreSystem.Effect;
+﻿using CoreSystem.Effect;
 using CoreSystem.EffectSystem;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
+using Lrw.Script.Agent.SkillSystem.NormalSkill;
+using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-namespace Agents.Players
+namespace Agents.Players.Skills
 {
-    public class PlayerMeleeSkillModule : Module
+    public class PlayerMeleeSkill : AbstractNormalSkill
     {
         [SerializeField] private Transform slashTrm;
         [SerializeField] private AssetNameSo[] attackSlashBundle;
         [SerializeField] private float attackCoolTime = 0.4f;
-        [SerializeField] private float attackDmg = 2;
+        [SerializeField] private StatData damageStatSo;
         
         private IVfxModule _vfxModule;
-        private PlayerController _playerController;
         private Camera _camera;
         private AbstractDamageCaster _damageCaster;
+        private IStatModule _statModule;
+        private Stat _damageStat;
+        
 
         private int _currentAttackSequence;
-        private bool _canAttack = true;
+
+        public override float GetMaxCooldown()
+            => SkillSo.BaseCooldown;
         
-        public override void Initialize(ModuleOwner owner)
+        public override void InitSkill(ModuleOwner owner)
         {
-            base.Initialize(owner);
-
-            _playerController = owner as PlayerController;
-
-            if (_playerController != null)
-            {
-                _playerController.PlayerInput.OnAttackKeyPressed += HandleMeleeUseSkill;
-            }
-
             _vfxModule = owner.GetModule<IVfxModule>();
-            Debug.Assert(_vfxModule != null, "VFX 모듈 좀 넣어줍쇼...");
+            FDebug.Assert(_vfxModule != null, "VFX 모듈 좀 넣어줍쇼...");
 
             _camera = Camera.main;
-            Debug.Assert(_camera != null, "Main Camera가 없습니다.");
+            FDebug.Assert(_camera != null, "Main Camera가 없습니다.");
+            
+            _statModule = owner.GetModule<IStatModule>();
+            
+            FDebug.Assert(_statModule != null,"StatModule is not found");
+            
+            _damageStat = _statModule.GetStat(damageStatSo,1f);
             
             _damageCaster = GetComponentInChildren<AbstractDamageCaster>();
             Debug.Assert(_damageCaster != null, "AbstractDamageCaster가 없습니다.");
             _damageCaster.InitCaster(owner);
         }
 
-        private void OnDestroy()
+        public override bool CanUseSkill()
         {
-            if (_playerController != null)
-            {
-                _playerController.PlayerInput.OnAttackKeyPressed -= HandleMeleeUseSkill;
-            }
+            return base.CanUseSkill() && attackSlashBundle.Length != 0;
         }
 
-        private void HandleMeleeUseSkill()
+        public override void UseSkill()
         {
-            if (!_canAttack || attackSlashBundle.Length == 0)
-                return;
+            base.UseSkill();
 
             LookAtMouse();
 
@@ -66,14 +63,13 @@ namespace Agents.Players
 
             _currentAttackSequence =
                 (_currentAttackSequence + 1) % attackSlashBundle.Length;
-
-            StartCoroutine(AttackCoolTimeCount());
+            
             HandleDmgCast();
         }
 
         private void HandleDmgCast()
         {
-            _damageCaster.CastDamage(attackDmg, transform.forward, 0);
+            _damageCaster.CastDamage(_damageStat.Value, transform.forward, 0);
         }
 
         private void LookAtMouse()
@@ -93,14 +89,10 @@ namespace Agents.Players
             slashTrm.right = direction;
             transform.right = direction;
         }
+        
 
-        private IEnumerator AttackCoolTimeCount()
-        {
-            _canAttack = false;
+        
 
-            yield return new WaitForSeconds(attackCoolTime);
-
-            _canAttack = true;
-        }
+        
     }
 }

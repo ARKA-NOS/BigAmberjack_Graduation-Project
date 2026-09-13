@@ -1,6 +1,6 @@
 ﻿using DevLib.ModuleSystem;
-using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
+using UnityEngine;
 
 namespace Lrw.Script.Test.Skill
 {

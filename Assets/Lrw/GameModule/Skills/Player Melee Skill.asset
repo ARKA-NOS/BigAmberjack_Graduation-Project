@@ -10,6 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4925160ab20a49d299424707793bc60c, type: 3}
-  m_Name: Skill SO
+  m_Name: Player Melee Skill
   m_EditorClassIdentifier: SkillSystemAssembly::Lrw.Script.Agent.SkillSystem.SkillSO
-  <BaseCooldown>k__BackingField: 10
+  <BaseCooldown>k__BackingField: 0.1
+  <IsCooldownBackUpdate>k__BackingField: 0

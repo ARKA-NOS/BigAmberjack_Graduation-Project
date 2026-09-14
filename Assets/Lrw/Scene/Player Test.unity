@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 106082936}
   - component: {fileID: 106082935}
   - component: {fileID: 106082937}
-  - component: {fileID: 106082938}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -166,9 +165,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2681e089c7aeaa8468b13e5839c814d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.StatTester
-  statData: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+  statData: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
   statModule: {fileID: 703884380}
-  changeValue: 0
+  changeValue: 4
 --- !u!114 &106082936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,20 +197,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.TestDamage
   healthModule: {fileID: 753261104}
   value: 10
---- !u!114 &106082938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 106082933}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b20ad452232d461996d63a803fa0712d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.SkillTester
-  skill: {fileID: 11400000, guid: 1436516f0e7a5ca498f32b4fa5db5c61, type: 2}
-  skillModule: {fileID: 0}
 --- !u!1 &192046918
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +209,7 @@ GameObject:
   - component: {fileID: 192046919}
   - component: {fileID: 192046921}
   m_Layer: 6
-  m_Name: Square
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -794,7 +779,7 @@ GameObject:
   - component: {fileID: 1002833302}
   - component: {fileID: 1002833303}
   m_Layer: 0
-  m_Name: StatModule'
+  m_Name: StatModule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

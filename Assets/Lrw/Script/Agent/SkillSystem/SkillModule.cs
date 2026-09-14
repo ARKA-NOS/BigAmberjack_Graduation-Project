@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.SkillSystem
 {
-    public class SkillModule : Module, ISkillModule
+    public class SkillModule : Module, ISkillModule,IAfterInitModule
     {
         private Dictionary<SkillSO, INormalSkill> _skillPlayers = new();
         
@@ -15,6 +15,10 @@ namespace Lrw.Script.Agent.SkillSystem
         {
             base.Initialize(owner);
             Owner = owner;
+        }
+        
+        public void AfterInit()
+        {
             _skillPlayers = GetSkillPlayers(GetComponentsInChildren<INormalSkill>());
         }
 
@@ -56,6 +60,7 @@ namespace Lrw.Script.Agent.SkillSystem
                 player.UseSkill();
             }
         }
+
         
     }
 }

@@ -22,7 +22,7 @@ namespace Agents.Players.FSM
         private void UpdateMovementDirectionX(float movementXKey)
         {
             ControlMovement.SetMovementDirectionX(movementXKey);
-            ControlMovement.UpdateFacingDirection(movementXKey);
+            _renderer.SetFlip(movementXKey);
         }
     }
 }

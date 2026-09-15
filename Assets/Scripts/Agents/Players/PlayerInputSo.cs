@@ -11,6 +11,7 @@ namespace Agents.Players
         
         public event Action OnDashKeyPressed;
         public event Action OnAttackKeyPressed;
+        public event Action OnAttackKeyReleased;
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
 
@@ -51,8 +52,10 @@ namespace Agents.Players
 
         public void OnAttack(InputAction.CallbackContext context)
         {
-            if (context.canceled)
+            if(context.started)
                 OnAttackKeyPressed?.Invoke();
+            if (context.canceled)
+                OnAttackKeyReleased?.Invoke();
         }
 
         public void OnDash(InputAction.CallbackContext context)

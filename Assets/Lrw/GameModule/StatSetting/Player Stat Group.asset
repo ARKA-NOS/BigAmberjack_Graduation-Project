@@ -10,12 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6343ca0540c4d09b6a957ed0cfef660, type: 3}
-  m_Name: Stat Group
+  m_Name: Player Stat Group
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.StatSystem.StatGroup
   <Stats>k__BackingField:
   - <StatData>k__BackingField: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
     <BaseValue>k__BackingField: 100
   - <StatData>k__BackingField: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
-    <BaseValue>k__BackingField: 1
+    <BaseValue>k__BackingField: 10
   - <StatData>k__BackingField: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
     <BaseValue>k__BackingField: 10
+  - <StatData>k__BackingField: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
+    <BaseValue>k__BackingField: 1
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 79c14af92222bd848b542d639e03d0db, type: 2}
+    <BaseValue>k__BackingField: 1
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 407c87306ac9f204bb92b2e51a6f91eb, type: 2}
+    <BaseValue>k__BackingField: 12

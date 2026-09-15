@@ -19,7 +19,7 @@ namespace Agents
             Debug.Assert(HealthModule != null, $"[{name}] HealthModule is not found");
         }
 
-        public void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
+        public virtual void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
         {
             //임시
             HealthModule.CurrentHealth -= damageData.DamageAmount;

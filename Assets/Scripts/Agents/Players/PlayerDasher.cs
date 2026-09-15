@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using CoreSystem.Effect;
-using CoreSystem.EffectSystem;
 
 namespace Agents.Players
 {
@@ -60,34 +59,20 @@ namespace Agents.Players
         {
             if (Time.time < _lastDashTime + dashCoolTime || !_canDash)
                 return;
-
-            Camera cam = Camera.main;
-
-            if (cam == null || Mouse.current == null)
-                return;
             
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Vector2 worldMousePos = cam.ScreenToWorldPoint(mousePos);
-
-            Vector2 direction =
-                worldMousePos - _playerRb.position;
-
+            Vector2 direction = _renderer.GetRight();
+            direction.y = 0;
+            
             if (direction.sqrMagnitude <= 0f)
                 return;
-
+            
             direction.Normalize();
             
             _afterImageEmitter.Play(DashTime);
 
-            float rotationY = direction.x >= 0f ? 0f : 180f;
-
-            _renderer.Animator.transform.rotation =
-                Quaternion.Euler(0f, rotationY, 0f);
-
             Vector2 targetPosition =
                 _playerRb.position + direction * dashRange;
             
-
             _lastDashTime = Time.time;
 
             _dashTween?.Kill();

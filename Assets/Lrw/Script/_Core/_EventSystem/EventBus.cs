@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
 namespace Lrw.Script._Core._EventSystem
 {
@@ -11,7 +9,9 @@ namespace Lrw.Script._Core._EventSystem
 
         private static readonly Dictionary<object, Event> Events = new();
         private static readonly object Lock = new object();
-
+        private static readonly object DefaultKey = new object();
+        
+        public static void Subscribe(Event callback) => Subscribe(DefaultKey, callback);
         public static void Subscribe(object key, Event callback)
         {
             if (key == null)
@@ -32,7 +32,7 @@ namespace Lrw.Script._Core._EventSystem
                 }
             }
         }
-
+        public static void UnSubscribe(Event callback) => Subscribe(DefaultKey, callback);
         public static void UnSubscribe(object key, Event callback)
         {
             if (key == null || callback == null)
@@ -55,7 +55,8 @@ namespace Lrw.Script._Core._EventSystem
                 }
             }
         }
-
+        
+        public static void Raise(T value) => Raise(DefaultKey, value);
         public static void Raise(object key, T value)
         {
             if (key == null)
@@ -71,29 +72,7 @@ namespace Lrw.Script._Core._EventSystem
         
             callback.Invoke(value);
         }
-
-        public static void RaiseAll(T value)
-        {
-            Event[] arr;
-            
-            lock (Lock)
-            {
-                arr = Events.Values.ToArray();
-            }
-            
-            foreach (var evt in arr)
-            {
-                try
-                {
-                    evt?.Invoke(value);
-                }
-                catch (Exception e)
-                {
-                    FDebug.LogError(e);
-                }
-            }
-        }
-    
+        
         public static void Clear(object key)
         {
             if (key == null)

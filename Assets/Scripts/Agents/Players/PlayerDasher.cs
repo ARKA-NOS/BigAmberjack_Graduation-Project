@@ -70,15 +70,9 @@ namespace Agents.Players
             
             _afterImageEmitter.Play(DashTime);
 
-            /*float rotationY = direction.x >= 0f ? 0f : 180f;
-
-            _renderer.Animator.transform.rotation =
-                Quaternion.Euler(0f, rotationY, 0f);*/
-
             Vector2 targetPosition =
                 _playerRb.position + direction * dashRange;
             
-
             _lastDashTime = Time.time;
 
             _dashTween?.Kill();

@@ -42,18 +42,6 @@ namespace Agents.Players
         {
             MovePlayer();
         }
-
-        public void UpdateFacingDirection(float movementXKey)
-        {
-            if (movementXKey == 0) return;
-            
-            Transform rendererTrm = _renderer.Animator.transform;
-            
-            rendererTrm.rotation = Quaternion.Euler(
-                0f, 
-                movementXKey > 0 ? 0f : 180f,
-                0f);
-        }
         
         private void MovePlayer() 
         {

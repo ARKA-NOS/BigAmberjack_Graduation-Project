@@ -1,5 +1,4 @@
-﻿using System;
-using Agents.FSM;
+﻿using Agents.FSM;
 using Agents.Players.Enum;
 using UnityEngine;
 

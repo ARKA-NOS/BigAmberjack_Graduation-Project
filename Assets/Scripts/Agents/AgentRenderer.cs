@@ -19,9 +19,18 @@ namespace Agents
             Animator.CrossFadeInFixedTime(clipHash, crossFadeDuration, layerIndex, normalizedTime);
         }
 
-        public void SetFloat(int idHash, float value)
+        public void SetAnimatorFloat(int idHash, float value)
         {
             Animator.SetFloat(idHash, value);
         }
+
+        public void SetFlip(float dir)
+        {
+            if(Mathf.Approximately(dir,0f)) return;
+            transform.rotation = Quaternion.Euler(0f, dir > 0 ? 0f : 180f, 0f);
+        }
+
+        public Vector3 GetRight()
+            => transform.right;
     }
 }

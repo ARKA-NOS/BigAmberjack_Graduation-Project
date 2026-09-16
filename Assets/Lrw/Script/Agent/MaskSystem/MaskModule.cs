@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.MaskSystem
 {
-    public class PlayerMaskModule : Module
+    public class MaskModule : Module
     {
         private Dictionary<MaskSo,IMask> _maskDict = new();
         private IMask _currentMask;
@@ -41,14 +41,18 @@ namespace Lrw.Script.Agent.MaskSystem
 
         public void ChangeMask(MaskSo maskSo)
         {
-            _currentMask?.Exit();
+            if (_currentMask != null)
+            {
+                if (_currentMask.MaskSo == maskSo) return;
+                _currentMask.Exit();
+            }
+            
             _currentMask = null;
 
             if (maskSo != null && _maskDict.TryGetValue(maskSo, out _currentMask))
             {
                 _currentMask.Enter();
             }
-            
         }
         
         private void Update()

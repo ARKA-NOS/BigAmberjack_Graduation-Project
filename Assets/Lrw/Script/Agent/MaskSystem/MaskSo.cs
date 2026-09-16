@@ -13,6 +13,7 @@ namespace Lrw.Script.Agent.MaskSystem
         [field:SerializeField] public SkillSO MeleeSkill { get; private set; }
         [field:SerializeField] public SkillSO Skill1 { get; private set; }
         [field:SerializeField] public SkillSO Skill2 { get; private set; }
+        [field:SerializeField] public SkillSO ChangeSkill { get; private set; }
         
     }
 }

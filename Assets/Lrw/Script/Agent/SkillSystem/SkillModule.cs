@@ -10,6 +10,8 @@ namespace Lrw.Script.Agent.SkillSystem
         private Dictionary<SkillSO, INormalSkill> _skillPlayers = new();
         
         public ModuleOwner Owner { get; private set; }
+        
+        private INormalSkill _normalSkill;
 
         public override void Initialize(ModuleOwner owner)
         {

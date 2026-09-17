@@ -211,6 +211,11 @@ MonoBehaviour:
   <VfxDuration>k__BackingField: 1
   particles:
   - {fileID: 69345442}
+--- !u!4 &74103925 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1138549759888491603, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
+  m_PrefabInstance: {fileID: 1974506778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &106082933
 GameObject:
   m_ObjectHideFlags: 0
@@ -10842,6 +10847,55 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1862820640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1862820641}
+  - component: {fileID: 1862820642}
+  m_Layer: 0
+  m_Name: PlayerDashAttackSkill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1862820641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862820640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 74103925}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1862820642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862820640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88fd91956b9742569b86723c35b2d56a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.Skills.PlayerDashAttackSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: 182a574fe7c3332429b98e01bfc75235, type: 2}
+  slashTrm: {fileID: 1351020526}
+  attackSlashBundle: {fileID: 11400000, guid: 5ef278c748e885e4cbfa9645874d5f09, type: 2}
+  damageStatSo: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+  attackSpeedStatSo: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
 --- !u!1 &1895207205
 GameObject:
   m_ObjectHideFlags: 0
@@ -10949,6 +11003,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3549329611549056625, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1351020526}
+    - targetCorrespondingSourceObject: {fileID: 1138549759888491603, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1862820641}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
 --- !u!4 &1974506779 stripped

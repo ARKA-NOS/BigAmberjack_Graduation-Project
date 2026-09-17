@@ -1,4 +1,6 @@
-﻿namespace Agents.FSM
+﻿using Lrw.Script._Core._FSM;
+
+namespace Agents.FSM
 {
     public abstract class AgentState
     {
@@ -19,8 +21,9 @@
         {
             _renderer.PlayClip(_stateClipHash, 0.1f, transitionDuration, _layerIndex);
         }
-
+        
         public virtual void Update() {}
+
         public virtual void Exit() {}
     }
 }

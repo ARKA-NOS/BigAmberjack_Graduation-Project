@@ -1,11 +1,12 @@
 ﻿using Agents.FSM;
 using Agents.Players.Enum;
+using Agents.Players.FSM;
 using UnityEngine;
 
 namespace Agents.Players
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class PlayerController : Agent
+    public class PlayerController : Agent, IHaveFsm<PlayerStateEnum>
     {
         [field: SerializeField] public PlayerInputSo PlayerInput { get; private set; }
         [SerializeField] private StateListSo playerStates;
@@ -29,7 +30,7 @@ namespace Agents.Players
         private void HandleDashStateChange()
         {
             if (_dashController.CanDash())
-                ChangeState(PlayerStateEnum.DASH, 0.1f);
+                _dashController.Dash();
         }
 
         private void Update()
@@ -37,7 +38,7 @@ namespace Agents.Players
             _stateMachine.UpdateMachine();
         }
         
-        public void ChangeState(PlayerStateEnum newState, float transitionDuration)
+        public void ChangeState(PlayerStateEnum newState, float transitionDuration = 0.1f)
             => _stateMachine.ChangeState((int)newState, transitionDuration);
     }
 }

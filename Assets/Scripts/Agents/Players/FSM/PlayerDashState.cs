@@ -20,7 +20,6 @@ namespace Agents.Players.FSM
         public override void Enter(float transitionDuration = 0.1f)
         {
             base.Enter(transitionDuration);
-            _controlDasher.Dash();
             Player.StartCoroutine(DashEndTime());
         }
 

@@ -25,7 +25,7 @@ namespace Lrw.Script._Core._SaveSystem
         [ContextMenu("Open Directory")]
         public void OpenDirectory()
         {
-            Progress.Start("https://github.com");
+            EditorUtility.RevealInFinder(SaveSystem.SaveDirectory);
         }
         
     }

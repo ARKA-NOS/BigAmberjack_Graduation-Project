@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Lrw.Script._Core._SaveSystem
@@ -22,7 +23,7 @@ namespace Lrw.Script._Core._SaveSystem
             File.WriteAllText(GetPath<T>(name),JsonUtility.ToJson(data));
         }
 
-        public static string LoadText(string path)
+        private static string LoadText(string path)
         {
             if(!Exists(path)) return null;
             return File.ReadAllText(path);

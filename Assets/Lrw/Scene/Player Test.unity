@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 106082935}
   - component: {fileID: 106082937}
   - component: {fileID: 106082938}
+  - component: {fileID: 106082939}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -309,6 +310,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.StopTest
   stopKey: 34
   playKey: 30
+--- !u!114 &106082939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106082933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3485ed9f2344599a9f74aac90452742, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script._Core._SaveSystem.DebugSaveSystem
+  saveName: 123
+  data:
+    number: 1
+    name: Default
 --- !u!1 &192046918
 GameObject:
   m_ObjectHideFlags: 0

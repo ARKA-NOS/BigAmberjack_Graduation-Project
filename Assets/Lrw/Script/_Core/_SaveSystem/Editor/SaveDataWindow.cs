@@ -14,18 +14,9 @@ namespace Lrw.Script._Core._SaveSystem.Editor
             window.Show();
         }
         
-        private string[] _saveFiles;
-        private string[] _fileData;
         private void CreateGUI()
         {
-            string[] fileNames = SaveSystem.GetFilePaths();
             
-            _fileData = fileNames.Select(SaveSystem.LoadText).ToArray();
-
-            foreach (string data in _fileData)
-            {
-                FDebug.Log(data);
-            }
             
         }
         

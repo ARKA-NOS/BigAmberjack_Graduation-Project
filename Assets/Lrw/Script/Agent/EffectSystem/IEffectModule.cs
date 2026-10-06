@@ -3,5 +3,6 @@
     public interface IEffectModule
     {
         void Effect(AbstractEffectSO effect);
+        void EffectClear(EffectType type);
     }
 }

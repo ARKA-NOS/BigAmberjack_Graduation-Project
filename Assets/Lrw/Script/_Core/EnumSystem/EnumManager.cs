@@ -2,8 +2,11 @@
 
 namespace Lrw.Script._Core.EnumSystem
 {
-    public static class EnumManager<T> where T : Enum
+    public static class EnumManager
     {
-        public static readonly T[] Values = (T[])Enum.GetValues(typeof(T));
+        public static T[] GetAllValue<T>() where T : Enum
+        {
+            return (T[])Enum.GetValues(typeof(T));
+        }
     }
 }

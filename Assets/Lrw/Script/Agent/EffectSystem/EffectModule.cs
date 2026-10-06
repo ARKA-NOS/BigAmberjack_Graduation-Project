@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using DevLib.ModuleSystem;
+using Lrw.Script._Core;
+using Lrw.Script._Core.EnumSystem;
+using Lrw.Script.Agent.EffectSystem.BaseEffects;
+using Lrw.Script.Agent.EffectSystem.Interface;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.EffectSystem
@@ -14,6 +18,7 @@ namespace Lrw.Script.Agent.EffectSystem
         
         public override void Initialize(ModuleOwner owner)
         {
+            base.Initialize(owner);
             _currentEffects = new();
         }
 
@@ -21,6 +26,7 @@ namespace Lrw.Script.Agent.EffectSystem
         {
             foreach (AbstractEffectSO effect in startEffects)
             {
+                if(effect == null) continue;
                 Effect(effect);
             }
         }
@@ -34,36 +40,28 @@ namespace Lrw.Script.Agent.EffectSystem
 
         private void Update()
         {
-            List<AbstractEffectSO> removeList = new();
-            
-            foreach (AbstractEffectSO effect in _currentEffects)
+            for (int i = _currentEffects.Count - 1; i >= 0; i--)
             {
+                AbstractEffectSO effect = _currentEffects[i];
                 effect.Update();
-                if (effect.GetRemainingDuration() > 0) continue;
-                effect.EffectEnd();
-                removeList.Add(effect);
-            }
-            
-            foreach (AbstractEffectSO effect in removeList)
-            {
-                _currentEffects.Remove(effect);
-            }
+
+                if (effect.IsEffectEnd) _currentEffects.RemoveAt(i);
+            } 
             
         }
 
-        public void Clear()
+        public void EffectClear()
         {
-            
+            _currentEffects.ForEach(x => x.EffectEnd());
+            _currentEffects.Clear();
         }
+        
+        
         public void EffectClear(EffectType type)
         {
             var targetEffects = _currentEffects.Where(x => x.Type == type);
-            foreach (AbstractEffectSO effect in targetEffects)
-            {
-                effect.EffectEnd();
-            }
+            targetEffects.Foreach(x => x.EffectEnd());
             _currentEffects.RemoveAll(x => x.Type == type);
-            _currentEffects.Clear();
         }
         
         

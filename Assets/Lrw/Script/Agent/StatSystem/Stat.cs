@@ -28,9 +28,9 @@ namespace Lrw.Script.Agent.StatSystem
             _modifyDict = new();
             UpdateValue();
         }
-
+        
         /// <summary>
-        /// 탈이 바뀌 때만 기본 값 바꾸기
+        /// 최대한 사용하지 않기
         /// </summary>
         public void SetBaseValue(float value)
         {

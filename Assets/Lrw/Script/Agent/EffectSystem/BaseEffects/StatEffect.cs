@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Lrw.Script.Agent.EffectSystem.BaseEffects
 {
     [CreateAssetMenu(fileName = "Stat Effect", menuName = "Effect/Stat Effect", order = 0)]
-    public class StatEffect : AbstractEffectSO
+    public class StatEffect : AbstractTemporaryEffect
     {
         [SerializeField] private StatData targetStat;
         [SerializeField] private int priority;
@@ -22,15 +22,18 @@ namespace Lrw.Script.Agent.EffectSystem.BaseEffects
             _stat = statModule.GetStat(targetStat);
             
             _stat.SetModify(this,new StatModifyData(priority,value,modifyType));
+            
+            FDebug.Log("start");
         }
 
         public override void EffectEnd()
         {
             base.EffectEnd();
             _stat?.RemoveModify(this);
+            FDebug.Log("end");
         }
         
-        public override float GetRemainingDuration()
+        public override float RemainingEffectDuration()
             => EffectDuration - (Time.time - EffectStartTime);
         
     }

@@ -39,7 +39,7 @@ namespace Lrw.Script.Agent.StatSystem
         }
         
         
-        public void AddModify(object key, StatModifyData modifyData)
+        public void SetModify(object key, StatModifyData modifyData)
         {
             _modifyDict[key] = modifyData;
             UpdateValue();

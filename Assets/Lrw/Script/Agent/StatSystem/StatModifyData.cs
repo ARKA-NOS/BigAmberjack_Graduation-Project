@@ -7,13 +7,13 @@ namespace Lrw.Script.Agent.StatSystem
     {
         public readonly int Priority;
         public readonly float Value;
-        public readonly ModifyMathType Type;
+        public readonly ModifyMathType ModifyType;
 
-        public StatModifyData(int priority, float value, ModifyMathType type = ModifyMathType.Add)
+        public StatModifyData(int priority, float value, ModifyMathType modifyType = ModifyMathType.Add)
         {
             Priority = priority;
             Value = value;
-            Type = type;
+            ModifyType = modifyType;
         }
         
     }

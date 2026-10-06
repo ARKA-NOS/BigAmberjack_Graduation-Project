@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -49,5 +50,22 @@ namespace Lrw.Script.Agent.EffectSystem
             }
             
         }
+
+        public void Clear()
+        {
+            
+        }
+        public void EffectClear(EffectType type)
+        {
+            var targetEffects = _currentEffects.Where(x => x.Type == type);
+            foreach (AbstractEffectSO effect in targetEffects)
+            {
+                effect.EffectEnd();
+            }
+            _currentEffects.RemoveAll(x => x.Type == type);
+            _currentEffects.Clear();
+        }
+        
+        
     }
 }

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Linq;
 
 namespace Lrw.Script._Core.EnumSystem
 {
-    public static class EnumManager
+    public static class EnumManager<T> where T : Enum
     {
-        public static T[] GetAllValue<T>() where T : Enum
-        {
-            var arr = Enum.GetValues(typeof(T));
-            return arr as T[];
-        }
+        public static readonly T[] Values = (T[])Enum.GetValues(typeof(T));
     }
 }

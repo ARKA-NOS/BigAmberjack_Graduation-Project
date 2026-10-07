@@ -24,7 +24,7 @@ namespace Lrw.Script.Test
         {
             if(statModule == null || statData == null) return;
             
-            statModule.GetStat(statData).AddModify(this,new StatModifyData(1,changeValue));
+            statModule.GetStat(statData).SetModify(this,new StatModifyData(1,changeValue));
         }
         
         

@@ -1,12 +1,8 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace Lrw.Script._Core._Manager
 {
-    /// <summary>
-    /// GameManager는 실행시 자동 생성 됩니다.
-    /// </summary>
     [DefaultExecutionOrder(-20)]
     public class GameManager : MonoBehaviour
     {
@@ -19,48 +15,25 @@ namespace Lrw.Script._Core._Manager
         
         private void Initialize()
         {
-            GameObject[] managerObjects = FindManagerTypes().Select(x => new GameObject(x.Name, x)).ToArray();
-
-            foreach (GameObject obj in managerObjects)
-            {
-                obj.transform.SetParent(transform);
-            }
-            
-            _managers = managerObjects.Select(x => x.GetComponent<AbstractManager>()).ToArray();
+            _managers = GetComponentsInChildren<AbstractManager>();
             
             foreach (AbstractManager manager in _managers)
             {
                 manager.Initialize();
             }
         }
-        
-        private static Type[] FindManagerTypes()
+
+        private void OnDestroy()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type =>
-                    type.IsClass &&
-                    !type.IsAbstract &&
-                    !type.ContainsGenericParameters &&
-                    typeof(AbstractManager).IsAssignableFrom(type))
-                .ToArray();
-        }
-        
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        public static void CreateManager()
-        {
-            GameObject manager = new GameObject("GameManager",typeof(GameManager));
-            DontDestroyOnLoad(manager);
+            GameEnd();
         }
 
-#if UNITY_EDITOR
-        private void OnValidate()
+        private void GameEnd()
         {
-            if (!Application.isPlaying)
+            foreach (AbstractManager manager in _managers)
             {
-                FDebug.LogError("GameManager를 수동으로 생성하지 마시오.");
+                manager.GameEnd();
             }
         }
-#endif
     }
 }

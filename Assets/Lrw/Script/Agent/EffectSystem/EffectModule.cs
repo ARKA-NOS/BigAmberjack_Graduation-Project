@@ -37,7 +37,7 @@ namespace Lrw.Script.Agent.EffectSystem
             effectClone.EffectStart(_owner);
             _currentEffects.Add(effectClone);
         }
-
+        
         private void Update()
         {
             for (int i = _currentEffects.Count - 1; i >= 0; i--)

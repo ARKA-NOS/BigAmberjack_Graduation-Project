@@ -11,8 +11,9 @@ namespace Lrw.Script.UI
             EventBus<UIOpenCloseEvent>.Subscribe(UIManagerKey,OpenClose);
         }
         
-        private void OnDestroy()
+        public override void GameEnd()
         {
+            base.GameEnd();
             EventBus<UIOpenCloseEvent>.UnSubscribe(UIManagerKey,OpenClose);
         }
         

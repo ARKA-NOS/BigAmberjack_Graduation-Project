@@ -49,5 +49,16 @@ namespace DevLib.ModuleSystem
             return default;
         }
 
+        public bool TryGetModule<T>(out T module)
+        {
+            module = GetModule<T>();
+            return module != null;
+        }
+
+        public T[] GetModules<T>()
+        {
+            return _moduleDict.Values.OfType<T>().ToArray();
+        }
+
     }
 }

@@ -1,66 +1,65 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace Lrw.Script._Core._SaveSystem
 {
     public static class SaveSystem
     {
-        public static string SaveDirectory => Application.persistentDataPath;
         private const string Ext = ".save";
+        private const string TempExt = ".tmp";
+
+        private static string SaveDirectory => Application.persistentDataPath;
         
-        public static string GetPath<T>(string name)
+        private static string GetPath<T>(string name)
         {
             return Path.Combine(SaveDirectory, $"[{typeof(T).FullName}]{name}{Ext}");
         }
-        
-        public static bool Exists(string path) => File.Exists(path);
-        
-        public static void Save<T>(string name, T data)
-        {
-            File.WriteAllText(GetPath<T>(name),JsonUtility.ToJson(data));
-        }
+        public static bool Exists<T>(string name) => File.Exists(GetPath<T>(name));
 
-        private static string LoadText(string path)
-        {
-            if(!Exists(path)) return null;
-            return File.ReadAllText(path);
-        }
-        
-        public static T Load<T>(string name, T defaultValue)
+        public static bool Save<T>(string name, T data)
         {
             string path = GetPath<T>(name);
-            string readData = LoadText(path);
-            
-            if(string.IsNullOrEmpty(readData)) return defaultValue;
-            
+            string temp = path + TempExt;
+
             try
             {
-                return JsonUtility.FromJson<T>(readData);
+                File.WriteAllText(temp, JsonUtility.ToJson(data));
+                if (File.Exists(path)) File.Delete(path);
+                File.Move(temp, path);
+                return true;
             }
-            catch
+            catch (Exception e)
             {
-                FDebug.LogError("Failed to load save file: " + path);
+                FDebug.LogError($"Failed to save file: {path}\n{e}");
+                return false;
             }
-            
-            return defaultValue;
         }
 
-        
+        public static T Load<T>(string name, T defaultValue = default)
+        {
+            string path = GetPath<T>(name);
+            if (!File.Exists(path)) return defaultValue;
+
+            try
+            {
+                string json = File.ReadAllText(path);
+                return string.IsNullOrEmpty(json) ? defaultValue : JsonUtility.FromJson<T>(json);
+            }
+            catch (Exception e)
+            {
+                FDebug.LogError($"Failed to load save file: {path}\n{e}");
+                return defaultValue;
+            }
+        }
+
         public static void Delete<T>(string name)
         {
             string path = GetPath<T>(name);
-            if(Exists(path)) File.Delete(path);
+            if (File.Exists(path)) File.Delete(path);
         }
 
-        #region MyRegion
-
-        public static string[] GetFilePaths()
-            => Directory.GetFiles(SaveDirectory, "*" + Ext);
-
-        #endregion
-
+        public static string[] GetFilePaths() => Directory.GetFiles(SaveDirectory, "*" + Ext);
+        
     }
 }

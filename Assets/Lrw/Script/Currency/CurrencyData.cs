@@ -11,7 +11,7 @@ namespace Lrw.Script.Currency
         
         public delegate void CurrencyChanged(int current, int prev);
 
-        public CurrencyChanged OnCurrencyChanged;
+        public event CurrencyChanged OnCurrencyChanged;
         
         public CurrencyData(CurrencySO type,int count)
         {

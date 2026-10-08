@@ -1,14 +1,9 @@
-using System;
-
 namespace SDW.Scripts.Maps
 {
-    [Flags]
+    // 방이 일직선(왼쪽 → 오른쪽)으로 이어지므로 포탈 방향은 좌/우 두 가지뿐이다.
     public enum RoomDirection
     {
-        None  = 0,
-        Up    = 1 << 0,
-        Down  = 1 << 1,
-        Left  = 1 << 2,
-        Right = 1 << 3
+        Left,
+        Right
     }
 }

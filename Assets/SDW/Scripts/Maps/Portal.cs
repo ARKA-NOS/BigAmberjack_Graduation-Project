@@ -17,11 +17,11 @@ namespace SDW.Scripts.Maps
         [SerializeField] private float doorOffsetDistance = 1f;
 
         public RoomDirection Direction { get; private set; }
-        public RoomNode TargetRoom { get; private set; }
+        public RoomController OwnerRoom { get; private set; }
+        public RoomController TargetRoom { get; private set; }
 
         public override bool CanInteract => !_isTransitioning && !_locked;
 
-        private DungeonGenerator _dungeonGenerator;
         private ScreenFader _screenFader;
         private Collider2D _col;
         private PlayerController _pendingPlayer;
@@ -29,7 +29,7 @@ namespace SDW.Scripts.Maps
 
         private static bool _isTransitioning;
 
-        // 방의 적이 남아있는 동안 문을 잠가 통로를 막는다. RoomEnemySpawner가 호출한다.
+        // 방을 클리어하기 전까지 문을 잠가 통로를 막는다. RoomController가 호출한다.
         public void SetLocked(bool locked)
         {
             _locked = locked;
@@ -38,11 +38,11 @@ namespace SDW.Scripts.Maps
                 doorVisual.SetActive(locked);
         }
 
-        public void Initialize(RoomDirection direction, RoomNode targetRoom, DungeonGenerator dungeonGenerator, ScreenFader screenFader)
+        public void Initialize(RoomDirection direction, RoomController ownerRoom, RoomController targetRoom, ScreenFader screenFader)
         {
             Direction = direction;
+            OwnerRoom = ownerRoom;
             TargetRoom = targetRoom;
-            _dungeonGenerator = dungeonGenerator;
             _screenFader = screenFader;
 
             PositionDoorVisual();
@@ -83,32 +83,26 @@ namespace SDW.Scripts.Maps
 
         public override void Interaction()
         {
-            if (_dungeonGenerator == null)
+            if (TargetRoom == null)
             {
-                Debug.LogWarning($"{name} : DungeonGenerator 참조가 없어 이동할 수 없습니다.");
+                Debug.LogWarning($"{name} : 이동할 목표 방을 찾을 수 없습니다.");
                 return;
             }
 
-            GameObject targetInstance = _dungeonGenerator.GetRoomInstance(TargetRoom);
-            if (targetInstance == null)
-            {
-                Debug.LogWarning($"{name} : 이동할 목표 방 인스턴스를 찾을 수 없습니다.");
-                return;
-            }
-
-            GameObject currentRoomInstance = transform.parent != null ? transform.parent.gameObject : null;
-            Vector3 spawnPosition = GetArrivalPosition(targetInstance);
+            RoomController ownerRoom = OwnerRoom;
+            RoomController targetRoom = TargetRoom;
+            Vector3 spawnPosition = GetArrivalPosition(targetRoom);
             PlayerController player = _pendingPlayer;
 
             _isTransitioning = true;
 
             _screenFader.Transition(() =>
             {
-                if (currentRoomInstance != null)
-                    currentRoomInstance.SetActive(false);
+                if (ownerRoom != null)
+                    ownerRoom.gameObject.SetActive(false);
 
-                targetInstance.SetActive(true);
-                targetInstance.GetComponent<RoomEnemySpawner>()?.SpawnIfNeeded();
+                targetRoom.gameObject.SetActive(true);
+                targetRoom.Enter();
 
                 player.transform.position = spawnPosition;
 
@@ -122,12 +116,12 @@ namespace SDW.Scripts.Maps
 
         // 목표 방에서 이번 포탈과 대응하는(반대 방향) 포탈 위치를 찾아,
         // 이동해온 방향으로 조금 더 들어간 지점을 도착 위치로 삼는다.
-        private Vector3 GetArrivalPosition(GameObject targetInstance)
+        private Vector3 GetArrivalPosition(RoomController targetRoom)
         {
-            RoomDefinition targetDefinition = targetInstance.GetComponent<RoomDefinition>();
+            RoomDefinition targetDefinition = targetRoom.Definition;
             Transform arrivalPoint = targetDefinition != null ? targetDefinition.GetPortalPoint(Direction.Opposite()) : null;
 
-            Vector3 basePosition = arrivalPoint != null ? arrivalPoint.position : targetInstance.transform.position;
+            Vector3 basePosition = arrivalPoint != null ? arrivalPoint.position : targetRoom.transform.position;
             Vector3 inwardDirection = (Vector3)(Vector2)Direction.ToVector2Int();
 
             return basePosition + inwardDirection * arrivalOffset;

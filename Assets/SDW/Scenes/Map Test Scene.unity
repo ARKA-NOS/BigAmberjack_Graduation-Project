@@ -506,12 +506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3078c152ff04b4d4d83a7eb12596a786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.DungeonGenerator
-  minRoomCount: 10
-  maxRoomCount: 30
-  expandChance: 0.5
-  roomPrefabs:
-  - {fileID: 6865504822459006744, guid: 4c96a4b5b9e655943bf9997452c9b530, type: 3}
-  allowPrefabReuseWhenExhausted: 1
+  stage: {fileID: 11400000, guid: 2f975396e396b58429956753d1e5d056, type: 2}
   portalPrefab: {fileID: -6787983932052557863, guid: 5de4a43701047a54a930fed46f6b7462, type: 3}
   playerPrefab: {fileID: 3728814495393267975, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
   screenFader: {fileID: 1721267677}

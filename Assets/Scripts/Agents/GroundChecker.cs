@@ -14,7 +14,7 @@ namespace Agents
         [Header("Base")]
         [SerializeField] private CheckerShape checkerShape;
         [SerializeField] private bool gizmosEnabled = true;
-        [SerializeField] private Vector2 chackerOffset = Vector2.zero;
+        [SerializeField] private Vector2 chackOffset = Vector2.zero;
         [SerializeField] private LayerMask whatIsGround;
 
         [Header("Square")]
@@ -25,7 +25,7 @@ namespace Agents
 
         public bool IsGroundChecking()
         {
-            Vector2 checkPosition = (Vector2)transform.position + chackerOffset;
+            Vector2 checkPosition = (Vector2)transform.position + chackOffset;
 
             return checkerShape switch
             {
@@ -51,7 +51,7 @@ namespace Agents
             if (!gizmosEnabled)
                 return;
 
-            Vector2 checkPosition = (Vector2)transform.position + chackerOffset;
+            Vector2 checkPosition = (Vector2)transform.position + chackOffset;
 
             Gizmos.color = Color.yellow;
             switch (checkerShape)

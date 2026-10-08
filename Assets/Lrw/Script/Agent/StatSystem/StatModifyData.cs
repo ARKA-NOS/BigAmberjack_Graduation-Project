@@ -1,19 +1,20 @@
 using System;
+using UnityEngine;
 
 namespace Lrw.Script.Agent.StatSystem
 {
     [Serializable]
-    public readonly struct StatModifyData
+    public struct StatModifyData
     {
-        public readonly int Priority;
-        public readonly float Value;
-        public readonly ModifyMathType Type;
-
-        public StatModifyData(int priority, float value, ModifyMathType type = ModifyMathType.Add)
+        [field:SerializeField] public int Priority { get; private set; }
+        [field:SerializeField] public float Value { get; private set; }
+        [field:SerializeField] public ModifyMathType ModifyType { get; private set; }
+        
+        public StatModifyData(int priority, float value, ModifyMathType modifyType = ModifyMathType.Add)
         {
             Priority = priority;
             Value = value;
-            Type = type;
+            ModifyType = modifyType;
         }
         
     }

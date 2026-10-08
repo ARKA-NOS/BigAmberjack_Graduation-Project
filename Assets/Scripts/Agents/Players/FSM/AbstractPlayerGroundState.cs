@@ -12,7 +12,7 @@ namespace Agents.Players.FSM
             _groundChecker = Player.GetModule<IGroundChecker>();
             Debug.Assert(_groundChecker != null, "GroundChecker is 없다.");
         }
-
+        
         protected bool TryChangeToFall()
         {
             if (_groundChecker.IsGroundChecking())

@@ -18,18 +18,19 @@ namespace Lrw.Script.Agent.StatSystem
         
         public void AddModifyData(float value,ModifyMathType type)
         {
-            if (type == ModifyMathType.Add)
+            switch (type)
             {
-                _addValue += value;
-            }
-            else if (type == ModifyMathType.Multiply)
-            {
-                _multiplyValue += value;
+                case ModifyMathType.Add:
+                    _addValue += value;
+                    break;
+                case ModifyMathType.Multiply:
+                    _multiplyValue += value;
+                    break;
             }
         }
 
         public float GetValue(float baseValue)
-            => _addValue + (baseValue * _multiplyValue);
+            => (baseValue * _multiplyValue) + _addValue;
         
     }
 }

@@ -12,20 +12,21 @@ namespace Agents.Players.Skills
     {
         [SerializeField] private Transform slashTrm;
         [SerializeField] private AssetNameSo[] attackSlashBundle;
-        [SerializeField] private float attackCoolTime = 0.4f;
         [SerializeField] private StatData damageStatSo;
+        [SerializeField] private StatData attackSpeedStatSo;
         
         private IVfxModule _vfxModule;
         private Camera _camera;
         private AbstractDamageCaster _damageCaster;
         private IStatModule _statModule;
         private Stat _damageStat;
+        private Stat _attackSpeedStat;
         
 
         private int _currentAttackSequence;
 
         public override float GetMaxCooldown()
-            => SkillSo.BaseCooldown;
+            => SkillSo.BaseCooldown / _attackSpeedStat.Value;
         
         public override void InitSkill(ModuleOwner owner)
         {
@@ -40,6 +41,7 @@ namespace Agents.Players.Skills
             FDebug.Assert(_statModule != null,"StatModule is not found");
             
             _damageStat = _statModule.GetStat(damageStatSo,1f);
+            _attackSpeedStat = _statModule.GetStat(attackSpeedStatSo,1f);
             
             _damageCaster = GetComponentInChildren<AbstractDamageCaster>();
             Debug.Assert(_damageCaster != null, "AbstractDamageCaster가 없습니다.");

@@ -3,8 +3,9 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Agents.Players.Enum;
+using Agents.Players.FSM;
 using CoreSystem.Effect;
-using CoreSystem.EffectSystem;
 
 namespace Agents.Players
 {
@@ -17,6 +18,8 @@ namespace Agents.Players
         [SerializeField] private float dashCoolTime = 0.2f;
         [SerializeField] private int maxAirDashCount = 1;
         [SerializeField] private AssetNameSo assetNameSo;
+
+        private IHaveFsm<PlayerStateEnum> _haveFsm;
         
         private Rigidbody2D _playerRb;
         private IRenderer _renderer;
@@ -33,15 +36,18 @@ namespace Agents.Players
         {
             base.Initialize(owner);
 
+            _haveFsm = owner as IHaveFsm<PlayerStateEnum>;
+            FDebug.Assert(_haveFsm != null,"owner is Not IHaveFsm<PlayerStateEnum>");
+
             _groundChecker = _owner.GetModule<IGroundChecker>();
             _playerRb = _owner.GetComponent<Rigidbody2D>();
             _afterImageEmitter = owner.GetModule<IAfterImageEmitter>();
             _renderer = _owner.GetModule<IRenderer>();
 
-            Debug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
-            Debug.Assert(_groundChecker != null, "Player에는 IGroundChecker도 필요합니다.");
-            Debug.Assert(_afterImageEmitter != null, "Player에는 IAfterImageEmitter 필요합니다.");
-            Debug.Assert(_renderer != null, "Player에는 IRenderer도 필요합니다.");
+            FDebug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
+            FDebug.Assert(_afterImageEmitter != null, "Player에는 IAfterImageEmitter 필요합니다.");
+            FDebug.Assert(_groundChecker != null, "Player에는 IGroundChecker도 필요합니다.");
+            FDebug.Assert(_renderer != null, "Player에는 IRenderer도 필요합니다.");
         }
 
 
@@ -60,34 +66,22 @@ namespace Agents.Players
         {
             if (Time.time < _lastDashTime + dashCoolTime || !_canDash)
                 return;
-
-            Camera cam = Camera.main;
-
-            if (cam == null || Mouse.current == null)
-                return;
             
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Vector2 worldMousePos = cam.ScreenToWorldPoint(mousePos);
-
-            Vector2 direction =
-                worldMousePos - _playerRb.position;
-
+            Vector2 direction = _renderer.GetRight();
+            direction.y = 0;
+            
             if (direction.sqrMagnitude <= 0f)
                 return;
-
+            
+            _haveFsm.ChangeState(PlayerStateEnum.DASH,0.1f);
+            
             direction.Normalize();
             
             _afterImageEmitter.Play(DashTime);
 
-            float rotationY = direction.x >= 0f ? 0f : 180f;
-
-            _renderer.Animator.transform.rotation =
-                Quaternion.Euler(0f, rotationY, 0f);
-
             Vector2 targetPosition =
                 _playerRb.position + direction * dashRange;
             
-
             _lastDashTime = Time.time;
 
             _dashTween?.Kill();

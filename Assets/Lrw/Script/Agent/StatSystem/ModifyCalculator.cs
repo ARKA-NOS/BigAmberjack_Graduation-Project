@@ -19,7 +19,7 @@ namespace Lrw.Script.Agent.StatSystem
                     modifyGroup = new ModifyGroup(modifyData.Priority);
                     modifyGroups.Add(modifyData.Priority,modifyGroup);
                 }
-                modifyGroup.AddModifyData(modifyData.Value,modifyData.Type);
+                modifyGroup.AddModifyData(modifyData.Value,modifyData.ModifyType);
             }
             
             ModifyGroup[] groups = modifyGroups.Values.OrderBy(x => x.Priority).ToArray();

@@ -1,11 +1,14 @@
 ﻿using DevLib.ModuleSystem;
+using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
 namespace Agents.Players
 {
-    public class PlayerJumper : Module, IControlJumper
+    public class PlayerJumper : Module, IControlJumper,IAfterInitModule
     {
-        [SerializeField] private float jumpForce;
+        //[SerializeField] private float jumpFor;//12
+        [SerializeField] private StatData jumpPowerStatData;
+        
         [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
 
         [field: SerializeField]
@@ -14,13 +17,24 @@ namespace Agents.Players
         public bool IsJumpFall { get; set; }
 
         private Rigidbody2D _playerRb;
+        private IStatModule _statModule;
+        private Stat _jumpPowerStat;
 
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
 
             _playerRb = _owner.GetComponent<Rigidbody2D>();
-            Debug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
+            FDebug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
+            
+            _statModule = owner.GetModule<IStatModule>();
+            FDebug.Assert(_statModule != null,"StatModule is not found");
+            
+        }
+        
+        public void AfterInit()
+        {
+            _jumpPowerStat = _statModule.GetStat(jumpPowerStatData, 1f);
         }
 
         public void Jump()
@@ -29,7 +43,7 @@ namespace Agents.Players
                 return;
 
             _playerRb.linearVelocityY = 0f;
-            _playerRb.AddForceY(jumpForce, ForceMode2D.Impulse);
+            _playerRb.AddForceY(_jumpPowerStat.Value, ForceMode2D.Impulse);
         }
 
         public void CancelJump()
@@ -42,5 +56,7 @@ namespace Agents.Players
 
             _playerRb.linearVelocityY *= jumpCutMultiplier;
         }
+
+        
     }
 }

@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 6943626776615578386}
   - component: {fileID: 1402751424337263761}
   m_Layer: 0
-  m_Name: Skill 1
+  m_Name: Player Melee Skilll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,8 +145,8 @@ MonoBehaviour:
   attackSlashBundle:
   - {fileID: 11400000, guid: 12238f836ee4215448483298bd305183, type: 2}
   - {fileID: 11400000, guid: 31573525632e8bd4d9feba98804733e9, type: 2}
-  attackCoolTime: 0.4
   damageStatSo: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+  attackSpeedStatSo: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
 --- !u!1 &2069202202630892910
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 759c5d3f7e424443a51f08068579bec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.PlayerMovement
-  playerMoveSpeed: 9
+  moveSpeed: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
 --- !u!1 &2684286984275401868
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,7 +533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca6b0ae3860c472e8606dad0a9f8f113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.PlayerJumper
-  jumpForce: 12
+  jumpPowerStatData: {fileID: 11400000, guid: 407c87306ac9f204bb92b2e51a6f91eb, type: 2}
   jumpCutMultiplier: 0.5
   <CoyoteTime>k__BackingField: 0.1
 --- !u!1 &3662162592724584917
@@ -886,7 +886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.PlayerDoubleJumper
   activeDoubleJump: 1
-  extraJumpCount: 1
+  multiJumpCountStatData: {fileID: 11400000, guid: 79c14af92222bd848b542d639e03d0db, type: 2}
   multiJumpVfx: {fileID: 11400000, guid: ac500e0fe287e89458460df986f83775, type: 2}
 --- !u!1 &8839712836641732174
 GameObject:

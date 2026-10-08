@@ -7,7 +7,7 @@ namespace Lrw.Script.Agent.StatSystem
 {
     public class Stat
     {
-        private readonly float _baseValue;
+        private float _baseValue;
         
         private readonly Dictionary<object,StatModifyData> _modifyDict;
         
@@ -29,7 +29,17 @@ namespace Lrw.Script.Agent.StatSystem
             UpdateValue();
         }
         
-        public void AddModify(object key, StatModifyData modifyData)
+        /// <summary>
+        /// 최대한 사용하지 않기
+        /// </summary>
+        public void SetBaseValue(float value)
+        {
+            _baseValue = value;
+            UpdateValue();
+        }
+        
+        
+        public void SetModify(object key, StatModifyData modifyData)
         {
             _modifyDict[key] = modifyData;
             UpdateValue();

@@ -1,6 +1,8 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Lrw.Script.Agent.HealthSystem
 {
@@ -13,6 +15,8 @@ namespace Lrw.Script.Agent.HealthSystem
         public delegate void HealthChanged(float newValue, float delta, float max);
         
         public event HealthChanged OnHealthChanged;
+        public event Action OnDead;
+        private bool _isDead = false;
         
         public float CurrentHealth
         {
@@ -20,9 +24,15 @@ namespace Lrw.Script.Agent.HealthSystem
             set
             {
                 float prevValue = currentHealth;
-                currentHealth = Mathf.Clamp(value, 0, MaxHealth);
+                currentHealth = Mathf.Clamp(value, 0f, MaxHealth);
                 if(Mathf.Approximately(currentHealth, prevValue)) return;
                 OnHealthChanged?.Invoke(currentHealth, currentHealth - prevValue,MaxHealth);
+                
+                if (!_isDead && Mathf.Approximately(currentHealth, 0f))
+                {
+                    _isDead = true;
+                    OnDead?.Invoke();
+                }
             }
         }
         
@@ -60,12 +70,11 @@ namespace Lrw.Script.Agent.HealthSystem
         }
         
         public override string ToString()
-            => $"[HealthModule] {CurrentHealth} / {MaxHealth}";
+            => $"{CurrentHealth} / {MaxHealth}";
         
 #if UNITY_EDITOR
         [ContextMenu("Debug HealthModule")]
-        private void Debug() 
-            => FDebug.Log(this);
+        private void Debug() => FDebug.Log(this);
 #endif
         
     }

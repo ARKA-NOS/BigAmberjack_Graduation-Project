@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Lrw.Script._Core._Debug;
 using UnityEngine;
 
 namespace Lrw.Script._Core._SaveSystem
@@ -9,7 +10,7 @@ namespace Lrw.Script._Core._SaveSystem
         private const string Ext = ".save";
         private const string TempExt = ".tmp";
 
-        private static string SaveDirectory => Application.persistentDataPath;
+        public static string SaveDirectory => Application.persistentDataPath;
         
         private static string GetPath<T>(string name)
         {

@@ -6,7 +6,7 @@ namespace Lrw.Script.Currency
     [Serializable]
     public class CurrencyData
     {
-        public CurrencySO currencyType;
+        public readonly CurrencySO CurrencyType;
         public int Count { get; private set; }
         
         public delegate void CurrencyChanged(int current, int prev);
@@ -15,7 +15,7 @@ namespace Lrw.Script.Currency
         
         public CurrencyData(CurrencySO type,int count)
         {
-            currencyType = type;
+            CurrencyType = type;
             Count = count;
         }
 

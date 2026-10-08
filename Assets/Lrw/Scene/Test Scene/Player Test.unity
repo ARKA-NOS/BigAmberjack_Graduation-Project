@@ -226,8 +226,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba0256a58ff407db688e7086f85274f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.EffectSystem.Test.EffectTester
-  effectModule: {fileID: 1974506781}
+  effectModule: {fileID: 0}
   effectSo: {fileID: 11400000, guid: cbe233e139e065348b5c7b33676ce1aa, type: 2}
+--- !u!1 &106506236
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 106506237}
+  - component: {fileID: 106506238}
+  m_Layer: 0
+  m_Name: TestUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &106506237
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106506236}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1805960468}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &106506238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106506236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: a3fc3df2b760d9644a5219fd62d97f05, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 34d6572dec9d9a4419f7e64ff5b49eaa, type: 3}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!1 &192046918
 GameObject:
   m_ObjectHideFlags: 0
@@ -10754,6 +10809,38 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1805960467
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1805960468}
+  m_Layer: 0
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1805960468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1805960467}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.4145, y: 8.04295, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 106506237}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1895207205
 GameObject:
   m_ObjectHideFlags: 0
@@ -10847,46 +10934,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2620897318286009670, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-      propertyPath: chackOffset.y
-      value: -0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 3282547565697425842, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 5543972898018659415, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e61f848884eff1b4fb2d0d709616ab44, type: 2}
-    m_RemovedComponents:
-    - {fileID: 4927680092251768639, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3707165695104396528, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1974506781}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
---- !u!1 &1974506780 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3707165695104396528, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
-  m_PrefabInstance: {fileID: 1974506778}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1974506781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1974506780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fd5738d12184b15bb7061413ceabac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.EffectSystem.EffectModule
-  startEffects:
-  - {fileID: 11400000, guid: cbe233e139e065348b5c7b33676ce1aa, type: 2}
 --- !u!1001 &2009870449
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16046,4 +16102,5 @@ SceneRoots:
   - {fileID: 192046920}
   - {fileID: 106082934}
   - {fileID: 8285158635765859200}
+  - {fileID: 1805960468}
   - {fileID: 451453196}

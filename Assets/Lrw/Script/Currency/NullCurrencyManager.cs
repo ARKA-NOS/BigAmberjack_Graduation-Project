@@ -1,4 +1,5 @@
 ﻿using Lrw.Script._Core._ServiceLocator;
+using UnityEditor;
 using UnityEngine;
 
 namespace Lrw.Script.Currency
@@ -7,6 +8,9 @@ namespace Lrw.Script.Currency
     {
         public CurrencyData GetCurrency(CurrencySO currencySo) => null;
 
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+#endif
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Initialize()
         {

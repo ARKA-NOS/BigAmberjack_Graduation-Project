@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SDW.Scripts.Maps.Data
 {
-    [CreateAssetMenu(fileName = "Room_Combat", menuName = "SDW/Map/Room/Combat Room")]
+    [CreateAssetMenu(fileName = "Room_Combat", menuName = "Map/Room/Combat Room")]
     public class CombatRoomDataSO : RoomDataSO
     {
         [SerializeField] private List<EnemySpawnEntry> enemies = new();

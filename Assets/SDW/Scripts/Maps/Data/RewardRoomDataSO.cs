@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SDW.Scripts.Maps.Data
 {
-    [CreateAssetMenu(fileName = "Room_Reward", menuName = "SDW/Map/Room/Reward Room")]
+    [CreateAssetMenu(fileName = "Room_Reward", menuName = "Map/Room/Reward Room")]
     public class RewardRoomDataSO : RoomDataSO
     {
         public override RoomType RoomType => RoomType.Reward;

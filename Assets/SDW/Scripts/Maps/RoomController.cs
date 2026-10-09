@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CTJ.Enemies;
 using SDW.Scripts.Maps.Conditions;
@@ -24,6 +25,9 @@ namespace SDW.Scripts.Maps
         public RoomDefinition Definition { get; private set; }
         public int Index { get; private set; }
         public bool IsCleared { get; private set; }
+
+        // 클리어 조건을 달성한 직후 호출된다. 방 안의 오브젝트(NPC 등)가 클리어 시점에 반응할 때 사용.
+        public event Action Cleared;
 
         public IReadOnlyList<Transform> EnemySpawnPoints => enemySpawnPoints;
         public IReadOnlyList<EnemyBase> SpawnedEnemies => _spawnedEnemies;
@@ -78,6 +82,7 @@ namespace SDW.Scripts.Maps
 
             SetPortalsLocked(false);
             Data.OnCleared(this);
+            Cleared?.Invoke();
         }
 
         private void SetPortalsLocked(bool locked)

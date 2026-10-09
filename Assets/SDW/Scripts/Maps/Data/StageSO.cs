@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SDW.Scripts.Maps.Data
 {
     // 일직선 스테이지 구성. slots 순서대로 왼쪽에서 오른쪽으로 방이 이어진다.
-    [CreateAssetMenu(fileName = "Stage", menuName = "SDW/Map/Stage")]
+    [CreateAssetMenu(fileName = "Stage", menuName = "Map/Stage")]
     public class StageSO : ScriptableObject
     {
         [SerializeField] private List<StageSlot> slots = new();

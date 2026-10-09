@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SDW.Scripts.Maps.Data
 {
-    [CreateAssetMenu(fileName = "Room_Boss", menuName = "SDW/Map/Room/Boss Room")]
+    [CreateAssetMenu(fileName = "Room_Boss", menuName = "Map/Room/Boss Room")]
     public class BossRoomDataSO : RoomDataSO
     {
         [SerializeField] private EnemyBase bossPrefab;

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa023f67e457cc4484f5ac27c2e1caf, type: 3}
+  m_Name: Npc_EccentricDoctor
+  m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.NPC.Data.NpcDataSO
+  <NpcName>k__BackingField: "\uAD34\uC9DC \uC758\uC0AC"
+  <NpcId>k__BackingField: 
+  <Role>k__BackingField: "\uC0C1\uD638\uC791\uC6A9 NPC"
+  <Status>k__BackingField: 0
+  <AppearChapters>k__BackingField: 
+  <AppearRoomName>k__BackingField: "\uAD34\uC9DC \uC758\uC0AC\uC758 \uBC29"
+  <SpawnChance>k__BackingField: 0.4
+  <Preconditions>k__BackingField: []
+  <RequiredCurrencies>k__BackingField: []
+  <RequiredItemIds>k__BackingField: []
+  <HpCost>k__BackingField: 0
+  <Choices>k__BackingField:
+  - <ChoiceText>k__BackingField: "\uC2DC\uC220 \uBC1B\uB294\uB2E4"
+    <IsCancel>k__BackingField: 0
+    <Effects>k__BackingField: []
+  - <ChoiceText>k__BackingField: "\uAC70\uC808\uD55C\uB2E4"
+    <IsCancel>k__BackingField: 1
+    <Effects>k__BackingField: []
+  <RewardDescription>k__BackingField: "\uBB3C\uB9AC \uB370\uBBF8\uC9C0 \uC99D\uAC00/\uC774\uB3D9\uC18D\uB3C4
+    \uC99D\uAC00/\uACF5\uACA9\uC18D\uB3C4 \uC99D\uAC00"
+  <LossDescription>k__BackingField: "\uCD5C\uB300 \uCCB4\uB825 20-"
+  <StatusEffectDescription>k__BackingField: "\uC5C6\uC74C"
+  <NextRoomEffectDescription>k__BackingField: "\uBCF4\uC0C1\uC758 \uBC84\uD504 \uC0C1\uC2DC
+    \uC720\uC9C0"
+  <InsufficientCostMessage>k__BackingField: "\uBE44\uC6A9 \uBD80\uC871 \uC5C6\uC74C"
+  <CancelDialogue>k__BackingField: "\uC544\uC27D\uAD70"
+  <Reusable>k__BackingField: 0
+  <UiFeedback>k__BackingField: 
+  <FirstDialogue>k__BackingField: "\uC774\uBCF4\uAC8C \uD765\uBBF8\uB85C\uC6B4 \uC2DC\uC220\uC744
+    \uBC1B\uC9C0 \uC54A\uACA0\uB098?"
+  <Sprite>k__BackingField: {fileID: 0}

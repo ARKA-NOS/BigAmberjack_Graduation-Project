@@ -1,4 +1,5 @@
 ﻿using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
@@ -22,8 +23,6 @@ namespace Lrw.Script.Agent.EffectSystem.BaseEffects
             _stat = statModule.GetStat(targetStat);
             
             _stat.SetModify(this,new StatModifyData(priority,value,modifyType));
-            
-            FDebug.Log("start");
         }
 
         public override void EffectEnd()

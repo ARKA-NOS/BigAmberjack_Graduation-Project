@@ -1,4 +1,5 @@
-﻿using Lrw.Script.Agent.HealthSystem;
+﻿using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.HealthSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Test

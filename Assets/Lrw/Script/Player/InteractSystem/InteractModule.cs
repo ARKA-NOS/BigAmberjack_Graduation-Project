@@ -2,7 +2,7 @@
 using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.InteractSystem
+namespace Lrw.Script.Player.InteractSystem
 {
     public class InteractModule : AbstractPlayerModule
     {
@@ -78,6 +78,12 @@ namespace Lrw.Script.Agent.InteractSystem
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, interactDistance);
+
+            if (_interact != null)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(_interact.Position, 0.3f);
+            }
         }
     }
 }

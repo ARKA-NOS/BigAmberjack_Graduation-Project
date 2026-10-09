@@ -1,7 +1,7 @@
 ﻿using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.InteractSystem
+namespace Lrw.Script.Player.InteractSystem
 {
     public interface ICanInteract
     {

@@ -1,6 +1,6 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
-using Lrw.Script.Agent.InteractSystem;
+using Lrw.Script.Player.InteractSystem;
 
 namespace Lrw.Script.Home.Upgrade
 {

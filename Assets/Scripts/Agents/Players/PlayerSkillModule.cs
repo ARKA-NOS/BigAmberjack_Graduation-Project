@@ -13,7 +13,7 @@ namespace Agents.Players
         [SerializeField] private SkillSO skill2;
         
         private PlayerController _playerController;
-        
+        private PlayerInputSo _input;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -21,12 +21,19 @@ namespace Agents.Players
             _playerController = owner as PlayerController;
             FDebug.Assert(_playerController != null,"Owner is not PlayerController");
 
-            _playerController.PlayerInput.OnAttackKeyPressed += AttackKeyPressed;
+            _input = _playerController.PlayerInput;
+            FDebug.Assert(_input != null,"Input SO is null");
+            
+            _input.OnAttackKeyPressed += AttackKeyPressed;
+            _input.OnSkill1KeyPressed += Skill1KeyPressed;
+            _input.OnSkill2KeyPressed += Skill2KeyPressed;
         }
 
         private void OnDestroy()
         {
-            _playerController.PlayerInput.OnAttackKeyPressed -= AttackKeyPressed;
+            _input.OnAttackKeyPressed -= AttackKeyPressed;
+            _input.OnSkill1KeyPressed -= Skill1KeyPressed;
+            _input.OnSkill2KeyPressed -= Skill2KeyPressed;
         }
 
         public void SetSkill(SkillSlot slot,SkillSO skill)
@@ -46,10 +53,17 @@ namespace Agents.Players
         }
         
         private void AttackKeyPressed()
+            => TryUseSkill(meleeSkill);
+        private void Skill2KeyPressed()
+            => TryUseSkill(skill1);
+        private void Skill1KeyPressed()
+            => TryUseSkill(skill2);
+
+        private void TryUseSkill(SkillSO skillSo)
         {
-            if (CanUseSkill(meleeSkill))
+            if (CanUseSkill(skillSo))
             {
-                UseSkill(meleeSkill);
+                UseSkill(skillSo);
             }
         }
         

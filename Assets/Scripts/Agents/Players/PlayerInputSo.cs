@@ -10,8 +10,20 @@ namespace Agents.Players
         [SerializeField] private LayerMask whatIsGround;
         
         public event Action OnDashKeyPressed;
+
+        #region SkillKeyEvent
+
         public event Action OnAttackKeyPressed;
         public event Action OnAttackKeyReleased;
+
+        public event Action OnSkill1KeyPressed;
+        public event Action OnSkill1KeyReleased;
+        
+        public event Action OnSkill2KeyPressed;
+        public event Action OnSkill2KeyReleased;
+
+        #endregion
+        
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
         
@@ -59,6 +71,22 @@ namespace Agents.Players
                 OnAttackKeyPressed?.Invoke();
             if (context.canceled)
                 OnAttackKeyReleased?.Invoke();
+        }
+
+        public void OnSkill1(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill1KeyPressed?.Invoke();
+            if (context.canceled)
+                OnSkill1KeyReleased?.Invoke();
+        }
+
+        public void OnSkill2(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill2KeyPressed?.Invoke();
+            if (context.canceled)
+                OnSkill2KeyReleased?.Invoke();
         }
 
         public void OnInteract(InputAction.CallbackContext context)

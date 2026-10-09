@@ -13,9 +13,18 @@ namespace Lrw.Script._Core._SaveSystem
         public static string SaveDirectory => Application.persistentDataPath;
         
         private static string GetPath<T>(string name)
+{
+    return Path.Combine(SaveDirectory, $"{GetTypeKey(typeof(T))}_{name}{Ext}");
+}
+
+        private static string GetTypeKey(Type type)
         {
-            return Path.Combine(SaveDirectory, $"[{typeof(T).FullName}]{name}{Ext}");
+            if (!type.IsGenericType) return type.Name;
+
+            string baseName = type.Name.Substring(0, type.Name.IndexOf('`'));
+            return baseName + "_" + string.Join("_", Array.ConvertAll(type.GetGenericArguments(), GetTypeKey));
         }
+        
         public static bool Exists<T>(string name) => File.Exists(GetPath<T>(name));
 
         public static bool Save<T>(string name, T data)

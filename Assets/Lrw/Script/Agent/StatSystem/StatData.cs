@@ -8,6 +8,7 @@ namespace Lrw.Script.Agent.StatSystem
         [field:SerializeField] public string StatName { get; private set; }
         [field:SerializeField] public string StatDescription { get; private set; }
         [field:SerializeField] public Sprite StatIcon { get; private set; }
+        [field: SerializeField] public bool UseValueRange { get; private set; } = false;
         [field: SerializeField] public Vector2 ValueRange { get; private set; }
         
         private void OnValidate()

@@ -2,6 +2,7 @@
 using Lrw.Script._Core._Debug;
 using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._SaveSystem;
+using Lrw.Script._Core._SaveSystem.Data;
 using Lrw.Script._Core._ServiceLocator;
 using UnityEngine;
 
@@ -12,11 +13,13 @@ namespace Lrw.Script.Currency
         [SerializeField] private CurrencySO[] currencies;
         
         private Dictionary<CurrencySO,CurrencyData> _currencyData;
+
+        private const string CurrencySaveName = "CurrencyData";
         
         public override void Initialize()
         {
             _currencyData = new();
-            InitCurrency();
+            LoadCurrency();
             ServiceLocator.Register<ICurrencyManager>(this);
         }
 
@@ -27,8 +30,15 @@ namespace Lrw.Script.Currency
             SaveCurrencies();
         }
 
-        private void InitCurrency()
+        private void LoadCurrency()
         {
+            Dictionary<string, int> dict = new();
+            
+            JsonDict<string, int> jsonDict = new(dict);
+            jsonDict = SaveSystem.Load(CurrencySaveName, jsonDict);
+            
+            jsonDict.AddTo(dict);
+            
             foreach (CurrencySO currency in currencies)
             {
                 if(currency == null) continue;
@@ -38,37 +48,38 @@ namespace Lrw.Script.Currency
                     continue;
                 }
                 
-                _currencyData.Add(currency,GetSaveCurrency(currency));
+                _currencyData.Add(currency,GetSaveCurrency(dict,currency));
             }
         }
 
-        private CurrencyData GetSaveCurrency(CurrencySO currencySo)
+        private CurrencyData GetSaveCurrency(Dictionary<string,int> dict,CurrencySO currencySo)
         {
-            CurrencyData baseData = new CurrencyData(currencySo, currencySo.baseCount);
+            if(!currencySo.IsPermanent) return new CurrencyData(currencySo, currencySo.baseCount);
             
-            if(!currencySo.IsPermanent) return baseData;
-            CurrencySaveData baseLoadData = new CurrencySaveData(baseData);
-            return SaveSystem.Load(currencySo.CurrencyName, baseLoadData).ChangeCurrency();
+            int saveCount = dict.GetValueOrDefault(currencySo.CurrencyName, currencySo.baseCount);
+            return new CurrencyData(currencySo, saveCount);
         }
 
         private void SaveCurrencies()
         {
+            Dictionary<string,int> dict = new();
+            
             foreach (CurrencyData currencyData in _currencyData.Values)
             {
                 if(!currencyData.CurrencyType.IsPermanent) continue;
                 
                 string currencyName = currencyData.CurrencyType.CurrencyName;
-
-                CurrencySaveData saveData = new CurrencySaveData(currencyData);
+                int count = currencyData.Count;
                 
-                bool saveComplete =
-                    SaveSystem.Save(currencyName, saveData);
-
-                if (!saveComplete)
-                {
-                    FDebug.LogError($"Save Fail : {currencyName}");
-                }
+                dict.Add(currencyName, count);
             }
+            
+            bool saveComplete
+                = SaveSystem.Save(CurrencySaveName, new JsonDict<string,int>(dict));
+
+            if (!saveComplete)
+                FDebug.LogError($"[CurrencyManager] SaveFail");
+            
         }
 
         [ContextMenu("Debug Currency")]

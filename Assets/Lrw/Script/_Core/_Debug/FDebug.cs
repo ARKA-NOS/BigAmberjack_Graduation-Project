@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
 
-namespace UnityEngine
+namespace Lrw.Script._Core._Debug
 {
     public static class FDebug
     {

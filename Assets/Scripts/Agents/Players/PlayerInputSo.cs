@@ -14,6 +14,9 @@ namespace Agents.Players
         public event Action OnAttackKeyReleased;
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
+        
+        public event Action OnInteractKeyPressed;
+        public event Action OnInventoryKeyReleased;
 
         private Controls _controls;
         
@@ -56,6 +59,18 @@ namespace Agents.Players
                 OnAttackKeyPressed?.Invoke();
             if (context.canceled)
                 OnAttackKeyReleased?.Invoke();
+        }
+
+        public void OnInteract(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnInteractKeyPressed?.Invoke();
+        }
+
+        public void OnInventory(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnInventoryKeyReleased?.Invoke();
         }
 
         public void OnDash(InputAction.CallbackContext context)

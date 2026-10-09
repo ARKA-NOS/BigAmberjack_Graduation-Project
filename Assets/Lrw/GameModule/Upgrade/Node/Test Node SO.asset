@@ -10,11 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1409c3f032d54f2493563713997e36cf, type: 3}
-  m_Name: Node SO
+  m_Name: Test Node SO
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Upgrade.NodeSO
-  <NodeName>k__BackingField: 
+  <NodeName>k__BackingField: Test Node
   <NodeIcon>k__BackingField: {fileID: 0}
-  <NodeDescrition>k__BackingField: 
+  <NodeDescription>k__BackingField: "\uD14C\uC2A4\uD2B8\uC5D0 \uBB58 \uC6D0\uD558\uB294
+    \uAC70\uB0D0"
   <PrevNodes>k__BackingField: []
-  <UpgradeCost>k__BackingField: []
+  <UpgradeCost>k__BackingField:
+  - <Type>k__BackingField: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
+    <Amount>k__BackingField: 100
   <UpgradeData>k__BackingField: {fileID: 11400000, guid: ee0aaeba123c6814cbbc63b2669753fd, type: 2}

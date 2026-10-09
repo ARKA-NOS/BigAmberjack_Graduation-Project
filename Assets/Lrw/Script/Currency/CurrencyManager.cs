@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Lrw.Script._Core._Debug;
 using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._SaveSystem;
+using Lrw.Script._Core._SaveSystem.Data;
 using Lrw.Script._Core._ServiceLocator;
 using UnityEngine;
 
@@ -11,11 +13,13 @@ namespace Lrw.Script.Currency
         [SerializeField] private CurrencySO[] currencies;
         
         private Dictionary<CurrencySO,CurrencyData> _currencyData;
+
+        private const string CurrencySaveName = "CurrencyData";
         
         public override void Initialize()
         {
             _currencyData = new();
-            InitCurrency();
+            LoadCurrency();
             ServiceLocator.Register<ICurrencyManager>(this);
         }
 
@@ -26,48 +30,90 @@ namespace Lrw.Script.Currency
             SaveCurrencies();
         }
 
-        private void InitCurrency()
+        private void LoadCurrency()
         {
+            Dictionary<string, int> dict = new();
+            
+            JsonDict<string, int> jsonDict = new(dict);
+            jsonDict = SaveSystem.Load(CurrencySaveName, jsonDict);
+            
+            jsonDict.AddTo(dict);
+            
             foreach (CurrencySO currency in currencies)
             {
+                if(currency == null) continue;
                 if (_currencyData.ContainsKey(currency))
                 {
                     FDebug.LogWarning("[CurrencyManager] SO 중복");
                     continue;
                 }
                 
-                _currencyData.Add(currency,GetSaveCurrency(currency));
+                _currencyData.Add(currency,GetSaveCurrency(dict,currency));
             }
         }
 
-        private CurrencyData GetSaveCurrency(CurrencySO currencySo)
+        private CurrencyData GetSaveCurrency(Dictionary<string,int> dict,CurrencySO currencySo)
         {
-            CurrencyData baseData = new CurrencyData(currencySo, currencySo.baseCount);
+            if(!currencySo.IsPermanent) return new CurrencyData(currencySo, currencySo.baseCount);
             
-            if(!currencySo.IsPermanent) return baseData;
-            return SaveSystem.Load(currencySo.CurrencyName, baseData);
+            int saveCount = dict.GetValueOrDefault(currencySo.CurrencyName, currencySo.baseCount);
+            return new CurrencyData(currencySo, saveCount);
         }
 
         private void SaveCurrencies()
         {
+            Dictionary<string,int> dict = new();
+            
             foreach (CurrencyData currencyData in _currencyData.Values)
             {
-                if(!currencyData.currencyType.IsPermanent) continue;
+                if(!currencyData.CurrencyType.IsPermanent) continue;
                 
-                string currencyName = currencyData.currencyType.CurrencyName;
+                string currencyName = currencyData.CurrencyType.CurrencyName;
+                int count = currencyData.Count;
                 
-                bool saveComplete =
-                    SaveSystem.Save(currencyName, currencyData);
+                dict.Add(currencyName, count);
+            }
+            
+            bool saveComplete
+                = SaveSystem.Save(CurrencySaveName, new JsonDict<string,int>(dict));
 
-                if (!saveComplete)
-                {
-                    FDebug.LogError($"Save Fail : {currencyName}");
-                }
+            if (!saveComplete)
+                FDebug.LogError($"[CurrencyManager] SaveFail");
+            
+        }
+
+        [ContextMenu("Debug Currency")]
+        private void DebugCurrency()
+        {
+            if (_currencyData == null)
+            {
+                FDebug.LogWarning("CurrencyManager is not Initialized");
+                return;
+            }
+            
+            foreach (CurrencyData currencyData in _currencyData.Values)
+            {
+                FDebug.Log($"{currencyData.CurrencyType.CurrencyName} : {currencyData.Count}");
+            }
+        }
+
+        [ContextMenu("Cheat")]
+        private void Cheat()
+        {
+            if (_currencyData == null)
+            {
+                FDebug.LogWarning("CurrencyManager is not Initialized");
+                return;
+            }
+            
+            foreach (CurrencyData currencyData in _currencyData.Values)
+            {
+                currencyData.Add(100);
             }
         }
         
         public CurrencyData GetCurrency(CurrencySO currencySo)
-            => _currencyData[currencySo];
+            => _currencyData.GetValueOrDefault(currencySo);
         
     }
 }

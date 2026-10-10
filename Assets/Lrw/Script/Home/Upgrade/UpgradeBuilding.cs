@@ -1,15 +1,17 @@
 ﻿using DevLib.ModuleSystem;
-using Lrw.Script._Core._Debug;
 using Lrw.Script.Player.InteractSystem;
+using Lrw.Script.UI;
+using UnityEngine;
 
 namespace Lrw.Script.Home.Upgrade
 {
     public class UpgradeBuilding : AbstractInteractObject
     {
+        [SerializeField] private AbstractWindow testUI;
         
         public override void Interact(ModuleOwner owner)
         {
-            FDebug.Log("Interact");
+            UIManagerEvents.OpenCloseWindow(testUI);
         }
         
         

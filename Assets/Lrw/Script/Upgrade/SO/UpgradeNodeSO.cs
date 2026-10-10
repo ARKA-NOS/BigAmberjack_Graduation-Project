@@ -1,7 +1,7 @@
 ﻿using Lrw.Script.Currency;
 using UnityEngine;
 
-namespace Lrw.Script.Upgrade
+namespace Lrw.Script.Upgrade.SO
 {
     [CreateAssetMenu(fileName = "Upgrade Node SO", menuName = "Upgrade/Upgrade Node SO", order = 0)]
     public class UpgradeNodeSO : ScriptableObject

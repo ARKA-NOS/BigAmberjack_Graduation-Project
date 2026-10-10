@@ -10,8 +10,6 @@ namespace Lrw.Script.Currency
         [field:SerializeField] public Sprite CurrencyIcon { get; private set; }
         [field: SerializeField] public bool IsPermanent { get; private set; } = false;
         [field: SerializeField] public int baseCount = 0;
-
-        [CreateProperty] public int GetCurrentCount
-            => CurrencySystem.GetCurrencyData(this)?.Count ?? 0;
+        
     }
 }

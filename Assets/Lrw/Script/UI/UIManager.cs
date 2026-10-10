@@ -5,20 +5,16 @@ namespace Lrw.Script.UI
 {
     public class UIManager : AbstractManager
     {
-        private static readonly object UIManagerKey = new();
         public override void Initialize()
         {
-            EventBus<UIOpenCloseEvent>.Subscribe(UIManagerKey,OpenClose);
+            EventBus<UIOpenCloseEvent>.Subscribe(OpenClose);
         }
         
         public override void GameEnd()
         {
             base.GameEnd();
-            EventBus<UIOpenCloseEvent>.UnSubscribe(UIManagerKey,OpenClose);
+            EventBus<UIOpenCloseEvent>.UnSubscribe(OpenClose);
         }
-        
-        public static void OpenCloseWindow(IWindow window)
-            => EventBus<UIOpenCloseEvent>.Raise(UIManagerKey,UIManagerEvents.UIOpenClose.Init(window));
         
         private IWindow _currentWindow;
         
@@ -33,7 +29,7 @@ namespace Lrw.Script.UI
             if (evt.Window == null) return;
             
             _currentWindow = evt.Window;
-            _currentWindow.Open();
+            _currentWindow.Open(evt.Data);
         }
         
         

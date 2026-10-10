@@ -1743,6 +1743,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1389134581402385000}
     m_Modifications:
+    - target: {fileID: 1126179358406497308, guid: e4604871cbacd3b44aae68b21ba9492b, type: 3}
+      propertyPath: uiOffset.y
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 8210428508780264725, guid: e4604871cbacd3b44aae68b21ba9492b, type: 3}
       propertyPath: m_Name
       value: InteractModule

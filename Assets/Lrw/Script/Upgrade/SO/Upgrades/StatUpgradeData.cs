@@ -2,7 +2,7 @@
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Upgrade.Upgrades
+namespace Lrw.Script.Upgrade.SO.Upgrades
 {
     [CreateAssetMenu(fileName = "Stat Upgrade Data", menuName = "Upgrade/Upgrade Data/Stat Upgrade Data", order = 0)]
     public class StatUpgradeData : AbstractUpgradeData

@@ -6,10 +6,16 @@ using UnityEngine;
 namespace Lrw.Script._Core._SaveSystem.Data
 {
     [Serializable]
-    public struct JsonDict<T, K>
+    public class JsonDict<T, K>
     {
         [SerializeField] private T[] keys;
         [SerializeField] private K[] values;
+        
+        public JsonDict()
+        {
+            keys = Array.Empty<T>();
+            values = Array.Empty<K>();
+        }
         
         public JsonDict(Dictionary<T, K> dict)
         {

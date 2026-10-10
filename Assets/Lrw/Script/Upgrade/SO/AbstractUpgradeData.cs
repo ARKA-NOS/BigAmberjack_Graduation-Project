@@ -1,7 +1,7 @@
 ﻿using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Upgrade
+namespace Lrw.Script.Upgrade.SO
 {
     //[CreateAssetMenu(fileName = "??? Upgrade Data", menuName = "Upgrade/Upgrade Data/??? Upgrade Data", order = 0)]
     public abstract class AbstractUpgradeData : ScriptableObject

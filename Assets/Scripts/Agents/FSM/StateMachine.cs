@@ -30,12 +30,18 @@ namespace Agents.FSM
 
         public void ChangeState(int newStateIndex, float transitionDuration = 0.1f)
         {
-            CurrentState?.Exit();
+            StateExit();
             AgentState newState = _stateDict.GetValueOrDefault(newStateIndex);
             Debug.Assert(newState != null, $"찾고자 하는 인덱스의 상태가 없습니다. : {newStateIndex}");
             
             CurrentState = newState;
             CurrentState.Enter(transitionDuration);
+        }
+
+        public void StateExit()
+        {
+            CurrentState?.Exit();
+            CurrentState = null;
         }
 
         public void UpdateMachine() => CurrentState?.Update();

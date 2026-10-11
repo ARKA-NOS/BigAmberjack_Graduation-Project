@@ -7,8 +7,6 @@ namespace Agents.Players
     [CreateAssetMenu(fileName = "PlayerInput", menuName = "SO/Player input", order = 0)]
     public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions
     {
-        [SerializeField] private LayerMask whatIsGround;
-        
         public event Action OnDashKeyPressed;
 
         #region SkillKeyEvent

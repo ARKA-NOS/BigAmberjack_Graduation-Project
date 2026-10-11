@@ -24,6 +24,7 @@ namespace Agents.Players
 
         private void OnDestroy()
         {
+            _stateMachine.StateExit();
             PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
         }
 

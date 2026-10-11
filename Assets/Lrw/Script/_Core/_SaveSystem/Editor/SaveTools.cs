@@ -6,8 +6,8 @@ namespace Lrw.Script._Core._SaveSystem.Editor
 {
     public static class SaveTools
     {
-        [MenuItem("Tools/Save Folder")]
-        private static void ShowWindow()
+        [MenuItem("Tools/Open Save Folder")]
+        private static void OpenSaveFolder()
         {
             Application.OpenURL("file://" + SaveSystem.SaveDirectory);
         }

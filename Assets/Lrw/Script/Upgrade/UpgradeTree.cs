@@ -29,6 +29,9 @@ namespace Lrw.Script.Upgrade
             Data[nodeSo] = upgrade;
         }
 
+        public bool IsUpgrade(UpgradeNodeSO nodeSo)
+            => Data.GetValueOrDefault(nodeSo, false);
+
         public void UpgradeOwner(ModuleOwner owner)
         {
             if (owner == null) return;

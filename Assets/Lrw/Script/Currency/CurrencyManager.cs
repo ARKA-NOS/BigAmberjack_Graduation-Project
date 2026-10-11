@@ -81,6 +81,12 @@ namespace Lrw.Script.Currency
                 FDebug.LogError($"[CurrencyManager] SaveFail");
             
         }
+        
+        public CurrencyData GetCurrency(CurrencySO currencySo)
+            => _currencyData.GetValueOrDefault(currencySo);
+
+
+        #region Test
 
         [ContextMenu("Debug Currency")]
         private void DebugCurrency()
@@ -112,8 +118,8 @@ namespace Lrw.Script.Currency
             }
         }
         
-        public CurrencyData GetCurrency(CurrencySO currencySo)
-            => _currencyData.GetValueOrDefault(currencySo);
+        #endregion
+        
         
     }
 }

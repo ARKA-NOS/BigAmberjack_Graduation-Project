@@ -1,13 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
-namespace Lrw.Script.UI.UpgradeUI
+namespace Lrw.Script.UI.Template
 {
-    public class TestFadeUI : AbstractWindow
+    public class FadeWindow : AbstractWindow
     {
+        [SerializeField] private bool startSetting = false;
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private float fadeSpeed = 3f;
-        
+
+        protected virtual void Awake()
+        {
+            canvasGroup.alpha = startSetting ? 1f : 0f;
+            canvasGroup.interactable = startSetting;
+        }
+
         private Coroutine coroutine;
         public override void Open(object data)
         {

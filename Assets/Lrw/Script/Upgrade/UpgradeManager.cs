@@ -4,29 +4,34 @@ using Lrw.Script._Core._Debug;
 using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._SaveSystem;
 using Lrw.Script._Core._SaveSystem.Data;
+using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Upgrade.SO;
 using UnityEngine;
 
 namespace Lrw.Script.Upgrade
 {
-    public class UpgradeManager : AbstractManager
+    public class UpgradeManager : AbstractManager, IUpgradeManager
     {
         [SerializeField] private UpgradeTreeSO[] treeSoList;
         
         private Dictionary<string, UpgradeTree> treesDict;
         
-        private const string UpgradeDataSaveName = "UpgradeData";
+        public const string UpgradeDataSaveName = "UpgradeData";
         
         public override void Initialize()
         {
             InitTrees();
+            ServiceLocator.Register<IUpgradeManager>(this);
         }
 
         public override void GameEnd()
         {
             base.GameEnd();
             SaveUpgradeData();
+            ServiceLocator.Register<IUpgradeManager>(new NullUpgradeManager());
         }
+
+        #region SaveLoad
 
         private void InitTrees()
         {
@@ -50,7 +55,7 @@ namespace Lrw.Script.Upgrade
         private Dictionary<string, Dictionary<string, bool>> GetSaveDict()
         {
             Dictionary<string, JsonDict<string, bool>> loadDict = SaveSystem.Load(UpgradeDataSaveName,
-                new JsonDict<string, JsonDict<string, bool>>())
+                    new JsonDict<string, JsonDict<string, bool>>())
                 .ChangeDict();
 
             return loadDict.Keys.ToDictionary(upgradeTreeName => upgradeTreeName, upgradeTreeName => loadDict[upgradeTreeName].ChangeDict());
@@ -76,7 +81,11 @@ namespace Lrw.Script.Upgrade
                 FDebug.LogError("[UpgradeManager] Save failed");
             }
         }
+
+        #endregion
         
+        public UpgradeTree GetUpgradeTree(string treeName)
+            => treesDict.GetValueOrDefault(treeName, null);
         
         
     }

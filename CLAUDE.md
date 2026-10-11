@@ -37,10 +37,6 @@ CLI 빌드/테스트 파이프라인은 없다. 컴파일, 실행, 테스트는 
 
 **저장** — `SaveSystem`은 `JsonUtility`로 JSON을 `Application.persistentDataPath`에 `{TypeName}_{name}.save`로 저장한다(임시 파일 교체 방식). `JsonUtility`는 Dictionary를 직렬화하지 못하므로 `JsonDict<K,V>`로 감싼다. 저장은 매니저의 `GameEnd()`에서 한다. 에디터 메뉴 `Tools/Open Save Folder`로 저장 폴더를 연다.
 
-**캐릭터/업그레이드 흐름** — `CharacterManager`가 선택된 `CharacterData`를 불러와 프리팹을 생성하고, `IUpgradeManager`에서 해당 `UpgradeTree`를 가져와 `tree.UpgradeOwner(moduleOwner)`를 호출한다. 이때 해금된 `UpgradeNodeSO` 데이터(`StatUpgradeData`, `PlayerSkillUpgradeData`)가 생성된 엔티티의 모듈에 적용된다.
-
-**피해** — 공격 측은 `DevLib.BattleSystem`(`AbstractDamageCaster`/`OverlapDamageCaster`, `DamageData`)을 쓰고 `IDamageable.ApplyDamage(...)`를 호출한다. 피격 피드백(깜빡임, 카메라 임펄스)은 `FeedbackPlayer`로 실행한다.
-
 **입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출하며, 모듈이 이를 구독한다.
 
 ## 컨벤션
@@ -48,4 +44,5 @@ CLI 빌드/테스트 파이프라인은 없다. 컴파일, 실행, 테스트는 
 - Lrw/Agents 코드에서는 `Debug.Log` 대신 `FDebug.Log/LogWarning/LogError`(에디터 전용 로그)와 `FDebug.Assert`(예외 발생)를 쓴다.
 - 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Agents.Players.FSM`, `DevLib.ModuleSystem`).
 - private 필드는 `_camelCase`. 직렬화 자동 프로퍼티는 `[field: SerializeField] public T X { get; private set; }`.
-- 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다. 이 팀원의 작업 브랜치는 `IRU`이고, PR 대상은 `main`이다.
+- 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다. PR 대상은 `main`이다.
+- 팀원별 개인 설정(작업 브랜치, 담당 폴더 등)은 이 파일이 아니라 git에 올라가지 않는 `CLAUDE.local.md`에 적는다.

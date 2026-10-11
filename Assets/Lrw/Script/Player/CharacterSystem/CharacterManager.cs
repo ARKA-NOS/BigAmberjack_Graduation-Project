@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Lrw.Script._Core._Manager;
+﻿using Lrw.Script._Core._Manager;
 using UnityEngine;
 
 namespace Lrw.Script.Player.CharacterSystem

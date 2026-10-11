@@ -1,12 +1,11 @@
-﻿using System;
-using DevLib.ModuleSystem;
+﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
 using UnityEngine;
 
 namespace Agents.Players
 {
-    public class PlayerSkillModule : SkillModule
+    public class PlayerSkillModule : SkillModule, IPlayerSkillModule
     {
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;

@@ -74,8 +74,6 @@ namespace Lrw.Script.Player.CharacterSystem
                 FDebug.LogWarning("[CharacterManager] currentCharacter UpgradeTree is not found");
             }
             
-            
-            
             owner.transform.position = pos;
         }
         

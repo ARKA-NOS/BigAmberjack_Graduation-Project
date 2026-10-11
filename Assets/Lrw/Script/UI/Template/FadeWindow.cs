@@ -24,7 +24,7 @@ namespace Lrw.Script.UI.Template
 
         public override void Close()
         {
-            coroutine = StartCoroutine(Fade(2));
+            coroutine = StartCoroutine(Fade(0));
         }
 
         private IEnumerator Fade(float targetValue)

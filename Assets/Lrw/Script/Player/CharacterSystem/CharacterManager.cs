@@ -34,16 +34,19 @@ namespace Lrw.Script.Player.CharacterSystem
 
         private CharacterData LoadCurrentCharacter()
         {
-            string loadStr = SaveSystem.Load(CharacterSaveName,DefaultValue);
+            CharacterSaveData loadData = SaveSystem.Load(CharacterSaveName,
+                new CharacterSaveData(DefaultValue));
             
-            CharacterData data = characterList.FirstOrDefault(x => x.name == loadStr) ?? defaultCharacter;
+            CharacterData data = characterList.FirstOrDefault(x => x.name == loadData.saveData)
+                                 ?? defaultCharacter;
             
             return data;
         }
 
         private void SaveCurrentCharacter()
         {
-            SaveSystem.Save(CharacterSaveName,currentCharacter?.name ?? DefaultValue);
+            SaveSystem.Save(CharacterSaveName,
+                new CharacterSaveData(currentCharacter?.name ?? DefaultValue));
         }
 
         public void CreateCharacter(Vector2 pos)
@@ -60,6 +63,12 @@ namespace Lrw.Script.Player.CharacterSystem
             if (owner == null)
             {
                 FDebug.LogError("[CharacterManager] ModuleOwner is not found");
+                return;
+            }
+
+            if (currentCharacter.TreeSo == null)
+            {
+                FDebug.LogError("[CharacterManager] currentCharacter.TreeSo is null");
                 return;
             }
             

@@ -1,4 +1,5 @@
-﻿using Agents.Players;
+﻿using System;
+using Agents.Players;
 using DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -11,15 +12,24 @@ namespace Lrw.Script.Player.InteractSystem
         
         [SerializeField] private int resultSize = 10;
         
+        [Header("Interact UI Setting")]
+        [SerializeField] private Transform interactUI;
+        [SerializeField] private Vector2 uiOffset;
+        
         private ContactFilter2D contactFilter;
         
         private ICanInteract _interact;
         
         private Collider2D[] result;
         
+        private Camera _camera;
+        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
+            
+            _camera = Camera.main;
+            
             result = new Collider2D[resultSize];
 
             contactFilter.useTriggers = true;
@@ -58,19 +68,26 @@ namespace Lrw.Script.Player.InteractSystem
                     _interact =  interact;
                 }
             }
+        }
 
+        private void Update()
+        {
             SetInteractUI();
         }
 
         private void SetInteractUI()
         {
+            if (interactUI == null) return;
+            
             if (_interact != null)
             {
-                //UI 구현 필요
+                interactUI.gameObject.SetActive(true);
+                Vector2 screenPoint = _camera.WorldToScreenPoint(_interact.Position);
+                interactUI.position = screenPoint + uiOffset;
             }
             else
             {
-                
+                interactUI.gameObject.SetActive(false);
             }
         }
 

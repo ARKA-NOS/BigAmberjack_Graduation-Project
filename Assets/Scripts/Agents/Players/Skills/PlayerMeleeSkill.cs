@@ -23,11 +23,10 @@ namespace Agents.Players.Skills
         private Stat _damageStat;
         private Stat _attackSpeedStat;
         
-
         private int _currentAttackSequence;
 
         public override float GetMaxCooldown()
-            => SkillSo.BaseCooldown / _attackSpeedStat.Value;
+            => BaseCooldown / _attackSpeedStat.Value;
         
         public override void InitSkill(ModuleOwner owner)
         {

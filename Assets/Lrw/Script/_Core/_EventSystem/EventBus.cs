@@ -32,7 +32,7 @@ namespace Lrw.Script._Core._EventSystem
                 }
             }
         }
-        public static void UnSubscribe(Event callback) => Subscribe(DefaultKey, callback);
+        public static void UnSubscribe(Event callback) => UnSubscribe(DefaultKey, callback);
         public static void UnSubscribe(object key, Event callback)
         {
             if (key == null || callback == null)

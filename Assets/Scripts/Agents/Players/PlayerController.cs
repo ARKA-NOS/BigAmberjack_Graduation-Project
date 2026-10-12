@@ -22,18 +22,19 @@ namespace Agents.Players
             _dashController = GetModule<IControlDasher>();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
+            _stateMachine.StateExit();
             PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
         }
 
-        private void HandleDashStateChange()
+        protected virtual void HandleDashStateChange()
         {
             if (_dashController.CanDash())
                 _dashController.Dash();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             _stateMachine.UpdateMachine();
         }

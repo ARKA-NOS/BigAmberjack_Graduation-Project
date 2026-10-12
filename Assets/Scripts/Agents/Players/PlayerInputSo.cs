@@ -7,11 +7,16 @@ namespace Agents.Players
     [CreateAssetMenu(fileName = "PlayerInput", menuName = "SO/Player input", order = 0)]
     public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions
     {
-        [SerializeField] private LayerMask whatIsGround;
-        
         public event Action OnDashKeyPressed;
-        public event Action OnAttackKeyPressed;
-        public event Action OnAttackKeyReleased;
+
+        #region SkillKeyEvent
+
+        public event Action<bool> OnMeleeSkillKeyPressed;
+        public event Action<bool> OnSkill1KeyPressed;
+        public event Action<bool> OnSkill2KeyPressed;
+
+        #endregion
+        
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
         
@@ -56,9 +61,25 @@ namespace Agents.Players
         public void OnAttack(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnAttackKeyPressed?.Invoke();
+                OnMeleeSkillKeyPressed?.Invoke(true);
             if (context.canceled)
-                OnAttackKeyReleased?.Invoke();
+                OnMeleeSkillKeyPressed?.Invoke(false);
+        }
+
+        public void OnSkill1(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill1KeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnSkill1KeyPressed?.Invoke(false);
+        }
+
+        public void OnSkill2(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill2KeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnSkill2KeyPressed?.Invoke(false);
         }
 
         public void OnInteract(InputAction.CallbackContext context)

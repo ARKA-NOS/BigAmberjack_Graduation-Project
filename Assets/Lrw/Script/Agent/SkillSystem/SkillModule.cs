@@ -8,11 +8,11 @@ namespace Lrw.Script.Agent.SkillSystem
 {
     public class SkillModule : Module, ISkillModule,IAfterInitModule
     {
-        private Dictionary<SkillSO, INormalSkill> _skillPlayers = new();
+        private Dictionary<SkillSO, ISkill> _skillPlayers = new();
         
         public ModuleOwner Owner { get; private set; }
         
-        private INormalSkill _normalSkill;
+        private ISkill _normalSkill;
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -22,14 +22,14 @@ namespace Lrw.Script.Agent.SkillSystem
         
         public void AfterInit()
         {
-            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<INormalSkill>());
+            _skillPlayers = GetSkillPlayers(GetComponentsInChildren<ISkill>());
         }
 
-        private Dictionary<SkillSO, INormalSkill> GetSkillPlayers(INormalSkill[] skillPlayers)
+        private Dictionary<SkillSO, ISkill> GetSkillPlayers(ISkill[] skillPlayers)
         {
-            Dictionary<SkillSO, INormalSkill> skillDict = new();
+            Dictionary<SkillSO, ISkill> skillDict = new();
 
-            foreach (INormalSkill skillPlayer in skillPlayers)
+            foreach (ISkill skillPlayer in skillPlayers)
             {
                 if (skillPlayer.SkillSo == null)
                 {
@@ -52,16 +52,16 @@ namespace Lrw.Script.Agent.SkillSystem
         public bool CanUseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return false;
-            return _skillPlayers.TryGetValue(skillSo, out INormalSkill player) && player.CanUseSkill();
+            return _skillPlayers.TryGetValue(skillSo, out ISkill player) && player.CanUseSkill();
         }
 
-        public void UseSkill(SkillSO skillSo)
+        public void UseSkill(SkillSO skillSo, bool keyPressed)
         {
             if(skillSo == null) return;
-            if (_skillPlayers.TryGetValue(skillSo, out INormalSkill player))
-            {
-                player.UseSkill();
-            }
+            if (!_skillPlayers.TryGetValue(skillSo, out ISkill player)) return;
+            
+            player.UseSkill();
+            
         }
 
         

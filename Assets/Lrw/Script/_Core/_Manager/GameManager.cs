@@ -9,6 +9,7 @@ namespace Lrw.Script._Core._Manager
         
         private void Awake()
         {
+            DontDestroyOnLoad(gameObject);
             Initialize();
         }
         

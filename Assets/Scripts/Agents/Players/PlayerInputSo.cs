@@ -11,14 +11,9 @@ namespace Agents.Players
 
         #region SkillKeyEvent
 
-        public event Action OnAttackKeyPressed;
-        public event Action OnAttackKeyReleased;
-
-        public event Action OnSkill1KeyPressed;
-        public event Action OnSkill1KeyReleased;
-        
-        public event Action OnSkill2KeyPressed;
-        public event Action OnSkill2KeyReleased;
+        public event Action<bool> OnMeleeSkillKeyPressed;
+        public event Action<bool> OnSkill1KeyPressed;
+        public event Action<bool> OnSkill2KeyPressed;
 
         #endregion
         
@@ -66,25 +61,25 @@ namespace Agents.Players
         public void OnAttack(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnAttackKeyPressed?.Invoke();
+                OnMeleeSkillKeyPressed?.Invoke(true);
             if (context.canceled)
-                OnAttackKeyReleased?.Invoke();
+                OnMeleeSkillKeyPressed?.Invoke(false);
         }
 
         public void OnSkill1(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnSkill1KeyPressed?.Invoke();
+                OnSkill1KeyPressed?.Invoke(true);
             if (context.canceled)
-                OnSkill1KeyReleased?.Invoke();
+                OnSkill1KeyPressed?.Invoke(false);
         }
 
         public void OnSkill2(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnSkill2KeyPressed?.Invoke();
+                OnSkill2KeyPressed?.Invoke(true);
             if (context.canceled)
-                OnSkill2KeyReleased?.Invoke();
+                OnSkill2KeyPressed?.Invoke(false);
         }
 
         public void OnInteract(InputAction.CallbackContext context)

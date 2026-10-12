@@ -23,14 +23,14 @@ namespace Agents.Players
             _input = _playerController.PlayerInput;
             FDebug.Assert(_input != null,"Input SO is null");
             
-            _input.OnAttackKeyPressed += AttackKeyPressed;
+            _input.OnMeleeSkillKeyPressed += AttackKeyPressed;
             _input.OnSkill1KeyPressed += Skill1KeyPressed;
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
         }
 
         private void OnDestroy()
         {
-            _input.OnAttackKeyPressed -= AttackKeyPressed;
+            _input.OnMeleeSkillKeyPressed -= AttackKeyPressed;
             _input.OnSkill1KeyPressed -= Skill1KeyPressed;
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
         }
@@ -51,18 +51,18 @@ namespace Agents.Players
             }
         }
         
-        private void AttackKeyPressed()
-            => TryUseSkill(meleeSkill);
-        private void Skill2KeyPressed()
-            => TryUseSkill(skill1);
-        private void Skill1KeyPressed()
-            => TryUseSkill(skill2);
+        private void AttackKeyPressed(bool pressed)
+            => TryUseSkill(meleeSkill, pressed);
+        private void Skill2KeyPressed(bool pressed)
+            => TryUseSkill(skill1, pressed);
+        private void Skill1KeyPressed(bool pressed)
+            => TryUseSkill(skill2, pressed);
 
-        private void TryUseSkill(SkillSO skillSo)
+        private void TryUseSkill(SkillSO skillSo,bool pressed)
         {
             if (CanUseSkill(skillSo))
             {
-                UseSkill(skillSo);
+                UseSkill(skillSo, pressed);
             }
         }
         

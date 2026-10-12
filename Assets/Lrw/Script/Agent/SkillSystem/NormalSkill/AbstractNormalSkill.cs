@@ -3,13 +3,15 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.SkillSystem.NormalSkill
 {
-    public abstract class AbstractNormalSkill : MonoBehaviour, INormalSkill
+    public abstract class AbstractNormalSkill : MonoBehaviour, ISkill
     {
         [field:SerializeField] public SkillSO SkillSo { get; private set; }
         
+        [field: SerializeField] public float BaseCooldown { get; private set; } = 1f;
+        
         public virtual float NormalizeCooldown()
         {
-            return Mathf.Clamp01(1f - (SkillDeltaTime / GetMaxCooldown()));
+            return Mathf.Clamp01(1f - (GetRemainingCooldown() / GetMaxCooldown()));
         }
 
         public virtual float GetRemainingCooldown()

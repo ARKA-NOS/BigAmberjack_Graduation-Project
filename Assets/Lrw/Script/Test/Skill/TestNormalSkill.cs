@@ -7,9 +7,10 @@ namespace Lrw.Script.Test.Skill
 {
     public class TestNormalSkill : AbstractNormalSkill
     {
+        
         public override float GetMaxCooldown()
         {
-            return SkillSo.BaseCooldown;
+            return BaseCooldown;
         }
 
         public override void InitSkill(ModuleOwner owner)

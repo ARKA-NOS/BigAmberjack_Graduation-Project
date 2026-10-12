@@ -44,5 +44,6 @@ CLI 빌드/테스트 파이프라인은 없다. 컴파일, 실행, 테스트는 
 - Lrw/Agents 코드에서는 `Debug.Log` 대신 `FDebug.Log/LogWarning/LogError`(에디터 전용 로그)와 `FDebug.Assert`(예외 발생)를 쓴다.
 - 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Agents.Players.FSM`, `DevLib.ModuleSystem`).
 - private 필드는 `_camelCase`. 직렬화 자동 프로퍼티는 `[field: SerializeField] public T X { get; private set; }`.
-- 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다. PR 대상은 `main`이다.
+- 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다.
+-  PR 대상은 `main`이나 `main`에 직접 커밋하지 않는다.
 - 팀원별 개인 설정(작업 브랜치, 담당 폴더 등)은 이 파일이 아니라 git에 올라가지 않는 `CLAUDE.local.md`에 적는다.

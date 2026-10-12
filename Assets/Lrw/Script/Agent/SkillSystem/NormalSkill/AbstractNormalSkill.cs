@@ -8,10 +8,12 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
         [field:SerializeField] public SkillSO SkillSo { get; private set; }
         
         [field: SerializeField] public float BaseCooldown { get; private set; } = 1f;
+        public float GetSkillStartTime { get; private set; }
+
         
         public virtual float NormalizeCooldown()
         {
-            return Mathf.Clamp01(1f - (GetRemainingCooldown() / GetMaxCooldown()));
+            return Mathf.Clamp01(1f - (SkillDeltaTime / GetMaxCooldown()));
         }
 
         public virtual float GetRemainingCooldown()

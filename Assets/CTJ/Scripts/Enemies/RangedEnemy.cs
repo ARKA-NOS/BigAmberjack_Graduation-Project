@@ -15,6 +15,8 @@ namespace CTJ.Enemies
 
         private bool _configurationWarningShown;
 
+        protected override Vector2 AttackOrigin => firePoint != null ? (Vector2)firePoint.position : base.AttackOrigin;
+
         private void Reset()
         {
             detectionRange = 10f;

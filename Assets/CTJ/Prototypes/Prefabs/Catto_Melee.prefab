@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6002371313276815539}
   - component: {fileID: 2547612643200237385}
   - component: {fileID: 1001759245267349421}
+  - component: {fileID: 8810647111667320001}
   m_Layer: 8
   m_Name: Catto_Melee
   m_TagString: Untagged
@@ -165,6 +166,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.HealthModule
   maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
   currentHealth: 0
+--- !u!114 &8810647111667320001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5683942725659162458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 767ddf0b3b914298956643af414a1661, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyMovementModule
+  bodyCollider: {fileID: 4782396479916137436}
+  terrainLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckDistance: 0.1
+  obstacleCheckDistance: 0.3
+  horizontalTolerance: 0.06
+  jumpHeight: 3
+  minimumTargetHeight: 0.45
+  jumpCooldown: 0.5
+  maxLedgeDetour: 3
 --- !u!1 &6940560111538749771
 GameObject:
   m_ObjectHideFlags: 0

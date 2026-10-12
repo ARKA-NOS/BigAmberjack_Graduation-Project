@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CTJ.Enemies
 {
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Rigidbody2D), typeof(EnemyMovementModule))]
     public abstract class EnemyBase : Agent, IDamageable
     {
         private const float TargetSearchInterval = 0.2f;
@@ -34,6 +34,7 @@ namespace CTJ.Enemies
         [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
 
         private Rigidbody2D _rigidbody;
+        private EnemyMovementModule _movement;
         private StateMachine<EnemyStateType> _stateMachine;
         private float _nextAttackTime;
 
@@ -46,9 +47,13 @@ namespace CTJ.Enemies
 
         protected override void Awake()
         {
+            // RequireComponent는 기존 프리팹에 소급되지 않습니다. 공용 ModuleOwner가 수집하기 전에 보완합니다.
+            if (GetComponentInChildren<EnemyMovementModule>() == null)
+                gameObject.AddComponent<EnemyMovementModule>();
             base.Awake();
 
             _rigidbody = GetComponent<Rigidbody2D>();
+            _movement = GetModule<EnemyMovementModule>();
             InitializeStateMachine();
             if (HealthModule != null)
             {
@@ -117,7 +122,7 @@ namespace CTJ.Enemies
 
         internal bool IsTargetInRange(float range)
         {
-            if (IsDead || target == null)
+            if (IsDead || target == null || !target.gameObject.activeInHierarchy)
                 return false;
 
             Vector2 currentPosition = transform.position;
@@ -127,30 +132,40 @@ namespace CTJ.Enemies
 
         internal void MoveTowardsTarget()
         {
-            if (IsDead || target == null)
+            if (IsDead || target == null || _movement == null)
             {
                 StopHorizontalMovement();
                 return;
             }
 
-            float horizontalDifference = target.position.x - transform.position.x;
-            float direction = Mathf.Sign(horizontalDifference);
-
-            if (Mathf.Approximately(horizontalDifference, 0f))
-                direction = 0f;
-
-            _rigidbody.linearVelocityX = direction * moveSpeed;
+            float direction = _movement.MoveTowards(target, moveSpeed);
             OnMoveDirectionChanged(direction);
         }
 
         internal void StopHorizontalMovement()
         {
-            _rigidbody.linearVelocityX = 0f;
+            if (_movement != null)
+                _movement.Stop();
+            else
+                _rigidbody.linearVelocityX = 0f;
         }
+
+        internal bool CanAttackTarget()
+        {
+            if (!IsTargetInRange(AttackRange) || _movement == null || !_movement.IsGrounded)
+                return false;
+            Collider2D targetBody = target.GetComponent<Collider2D>();
+            Vector2 aimPoint = targetBody != null ? (Vector2)targetBody.bounds.center : (Vector2)target.position;
+            return IsTargetAtAttackHeight() && _movement.HasClearPath(AttackOrigin, aimPoint);
+        }
+
+        protected virtual Vector2 AttackOrigin => _movement.BodyCenter;
+        protected float TargetHeightDifference => _movement.GetTargetHeightDifference(target);
+        protected virtual bool IsTargetAtAttackHeight() => true;
 
         internal void ExecuteAttack()
         {
-            if (IsDead || IsAttackInProgress || Time.time < _nextAttackTime)
+            if (IsDead || IsAttackInProgress || Time.time < _nextAttackTime || !CanAttackTarget())
                 return;
 
             // 상태를 나갔다 들어와도 공격 간격이 초기화되지 않습니다.

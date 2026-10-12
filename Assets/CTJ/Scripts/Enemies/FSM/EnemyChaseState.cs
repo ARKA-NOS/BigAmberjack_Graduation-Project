@@ -14,7 +14,7 @@ namespace CTJ.Enemies.FSM
                 return;
             }
 
-            if (Enemy.IsTargetInRange(Enemy.AttackRange))
+            if (Enemy.CanAttackTarget())
                 Enemy.ChangeState(EnemyStateType.Attack);
         }
 

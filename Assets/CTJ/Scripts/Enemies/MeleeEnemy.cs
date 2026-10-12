@@ -12,6 +12,8 @@ namespace CTJ.Enemies
         [SerializeField] private string attackStateName = "Base Layer.Attack";
         [SerializeField] private Collider2D attackHitbox;
         [SerializeField, Min(0f)] private float damage = 10f;
+        [Tooltip("Collider 발 위치의 허용 높이 차이. 위층 타깃 앞에서 허공 공격을 하지 않게 합니다.")]
+        [SerializeField, Min(0f)] private float maxAttackHeightDifference = 0.5f;
         [Tooltip("종료 이벤트가 누락됐을 때의 복구 시간. 실제 공격 애니메이션보다 길게 설정합니다.")]
         [SerializeField, Min(0.1f)] private float attackTimeout = 3f;
 
@@ -23,6 +25,11 @@ namespace CTJ.Enemies
         private bool _configurationWarningShown;
 
         public override bool IsAttackInProgress => _isAttacking;
+
+        protected override bool IsTargetAtAttackHeight()
+        {
+            return Target != null && Mathf.Abs(TargetHeightDifference) <= maxAttackHeightDifference;
+        }
 
         protected override void Attack()
         {

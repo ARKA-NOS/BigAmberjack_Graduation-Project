@@ -4,6 +4,7 @@ namespace Lrw.Script.Agent.SkillSystem
 {
     public interface ISkill
     {
+        SkillSO SkillSo { get; }
         void InitSkill(ModuleOwner owner);
         bool CanUseSkill();
         void UseSkill();

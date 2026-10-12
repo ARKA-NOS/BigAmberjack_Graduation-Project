@@ -1,19 +1,18 @@
-﻿using System;
-using DevLib.ModuleSystem;
+﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
 using UnityEngine;
 
 namespace Agents.Players
 {
-    public class PlayerSkillModule : SkillModule
+    public class PlayerSkillModule : SkillModule, IPlayerSkillModule
     {
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
         [SerializeField] private SkillSO skill2;
         
         private PlayerController _playerController;
-        
+        private PlayerInputSo _input;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -21,12 +20,19 @@ namespace Agents.Players
             _playerController = owner as PlayerController;
             FDebug.Assert(_playerController != null,"Owner is not PlayerController");
 
-            _playerController.PlayerInput.OnAttackKeyPressed += AttackKeyPressed;
+            _input = _playerController.PlayerInput;
+            FDebug.Assert(_input != null,"Input SO is null");
+            
+            _input.OnMeleeSkillKeyPressed += AttackKeyPressed;
+            _input.OnSkill1KeyPressed += Skill1KeyPressed;
+            _input.OnSkill2KeyPressed += Skill2KeyPressed;
         }
 
         private void OnDestroy()
         {
-            _playerController.PlayerInput.OnAttackKeyPressed -= AttackKeyPressed;
+            _input.OnMeleeSkillKeyPressed -= AttackKeyPressed;
+            _input.OnSkill1KeyPressed -= Skill1KeyPressed;
+            _input.OnSkill2KeyPressed -= Skill2KeyPressed;
         }
 
         public void SetSkill(SkillSlot slot,SkillSO skill)
@@ -45,11 +51,18 @@ namespace Agents.Players
             }
         }
         
-        private void AttackKeyPressed()
+        private void AttackKeyPressed(bool pressed)
+            => TryUseSkill(meleeSkill, pressed);
+        private void Skill2KeyPressed(bool pressed)
+            => TryUseSkill(skill1, pressed);
+        private void Skill1KeyPressed(bool pressed)
+            => TryUseSkill(skill2, pressed);
+
+        private void TryUseSkill(SkillSO skillSo,bool pressed)
         {
-            if (CanUseSkill(meleeSkill))
+            if (CanUseSkill(skillSo))
             {
-                UseSkill(meleeSkill);
+                UseSkill(skillSo, pressed);
             }
         }
         

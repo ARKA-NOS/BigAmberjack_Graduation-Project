@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Test.Skill
 {
-    public class TestNormalSkill : AbstractNormalSkill
+    public class TestSkill : AbstractSkill
     {
         
         public override float GetMaxCooldown()

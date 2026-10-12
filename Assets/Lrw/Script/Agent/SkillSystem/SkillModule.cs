@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.SkillSystem.ChargeSkill;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Lrw.Script.Agent.SkillSystem
         
         public ModuleOwner Owner { get; private set; }
         
-        private ISkill _normalSkill;
+        private ISkill _currentUsingSkill;
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -58,9 +59,16 @@ namespace Lrw.Script.Agent.SkillSystem
         public void UseSkill(SkillSO skillSo, bool keyPressed)
         {
             if(skillSo == null) return;
-            if (!_skillPlayers.TryGetValue(skillSo, out ISkill player)) return;
+            if (!_skillPlayers.TryGetValue(skillSo, out ISkill skill)) return;
+
+            if (_currentUsingSkill != null && _currentUsingSkill.IsUsing)
+            {
+                _currentUsingSkill.StopSkill();
+            }
             
-            player.UseSkill();
+            
+            
+            _currentUsingSkill.UseSkill();
             
         }
 

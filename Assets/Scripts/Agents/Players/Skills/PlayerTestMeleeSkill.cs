@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 namespace Agents.Players.Skills
 {
-    public class PlayerMeleeSkill : AbstractNormalSkill
+    public class PlayerTestMeleeSkill : AbstractSkill
     {
         [SerializeField] private Transform slashTrm;
         [SerializeField] private AssetNameSo[] attackSlashBundle;

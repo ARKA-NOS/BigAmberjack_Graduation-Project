@@ -16,6 +16,8 @@ namespace Agents.Players
 
         private Stat _moveSpeedStat;
 
+        private bool _isMoveLock = false;
+
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -31,12 +33,17 @@ namespace Agents.Players
         
         public void AfterInit()
         {
-            _moveSpeedStat = _statModule.GetStat(moveSpeed, 1f);
+            _moveSpeedStat = _statModule.GetStat(moveSpeed);
         }
 
         public void SetMovementDirectionX(float movementXInput)
         {
             _movementDirectionX = movementXInput;
+        }
+
+        public void MoveLock(bool value)
+        {
+            _isMoveLock = value;
         }
 
         private void FixedUpdate()
@@ -47,7 +54,7 @@ namespace Agents.Players
         private void MovePlayer() 
         {
             if (_playerRb == null) return;
-            _playerRb.linearVelocityX = _movementDirectionX * _moveSpeedStat.Value;
+            _playerRb.linearVelocityX = _isMoveLock ? 0f : _movementDirectionX * _moveSpeedStat.Value;
         }
 
         

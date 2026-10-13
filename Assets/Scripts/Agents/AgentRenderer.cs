@@ -1,10 +1,11 @@
 ﻿
+using System;
 using DevLib.ModuleSystem;
 using UnityEngine;
 
 namespace Agents
 {
-    public class AgentRenderer : Module, IRenderer
+    public class AgentRenderer : Module, IRenderer,IAnimationTrigger
     {
         public Animator Animator { get; private set; }
 
@@ -14,9 +15,9 @@ namespace Agents
             Animator = GetComponent<Animator>();
         }
 
-        public void PlayClip(int clipHash, float normalizedTime, float crossFadeDuration, int layerIndex = 0)
+        public void PlayClip(int clipHash, int layerIndex = 0)
         {
-            Animator.CrossFadeInFixedTime(clipHash, crossFadeDuration, layerIndex, normalizedTime);
+            Animator.Play(clipHash, layerIndex);
         }
 
         public void SetAnimatorFloat(int idHash, float value)
@@ -32,5 +33,16 @@ namespace Agents
 
         public Vector3 GetRight()
             => transform.right;
+
+
+        #region IAnimationTrigger
+        public event Action OnAnimationEnd;
+        public event Action OnAttackTrigger;
+        
+        public void AnimationEnd() => OnAnimationEnd?.Invoke();
+        public void AttackTrigger() => OnAttackTrigger?.Invoke();
+        
+        #endregion
+        
     }
 }

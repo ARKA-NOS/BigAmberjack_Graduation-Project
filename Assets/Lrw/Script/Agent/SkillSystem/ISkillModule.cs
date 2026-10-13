@@ -7,5 +7,6 @@ namespace Lrw.Script.Agent.SkillSystem
         ModuleOwner Owner { get; }
         public bool CanUseSkill(SkillSO skillSo);
         public void UseSkill(SkillSO skillSo, bool keyPressed);
+        public void ForceStopCurrentSkill();
     }
 }

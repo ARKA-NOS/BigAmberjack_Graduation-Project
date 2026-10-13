@@ -35,7 +35,7 @@ namespace Agents.Players
         
         public void AfterInit()
         {
-            _jumpPowerStat = _statModule.GetStat(jumpPowerStatData, 1f);
+            _jumpPowerStat = _statModule.GetStat(jumpPowerStatData);
         }
 
         public void Jump()

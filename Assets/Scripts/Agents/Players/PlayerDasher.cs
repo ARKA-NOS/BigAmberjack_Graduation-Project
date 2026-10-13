@@ -74,7 +74,7 @@ namespace Agents.Players
             if (direction.sqrMagnitude <= 0f)
                 return;
             
-            _haveFsm.ChangeState(PlayerStateEnum.DASH,0.1f);
+            _haveFsm.ChangeState(PlayerStateEnum.DASH);
             
             direction.Normalize();
             

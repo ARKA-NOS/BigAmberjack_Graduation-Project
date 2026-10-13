@@ -29,7 +29,7 @@ namespace Agents.Players
 
         public void AfterInit()
         {
-            _multiJumpCount = _statModule.GetStat(multiJumpCountStatData, 1f);
+            _multiJumpCount = _statModule.GetStat(multiJumpCountStatData);
         }
 
         public bool CanDoubleJump()

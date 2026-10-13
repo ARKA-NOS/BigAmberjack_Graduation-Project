@@ -2,6 +2,6 @@ namespace Lrw.Script.Agent.StatSystem
 {
     public interface IStatModule
     {
-        Stat GetStat(StatData statData, float baseValue = 0f);
+        Stat GetStat(StatData statData);
     }
 }

@@ -28,7 +28,7 @@ namespace Agents.Players.FSM
         private void HandleIdleStateChange(float movementXKey)
         {
             if (Mathf.Abs(movementXKey) > INPUT_DEADZONE) return;
-            Player.ChangeState(PlayerStateEnum.IDLE, 0.1f);
+            Player.ChangeState(PlayerStateEnum.IDLE);
         }
     }
 }

@@ -247,7 +247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8116982410149978507}
   m_Layer: 0
-  m_Name: PlayerPack
+  m_Name: PlayerBasePack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -327,7 +327,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5586435815872626324}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 9110885535307497447, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98319212bfb05ef448c2ed4b0411a621, type: 3}

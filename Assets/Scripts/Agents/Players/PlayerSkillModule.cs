@@ -53,10 +53,12 @@ namespace Agents.Players
         
         private void AttackKeyPressed(bool pressed)
             => TryUseSkill(meleeSkill, pressed);
-        private void Skill2KeyPressed(bool pressed)
-            => TryUseSkill(skill1, pressed);
+        
         private void Skill1KeyPressed(bool pressed)
+            => TryUseSkill(skill1, pressed);
+        private void Skill2KeyPressed(bool pressed)
             => TryUseSkill(skill2, pressed);
+        
 
         private void TryUseSkill(SkillSO skillSo,bool pressed)
         {

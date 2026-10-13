@@ -18,13 +18,13 @@ namespace Agents.Players.FSM
             if (_groundChecker.IsGroundChecking())
                 return false;
 
-            Player.ChangeState(PlayerStateEnum.FALL, 0.1f);
+            Player.ChangeState(PlayerStateEnum.FALL);
             return true;
         }
 
-        public override void Enter(float transitionDuration = 0.1f)
+        public override void Enter()
         {
-            base.Enter(transitionDuration);
+            base.Enter();
             Player.PlayerInput.OnJumpKeyPressed += HandleJumpStateChange;
         }
         
@@ -36,7 +36,7 @@ namespace Agents.Players.FSM
 
         private void HandleJumpStateChange()
         {
-            Player.ChangeState(PlayerStateEnum.JUMP, 0.1f);
+            Player.ChangeState(PlayerStateEnum.JUMP);
         }
     }
 }

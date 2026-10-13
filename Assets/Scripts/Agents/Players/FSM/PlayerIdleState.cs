@@ -9,9 +9,9 @@ namespace Agents.Players.FSM
         {
         }
 
-        public override void Enter(float transitionDuration = 0.1f)
+        public override void Enter()
         {
-            base.Enter(transitionDuration);
+            base.Enter();
             ControlMovement.SetMovementDirectionX(0);
         }
 
@@ -26,7 +26,7 @@ namespace Agents.Players.FSM
         private void HandleMovementStateChange(float movementXKey)
         {
             if (Mathf.Abs(movementXKey) < INPUT_DEADZONE) return;
-            Player.ChangeState(PlayerStateEnum.RUN, 0.1f);
+            Player.ChangeState(PlayerStateEnum.RUN);
         }
     }
 }

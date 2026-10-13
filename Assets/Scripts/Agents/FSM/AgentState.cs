@@ -17,9 +17,9 @@ namespace Agents.FSM
             _renderer = agent.GetModule<IRenderer>();
         }
 
-        public virtual void Enter(float transitionDuration = 0.1f)
+        public virtual void Enter()
         {
-            _renderer.PlayClip(_stateClipHash, 0.1f, transitionDuration, _layerIndex);
+            _renderer.PlayClip(_stateClipHash, _layerIndex);
         }
         
         public virtual void Update() {}

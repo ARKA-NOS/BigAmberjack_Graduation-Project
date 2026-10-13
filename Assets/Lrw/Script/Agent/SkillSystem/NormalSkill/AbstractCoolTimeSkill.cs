@@ -5,11 +5,11 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
 {
     public abstract class AbstractCoolTimeSkill : AbstractSkill, IHasCoolTime
     {
-        [SerializeField] private float baseCoolTime = 1f;
+        [field:SerializeField] protected float BaseCoolTime { get; private set; }= 1f;
 
         // 시작하자마자 쓸 수 있도록 아주 먼 과거로 둔다
         public float CoolTimeStartTime { get; private set; } = float.NegativeInfinity;
-        public virtual float CoolTime => baseCoolTime;
+        public virtual float CoolTime => BaseCoolTime;
         public float RemainingCoolTime => Mathf.Max(0f, CoolTimeStartTime + CoolTime - Time.time);
 
         public sealed override bool CanUseSkill()

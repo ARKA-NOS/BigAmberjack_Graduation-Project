@@ -17,7 +17,7 @@ namespace Lrw.Script.Player.Skills
         private Stat damageStat;
         private Stat attackSpeedStat;
 
-        public override float CoolTime => GetCoolTime();
+        public override float CoolTime => BaseCoolTime / attackSpeedStat.Value;
         
 
         public override void InitSkill(ModuleOwner owner)
@@ -31,12 +31,8 @@ namespace Lrw.Script.Player.Skills
             attackSpeedStat = statModule.GetStat(attackSpeed);
             
         }
-
-
-        private float GetCoolTime()
-        {
-            return CoolTime;
-        }
+        
+        
         
     }
 }

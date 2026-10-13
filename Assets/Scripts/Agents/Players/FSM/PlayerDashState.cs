@@ -17,9 +17,9 @@ namespace Agents.Players.FSM
             Debug.Assert(_controlJumper != null, "점퍼 친구가 없어영");
         }
 
-        public override void Enter(float transitionDuration = 0.1f)
+        public override void Enter()
         {
-            base.Enter(transitionDuration);
+            base.Enter();
             Player.StartCoroutine(DashEndTime());
         }
 
@@ -31,7 +31,7 @@ namespace Agents.Players.FSM
 
         private void DashEnd()
         {
-            Player.ChangeState(PlayerStateEnum.FALL, 0.1f);
+            Player.ChangeState(PlayerStateEnum.FALL);
         }
     }
 }

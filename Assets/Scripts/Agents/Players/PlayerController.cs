@@ -39,7 +39,7 @@ namespace Agents.Players
             _stateMachine.UpdateMachine();
         }
         
-        public void ChangeState(PlayerStateEnum newState, float transitionDuration = 0.1f)
-            => _stateMachine.ChangeState((int)newState, transitionDuration);
+        public void ChangeState(PlayerStateEnum newState)
+            => _stateMachine.ChangeState((int)newState);
     }
 }

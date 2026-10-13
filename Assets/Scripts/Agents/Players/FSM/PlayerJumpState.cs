@@ -12,9 +12,9 @@ namespace Agents.Players.FSM
             Debug.Assert(_playerRb != null, "플레이어한테 Rigidbody2D 안 붙였나요??");
         }
 
-        public override void Enter(float transitionDuration = 0.1f)
+        public override void Enter()
         {
-            base.Enter(transitionDuration);
+            base.Enter();
             ControlJumper.Jump();
             Player.PlayerInput.OnJumpKeyReleased += HandleJumpReleased;
         }
@@ -40,7 +40,7 @@ namespace Agents.Players.FSM
         {
             if (velocityY >= 0f) return;
 
-            Player.ChangeState(PlayerStateEnum.FALL, 0.1f);
+            Player.ChangeState(PlayerStateEnum.FALL);
             ControlJumper.IsJumpFall = true;
         }
     }

@@ -20,9 +20,9 @@ namespace Agents.Players.FSM
             Debug.Assert(_controlDasher != null, "IControlDasher is 없다.");
         }
 
-        public override void Enter(float transitionDuration = 0.1f)
+        public override void Enter()
         {
-            base.Enter(transitionDuration);
+            base.Enter();
             Player.PlayerInput.OnJumpKeyPressed += HandleJump;
             _fallTime = 0;
         }
@@ -45,7 +45,7 @@ namespace Agents.Players.FSM
         private void HandleIdleStateChange()
         {
             if (!_groundChecker.IsGroundChecking()) return;
-            Player.ChangeState(PlayerStateEnum.IDLE, 0.1f);
+            Player.ChangeState(PlayerStateEnum.IDLE);
             _controlMultiJumper.ResetMultiJumpCount();
             _controlDasher.ResetAirDashCount();
         }
@@ -54,7 +54,7 @@ namespace Agents.Players.FSM
         {
             if (_fallTime < ControlJumper.CoyoteTime && !ControlJumper.IsJumpFall || _controlMultiJumper.CanDoubleJump())
             {
-                Player.ChangeState(PlayerStateEnum.JUMP, 0.1f);
+                Player.ChangeState(PlayerStateEnum.JUMP);
             }
         }
     }

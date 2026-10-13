@@ -1,4 +1,5 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
 using Lrw.Script.Agent.SkillSystem.Interface;
 using UnityEngine;
 
@@ -17,6 +18,14 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
             Owner = owner;
         }
 
+        protected virtual void Update()
+        {
+            if (IsUsing)
+            {
+                UpdateSkill();
+            }
+        }
+
         public abstract bool CanUseSkill();
 
         public void UseSkill()
@@ -26,6 +35,8 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
 
             OnUseSkill();
         }
+        
+        public virtual void UpdateSkill() {}
 
         /// <summary>
         /// 외부에서 스킬을 끊을 때(캔슬, 강제 종료) 호출한다.

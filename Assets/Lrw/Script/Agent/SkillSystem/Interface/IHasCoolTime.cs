@@ -4,5 +4,6 @@
     {
         float CoolTimeStartTime { get; }
         float CoolTime { get; }
+        float RemainingCoolTime { get; }
     }
 }

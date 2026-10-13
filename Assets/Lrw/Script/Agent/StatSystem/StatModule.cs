@@ -35,10 +35,10 @@ namespace Lrw.Script.Agent.StatSystem
         }
         
         [NotNull]
-        public Stat GetStat(StatData statData, float baseValue = 0f)
+        public Stat GetStat(StatData statData)
         {
             if (statData == null) throw new Exception("StatData is null");
-            return _stats.TryGetValue(statData, out Stat stat) ? stat : AddStat(statData, baseValue);
+            return _stats.TryGetValue(statData, out Stat stat) ? stat : AddStat(statData, statData.DefaultValue);
         }
         
     }

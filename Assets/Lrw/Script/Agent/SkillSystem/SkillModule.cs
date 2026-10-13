@@ -2,7 +2,6 @@
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem.Interface;
-using Lrw.Script.Agent.SkillSystem.NormalSkill;
 
 namespace Lrw.Script.Agent.SkillSystem
 {
@@ -73,8 +72,7 @@ namespace Lrw.Script.Agent.SkillSystem
             {
                 if (!CanUseSkill(skillSo)) return;
 
-                ISkill current = GetCurrentSkill();
-                current?.StopSkill();
+                ForceStopCurrentSkill();
 
                 _currentUsingSkill = skill;
 
@@ -90,6 +88,23 @@ namespace Lrw.Script.Agent.SkillSystem
                 if (skill is IChargeSkill { IsCharging: true } chargeSkill)
                     chargeSkill.ChargeEnd();
             }
+        }
+
+        /// <summary>
+        /// 현재 스킬을 캔슬 규칙과 상관없이 끊는다. 차징 중이면 차징만 취소한다.
+        /// 피격, 사망, 가면 교체 등 외부에서도 이걸로 끊는다.
+        /// </summary>
+        public void ForceStopCurrentSkill()
+        {
+            ISkill current = GetCurrentSkill();
+            if (current == null) return;
+
+            if (current is IChargeSkill { IsCharging: true } chargingSkill)
+                chargingSkill.ChargeCancel();
+            else
+                current.StopSkill();
+
+            _currentUsingSkill = null;
         }
 
         /// <summary>

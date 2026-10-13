@@ -31,7 +31,7 @@ namespace Agents.Players
         
         public void AfterInit()
         {
-            _moveSpeedStat = _statModule.GetStat(moveSpeed, 1f);
+            _moveSpeedStat = _statModule.GetStat(moveSpeed);
         }
 
         public void SetMovementDirectionX(float movementXInput)

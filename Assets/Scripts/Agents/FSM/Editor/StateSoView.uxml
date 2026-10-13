@@ -4,6 +4,6 @@
         <ui:DropdownField label="Class Name" name="ClassNameDropdown" binding-path="className"/>
         <ui:IntegerField label="Asset Index" value="0" name="AssetIndexField" binding-path="assetIndex"/>
         <ui:IntegerField label="Layer Index" value="0" name="AssetIndexField" binding-path="layerIndex"/>
-        <uie:ObjectField label="Anim State" name="StateParamField" type="GGMLib.AnimationSystem.AnimParamSo, Assembly-CSharp" binding-path="stateParam"/>
+        <uie:ObjectField label="Anim State" name="StateParamField" type="DevLib.AnimatorSystem.HashDataSO, AnimatorSystem_assembly" binding-path="stateParam"/>
     </ui:VisualElement>
 </ui:UXML>

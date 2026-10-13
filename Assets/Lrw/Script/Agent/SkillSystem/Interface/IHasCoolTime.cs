@@ -2,7 +2,7 @@
 {
     public interface IHasCoolTime
     {
-        float SkillStartTime { get; }
+        float CoolTimeStartTime { get; }
         float CoolTime { get; }
     }
 }

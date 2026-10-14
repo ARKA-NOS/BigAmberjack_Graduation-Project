@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Agents.FSM
 {
-    public class StateMachine
+    public class AgentStateMachine
     {
         public AgentState CurrentState { get; private set; }
 
         private Dictionary<int, AgentState> _stateDict;
 
-        public StateMachine(Agent agent, StateSo[] stateList)
+        public AgentStateMachine(Agent agent, StateSo[] stateList)
         {
             _stateDict = new Dictionary<int, AgentState>();
             foreach (StateSo stateData in stateList)

@@ -13,17 +13,30 @@ namespace CTJ.Enemies.Skills
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간. 애니메이션 길이에 맞춥니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
         private float _endTime;
+        private Vector2 _castDirection;
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() &&
             projectilePrefab != null && projectilePrefab.gameObject.activeSelf && firePoint != null;
 
-        protected override void OnUseSkill()
+        protected override void PrepareAttack()
         {
-            base.OnUseSkill();
-            Vector2 direction = CastTarget.position - firePoint.position;
-            if (direction.sqrMagnitude < 0.0001f) direction = Vector2.right;
+            _castDirection = CastTarget.position - firePoint.position;
+            if (_castDirection.sqrMagnitude < 0.0001f) _castDirection = Vector2.right;
+            _castDirection.Normalize(); // 예고 방향으로 발사합니다. 준비 중 타깃을 재조준하지 않습니다.
+        }
+
+        protected override void UpdateTelegraph()
+        {
+            if (firePoint != null && projectilePrefab != null)
+                Telegraph.SetLane(firePoint.position, _castDirection, projectilePrefab.TravelDistance, projectilePrefab.Diameter);
+        }
+
+        protected override void OnReleaseAttack()
+        {
+            Telegraph?.Hide();
+            if (projectilePrefab == null || firePoint == null) { StopSkill(); return; }
             EnemyProjectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-            projectile.Launch(Enemy, CastTarget, damage, direction);
+            projectile.Launch(Enemy, CastTarget, damage, _castDirection);
             int stateHash = Animator.StringToHash(attackStateName);
             if (attackAnimator != null && attackAnimator.isActiveAndEnabled &&
                 attackAnimator.runtimeAnimatorController != null && attackAnimator.HasState(0, stateHash))
@@ -38,7 +51,7 @@ namespace CTJ.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
-            if (IsUsing && Time.time >= _endTime) EndSkill();
+            if (IsUsing && HasReleased && Time.time >= _endTime) EndSkill();
         }
     }
 }

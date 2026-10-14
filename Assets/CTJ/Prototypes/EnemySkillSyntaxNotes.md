@@ -51,3 +51,15 @@ SkillEntry는 GameObject에 붙는 컴포넌트가 아니라, 목록 한 칸의 
 Tools~의 async Task는 Unity 에디터 메인 루프가 계속 움직이는 동안 프레임/애니메이션 결과를 기다리기 위해 썼다. 게임 실행 코드는 async로 바꾸지 않았다. Task.WhenAll은 서로 멀리 떨어진 테스트 공간들을 함께 관찰한다.
 
 try/finally는 검사 중 예외가 발생해도 테스트용 GameObject를 제거하기 위한 문법이다. 에디터의 실제 씬/프리팹 저장은 호출하지 않는다. `SerializedObject`로 런타임 복제본만 구성하여 private 직렬화 필드를 테스트한다.
+
+## 추적 해제·HP·Canvas 예고 추가에서 사용한 문법 (2026-10-14)
+
+- `[SerializeField, Min(0f)] private float chaseReleaseRange`: Inspector에 저장할 값이면서 음수 입력을 제한한다. 속성만으로 런타임 값까지 보장되지는 않으므로 `Mathf.Max(detectionRange, chaseReleaseRange)`로 읽을 때도 보정한다. 두 거리를 나눠 감지 경계에서 추적/대기가 반복되는 현상을 막는다.
+- `StatData`는 공용 스탯의 키인 ScriptableObject다. `owner.TryGetModule(out IStatModule stats)`의 `out`은 성공 시 찾은 모듈을 지역 변수에 담는다. 새 인터페이스 없이 기존 IStatModule을 사용했다.
+- `_attackDelay?.Value ?? fallbackAttackDelay`: 스탯이 있으면 현재 값, 없으면 호환용 기본값을 사용한다. `?.`는 null 조건부 접근, `??`는 왼쪽이 null일 때 오른쪽을 선택하는 연산자다. 준비 시간은 시작 시 `Time.time + 값`으로 고정하여 같은 공격 도중 스탯 변경으로 시점이 튀지 않게 했다.
+- 기존 EnemyAttackSkill의 `virtual`/`override` 훅을 사용한다. PrepareAttack은 방향 고정, UpdateTelegraph는 표시 크기, OnReleaseAttack은 대기 후 실제 동작을 담당한다. 두 스킬에서 이미 필요한 단계만 추가했으며 새로운 추상 클래스/인터페이스는 만들지 않았다. 상속 스킬의 UpdateSkill에서 `base.UpdateSkill()`을 호출해야 공통 준비/취소 처리가 실행된다.
+- `new Color32(255, 110, 110, 50)`은 0~255 바이트 색상이다. Color로 변환되면 알파가 50/255가 된다. `% 2`로 점멸 구간의 짝수/홀수를 나눠 알파 0과 원래 알파를 교대한다. Time.time을 사용하므로 게임 일시정지 때 준비와 점멸도 함께 멈춘다.
+- `RectTransform`, `Canvas.renderMode = RenderMode.WorldSpace`, `Image`는 기본 uGUI 구성이다. 화면 픽셀이 아닌 월드 위치에 놓아 실제 Collider와 맞춘다. raycastTarget=false라 입력을 가리지 않으며, UI 자체는 피해를 주지 않는다.
+- `attackHitbox is BoxCollider2D box`는 타입 검사와 변수 선언을 함께 하는 패턴 매칭이다. Box일 때 실제 size/offset을 사용하고, `TransformPoint`로 로컬 offset을 월드 좌표로 바꾼다. `lossyScale`로 몸체 크기를 계산한 뒤 Canvas 부모 스케일을 역수로 보정해 2배 프리팹에서 4배로 표시되는 것을 막는다.
+- `Mathf.Atan2(y, x) * Mathf.Rad2Deg`는 발사 방향을 Z 회전 각도로 바꾼다. `Normalize()`로 고정한 방향을 표시와 실제 발사에 같이 사용하므로 예고 뒤 회피가 가능하다.
+- Animation Event는 C# 문법이 아니라 클립의 지정 시점에 메서드를 호출하는 Unity 기능이다. OnAttackWarning은 점멸만, OnAttackHit은 그 순간 겹침/피해만 담당한다. IsUsing/HasReleased 검사로 준비 이전의 이벤트가 피해를 만들지 않게 했다.

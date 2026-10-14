@@ -130,6 +130,7 @@ MonoBehaviour:
       m_Calls: []
   target: {fileID: 0}
   detectionRange: 6
+  chaseReleaseRange: 9
   attackRange: 1.05
   moveSpeed: 2
   facingRoot: {fileID: 2368432189235151295}
@@ -443,6 +444,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Skills.EnemyMeleeSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: b730ad5eb65f41b19f4e410fc0d70005, type: 2}
   <BaseCoolTime>k__BackingField: 1
+  attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
+  fallbackAttackDelay: 0.35
+  telegraphPrefab: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
   attackAnimator: {fileID: 2391880773380209860}
   attackStateName: Base Layer.Attack
   attackHitbox: {fileID: 7373078564446817729}

@@ -136,6 +136,11 @@ namespace CTJ.Enemies
             _castTarget = null;
         }
 
+        public void OnAttackWarning()
+        {
+            if (Ready && ActiveSkill is EnemyAttackSkill skill) skill.OnAttackWarning();
+        }
+
         public void OnAttackHit()
         {
             if (Ready && ActiveSkill is EnemyAttackSkill skill) skill.OnAttackHit();

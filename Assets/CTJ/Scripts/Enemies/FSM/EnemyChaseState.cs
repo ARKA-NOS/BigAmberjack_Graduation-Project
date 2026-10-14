@@ -8,7 +8,7 @@ namespace CTJ.Enemies.FSM
 
         public override void StateUpdate()
         {
-            if (!Enemy.IsTargetInRange(Enemy.DetectionRange))
+            if (!Enemy.IsTargetInRange(Enemy.ChaseReleaseRange))
             {
                 Enemy.ChangeState(EnemyStateType.Idle);
                 return;

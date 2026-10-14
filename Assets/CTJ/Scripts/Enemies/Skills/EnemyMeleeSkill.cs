@@ -14,16 +14,34 @@ namespace CTJ.Enemies.Skills
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private bool _hitEventConsumed;
         private float _endDeadline;
+        protected override bool BlinkDuringPreparation => false;
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() &&
             attackAnimator != null && attackAnimator.isActiveAndEnabled && attackAnimator.runtimeAnimatorController != null &&
             attackAnimator.HasState(0, Animator.StringToHash(attackStateName)) && attackHitbox != null &&
             attackHitbox.enabled && attackHitbox.gameObject.activeInHierarchy && attackHitbox.isTrigger;
 
-        protected override void OnUseSkill()
+        protected override void PrepareAttack()
         {
-            base.OnUseSkill();
             _hitEventConsumed = false;
+        }
+
+        protected override void UpdateTelegraph()
+        {
+            if (attackHitbox is BoxCollider2D box) Telegraph.SetBox(box);
+            else if (attackHitbox != null) Telegraph.SetBounds(attackHitbox.bounds);
+        }
+
+        protected override void OnReleaseAttack()
+        {
+            if (attackAnimator == null || !attackAnimator.isActiveAndEnabled ||
+                attackAnimator.runtimeAnimatorController == null || attackHitbox == null ||
+                !attackHitbox.enabled || !attackHitbox.gameObject.activeInHierarchy ||
+                !attackAnimator.HasState(0, Animator.StringToHash(attackStateName)))
+            {
+                StopSkill();
+                return;
+            }
             _endDeadline = Time.time + Mathf.Max(0.1f, attackTimeout);
             attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             attackAnimator.Play(Animator.StringToHash(attackStateName), 0, 0f);
@@ -31,8 +49,9 @@ namespace CTJ.Enemies.Skills
 
         public override void OnAttackHit()
         {
-            if (!IsUsing || !CanContinue || _hitEventConsumed) return;
+            if (!IsUsing || !HasReleased || !CanContinue || _hitEventConsumed) return;
             _hitEventConsumed = true; // 빗나가도 소모하여 중복 이벤트의 재타격을 막습니다.
+            Telegraph?.Hide();
             if (attackHitbox == null || !attackHitbox.enabled || !attackHitbox.gameObject.activeInHierarchy) return;
             Physics2D.SyncTransforms();
             attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
@@ -46,7 +65,7 @@ namespace CTJ.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
-            if (!IsUsing || Time.time < _endDeadline) return;
+            if (!IsUsing || !HasReleased || Time.time < _endDeadline) return;
             EndSkill();
             Debug.LogWarning($"{name}: OnAttackFinished 이벤트가 없어 근접 스킬을 종료했습니다.", this);
         }

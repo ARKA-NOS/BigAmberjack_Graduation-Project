@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Agents;
+using Lrw.Script.Agent;
 using CTJ.Enemies;
 using CTJ.Enemies.Skills;
 using CTJ.Testing;
@@ -81,11 +81,14 @@ namespace CTJ.Tools
                 Check(sa.IsUsing && !ma.TryUseAttack(), "Attack overlap guard failed");
                 Check(sa.SkillSo == sb.SkillSo && sb.RemainingCoolTime == 0f && b.GetModule<EnemySkillModule>().TryUseAttack(),
                     "Shared SO must not share cooldown state");
+                a.OnAttackHit();
+                Check(targetA.ReceivedHitCount == 0, "Hit event must not bypass preparation");
+                await Until(() => !sa.IsPreparing);
                 a.OnAttackHit(); a.OnAttackHit();
                 Check(targetA.ReceivedHitCount == 1, "Duplicate hit event must damage once");
-                await Wait(0.7f);
+                await Wait(0.65f);
                 Check(!ma.IsBusy && targetA.ReceivedHitCount == 1, "Animation end / duplicate animation hit failed");
-                Check(sa.RemainingCoolTime > 1.2f && !ma.CanUseSkill(sa.SkillSo), "Cooldown used normalized value instead of seconds");
+                Check(sa.RemainingCoolTime > 1f && !ma.CanUseSkill(sa.SkillSo), "Cooldown used normalized value instead of seconds");
                 await Until(() => Time.time - first >= 2.25f);
                 Check(ma.CanUseSkill(sa.SkillSo) && ma.TryUseAttack(), "Cooldown did not recover");
                 return new { scenario = "first-use / 2.2s cooldown / per-instance / duplicate-hit / animation-end", passed = true,
@@ -108,7 +111,7 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 Check(module.TryUseAttack(), "Dodge attack failed to start");
                 probe.transform.position += Vector3.up * 3f;
-                await Wait(0.7f);
+                await Wait(1f);
                 Check(probe.ReceivedHitCount == 0 && !module.IsBusy, "Dodged attack caused damage");
                 probe.transform.position -= Vector3.up * 3f;
                 Physics2D.SyncTransforms();
@@ -168,10 +171,10 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 Check(module.Skills.Count == 2 && ReferenceEquals(enemy.GetModule<ISkillModule>(), module), "Shared module lookup failed");
                 Check(module.TryUseAttack() && module.ActiveSkill == melee, "Higher-priority melee was not selected");
-                await Wait(0.65f);
-                Check(melee.RemainingCoolTime > 4f && module.TryUseAttack() && module.ActiveSkill == shot,
+                await Wait(0.95f);
+                Check(melee.RemainingCoolTime > 3.9f && module.TryUseAttack() && module.ActiveSkill == shot,
                     "Cooldown fallback to second skill failed");
-                await Wait(0.25f);
+                await Wait(0.85f);
                 Check(probe.ReceivedHitCount >= 2, "Composed projectile did not damage target");
                 module.StopAttack();
                 probe.transform.position = new Vector3(3204f, 0.05f, 0f);
@@ -194,7 +197,7 @@ namespace CTJ.Tools
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 await Wait(0.15f);
                 Check(module.TryUseAttack() && module.IsBusy, "Ranged did not start");
-                await Wait(0.85f);
+                await Wait(1.05f);
                 Check(!module.IsBusy && probe.ReceivedHitCount == 1 && probe.TotalDamage == 5f, "Ranged damage/recovery failed");
                 Check(!module.CanUseSkill(skill.SkillSo), "Ranged 1.2s cooldown ended early");
                 await Until(() => skill.RemainingCoolTime <= 0f);

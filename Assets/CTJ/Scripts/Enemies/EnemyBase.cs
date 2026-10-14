@@ -17,6 +17,8 @@ namespace CTJ.Enemies
         [Header("Target")]
         [SerializeField] private Transform target;
         [SerializeField, Min(0f)] protected float detectionRange = 6f;
+        [Tooltip("한 번 추적한 뒤 이 거리 밖으로 나가야 해제합니다. 해제 후 현재 위치에서 대기합니다.")]
+        [SerializeField, Min(0f)] private float chaseReleaseRange = 12f;
         [Tooltip("EnemySkillModule이 없는 구형 EnemyPrototype에서만 사용합니다.")]
         [SerializeField, Min(0f)] protected float attackRange = 1.5f;
 
@@ -43,6 +45,7 @@ namespace CTJ.Enemies
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
+        public float ChaseReleaseRange => Mathf.Max(detectionRange, chaseReleaseRange);
         public float AttackRange => _skills != null ? _skills.MaximumRange : attackRange;
         public float AttackInterval => attackInterval;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
@@ -201,8 +204,10 @@ namespace CTJ.Enemies
 
         protected virtual void Attack() { }
 
+        public void OnAttackWarning() => _skills?.OnAttackWarning();
         public void OnAttackHit() => _skills?.OnAttackHit();
         public void OnAttackFinished() => _skills?.OnAttackFinished();
+        internal void CancelAttack() => _skills?.StopAttack();
 
         public override void ApplyDamage(
             DamageData damageData,
@@ -275,6 +280,7 @@ namespace CTJ.Enemies
         private void OnValidate()
         {
             detectionRange = Mathf.Max(0f, detectionRange);
+            chaseReleaseRange = Mathf.Max(detectionRange, chaseReleaseRange);
             attackRange = Mathf.Clamp(attackRange, 0f, detectionRange);
             moveSpeed = Mathf.Max(0f, moveSpeed);
             attackInterval = Mathf.Max(0.01f, attackInterval);
@@ -284,6 +290,9 @@ namespace CTJ.Enemies
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, ChaseReleaseRange);
 
             Gizmos.color = Color.red;
             EnemySkillModule skillModule = _skills != null ? _skills : GetComponentInChildren<EnemySkillModule>();

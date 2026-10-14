@@ -13,6 +13,12 @@ namespace CTJ.Enemies
                 enemy = GetComponentInParent<EnemyBase>();
         }
 
+        public void OnAttackWarning()
+        {
+            if (isActiveAndEnabled && enemy != null)
+                enemy.OnAttackWarning();
+        }
+
         public void OnAttackHit()
         {
             if (isActiveAndEnabled && enemy != null)

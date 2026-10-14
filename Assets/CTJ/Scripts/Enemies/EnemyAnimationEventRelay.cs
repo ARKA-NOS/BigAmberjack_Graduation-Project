@@ -5,12 +5,12 @@ namespace CTJ.Enemies
     [RequireComponent(typeof(Animator))]
     public sealed class EnemyAnimationEventRelay : MonoBehaviour
     {
-        [SerializeField] private MeleeEnemy enemy;
+        [SerializeField] private EnemyBase enemy;
 
         private void Awake()
         {
             if (enemy == null)
-                enemy = GetComponentInParent<MeleeEnemy>();
+                enemy = GetComponentInParent<EnemyBase>();
         }
 
         public void OnAttackHit()

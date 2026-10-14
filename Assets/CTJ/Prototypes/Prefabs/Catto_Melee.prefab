@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 2547612643200237385}
   - component: {fileID: 1001759245267349421}
   - component: {fileID: 8810647111667320001}
+  - component: {fileID: 8810647111667320100}
+  - component: {fileID: 8810647111667320101}
   m_Layer: 8
   m_Name: Catto_Melee
   m_TagString: Untagged
@@ -134,11 +136,6 @@ MonoBehaviour:
   attackInterval: 1
   deathAnimator: {fileID: 2391880773380209860}
   deathDespawnDelay: 1.1
-  attackAnimator: {fileID: 2391880773380209860}
-  attackStateName: Base Layer.Attack
-  attackHitbox: {fileID: 7373078564446817729}
-  damage: 10
-  attackTimeout: 1.5
 --- !u!114 &2547612643200237385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,3 +407,44 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.65}
   m_EdgeRadius: 0
+--- !u!114 &8810647111667320100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5683942725659162458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70001, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
+  skills:
+  - skill: {fileID: 8810647111667320101}
+    useSkill: 1
+    minRange: 0
+    maxRange: 1.05
+    maxHeightDifference: 0.5
+    requireGrounded: 1
+    requireClearPath: 1
+    origin: {fileID: 0}
+    chargeDuration: 0
+--- !u!114 &8810647111667320101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5683942725659162458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70003, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Skills.EnemyMeleeSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: b730ad5eb65f41b19f4e410fc0d70005, type: 2}
+  <BaseCoolTime>k__BackingField: 1
+  attackAnimator: {fileID: 2391880773380209860}
+  attackStateName: Base Layer.Attack
+  attackHitbox: {fileID: 7373078564446817729}
+  damage: 10
+  attackTimeout: 1.5

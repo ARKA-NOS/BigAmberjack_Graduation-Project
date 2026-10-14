@@ -1,5 +1,7 @@
 # 플레이어 공격 전달 · 적 피격/사망 테스트
 
+2026-10-14 주의: 아래는 최초 연결 당시 기록이다. 현재 Agent.ApplyDamage는 virtual이고 EnemyBase는 override한다. 플레이어는 공용 스킬 기반으로 바뀌었으며, 이전 PlayerMeleeSkillModule 설정은 최신 PlayerPack에 해당하지 않는다. 현재 적 공격 설정/검증은 `EnemySkillGuide.md`를 우선 참고한다.
+
 ## 결론과 연결 경로
 
 현재 플레이어 공격은 이미 피해 데이터를 전달한다. 동료 코드나 플레이어 프리팹은 수정하지 않았다.

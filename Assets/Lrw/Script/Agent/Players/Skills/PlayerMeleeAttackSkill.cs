@@ -74,7 +74,7 @@ namespace Lrw.Script.Agent.Players.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            _playerController.ChangeState(PlayerStateEnum.SKILL);
+            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _movement.MoveLock(true);

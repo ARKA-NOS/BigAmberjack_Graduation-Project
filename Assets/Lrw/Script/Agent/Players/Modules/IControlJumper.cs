@@ -1,4 +1,4 @@
-﻿namespace Lrw.Script.Agent.Players
+﻿namespace Lrw.Script.Agent.Players.Modules
 {
     public interface IControlJumper
     {

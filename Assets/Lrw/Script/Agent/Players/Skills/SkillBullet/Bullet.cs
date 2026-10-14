@@ -1,10 +1,9 @@
-﻿using System;
-using CTJ.Enemies;
+﻿using CTJ.Enemies;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Player.Skills.SkillBullet
+namespace Lrw.Script.Agent.Players.Skills.SkillBullet
 {
     [RequireComponent(typeof(Collider2D),typeof(Rigidbody2D))]
     public class Bullet : MonoBehaviour

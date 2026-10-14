@@ -1,7 +1,7 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public abstract class AbstractPlayerModule : Module
     {

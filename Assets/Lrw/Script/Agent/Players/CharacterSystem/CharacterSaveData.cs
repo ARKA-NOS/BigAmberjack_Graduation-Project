@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lrw.Script.Player.CharacterSystem
+namespace Lrw.Script.Agent.Players.CharacterSystem
 {
     [Serializable]
     public struct CharacterSaveData

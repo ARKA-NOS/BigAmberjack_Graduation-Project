@@ -3,7 +3,7 @@ using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerSkillModule : SkillModule, IPlayerSkillModule
     {

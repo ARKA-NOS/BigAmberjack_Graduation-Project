@@ -1,7 +1,7 @@
 ﻿using DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Player.InteractSystem
+namespace Lrw.Script.Agent.Players.InteractSystem
 {
     public abstract class AbstractInteractObject : MonoBehaviour, ICanInteract
     {

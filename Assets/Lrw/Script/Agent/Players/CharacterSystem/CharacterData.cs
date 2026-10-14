@@ -1,9 +1,7 @@
-﻿using System;
-using Lrw.Script.Upgrade;
-using Lrw.Script.Upgrade.SO;
+﻿using Lrw.Script.Upgrade.SO;
 using UnityEngine;
 
-namespace Lrw.Script.Player.CharacterSystem
+namespace Lrw.Script.Agent.Players.CharacterSystem
 {
     [CreateAssetMenu(fileName = "Character Data", menuName = "Character/Character Data", order = 0)]
     public class CharacterData : ScriptableObject

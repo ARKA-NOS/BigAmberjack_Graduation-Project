@@ -4,7 +4,7 @@ using Lrw.Script.VFXSystem.Effect;
 using Lrw.Script.VFXSystem.EffectSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerMultiJumper : Module, IControlMultiJumper,IAfterInitModule
     {

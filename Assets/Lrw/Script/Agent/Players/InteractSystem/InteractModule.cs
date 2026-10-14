@@ -1,9 +1,8 @@
-﻿using System;
-using DevLib.ModuleSystem;
-using Lrw.Script.Agent.Players;
+﻿using DevLib.ModuleSystem;
+using Lrw.Script.Agent.Players.Modules;
 using UnityEngine;
 
-namespace Lrw.Script.Player.InteractSystem
+namespace Lrw.Script.Agent.Players.InteractSystem
 {
     public class InteractModule : AbstractPlayerModule
     {

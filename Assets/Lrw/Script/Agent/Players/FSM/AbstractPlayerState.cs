@@ -1,7 +1,8 @@
 ﻿using Lrw.Script.Agent.FSM;
+using Lrw.Script.Agent.Players.Modules;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.FSM
 {
     public abstract class AbstractPlayerState : AgentState
     {

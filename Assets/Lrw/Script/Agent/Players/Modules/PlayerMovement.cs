@@ -3,7 +3,7 @@ using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerMovement : Module, IControlMovement,IAfterInitModule
     {

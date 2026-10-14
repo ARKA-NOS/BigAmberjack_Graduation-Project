@@ -1,7 +1,7 @@
 ﻿using Lrw.Script._Core._ServiceLocator;
 using UnityEngine;
 
-namespace Lrw.Script.Player.CharacterSystem
+namespace Lrw.Script.Agent.Players.CharacterSystem
 {
     public class NullCharacterManager : ICharacterManager
     {

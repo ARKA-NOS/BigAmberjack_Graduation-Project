@@ -7,7 +7,7 @@ using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Upgrade;
 using UnityEngine;
 
-namespace Lrw.Script.Player.CharacterSystem
+namespace Lrw.Script.Agent.Players.CharacterSystem
 {
     public class CharacterManager : AbstractManager, ICharacterManager
     {

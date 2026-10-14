@@ -1,6 +1,6 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core.SceneSystem;
-using Lrw.Script.Player.InteractSystem;
+using Lrw.Script.Agent.Players.InteractSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

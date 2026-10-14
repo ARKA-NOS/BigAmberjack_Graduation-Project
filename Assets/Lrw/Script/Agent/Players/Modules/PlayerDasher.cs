@@ -7,7 +7,7 @@ using Lrw.Script.Agent.Players.FSM;
 using Lrw.Script.VFXSystem.Effect;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerDasher : Module, IControlDasher
     {

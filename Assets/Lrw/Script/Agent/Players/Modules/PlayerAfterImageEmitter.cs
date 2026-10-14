@@ -3,7 +3,7 @@ using DevLib.ModuleSystem;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace Lrw.Script.Agent.Players
+namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerAfterImageEmitter : Module, IAfterImageEmitter
     {

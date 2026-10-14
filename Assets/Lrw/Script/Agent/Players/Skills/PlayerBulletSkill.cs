@@ -1,12 +1,11 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
-using Lrw.Script.Agent.Players;
+using Lrw.Script.Agent.Players.Skills.SkillBullet;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
 using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.Player.Skills.SkillBullet;
 using UnityEngine;
 
-namespace Lrw.Script.Player.Skills
+namespace Lrw.Script.Agent.Players.Skills
 {
     public class PlayerBulletSkill : AbstractCoolTimeSkill
     {

@@ -48,6 +48,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 컨벤션
 
+- 코드는 SOLID 원칙을 지켜서 작성한다.
+  - **단일 책임(SRP)** — 클래스/모듈은 한 가지 역할만 맡는다. 기능이 늘면 기존 클래스를 키우지 말고 모듈로 나눈다.
+  - **개방-폐쇄(OCP)** — 새 동작은 기존 코드를 고치지 않고 확장(새 모듈, 새 상태, 새 ScriptableObject 데이터)으로 추가한다.
+  - **리스코프 치환(LSP)** — 하위 클래스는 베이스(`Agent`, `AbstractManager` 등)의 계약을 깨지 않는다. 베이스가 보장하는 동작을 무효화하는 오버라이드를 만들지 않는다.
+  - **인터페이스 분리(ISP)** — 큰 인터페이스 하나보다 역할별 작은 인터페이스(`IHealthModule`, `IDamageable` 등)를 둔다.
+  - **의존성 역전(DIP)** — 구체 클래스 대신 인터페이스에 의존한다. 매니저는 `ServiceLocator.Get<IXxxManager>()`로, 모듈은 `GetModule<인터페이스>()`로 가져오고, 시스템 간 통신은 직접 참조보다 이벤트(`EventBus`)를 우선한다.
 - 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Agents.Players.FSM`, `DevLib.ModuleSystem`).
 - private 필드는 `_camelCase`. 직렬화 자동 프로퍼티는 `[field: SerializeField] public T X { get; private set; }`.
 - 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다.

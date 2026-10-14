@@ -1,5 +1,7 @@
 # Catto · Mad Ghost 프로토타입 사용 안내
 
+2026-10-14: 공격 설정은 [EnemySkillGuide.md](EnemySkillGuide.md)를 우선 참고한다. 두 프리팹은 공용 스킬 기반으로 변경됐으며, 공격 수치는 EnemyMeleeSkill/EnemyProjectileSkill, 사거리·우선순위는 EnemySkillModule에서 설정한다. [문법 설명](EnemySkillSyntaxNotes.md) / [담당 업무 현황](CTJ_Progress_2026-10-14.md).
+
 2026-10-12: 이동 모듈, 점프, 근거리 상단 발판 우회, 공격 시야/높이 검사를 추가했다. 아래의 평지 전용 설명은 최초 구성 기록이며, 현재 이동 설정과 테스트/문법 설명은 `EnemyMovementGuide.md`를 우선 참고한다.
 
 피격·사망 기능도 연결되어 있다. 플레이어 공격 전달 경로, 에디터 피해 테스트 메뉴, 체력 설정과 이번 문법 설명은 `EnemyDamageDeathGuide.md`를 참고한다.

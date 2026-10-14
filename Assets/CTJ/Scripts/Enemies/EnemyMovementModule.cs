@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Agents;
 using DevLib.ModuleSystem;
+using Lrw.Script.Agent;
 using UnityEngine;
 
 namespace CTJ.Enemies

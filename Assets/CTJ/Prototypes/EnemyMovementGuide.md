@@ -2,6 +2,15 @@
 
 2026-10-14: 아래 이동 설정은 유지한다. 공격 사거리·높이 조건은 이제 `EnemySkillModule → Skills`, 쿨타임/피해량은 각 스킬 컴포넌트에서 설정한다. 공용 쿨타임 수정 확인과 공격 모듈 전환 결과는 `EnemySkillGuide.md`에 있다.
 
+## 2026-10-14 공용 Agent 네임스페이스 변경 대응
+
+- 원인: 공용 Agent가 `Agents`에서 `Lrw.Script.Agent`로 이동했지만 이동 모듈의 참조가 이전 이름을 사용해 CS0246 컴파일 오류가 발생했다. 이전 using만 제거해도 `GetComponentInParent<Agent>()`의 Agent 타입을 찾을 수 없다.
+- 수정: `using Lrw.Script.Agent;`를 추가했다. 걷기·점프·지형 판정 로직이나 프리팹 설정은 변경하지 않는다.
+- 문법과 이유: `using`은 다른 네임스페이스의 타입을 짧은 이름으로 사용할 수 있게 하는 선언이다. 이 경우 `Agent`가 `Lrw.Script.Agent.Agent`를 뜻하도록 연결한다. 패키지를 설치하거나 새로운 클래스를 만드는 문법이 아니다.
+- `GetComponentInParent<Agent>()`의 `<Agent>`는 찾을 컴포넌트 타입을 지정하는 제네릭 문법이다. 지형 검사에서 플레이어·다른 적의 Collider를 지형으로 취급하지 않도록 사용한다. 타입 검사를 삭제하면 기존 동작까지 달라지므로 참조만 바로잡는다.
+- 직접 확인: Unity 재컴파일 완료 후 Console의 CS0246 재발 여부를 확인한다. `EnemyArtTest` 씬을 Play해 적이 평지에서 추적·공격하는지, 타깃을 위쪽 발판으로 옮겼을 때 기존 점프/우회가 유지되는지 확인한다. 바닥은 Ground 레이어, 적의 Terrain Layers도 Ground여야 한다.
+- 검증 결과 (Unity 6000.3.22f1): 재컴파일 오류 0건, Catto/Mad Ghost 두 프리팹의 Body Collider·Ground 마스크·점프 높이 참조 정상. CTJ 전용 Play 테스트 `RunScenarios` 12건 모두 통과했고 종료 후 Console 오류 0건을 확인했다. Play를 종료하고 이전 Play 시작 씬 설정을 복원했으며 씬 파일은 저장하지 않았다. 실제 생성 맵 전체에 대한 검증은 아니다.
+
 ## 원인과 변경 범위
 
 - 기존 Chase는 `target.x - enemy.x`의 부호로 X 속도만 설정했다. 같은 X의 위층 플레이어에게는 방향이 0이 되고, 점프 코드도 없어 정지했다.

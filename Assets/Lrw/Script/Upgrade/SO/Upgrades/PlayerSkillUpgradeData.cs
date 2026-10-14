@@ -8,14 +8,14 @@ namespace Lrw.Script.Upgrade.SO.Upgrades
     [CreateAssetMenu(fileName = "Skill Upgrade Data", menuName = "Upgrade/Upgrade Data/Skill Upgrade Data", order = 0)]
     public class PlayerSkillUpgradeData : AbstractUpgradeData
     {
-        [SerializeField] private SkillSlot skillSlot;
+        [SerializeField] private PlayerSkillSlot playerSkillSlot;
         [SerializeField] private SkillSO skill;
         
         public override void AgentUpgrade(ModuleOwner owner)
         {
             if(!owner.TryGetModule(out IPlayerSkillModule skillModule)) return;
             
-            skillModule.SetSkill(skillSlot,skill);
+            skillModule.SetSkill(playerSkillSlot,skill);
         }
         
     }

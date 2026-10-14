@@ -1,6 +1,6 @@
 ﻿namespace Lrw.Script.Agent.Players
 {
-    public enum SkillSlot
+    public enum PlayerSkillSlot
     {
         Melee,First,Second
     }

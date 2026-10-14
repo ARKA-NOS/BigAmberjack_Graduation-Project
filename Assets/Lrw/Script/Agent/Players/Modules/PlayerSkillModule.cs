@@ -35,17 +35,17 @@ namespace Lrw.Script.Agent.Players
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
         }
 
-        public void SetSkill(SkillSlot slot,SkillSO skill)
+        public void SetSkill(PlayerSkillSlot slot,SkillSO skill)
         {
             switch (slot)
             {
-                case SkillSlot.Melee:
+                case PlayerSkillSlot.Melee:
                     meleeSkill = skill;
                     break;
-                case SkillSlot.First:
+                case PlayerSkillSlot.First:
                     skill1 = skill;
                     break;
-                case SkillSlot.Second:
+                case PlayerSkillSlot.Second:
                     skill2 = skill;
                     break;
             }

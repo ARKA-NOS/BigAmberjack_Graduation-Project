@@ -26,7 +26,7 @@ namespace Agents.Players
         private Controls _controls;
         
         public Vector2 MovementKey { get; private set; }
-        
+        public Vector2 MousePos { get; private set; }
 
         private void OnEnable()
         {
@@ -93,6 +93,14 @@ namespace Agents.Players
             if(context.started)
                 OnInventoryKeyReleased?.Invoke();
         }
+
+        public void OnMouse(InputAction.CallbackContext context)
+        {
+            MousePos = context.ReadValue<Vector2>();
+        }
+        
+        public Vector2 GetMouseWorldPosition()
+            => Camera.main.ScreenToWorldPoint(MousePos);
 
         public void OnDash(InputAction.CallbackContext context)
         {

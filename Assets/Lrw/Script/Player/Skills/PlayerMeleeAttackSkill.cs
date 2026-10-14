@@ -50,21 +50,21 @@ namespace Lrw.Script.Player.Skills
             _playerController = owner as PlayerController;
             
             FDebug.Assert(_playerController != null,
-                $"[MeleeAttackSkill : {gameObject.name}] owner is not PlayerController");
+                $"[MeleeAttackSkill : {owner.name}] owner is not PlayerController");
             
             FDebug.Assert(owner.TryGetModule(out IStatModule statModule),
-                $"[MeleeAttackSkill : {gameObject.name}] IStatModule is not found");
+                $"[MeleeAttackSkill : {owner.name}] IStatModule is not found");
             
             FDebug.Assert(owner.TryGetModule(out _renderer),
-                $"[MeleeAttackSkill : {gameObject.name}] IRenderer is not found");
+                $"[MeleeAttackSkill : {owner.name}] IRenderer is not found");
 
             _animator = _renderer.Animator;
             
             FDebug.Assert(owner.TryGetModule(out _trigger),
-                $"[MeleeAttackSkill : {gameObject.name}] IAnimationTrigger is not found");
+                $"[MeleeAttackSkill : {owner.name}] IAnimationTrigger is not found");
             
             FDebug.Assert(owner.TryGetModule(out _movement),
-                $"[MeleeAttackSkill : {gameObject.name}] IControlMovement is not found");
+                $"[MeleeAttackSkill : {owner.name}] IControlMovement is not found");
             
             damageStat = statModule.GetStat(physicalDamage);
             attackSpeedStat = statModule.GetStat(attackSpeed);
@@ -86,8 +86,11 @@ namespace Lrw.Script.Player.Skills
 
         private void OnTrigger()
         {
-            damageCaster.CastDamage(damageStat.Value, Vector2.up, kbForce);
+            damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce);
         }
+
+        private Vector2 GetMouseDirection()
+            => (Vector2)Owner.transform.position - _playerController.PlayerInput.GetMouseWorldPosition();
 
         public override void UpdateSkill()
         {

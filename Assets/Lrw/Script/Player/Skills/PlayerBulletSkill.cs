@@ -31,6 +31,7 @@ namespace Lrw.Script.Player.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
+            FDebug.Log("[PlayerBulletSkill] OnUseSkill");
         }
     }
 }

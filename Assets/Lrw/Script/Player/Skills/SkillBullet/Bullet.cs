@@ -1,4 +1,5 @@
-﻿using DevLib.BattleSystem;
+﻿using CTJ.Enemies;
+using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Lrw.Script.Player.Skills.SkillBullet
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if(!other.TryGetComponent(out IDamageable damageable)) return;    
+            if(!other.TryGetComponent(out EnemyBase damageable)) return;    
             
             Vector2 point = other.ClosestPoint(transform.position);
             

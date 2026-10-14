@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Lrw.Script.Agent.Players.Modules;
+using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.FSM
 {

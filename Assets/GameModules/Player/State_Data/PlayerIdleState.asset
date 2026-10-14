@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerIdleState
   m_EditorClassIdentifier: Assembly-CSharp::Agents.FSM.StateSo
   stateName: IDLE
-  className: Agents.Players.FSM.PlayerIdleState
+  className: Lrw.Script.Agent.Players.FSM.PlayerDashState
   assetIndex: 0
   layerIndex: 0
   stateParam: {fileID: 11400000, guid: 8632bab6f7be15d43af9b7367f492cfd, type: 2}

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Lrw.Script.Agent.Players.Enum;
+using Lrw.Script.Agent.Players.Modules;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.FSM

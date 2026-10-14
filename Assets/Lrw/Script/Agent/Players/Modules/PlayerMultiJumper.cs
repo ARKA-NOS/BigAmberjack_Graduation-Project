@@ -36,7 +36,7 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             if (_groundChecker.IsGroundChecking() || _currentJumpCount  > _multiJumpCount.Value - 1 || !activeDoubleJump) return false;
             _currentJumpCount++;
-            _vfxModule.PlayVfx(multiJumpVfx.AssetHash);
+            _vfxModule?.PlayVfx(multiJumpVfx.AssetHash);
             return true;
         }
 

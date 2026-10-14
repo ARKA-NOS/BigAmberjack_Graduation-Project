@@ -7,12 +7,10 @@ using UnityEngine.UI;
 
 namespace SDW.Scripts.NPC.UI
 {
-    // NPC 머리 위 프롬프트와 화면 하단 대화창(이름표 + 대사 + 선택지)을 제어한다.
+    // NPC 화면 하단 대화창(이름표 + 대사 + 선택지)을 제어한다.
+    // 상호작용 가능 표시는 플레이어 InteractModule의 InteractUI가 담당한다.
     public class NpcInteractionView : MonoBehaviour
     {
-        [Header("프롬프트")]
-        [SerializeField] private GameObject promptRoot;
-
         [Header("대화창")]
         [SerializeField] private GameObject dialogueRoot;
         [SerializeField] private TMP_Text nameText;
@@ -26,18 +24,7 @@ namespace SDW.Scripts.NPC.UI
         private void Awake()
         {
             choiceButtonTemplate.gameObject.SetActive(false);
-            HidePrompt();
             CloseDialogue();
-        }
-
-        public void ShowPrompt()
-        {
-            promptRoot.SetActive(true);
-        }
-
-        public void HidePrompt()
-        {
-            promptRoot.SetActive(false);
         }
 
         public void OpenDialogue(NpcDataSO data, Action<int> onSelected)
@@ -59,7 +46,6 @@ namespace SDW.Scripts.NPC.UI
             }
 
             choiceContainer.gameObject.SetActive(true);
-            HidePrompt();
             dialogueRoot.SetActive(true);
         }
 

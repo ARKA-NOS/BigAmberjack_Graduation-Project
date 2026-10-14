@@ -30,7 +30,6 @@ namespace SDW.Scripts.NPC
         private Collider2D _col;
         private SpriteRenderer _spriteRenderer;
         private Coroutine _closeRoutine;
-        private bool _playerInRange;
         private bool _used;
         private bool _isOpen;
 
@@ -82,23 +81,7 @@ namespace SDW.Scripts.NPC
                 _spriteRenderer.enabled = visible;
 
             if (!visible)
-            {
-                _playerInRange = false;
                 Close();
-                view.HidePrompt();
-            }
-        }
-
-        // 머리 위 프롬프트 표시용 범위 감지. 실제 상호작용 대상 선정은 InteractModule이 한다.
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.GetComponentInParent<PlayerController>() == null)
-                return;
-
-            _playerInRange = true;
-
-            if (CanUse && !_isOpen)
-                view.ShowPrompt();
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -106,9 +89,7 @@ namespace SDW.Scripts.NPC
             if (other.GetComponentInParent<PlayerController>() == null)
                 return;
 
-            _playerInRange = false;
             Close();
-            view.HidePrompt();
         }
 
         public override void Interact(ModuleOwner owner)
@@ -134,9 +115,6 @@ namespace SDW.Scripts.NPC
 
             _isOpen = false;
             view.CloseDialogue();
-
-            if (_playerInRange && CanUse)
-                view.ShowPrompt();
         }
 
         private void OnChoiceSelected(int index)

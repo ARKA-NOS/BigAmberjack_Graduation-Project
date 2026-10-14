@@ -49,11 +49,11 @@ namespace Lrw.Script.Agent.HealthSystem
             
             FDebug.Assert(_statModule != null,"StatModule is null");
             
-            _maxHpStat = _statModule?.GetStat(maxHpStatData);
+            _maxHpStat = _statModule.GetStat(maxHpStatData);
             
             FDebug.Assert(_maxHpStat != null,"MaxHpStat is null");
 
-            _maxHpStat!.OnValueChanged += MaxHpChanged;
+            _maxHpStat.OnValueChanged += MaxHpChanged;
 
             CurrentHealth = MaxHealth;
         }

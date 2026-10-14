@@ -1,7 +1,9 @@
-﻿using DevLib.ModuleSystem;
+﻿using Agents.Players;
+using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
 using Lrw.Script.Agent.StatSystem;
+using Lrw.Script.Player.Skills.SkillBullet;
 using UnityEngine;
 
 namespace Lrw.Script.Player.Skills
@@ -11,6 +13,13 @@ namespace Lrw.Script.Player.Skills
         [Header("Stat Data")]
         [SerializeField] private StatData physicalDamage;
         [SerializeField] private StatData coolDownSpeed;
+
+        [Header("Bullet Setting")] 
+        [SerializeField] private GameObject prefab;
+        [SerializeField] private float bulletSpeed = 5f;
+        [SerializeField] private float force = 3f;
+        
+        private PlayerController _playerController;
         
         private Stat damageStat;
         private Stat coolDownSpeedStat;
@@ -20,6 +29,12 @@ namespace Lrw.Script.Player.Skills
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
+            
+            _playerController = owner as PlayerController;
+            
+            FDebug.Assert(_playerController != null,
+                $"[PlayerBulletSkill : {owner.name}] owner is not PlayerController");
+            
             FDebug.Assert(owner.TryGetModule(out IStatModule statModule),
                 $"[PlayerBulletSkill : {owner.name}] IStatModule is not found");
 
@@ -31,8 +46,22 @@ namespace Lrw.Script.Player.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            FDebug.Log("[PlayerBulletSkill] OnUseSkill");
+            
+            Vector2 direction = _playerController.PlayerInput.GetMouseWorldPosition() - (Vector2)transform.position;
+            
+            GameObject go = Instantiate(prefab);
+            go.transform.position = transform.position;
+            if (go.TryGetComponent(out Bullet bullet))
+            {
+                bullet.Init(direction * bulletSpeed, Owner, GetDamage(), force);
+            }
             EndSkill();
         }
+
+        private float GetDamage()
+        {
+            return damageStat.Value;
+        }
+        
     }
 }

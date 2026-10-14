@@ -135,6 +135,9 @@ MonoBehaviour:
   <BaseCoolTime>k__BackingField: 1
   physicalDamage: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
   coolDownSpeed: {fileID: 11400000, guid: 4455611de8f44f04cb8ccc6d28eb0a5b, type: 2}
+  prefab: {fileID: 9007365863000333981, guid: c988734324fac25429ca93ca00cc18aa, type: 3}
+  bulletSpeed: 5
+  force: 3
 --- !u!1 &8695000900061937281
 GameObject:
   m_ObjectHideFlags: 0

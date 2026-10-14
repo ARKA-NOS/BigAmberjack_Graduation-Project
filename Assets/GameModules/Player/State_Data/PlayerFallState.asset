@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerFallState
   m_EditorClassIdentifier: Assembly-CSharp::Agents.FSM.StateSo
   stateName: FALL
-  className: Lrw.Script.Agent.Players.FSM.PlayerDashState
+  className: Lrw.Script.Agent.Players.FSM.PlayerFallState
   assetIndex: 3
   layerIndex: 0
   stateParam: {fileID: 11400000, guid: ea2a3585f50649148b61c47d28785a7d, type: 2}

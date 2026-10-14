@@ -1,6 +1,6 @@
 ﻿using System;
-using Agents.Players;
 using DevLib.ModuleSystem;
+using Lrw.Script.Agent.Players;
 using UnityEngine;
 
 namespace Lrw.Script.Player.InteractSystem

@@ -1,9 +1,9 @@
 using System.Collections;
-using Agents;
-using Agents.Players;
 using CTJ.Enemies.FSM;
 using DevLib.BattleSystem;
 using Lrw.Script._Core._FSM;
+using Lrw.Script.Agent;
+using Lrw.Script.Agent.Players;
 using UnityEngine;
 
 namespace CTJ.Enemies

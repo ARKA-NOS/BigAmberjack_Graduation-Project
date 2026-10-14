@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Agents.Players;
+using Lrw.Script.Agent.Players;
 using SDW.Scripts.Maps.Data;
 using SDW.Scripts.UI;
 using UnityEngine;

@@ -1,5 +1,5 @@
-﻿using Agents.Players;
-using DevLib.ModuleSystem;
+﻿using DevLib.ModuleSystem;
+using Lrw.Script.Agent.Players;
 using Lrw.Script.Agent.SkillSystem;
 using UnityEngine;
 

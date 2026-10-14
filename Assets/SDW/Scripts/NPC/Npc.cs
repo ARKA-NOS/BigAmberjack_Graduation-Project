@@ -1,6 +1,6 @@
 using System.Collections;
-using Agents.Players;
 using DevLib.ModuleSystem;
+using Lrw.Script.Agent.Players;
 using Lrw.Script.Player.InteractSystem;
 using SDW.Scripts.Maps;
 using SDW.Scripts.Maps.Data;

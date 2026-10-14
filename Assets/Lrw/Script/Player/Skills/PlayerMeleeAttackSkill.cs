@@ -1,11 +1,11 @@
 ﻿using System;
-using Agents;
-using Agents.Players;
-using Agents.Players.Enum;
 using DevLib.AnimatorSystem;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent;
+using Lrw.Script.Agent.Players;
+using Lrw.Script.Agent.Players.Enum;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;

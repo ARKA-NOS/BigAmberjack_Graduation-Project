@@ -1,6 +1,7 @@
 ﻿using Agents.FSM;
 using Agents.Players.Enum;
 using Agents.Players.FSM;
+using DevLib.BattleSystem;
 using UnityEngine;
 
 namespace Agents.Players
@@ -10,21 +11,21 @@ namespace Agents.Players
     {
         [field: SerializeField] public PlayerInputSo PlayerInput { get; private set; }
         [SerializeField] private StateListSo playerStates;
-        private StateMachine _stateMachine;
+        private AgentStateMachine agentStateMachine;
         private IControlDasher _dashController;
         
         protected override void Awake()
         {
             base.Awake();
-            _stateMachine = new StateMachine(this, playerStates.states);
-            _stateMachine.ChangeState((int)PlayerStateEnum.IDLE);
+            agentStateMachine = new AgentStateMachine(this, playerStates.states);
+            agentStateMachine.ChangeState((int)PlayerStateEnum.IDLE);
             PlayerInput.OnDashKeyPressed += HandleDashStateChange;
             _dashController = GetModule<IControlDasher>();
         }
 
         protected virtual void OnDestroy()
         {
-            _stateMachine.StateExit();
+            agentStateMachine.StateExit();
             PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
         }
 
@@ -36,10 +37,10 @@ namespace Agents.Players
 
         protected virtual void Update()
         {
-            _stateMachine.UpdateMachine();
+            agentStateMachine.UpdateMachine();
         }
         
         public void ChangeState(PlayerStateEnum newState)
-            => _stateMachine.ChangeState((int)newState);
+            => agentStateMachine.ChangeState((int)newState);
     }
 }

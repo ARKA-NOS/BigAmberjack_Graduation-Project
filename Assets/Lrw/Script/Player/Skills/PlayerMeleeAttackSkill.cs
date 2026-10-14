@@ -90,7 +90,7 @@ namespace Lrw.Script.Player.Skills
         }
 
         private Vector2 GetMouseDirection()
-            => (Vector2)Owner.transform.position - _playerController.PlayerInput.GetMouseWorldPosition();
+            => (Vector2)_playerController.transform.position - _playerController.PlayerInput.GetMouseWorldPosition();
 
         public override void UpdateSkill()
         {

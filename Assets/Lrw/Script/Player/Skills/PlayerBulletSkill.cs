@@ -32,6 +32,7 @@ namespace Lrw.Script.Player.Skills
         {
             base.OnUseSkill();
             FDebug.Log("[PlayerBulletSkill] OnUseSkill");
+            EndSkill();
         }
     }
 }

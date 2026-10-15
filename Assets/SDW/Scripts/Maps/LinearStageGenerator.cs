@@ -167,7 +167,7 @@ namespace SDW.Scripts.Maps
 
         private static Vector3 GetSpawnPosition(RoomController room)
         {
-            Transform spawnPoint = room.Definition != null ? room.Definition.SpawnPoint : null;
+            Transform spawnPoint = room.Definition != null ? room.Definition.PlayerSpawnPoint : null;
             return spawnPoint != null ? spawnPoint.position : room.transform.position;
         }
 

@@ -49,7 +49,12 @@ namespace CTJ.Tools
                 SerializedObject serialized = new SerializedObject(skill);
                 Check(serialized.FindProperty("attackDelayStat").objectReferenceValue == AssetDatabase.LoadAssetAtPath<StatData>(Delay), "Delay reference");
                 AttackTelegraphUI ui = (AttackTelegraphUI)serialized.FindProperty("telegraphPrefab").objectReferenceValue;
-                Check(ui != null && ui.GetComponent<Canvas>().renderMode == RenderMode.WorldSpace, "World Canvas reference");
+                if (path == Cat) Check(ui == null, "Melee must not have a telegraph prefab");
+                else
+                {
+                    Check(ui != null && ui.GetComponent<Canvas>().renderMode == RenderMode.WorldSpace, "World Canvas reference");
+                    Check(!ui.GetComponentInChildren<Image>().raycastTarget && ui.GetComponent<GraphicRaycaster>() == null, "UI blocks input");
+                }
                 Check(Mathf.Approximately(skill.PostBlinkDelay, 0.15f), "Post-blink hold must be 0.15 seconds");
                 Check(serialized.FindProperty("blinkBeforeAttack").boolValue == (path == Ghost), "Enemy blink setting");
                 Check(Mathf.Approximately(serialized.FindProperty("telegraphOpacity").floatValue, path == Cat ? 1f : 0.6f), "Enemy alpha multiplier");
@@ -59,7 +64,6 @@ namespace CTJ.Tools
                 Check(hurtbox.offset == terrain.offset && hurtbox.size == terrain.size && terrain.gameObject.layer == 2, "Terrain collider geometry/layer");
                 Check(new SerializedObject(enemy.GetComponent<EnemyMovementModule>()).FindProperty("bodyCollider").objectReferenceValue == terrain, "Movement collider reference");
                 Check(!terrain.TryGetComponent<IDamageable>(out _), "Terrain collider must not receive duplicate damage");
-                Check(!ui.GetComponentInChildren<Image>().raycastTarget && ui.GetComponent<GraphicRaycaster>() == null, "UI blocks input");
                 StatGroup group = (StatGroup)new SerializedObject(enemy.GetComponent<StatModule>()).FindProperty("baseStats").objectReferenceValue;
                 float hp = group.Stats.First(s => s.StatData.name == "MaxHealth").BaseValue;
                 float delay = group.Stats.First(s => s.StatData.name == "EnemyAttackDelay").BaseValue;
@@ -79,7 +83,7 @@ namespace CTJ.Tools
                         Mathf.Approximately(keys[5].time, 0.4f) && keys[4].value == keys[5].value, "Attack recovery keys/references");
                 }
                 return new { path, detection = enemy.DetectionRange, release = enemy.ChaseReleaseRange, hp, hitsToKill = Mathf.CeilToInt(hp / damage), delay, postBlinkDelay = skill.PostBlinkDelay,
-                    blink = serialized.FindProperty("blinkBeforeAttack").boolValue, alpha = path == Cat ? 50 : 30, triggerBody = hurtbox.isTrigger, referencesValid = true };
+                    hasTelegraph = ui != null, blink = serialized.FindProperty("blinkBeforeAttack").boolValue, alpha = path == Cat ? 0 : 30, triggerBody = hurtbox.isTrigger, referencesValid = true };
             }).ToArray() };
         }
 
@@ -266,25 +270,28 @@ namespace CTJ.Tools
                 Check(module.TryUseAttack(), "Timing begin");
                 float started = Time.time;
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
-                Image area = ui.GetComponentInChildren<Image>();
-                float expectedAlpha = (path == Cat ? 50f : 30f) / 255f;
+                Check((path == Cat) == (ui == null), "Runtime telegraph presence differs from enemy configuration");
+                Image area = ui != null ? ui.GetComponentInChildren<Image>() : null;
+                float expectedAlpha = 30f / 255f;
                 SpriteRenderer sprite = enemy.GetComponentInChildren<SpriteRenderer>();
                 bool blink = false;
                 await Wait(0.1f);
                 if (path == Cat) Check(sprite.sprite.name == "Catto_019", "Preparation pose not displayed immediately");
                 await ObserveUntil(() => skill.IsHoldingWarning, () =>
                 {
-                    blink |= ui.IsBlinking;
-                    if (path == Cat) Check(!ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Melee warning must not blink");
+                    blink |= ui != null && ui.IsBlinking;
+                    if (path == Cat) CheckNoMeleeTelegraph(enemy);
                     Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Attack before final hold");
                 });
                 float holdStarted = Time.time;
-                Check(blink == (path == Ghost) && ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold must preserve per-enemy alpha");
+                Check(blink == (path == Ghost), "Unexpected blink setting");
+                if (path == Ghost) Check(ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold must preserve ranged alpha");
                 enemy.OnAttackWarning(); enemy.OnAttackHit(); enemy.OnAttackFinished();
-                Check(skill.IsHoldingWarning && !ui.IsBlinking && target.ReceivedHitCount == 0, "Old animation event bypassed/restarted hold");
+                Check(skill.IsHoldingWarning && (ui == null || !ui.IsBlinking) && target.ReceivedHitCount == 0, "Old animation event bypassed/restarted hold");
                 await ObserveUntil(() => !skill.IsPreparing, () =>
                 {
-                    Check(ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold flickered/hidden");
+                    if (path == Cat) CheckNoMeleeTelegraph(enemy);
+                    else Check(ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold flickered/hidden");
                     Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0 && !module.TryUseAttack(), "Hold allowed early attack");
                     if (path == Cat) Check(sprite.sprite.name == "Catto_019", "Preparation pose released during hold");
                 });
@@ -296,7 +303,8 @@ namespace CTJ.Tools
                 {
                     await ObserveUntil(() => target.ReceivedHitCount > 0, () => { });
                     hitAt = Time.time;
-                    Check(hitAt - released <= 0.05f + 2f / rate && !ui.IsVisible, "Fast hit timing/UI hide");
+                    Check(hitAt - released <= 0.05f + 2f / rate, "Fast hit timing");
+                    CheckNoMeleeTelegraph(enemy);
                     enemy.OnAttackHit(); enemy.OnAttackHit();
                     await ObserveUntil(() => sprite.sprite.name == "Catto_023", () => { });
                     float recoveryStarted = Time.time;
@@ -337,14 +345,14 @@ namespace CTJ.Tools
                 await ObserveUntil(() => skill.IsHoldingWarning, () => { });
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
                 enemy.SetTarget(null);
-                Check(!skill.IsUsing && !ui.IsVisible, "Hold target loss did not cancel");
+                Check(!skill.IsUsing && TelegraphHidden(ui), "Hold target loss did not cancel");
                 await Wait(0.1f);
                 if (path == Cat) Check(enemy.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Idle"), "Cancelled preparation pose stuck");
                 enemy.SetTarget(target.transform);
                 Check(module.TryUseAttack(), "Hold cancellation reuse");
                 await ObserveUntil(() => skill.IsHoldingWarning, () => { });
                 ((Agent)enemy).ApplyDamage(new DamageData { DamageAmount = 999f }, Vector2.zero, Vector2.zero, Vector2.zero);
-                Check(!skill.IsUsing && !ui.IsVisible, "Hold death did not cancel");
+                Check(!skill.IsUsing && TelegraphHidden(ui), "Hold death did not cancel");
                 await Wait(0.4f);
                 Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Cancelled hold caused damage");
                 return new { scenario = path == Cat ? "melee-hold-cancel-reuse-death" : "projectile-hold-cancel-reuse-death", passed = true };
@@ -465,34 +473,20 @@ namespace CTJ.Tools
                 EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 Check(module.TryUseAttack(), "Melee begin");
-                AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
-                Check(ui != null && ui.IsVisible && skill.IsPreparing, "Preparation UI missing");
-                Check(Mathf.Abs(ui.GetComponentInChildren<Image>().color.a - 50f / 255f) < 0.001f, "Alpha must be 50/255");
-                BoxCollider2D hitbox = (BoxCollider2D)new SerializedObject(skill).FindProperty("attackHitbox").objectReferenceValue;
-                RectTransform rect = ui.GetComponent<RectTransform>();
-                Check(Vector2.Distance(ui.transform.position, hitbox.bounds.center) < 0.01f && Vector2.Distance(rect.rect.size, hitbox.bounds.size) < 0.01f, "Hitbox/UI size or facing mismatch");
+                CheckNoMeleeTelegraph(enemy);
+                Check(skill.IsPreparing, "No-UI melee must still prepare");
                 enemy.OnAttackHit(); enemy.OnAttackFinished();
                 Check(target.ReceivedHitCount == 0 && skill.IsPreparing, "Early animation event bypassed delay");
                 float start = Time.time;
                 await Wait(0.2f);
                 Check(skill.IsPreparing && target.ReceivedHitCount == 0, "Melee released before stat delay");
                 if (dodge) target.transform.position += Vector3.up * 3f;
-                bool steadyWarning = false;
-                await ObserveUntil(() => !skill.IsUsing, () =>
-                {
-                    Check(!ui.IsBlinking, "Melee warning blinked");
-                    if (ui.IsVisible)
-                    {
-                        float alpha = ui.GetComponentInChildren<Image>().color.a;
-                        Check(Mathf.Abs(alpha - 50f / 255f) < 0.001f, "Melee warning alpha changed");
-                        steadyWarning = true;
-                    }
-                });
-                Check(steadyWarning && !ui.IsVisible, "Melee steady warning/hide sequence");
+                await ObserveUntil(() => !skill.IsUsing, () => CheckNoMeleeTelegraph(enemy));
+                CheckNoMeleeTelegraph(enemy);
                 Check(target.ReceivedHitCount == (dodge ? 0 : 1), "Melee event contact damage");
                 enemy.OnAttackHit(); enemy.OnAttackHit();
                 Check(target.ReceivedHitCount == (dodge ? 0 : 1), "Late duplicate event");
-                return new { scenario = dodge ? "left-melee-dodge-and-ui" : "melee-delay-event-steady-ui", passed = true, duration = Time.time - start, hits = target.ReceivedHitCount };
+                return new { scenario = dodge ? "left-melee-dodge-no-ui" : "melee-delay-event-no-ui", passed = true, duration = Time.time - start, hits = target.ReceivedHitCount };
             }
             finally { Object.Destroy(arena); }
         }
@@ -549,11 +543,11 @@ namespace CTJ.Tools
                 Check(module.TryUseAttack(), "Cancel begin");
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
                 enemy.SetTarget(null);
-                Check(!skill.IsUsing && !ui.IsVisible, "Target switch retained UI");
+                Check(!skill.IsUsing && TelegraphHidden(ui), "Target switch retained UI");
                 enemy.SetTarget(target.transform);
                 Check(module.TryUseAttack(), "Disable begin");
                 enemy.enabled = false;
-                Check(!skill.IsUsing && !ui.IsVisible, "Disable retained UI");
+                Check(!skill.IsUsing && TelegraphHidden(ui), "Disable retained UI");
                 enemy.enabled = true;
                 if (path == Cat)
                 {
@@ -561,13 +555,13 @@ namespace CTJ.Tools
                     Animator animator = enemy.GetComponentInChildren<Animator>();
                     animator.enabled = false;
                     await Wait(0.45f);
-                    Check(!skill.IsUsing && !ui.IsVisible && target.ReceivedHitCount == 0, "Disabled animator did not cancel release");
+                    Check(!skill.IsUsing && TelegraphHidden(ui) && target.ReceivedHitCount == 0, "Disabled animator did not cancel release");
                     animator.enabled = true;
                 }
                 Check(module.TryUseAttack(), "Death begin");
                 ((Agent)enemy).ApplyDamage(new DamageData { DamageAmount = 999f }, Vector2.zero, Vector2.zero, Vector2.zero);
                 enemy.OnAttackWarning(); enemy.OnAttackHit();
-                Check(!skill.IsUsing && !ui.IsVisible && enemy.IsDead, "Death retained UI/skill");
+                Check(!skill.IsUsing && TelegraphHidden(ui) && enemy.IsDead, "Death retained UI/skill");
                 await Wait(0.8f);
                 Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Cancelled attack caused damage");
                 return new { scenario = path == Cat ? "cat-cancel-cleanup" : "ghost-cancel-cleanup", passed = true };
@@ -587,7 +581,7 @@ namespace CTJ.Tools
                 await ObserveUntil(() => skill.IsPreparing, () => { });
                 target.transform.position = enemy.transform.position + Vector3.right * (enemy.ChaseReleaseRange + 2f);
                 await Wait(0.1f);
-                Check(State(enemy) == "EnemyIdleState" && !skill.IsUsing && !enemy.GetComponentInChildren<AttackTelegraphUI>().IsVisible,
+                Check(State(enemy) == "EnemyIdleState" && !skill.IsUsing && TelegraphHidden(enemy.GetComponentInChildren<AttackTelegraphUI>()),
                     "Attack preparation ignored chase release");
                 await Wait(0.6f);
                 Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Attack released after losing pursuit");
@@ -632,6 +626,11 @@ namespace CTJ.Tools
             await Wait(0.2f);
             return "Runtime-only preview: preparation extended to 10 seconds. Stop Play to restore original settings.";
         }
+
+        private static void CheckNoMeleeTelegraph(EnemyBase enemy) => Check(
+            enemy.GetComponentsInChildren<AttackTelegraphUI>(true).Length == 0 && enemy.GetComponentsInChildren<Canvas>(true).Length == 0,
+            "Melee must not create an attack range Canvas, including hidden ones");
+        private static bool TelegraphHidden(AttackTelegraphUI ui) => ui == null || !ui.IsVisible;
 
         private static EnemyProjectile[] Shots(EnemyBase enemy) => Object.FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None)
             .Where(p => ReferenceEquals(Field(p, "_dealer"), enemy)).ToArray();

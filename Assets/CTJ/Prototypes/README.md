@@ -1,6 +1,6 @@
 # Catto · Mad Ghost 프로토타입 사용 안내
 
-2026-10-15: Catto는 점멸 없이 경고를 유지하고, Ghost는 알파 30으로 점멸한 뒤 0.15초 유지하고 공격한다. Catto에는 AttackPreparation 클립/상태를 추가했고, Attack 클립의 타격 이벤트는 0.05초, 종료 이벤트는 0.4초다. 두 적은 피격용 Trigger 몸통 + Ground 전용 TerrainBody로 구성하여 플레이어/적과는 물리 충돌하지 않고 사거리 안에서는 멈춰 공격한다. 아래 최초 구성 기록의 HP/클립 시간/공격 필드보다 [최신 설정·테스트 안내](EnemyCombatRulesGuide.md)를 우선한다.
+2026-10-16: Catto는 범위 UI 없이 준비 모션으로만 공격을 예고한다(Telegraph Prefab=None). Ghost는 알파 30으로 점멸한 뒤 0.15초 유지하고 공격한다. Catto의 AttackPreparation과 타격 0.05초/종료 0.4초 이벤트는 그대로다. 두 적은 피격용 Trigger 몸통 + Ground 전용 TerrainBody로 구성하여 플레이어/적과는 물리 충돌하지 않고 사거리 안에서는 멈춰 공격한다. 아래 최초 구성 기록의 HP/클립 시간/공격 필드보다 [최신 설정·테스트 안내](EnemyCombatRulesGuide.md)를 우선한다.
 
 2026-10-14: 공격 설정은 [EnemySkillGuide.md](EnemySkillGuide.md)를 우선 참고한다. 두 프리팹은 공용 스킬 기반으로 변경됐으며, 공격 수치는 EnemyMeleeSkill/EnemyProjectileSkill, 사거리·우선순위는 EnemySkillModule에서 설정한다. [문법 설명](EnemySkillSyntaxNotes.md) / [담당 업무 현황](CTJ_Progress_2026-10-14.md).
 

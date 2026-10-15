@@ -84,3 +84,7 @@ try/finally는 검사 중 예외가 발생해도 테스트용 GameObject를 제�
 - Ground가 6번이므로 `1 << 6`은 그 레이어 비트(64), `~(1 << 6)`은 그 비트만 끈 나머지 모든 레이어다. 저장된 Exclude Layers 값 4294967231은 이를 부호 없는 32비트 값으로 표현한 것이다. 반대쪽 Collider 설정과 충돌할 때의 우선순위는 Layer Override Priority=1로 뒀다. [Unity 우선순위 문서](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Collider2D-layerOverridePriority.html).
 - `GetComponentsInChildren<Collider2D>()`는 루트와 자식에서 콜라이더를 찾는다. Body Collider 참조가 빠진 경우에만 호출하며 `candidate.isTrigger`를 제외하고 `candidate.attachedRigidbody == _body`를 확인해 같은 물리 몸체의 지형 콜라이더만 선택한다. 새 모듈/인터페이스는 만들지 않았다.
 - Chase의 `StateFixedUpdate`에서 공격 가능 여부를 먼저 확인하고 `return`하면 그 물리 틱의 MoveTowardsTarget 호출을 건너뛴다. Update 사이에 물리 틱이 여러 번 와도 사거리 안에서 계속 전진하지 않게 한다. 기존 Attack.Enter/FixedUpdate가 수평 속도를 0으로 유지하며 쿨타임은 기존 SkillModule 규칙을 따른다.
+
+## 근접 범위 표시 제거 (2026-10-16)
+
+런타임 C# 문법이나 시스템은 추가하지 않았다. Catto 프리팹의 `Telegraph Prefab` 참조만 None(`{fileID: 0}`)으로 비웠다. 기존 `telegraphPrefab != null` 조건이 Canvas 생성을 건너뛰고, `Telegraph?.EndBlink()`/`?.Hide()`는 참조가 없으면 호출하지 않는다. 준비·타격·후딜 타이머는 UI와 별도로 실행되므로 그대로 유지된다. 알파를 0으로 해서 숨긴 것이 아니라 UI 인스턴스를 생성하지 않는 방식이다. 검증에서는 `GetComponentsInChildren<AttackTelegraphUI>(true)`와 Canvas 배열 길이가 0인지 검사해 비활성 UI까지 남지 않았는지 확인한다.

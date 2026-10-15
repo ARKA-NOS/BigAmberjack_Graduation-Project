@@ -1,4 +1,5 @@
-﻿using DevLib.AnimatorSystem;
+﻿using System;
+using DevLib.AnimatorSystem;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
@@ -40,6 +41,8 @@ namespace Lrw.Script.Agent.Players.Skills
         private float _prevSpeed;
         
         public override float CoolTime => BaseCoolTime / attackSpeedStat.Value;
+
+        private Vector3 _offset;
         
         public override void InitSkill(ModuleOwner owner)
         {
@@ -68,6 +71,17 @@ namespace Lrw.Script.Agent.Players.Skills
             attackSpeedStat = statModule.GetStat(attackSpeed);
             
             damageCaster.InitCaster(owner);
+
+            _offset = damageCaster.transform.position - owner.transform.position;
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            Vector3 currentPos = _offset;
+            Vector3 right = _renderer.GetRight();
+            if (right.x < 0) currentPos.x *= -1;
+            damageCaster.transform.position = Owner.transform.position + currentPos;
         }
 
 

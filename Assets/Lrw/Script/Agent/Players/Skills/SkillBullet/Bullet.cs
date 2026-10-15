@@ -48,7 +48,7 @@ namespace Lrw.Script.Agent.Players.Skills.SkillBullet
                 Destroy(gameObject);
             }
         }
-
+        
         private void OnTriggerEnter2D(Collider2D other)
         {
             if(!other.TryGetComponent(out EnemyBase damageable)) return;    

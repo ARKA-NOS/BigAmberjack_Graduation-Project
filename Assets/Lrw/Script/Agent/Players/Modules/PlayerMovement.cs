@@ -44,6 +44,7 @@ namespace Lrw.Script.Agent.Players.Modules
         public void MoveLock(bool value)
         {
             _isMoveLock = value;
+            if(value) _playerRb.linearVelocityX = 0;
         }
 
         private void FixedUpdate()
@@ -54,9 +55,13 @@ namespace Lrw.Script.Agent.Players.Modules
         private void MovePlayer() 
         {
             if (_playerRb == null) return;
-            _playerRb.linearVelocityX = _isMoveLock ? 0f : _movementDirectionX * _moveSpeedStat.Value;
+            if(_isMoveLock) return;
+            _playerRb.linearVelocityX = _movementDirectionX * _moveSpeedStat.Value;
         }
 
+        public void AddForce(Vector2 force, ForceMode2D impulse = ForceMode2D.Impulse) 
+            => _playerRb.AddForce(force,impulse);
+        
         
     }
 }

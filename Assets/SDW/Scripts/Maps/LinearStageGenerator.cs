@@ -4,7 +4,7 @@ using SDW.Scripts.Maps.Data;
 using SDW.Scripts.UI;
 using UnityEngine;
 using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Player.CharacterSystem;
+using Lrw.Script.Agent.Players.CharacterSystem;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

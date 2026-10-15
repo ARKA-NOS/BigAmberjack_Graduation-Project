@@ -3,7 +3,6 @@ using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Lrw.Script.Agent.HealthSystem
 {
@@ -17,11 +16,11 @@ namespace Lrw.Script.Agent.HealthSystem
         
         public event HealthChanged OnHealthChanged;
         public event Action OnDead;
-        private bool _isDead = false;
+        public bool IsDead { get; private set; }
         
         public float CurrentHealth
         {
-            get => currentHealth;
+            get =>  currentHealth;
             set
             {
                 float prevValue = currentHealth;
@@ -29,9 +28,9 @@ namespace Lrw.Script.Agent.HealthSystem
                 if(Mathf.Approximately(currentHealth, prevValue)) return;
                 OnHealthChanged?.Invoke(currentHealth, currentHealth - prevValue,MaxHealth);
                 
-                if (!_isDead && Mathf.Approximately(currentHealth, 0f))
+                if (!IsDead && Mathf.Approximately(currentHealth, 0f))
                 {
-                    _isDead = true;
+                    IsDead = true;
                     OnDead?.Invoke();
                 }
             }
@@ -56,6 +55,8 @@ namespace Lrw.Script.Agent.HealthSystem
             _maxHpStat.OnValueChanged += MaxHpChanged;
 
             CurrentHealth = MaxHealth;
+
+            IsDead = false;
         }
 
         private void OnDestroy()

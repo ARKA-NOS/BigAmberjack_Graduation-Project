@@ -14,6 +14,7 @@ namespace CTJ.UI
         private Canvas _canvas;
         private RectTransform _rect;
         private float _blinkStartedAt;
+        private Color _displayColor;
 
         public bool IsVisible { get; private set; }
         public bool IsBlinking { get; private set; }
@@ -28,12 +29,14 @@ namespace CTJ.UI
             Hide();
         }
 
-        public void Show()
+        public void Show(float opacity = 1f)
         {
+            _displayColor = areaColor;
+            _displayColor.a *= Mathf.Clamp01(opacity);
             IsVisible = true;
             IsBlinking = false;
             _canvas.enabled = true;
-            if (areaImage != null) areaImage.color = areaColor;
+            if (areaImage != null) areaImage.color = _displayColor;
         }
 
         public void BeginBlink()
@@ -41,6 +44,13 @@ namespace CTJ.UI
             if (!IsVisible || IsBlinking || BlinkDuration <= 0f) return;
             IsBlinking = true;
             _blinkStartedAt = Time.time;
+        }
+
+        public void EndBlink()
+        {
+            if (!IsVisible) return;
+            IsBlinking = false;
+            if (areaImage != null) areaImage.color = _displayColor;
         }
 
         public void Hide()
@@ -53,7 +63,7 @@ namespace CTJ.UI
         private void Update()
         {
             if (!IsVisible || areaImage == null) return;
-            Color color = areaColor;
+            Color color = _displayColor;
             if (IsBlinking && Mathf.FloorToInt((Time.time - _blinkStartedAt) / Mathf.Max(0.01f, blinkInterval)) % 2 == 0)
                 color.a = 0f;
             areaImage.color = color;

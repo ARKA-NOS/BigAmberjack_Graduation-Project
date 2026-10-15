@@ -2,7 +2,7 @@
 
 현재 공격 설정은 이 문서를 기준으로 한다. 기존 EnemyCombatGuide/EnemyDamageDeathGuide의 MeleeEnemy·RangedEnemy 내부 공격 필드 설명은 이전 구조다. 이동 설정은 EnemyMovementGuide를 그대로 사용한다.
 
-추가된 추적 해제 거리, HP 40/30, 준비 스탯과 Canvas 공격 예고의 상세 설정/테스트는 `EnemyCombatRulesGuide.md`를 참고한다.
+추가된 추적 해제 거리, HP 40/30, 준비 스탯과 Canvas 공격 예고의 상세 설정/테스트는 `EnemyCombatRulesGuide.md`를 참고한다. 10월 15일 추가 피드백으로 Catto 점멸은 껐고 Ghost 알파는 30으로 낮췄다. 피격용 Trigger 몸통과 Ground 전용 TerrainBody를 분리했으며 사거리 안에서는 멈춰 공격한다.
 
 ## 이번에 완성한 범위
 
@@ -60,8 +60,8 @@ Skill SO는 스킬 식별용 데이터다. 피해량/쿨타임 수치는 현재 
 
 - 근접 타격 프레임: 기존 `OnAttackHit`. 그 시점에 타깃과 Hitbox가 겹쳐야 피해를 준다. 중복 이벤트나 여러 타깃 Collider로 한 공격이 중복 피해를 주지 않는다.
 - 근접 종료 프레임: 기존 `OnAttackFinished`. Animator가 Visual 자식에 있으면 기존 EnemyAnimationEventRelay가 적 → 현재 스킬로 전달한다.
-- 근접 타격 직전: `OnAttackWarning`. Catto는 클립 0.08초부터 0.2초 타격까지 표시가 깜빡인다.
-- 원거리는 Attack Delay Stat의 준비 시간과 예고 점멸 후 발사한다. 기존 Mad Ghost 클립에는 타격 이벤트를 새로 넣을 필요가 없다.
+- 2026-10-15: 점멸은 공통 준비 타이머에서 처리한다. Catto의 Blink Before Attack=false로 점멸은 생략한다. `OnAttackWarning`은 호환용으로만 남았으며 새 클립에는 넣지 않는다. 준비/점멸 후 Post Blink Delay=0.15초 동안 켜진 경고를 유지한 다음 공격한다.
+- Catto는 사용 즉시 AttackPreparation 상태에서 준비 자세를 유지하고, 대기가 끝나면 Attack 클립의 0.05초에 타격, 0.4초에 종료한다. 마지막 자세는 클립 0.2~0.4초 동안 유지한다. 원거리는 준비·점멸·추가 유지 후 발사하며 Mad Ghost 클립에는 타격 이벤트가 필요 없다. 세부 타임라인은 EnemyCombatRulesGuide를 참고한다.
 - 새로운 **공격 동작**이 필요하면 `EnemyAttackSkill`을 상속한다. 준비는 PrepareAttack, 실제 동작은 OnReleaseAttack, 표시 갱신은 UpdateTelegraph를 override한다. 끝나면 EndSkill, 추가 취소 처리는 OnStopSkill에서 base도 호출한다. OnUseSkill을 직접 재정의한다면 반드시 base를 호출하고 준비 이전에 피해/발사를 실행하지 않는다.
 - 공용 `AbstractSkill` / `AbstractChargeSkill` 파생 컴포넌트도 목록에 넣을 수 있다. 차징은 항목의 Charge Duration 뒤 입력 해제로 발동한다. 별도 종료 처리는 그 스킬이 맡아야 한다.
 - **플레이어 전용 스킬을 그대로 붙일 수 있다는 뜻은 아니다.** 현재 PlayerMeleeAttackSkill은 PlayerController, 플레이어 FSM, 전용 렌더러·스탯에 의존한다. 공용 실행 규약/쿨타임을 통일했으며, 공격 구현은 적용 가능한 소유자를 지원해야 한다.

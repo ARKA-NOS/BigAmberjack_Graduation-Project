@@ -62,4 +62,25 @@ try/finally는 검사 중 예외가 발생해도 테스트용 GameObject를 제�
 - `RectTransform`, `Canvas.renderMode = RenderMode.WorldSpace`, `Image`는 기본 uGUI 구성이다. 화면 픽셀이 아닌 월드 위치에 놓아 실제 Collider와 맞춘다. raycastTarget=false라 입력을 가리지 않으며, UI 자체는 피해를 주지 않는다.
 - `attackHitbox is BoxCollider2D box`는 타입 검사와 변수 선언을 함께 하는 패턴 매칭이다. Box일 때 실제 size/offset을 사용하고, `TransformPoint`로 로컬 offset을 월드 좌표로 바꾼다. `lossyScale`로 몸체 크기를 계산한 뒤 Canvas 부모 스케일을 역수로 보정해 2배 프리팹에서 4배로 표시되는 것을 막는다.
 - `Mathf.Atan2(y, x) * Mathf.Rad2Deg`는 발사 방향을 Z 회전 각도로 바꾼다. `Normalize()`로 고정한 방향을 표시와 실제 발사에 같이 사용하므로 예고 뒤 회피가 가능하다.
-- Animation Event는 C# 문법이 아니라 클립의 지정 시점에 메서드를 호출하는 Unity 기능이다. OnAttackWarning은 점멸만, OnAttackHit은 그 순간 겹침/피해만 담당한다. IsUsing/HasReleased 검사로 준비 이전의 이벤트가 피해를 만들지 않게 했다.
+- Animation Event는 C# 문법이 아니라 클립의 지정 시점에 메서드를 호출하는 Unity 기능이다. OnAttackHit은 그 순간 겹침/피해만 담당한다. IsUsing/HasReleased 검사로 준비 이전의 이벤트가 피해를 만들지 않게 했다. 10월 14일의 OnAttackWarning 점멸은 아래 10월 15일 변경에서 공통 타이머로 대체했다.
+
+## 점멸 후 유지·준비 자세·빠른 타격에서 사용한 문법 (2026-10-15)
+
+- `private enum PreparationPhase { Waiting, Blinking, Holding }`: 동시에 여러 bool이 켜지는 조합 대신 준비 중 한 단계를 이름으로 표현한다. 적 AI용 FSM을 새로 만든 것이 아니라 기존 공격 스킬 내부의 세 단계다. `switch`와 `case`는 현재 단계에 해당하는 처리만 실행하고, `break`는 다음 case로 넘어가지 않도록 끝낸다.
+- `_phaseEndTime = Time.time + _holdDuration`: 점멸이 실제 끝난 프레임부터 0.15초를 센다. 모든 시각을 공격 시작 때 절대 시각으로만 계산하면 프레임이 늦을 때 유지 구간이 건너뛰어질 수 있어서 단계별 종료 시각을 썼다. 설정값은 공격 시작에 복사하므로 도중 스탯 변경은 다음 공격부터 반영한다. Time.time 기반이라 게임 일시정지와 함께 멈춘다.
+- `[SerializeField, Min(0f)] private float postBlinkDelay`: Inspector에서 적마다 유지 시간을 바꾸되 다른 코드가 필드를 직접 덮어쓰지 않도록 private으로 둔다. `public float PostBlinkDelay => ...`는 검사/읽기용 프로퍼티이며 외부 setter는 없다.
+- `EndBlink()`는 `IsBlinking=false`와 Image 색 복구를 한 번에 처리한다. 다음 UI Update를 기다리지 않고 원래 알파를 돌려주어 마지막 점멸이 꺼진 프레임이어도 유지 구간이 투명하게 남지 않는다. 피해 판정은 UI가 아닌 기존 스킬에서만 한다.
+- `string.IsNullOrEmpty(preparationStateName)`는 준비 상태를 선택 사항으로 취급하는 검사다. 연결한 경우 `Animator.HasState`로 유효성을 확인한 뒤 `Animator.Play(hash, 0, 0f)`로 해당 상태를 처음부터 재생한다. 문자열을 Animator 식별자로 바꾸는 `StringToHash`는 기존 공격 재생 방식과 같다.
+- 준비/타격 클립 분리는 C# 상속을 추가한 것이 아니라 Animator 상태와 AnimationClip 데이터 구성이다. 준비 클립은 Loop와 자동 전환 없이 마지막 스프라이트를 유지한다. 실제 준비 길이는 스탯+경고 타이머가 결정하므로 클립 대기와 스탯 대기가 이중으로 누적되지 않는다.
+- 스프라이트 키의 **시간 간격**을 0.05초/0.2초처럼 다르게 둔다. Sample Rate=60은 편집 시간 격자이며 게임을 60FPS로 강제하지 않는다. 공격 클립의 0.05초 OnAttackHit과 0.4초 OnAttackFinished가 피해 및 행동 잠금 해제를 결정한다. Animator.speed를 전역 변경하지 않아 타격/회수까지 같이 느려지는 문제를 피한다.
+- `OnEndSkill`/`OnStopSkill`에서 `base`를 먼저 호출해 UI·타깃 상태를 정리한 다음 Idle로 복귀한다. `Enemy.IsDead`일 때는 Idle을 재생하지 않아 사망 애니메이션을 덮어쓰지 않는다. 별도 인터페이스/추상 클래스/패키지는 추가하지 않았다.
+- 검증 코드의 `Time.captureDeltaTime`은 30/60 Hz 시뮬레이션 간격으로 애니메이션·타이머를 검사하기 위해 잠깐 사용한다. `try/finally`에서 원래 값을 복원한다. 게임 코드나 프로젝트 FPS 설정에는 적용하지 않는다.
+
+## 무점멸·알파 배율·트리거 몸통에서 사용한 문법 (2026-10-15 추가 피드백)
+
+- `blinkBeforeAttack && Telegraph != null ? Telegraph.BlinkDuration : 0f`: `&&`로 두 조건을 함께 확인하고 `조건 ? 참일 때 값 : 거짓일 때 값`인 삼항 연산자로 이번 공격의 점멸 시간을 결정한다. Catto는 0초여서 Blinking 단계를 건너뛰지만 준비/마지막 유지/후딜은 남는다.
+- `Show(float opacity = 1f)`의 `= 1f`는 선택적 매개변수의 기본값이다. 기존 Show() 호출도 원래 알파로 작동한다. `Mathf.Clamp01(opacity)`로 0~1 사이로 제한한 뒤 `_displayColor.a *= ...`로 알파만 곱한다. Color는 값 형식이므로 `_displayColor = areaColor`는 복사이며 공용 프리팹의 색을 수정하지 않는다. `[Range(0f, 1f)]`는 Inspector 슬라이더를 제공한다.
+- 루트 `isTrigger`와 자식의 Layer Override는 C# 문법이 아니라 Unity 물리 설정이다. Trigger 몸통은 피격 검색용, 비 Trigger TerrainBody는 지형 물리 반응용으로 역할을 나눴다. Collider별 Include/Exclude를 사용해서 ProjectSettings/다른 팀 설정을 바꾸지 않았다. [Unity Collider2D.excludeLayers 문서](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Collider2D-excludeLayers.html).
+- Ground가 6번이므로 `1 << 6`은 그 레이어 비트(64), `~(1 << 6)`은 그 비트만 끈 나머지 모든 레이어다. 저장된 Exclude Layers 값 4294967231은 이를 부호 없는 32비트 값으로 표현한 것이다. 반대쪽 Collider 설정과 충돌할 때의 우선순위는 Layer Override Priority=1로 뒀다. [Unity 우선순위 문서](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Collider2D-layerOverridePriority.html).
+- `GetComponentsInChildren<Collider2D>()`는 루트와 자식에서 콜라이더를 찾는다. Body Collider 참조가 빠진 경우에만 호출하며 `candidate.isTrigger`를 제외하고 `candidate.attachedRigidbody == _body`를 확인해 같은 물리 몸체의 지형 콜라이더만 선택한다. 새 모듈/인터페이스는 만들지 않았다.
+- Chase의 `StateFixedUpdate`에서 공격 가능 여부를 먼저 확인하고 `return`하면 그 물리 틱의 MoveTowardsTarget 호출을 건너뛴다. Update 사이에 물리 틱이 여러 번 와도 사거리 안에서 계속 전진하지 않게 한다. 기존 Attack.Enter/FixedUpdate가 수평 속도를 0으로 유지하며 쿨타임은 기존 SkillModule 규칙을 따른다.

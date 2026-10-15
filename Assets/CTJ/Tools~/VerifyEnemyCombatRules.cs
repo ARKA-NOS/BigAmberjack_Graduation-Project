@@ -9,8 +9,9 @@ using CTJ.UI;
 using DevLib.BattleSystem;
 using Lrw.Script.Agent;
 using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.Player.Skills;
+using Lrw.Script.Agent.Players.Skills;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -49,12 +50,36 @@ namespace CTJ.Tools
                 Check(serialized.FindProperty("attackDelayStat").objectReferenceValue == AssetDatabase.LoadAssetAtPath<StatData>(Delay), "Delay reference");
                 AttackTelegraphUI ui = (AttackTelegraphUI)serialized.FindProperty("telegraphPrefab").objectReferenceValue;
                 Check(ui != null && ui.GetComponent<Canvas>().renderMode == RenderMode.WorldSpace, "World Canvas reference");
+                Check(Mathf.Approximately(skill.PostBlinkDelay, 0.15f), "Post-blink hold must be 0.15 seconds");
+                Check(serialized.FindProperty("blinkBeforeAttack").boolValue == (path == Ghost), "Enemy blink setting");
+                Check(Mathf.Approximately(serialized.FindProperty("telegraphOpacity").floatValue, path == Cat ? 1f : 0.6f), "Enemy alpha multiplier");
+                BoxCollider2D hurtbox = enemy.GetComponent<BoxCollider2D>();
+                BoxCollider2D terrain = enemy.transform.Find("TerrainBody").GetComponent<BoxCollider2D>();
+                Check(hurtbox.isTrigger && !terrain.isTrigger && terrain.includeLayers.value == (1 << 6) && terrain.excludeLayers.value == ~(1 << 6), "Trigger/terrain layer split");
+                Check(hurtbox.offset == terrain.offset && hurtbox.size == terrain.size && terrain.gameObject.layer == 2, "Terrain collider geometry/layer");
+                Check(new SerializedObject(enemy.GetComponent<EnemyMovementModule>()).FindProperty("bodyCollider").objectReferenceValue == terrain, "Movement collider reference");
+                Check(!terrain.TryGetComponent<IDamageable>(out _), "Terrain collider must not receive duplicate damage");
                 Check(!ui.GetComponentInChildren<Image>().raycastTarget && ui.GetComponent<GraphicRaycaster>() == null, "UI blocks input");
                 StatGroup group = (StatGroup)new SerializedObject(enemy.GetComponent<StatModule>()).FindProperty("baseStats").objectReferenceValue;
                 float hp = group.Stats.First(s => s.StatData.name == "MaxHealth").BaseValue;
                 float delay = group.Stats.First(s => s.StatData.name == "EnemyAttackDelay").BaseValue;
                 Check(enemy.ChaseReleaseRange > enemy.DetectionRange && hp > damage && delay > 0f, "Enemy config values");
-                return new { path, detection = enemy.DetectionRange, release = enemy.ChaseReleaseRange, hp, hitsToKill = Mathf.CeilToInt(hp / damage), delay, referencesValid = true };
+                if (path == Cat)
+                {
+                    AnimatorController controller = (AnimatorController)enemy.GetComponentInChildren<Animator>().runtimeAnimatorController;
+                    AnimatorState preparation = controller.layers[0].stateMachine.states.Select(s => s.state).Single(s => s.name == "AttackPreparation");
+                    AnimationClip clip = (AnimationClip)preparation.motion;
+                    Check(preparation.transitions.Length == 0 && !clip.isLooping && clip.events.Length == 0, "Preparation must hold without auto-release/events");
+                    Check(serialized.FindProperty("preparationStateName").stringValue == "Base Layer.AttackPreparation", "Preparation state reference");
+                    AnimationClip attack = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/CTJ/Prototypes/Animations/Catto_Attack.anim");
+                    Check(attack.events.Length == 2 && attack.events.Any(e => e.functionName == "OnAttackHit" && Mathf.Approximately(e.time, 0.05f)) &&
+                        attack.events.Any(e => e.functionName == "OnAttackFinished" && Mathf.Approximately(e.time, 0.4f)), "Attack hit/recovery events");
+                    ObjectReferenceKeyframe[] keys = AnimationUtility.GetObjectReferenceCurve(attack, AnimationUtility.GetObjectReferenceCurveBindings(attack).Single());
+                    Check(keys.Length == 6 && keys.All(k => k.value != null) && Mathf.Approximately(keys[4].time, 0.2f) &&
+                        Mathf.Approximately(keys[5].time, 0.4f) && keys[4].value == keys[5].value, "Attack recovery keys/references");
+                }
+                return new { path, detection = enemy.DetectionRange, release = enemy.ChaseReleaseRange, hp, hitsToKill = Mathf.CeilToInt(hp / damage), delay, postBlinkDelay = skill.PostBlinkDelay,
+                    blink = serialized.FindProperty("blinkBeforeAttack").boolValue, alpha = path == Cat ? 50 : 30, triggerBody = hurtbox.isTrigger, referencesValid = true };
             }).ToArray() };
         }
 
@@ -69,6 +94,305 @@ namespace CTJ.Tools
                 Cancellation(Cat, 4800f), Cancellation(Ghost, 4900f),
                 ReleaseDuringAttack(Cat, 5000f), ReleaseDuringAttack(Ghost, 5100f),
                 DelayStat(5200f));
+        }
+
+        public static async Task<object> RunCollisionScenarios()
+        {
+            RequirePlay();
+            return await Task.WhenAll(
+                WalkThrough(Cat, 6000f, 7), WalkThrough(Ghost, 6100f, 7),
+                WalkThrough(Cat, 6200f, 0), WalkThrough(Ghost, 6300f, 0), WalkThrough(Cat, 6400f, 8),
+                TerrainCollision(Cat, 6500f), TerrainCollision(Ghost, 6600f),
+                PlayerCasterDamage(Cat, 6700f), PlayerCasterDamage(Ghost, 6800f), StopAtMeleeRange(6900f));
+        }
+
+        private static async Task<object> WalkThrough(string path, float x, int actorLayer)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(path, arena, x);
+                EnemyDamageProbe actor = SolidActor(arena, x - 3f, actorLayer);
+                Rigidbody2D actorBody = actor.GetComponent<Rigidbody2D>();
+                Collider2D actorCollider = actor.GetComponent<Collider2D>();
+                Collider2D terrain = enemy.transform.Find("TerrainBody").GetComponent<Collider2D>();
+                await Wait(0.2f);
+                float enemyX = enemy.transform.position.x;
+                bool overlapped = false;
+                actorBody.linearVelocityX = 4f;
+                float end = Time.time + 1.6f;
+                await ObserveUntil(() => Time.time >= end, () =>
+                {
+                    overlapped |= enemy.GetComponent<Collider2D>().bounds.Intersects(actorCollider.bounds);
+                    Check(!terrain.IsTouching(actorCollider), "Terrain body physically blocked actor");
+                });
+                Check(overlapped && actorBody.position.x > x + 2.5f, "Actor did not pass through enemy");
+                Check(Mathf.Abs(enemy.transform.position.x - enemyX) < 0.02f && enemy.GetModule<EnemyMovementModule>().IsGrounded,
+                    "Actor pushed enemy or enemy fell through ground");
+                actorBody.linearVelocityX = -4f;
+                await Wait(1.6f);
+                Check(actorBody.position.x < x - 2.5f && Mathf.Abs(enemy.transform.position.x - enemyX) < 0.02f, "Reverse crossing pushed/blocked");
+                return new { scenario = "body-pass-through-both-directions", prefab = path, actorLayer, passed = true };
+            }
+            finally { Object.Destroy(arena); }
+        }
+
+        private static async Task<object> TerrainCollision(string path, float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(path, arena, x);
+                enemy.enabled = false; // 물리만 검사. FSM의 정지/점프 입력은 제외합니다.
+                Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
+                Collider2D terrain = enemy.transform.Find("TerrainBody").GetComponent<Collider2D>();
+                GameObject wall = new GameObject("Ground wall");
+                wall.transform.SetParent(arena.transform);
+                wall.layer = 6;
+                wall.transform.position = new Vector3(x + 3f, 3f);
+                BoxCollider2D wallCollider = wall.AddComponent<BoxCollider2D>();
+                wallCollider.size = new Vector2(0.5f, 6f);
+                body.position = new Vector2(x, 2f);
+                await Wait(0.8f);
+                Check(Mathf.Abs(terrain.bounds.min.y) < 0.04f, "Trigger enemy fell through floor");
+                body.linearVelocityX = 5f;
+                await Wait(0.8f);
+                Check(terrain.bounds.max.x <= wallCollider.bounds.min.x + 0.03f && terrain.IsTouching(wallCollider), "Trigger enemy passed through wall");
+                enemy.enabled = true;
+                Check(enemy.GetModule<EnemyMovementModule>().IsGrounded, "Movement ground detection lost terrain collider");
+                return new { scenario = "trigger-body-ground-and-wall", prefab = path, passed = true };
+            }
+            finally { Object.Destroy(arena); }
+        }
+
+        private static async Task<object> PlayerCasterDamage(string path, float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(path, arena, x);
+                await Wait(0.15f);
+                // 플레이어 파일은 읽기만 합니다. 같은 Caster/필터 설정의 복제본으로 실제 피해 경로를 호출합니다.
+                OverlapDamageCaster source = AssetDatabase.LoadAssetAtPath<GameObject>(Player).GetComponentInChildren<OverlapDamageCaster>(true);
+                OverlapDamageCaster caster = Object.Instantiate(source, enemy.GetComponent<Collider2D>().bounds.center, Quaternion.identity, arena.transform);
+                caster.InitCaster(null);
+                Physics2D.SyncTransforms();
+                float before = enemy.HealthModule.CurrentHealth;
+                float damage = PlayerDamage();
+                Check(caster.CastDamage(damage, Vector2.right, 0f), "Player caster failed to query trigger");
+                Check(Mathf.Approximately(enemy.HealthModule.CurrentHealth, before - damage), "Trigger body missed or duplicated player damage");
+                return new { scenario = "existing-player-caster-single-damage-to-trigger", prefab = path, passed = true, damage };
+            }
+            finally { Object.Destroy(arena); }
+        }
+
+        private static async Task<object> StopAtMeleeRange(float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(Cat, arena, x, false);
+                EnemyDamageProbe target = SolidActor(arena, x + 4f, 7);
+                enemy.SetTarget(target.transform);
+                EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
+                Set(skill, "<BaseCoolTime>k__BackingField", 3f);
+                await ObserveUntil(() => skill.IsPreparing, () => { });
+                float stoppedX = enemy.transform.position.x;
+                float distance = target.transform.position.x - stoppedX;
+                Check(distance > 0.75f && distance <= enemy.AttackRange + 0.02f, "Melee did not stop before body contact");
+                await ObserveUntil(() => !skill.IsUsing, () =>
+                {
+                    Check(Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.001f && Mathf.Abs(enemy.transform.position.x - stoppedX) < 0.02f,
+                        "Melee advanced during preparation/attack/recovery");
+                });
+                Check(target.ReceivedHitCount == 1, "Stationary melee did not hit once");
+                await Wait(0.25f);
+                Check(State(enemy) == "EnemyAttackState" && Mathf.Abs(enemy.transform.position.x - stoppedX) < 0.02f, "Melee moved during cooldown in range");
+                target.GetComponent<Rigidbody2D>().position += Vector2.right * 3f;
+                await Wait(0.15f);
+                Check(State(enemy) == "EnemyChaseState" && enemy.GetComponent<Rigidbody2D>().linearVelocityX > 0.1f, "Melee did not resume chase outside range");
+                return new { scenario = "melee-stops-without-contact-attacks-waits-cooldown-resumes-chase", passed = true, stoppedDistance = distance };
+            }
+            finally { Object.Destroy(arena); }
+        }
+
+        private static EnemyDamageProbe SolidActor(GameObject arena, float x, int layer)
+        {
+            EnemyDamageProbe actor = Target(arena, x);
+            actor.gameObject.layer = layer;
+            BoxCollider2D collider = actor.GetComponent<BoxCollider2D>();
+            collider.isTrigger = false;
+            collider.sharedMaterial = AssetDatabase.LoadAssetAtPath<EnemyBase>(Cat).GetComponent<Collider2D>().sharedMaterial;
+            Rigidbody2D body = actor.gameObject.AddComponent<Rigidbody2D>();
+            body.gravityScale = 3f;
+            body.freezeRotation = true;
+            return actor;
+        }
+
+        public static async Task<object> RunTimingScenarios()
+        {
+            RequirePlay();
+            float previousCaptureDelta = Time.captureDeltaTime;
+            var results = new System.Collections.Generic.List<object>();
+            try
+            {
+                // 성능 벤치마크가 아니라 30/60 Hz 시간 간격에서 순서와 최소 대기를 검사합니다.
+                foreach (int rate in new[] { 30, 60 })
+                {
+                    Time.captureDeltaTime = 1f / rate;
+                    results.Add(await Timing(Cat, 5300f, rate));
+                    results.Add(await Timing(Ghost, 5400f, rate));
+                }
+                results.Add(await CancelDuringHold(Cat, 5500f));
+                results.Add(await CancelDuringHold(Ghost, 5600f));
+                results.Add(await LongMeleePreparation(5700f));
+                results.Add(await ZeroDelayWarning(5800f));
+                return results;
+            }
+            finally { Time.captureDeltaTime = previousCaptureDelta; }
+        }
+
+        private static async Task<object> Timing(string path, float x, int rate)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(path, arena, x);
+                EnemyDamageProbe target = Target(arena, x + (path == Cat ? 1f : 4f));
+                enemy.SetTarget(target.transform);
+                await Wait(0.15f);
+                EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
+                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                Check(module.TryUseAttack(), "Timing begin");
+                float started = Time.time;
+                AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
+                Image area = ui.GetComponentInChildren<Image>();
+                float expectedAlpha = (path == Cat ? 50f : 30f) / 255f;
+                SpriteRenderer sprite = enemy.GetComponentInChildren<SpriteRenderer>();
+                bool blink = false;
+                await Wait(0.1f);
+                if (path == Cat) Check(sprite.sprite.name == "Catto_019", "Preparation pose not displayed immediately");
+                await ObserveUntil(() => skill.IsHoldingWarning, () =>
+                {
+                    blink |= ui.IsBlinking;
+                    if (path == Cat) Check(!ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Melee warning must not blink");
+                    Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Attack before final hold");
+                });
+                float holdStarted = Time.time;
+                Check(blink == (path == Ghost) && ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold must preserve per-enemy alpha");
+                enemy.OnAttackWarning(); enemy.OnAttackHit(); enemy.OnAttackFinished();
+                Check(skill.IsHoldingWarning && !ui.IsBlinking && target.ReceivedHitCount == 0, "Old animation event bypassed/restarted hold");
+                await ObserveUntil(() => !skill.IsPreparing, () =>
+                {
+                    Check(ui.IsVisible && !ui.IsBlinking && Mathf.Abs(area.color.a - expectedAlpha) < 0.001f, "Hold flickered/hidden");
+                    Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0 && !module.TryUseAttack(), "Hold allowed early attack");
+                    if (path == Cat) Check(sprite.sprite.name == "Catto_019", "Preparation pose released during hold");
+                });
+                float released = Time.time;
+                Check(released - holdStarted >= skill.PostBlinkDelay - 0.001f, "Hold shorter than configured delay");
+                float hitAt = released;
+                float finalPoseHold = 0f;
+                if (path == Cat)
+                {
+                    await ObserveUntil(() => target.ReceivedHitCount > 0, () => { });
+                    hitAt = Time.time;
+                    Check(hitAt - released <= 0.05f + 2f / rate && !ui.IsVisible, "Fast hit timing/UI hide");
+                    enemy.OnAttackHit(); enemy.OnAttackHit();
+                    await ObserveUntil(() => sprite.sprite.name == "Catto_023", () => { });
+                    float recoveryStarted = Time.time;
+                    await ObserveUntil(() => !skill.IsUsing, () =>
+                    {
+                        Check(!module.TryUseAttack() && target.ReceivedHitCount == 1, "Recovery interrupted/damaged twice");
+                        Check(sprite.sprite.name == "Catto_023", "Recovery pose changed before finishing");
+                    });
+                    finalPoseHold = Time.time - recoveryStarted;
+                    Check(finalPoseHold >= 0.2f - 1.1f / rate, "Final pose recovery too short");
+                    Check(Time.time - hitAt >= 0.35f - 1.1f / rate, "Melee finished before recovery");
+                }
+                else
+                {
+                    Check(Shots(enemy).Length == 1 && !ui.IsVisible, "Projectile not released after hold");
+                    await Wait(0.7f);
+                }
+                Check(!skill.IsUsing && target.ReceivedHitCount == 1, "Timing damage/end");
+                return new { scenario = path == Cat ? "melee-anticipation-hold-fast-hit-recovery" : "projectile-post-blink-hold", rate,
+                    passed = true, releaseAfter = released - started, holdSeconds = released - holdStarted, hitAfter = hitAt - started, finalPoseHold };
+            }
+            finally { DestroyShots(x); Object.Destroy(arena); }
+        }
+
+        private static async Task<object> CancelDuringHold(string path, float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(path, arena, x);
+                EnemyDamageProbe target = Target(arena, x + 1f);
+                enemy.SetTarget(target.transform);
+                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                Set(skill, "<BaseCoolTime>k__BackingField", 0f);
+                await Wait(0.15f);
+                EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
+                Check(module.TryUseAttack(), "Hold cancel begin");
+                await ObserveUntil(() => skill.IsHoldingWarning, () => { });
+                AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
+                enemy.SetTarget(null);
+                Check(!skill.IsUsing && !ui.IsVisible, "Hold target loss did not cancel");
+                await Wait(0.1f);
+                if (path == Cat) Check(enemy.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Idle"), "Cancelled preparation pose stuck");
+                enemy.SetTarget(target.transform);
+                Check(module.TryUseAttack(), "Hold cancellation reuse");
+                await ObserveUntil(() => skill.IsHoldingWarning, () => { });
+                ((Agent)enemy).ApplyDamage(new DamageData { DamageAmount = 999f }, Vector2.zero, Vector2.zero, Vector2.zero);
+                Check(!skill.IsUsing && !ui.IsVisible, "Hold death did not cancel");
+                await Wait(0.4f);
+                Check(target.ReceivedHitCount == 0 && Shots(enemy).Length == 0, "Cancelled hold caused damage");
+                return new { scenario = path == Cat ? "melee-hold-cancel-reuse-death" : "projectile-hold-cancel-reuse-death", passed = true };
+            }
+            finally { DestroyShots(x); Object.Destroy(arena); }
+        }
+
+        private static async Task<object> LongMeleePreparation(float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(Cat, arena, x);
+                enemy.GetModule<IStatModule>().GetStat(AssetDatabase.LoadAssetAtPath<StatData>(Delay)).SetBaseValue(1f);
+                EnemyDamageProbe target = Target(arena, x + 1f);
+                enemy.SetTarget(target.transform);
+                await Wait(0.15f);
+                Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Long preparation begin");
+                await Wait(0.7f);
+                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                Check(skill.IsPreparing && target.ReceivedHitCount == 0 && enemy.GetComponentInChildren<SpriteRenderer>().sprite.name == "Catto_019", "Preparation clip auto-released or looped");
+                await ObserveUntil(() => !skill.IsUsing, () => { });
+                Check(target.ReceivedHitCount == 1, "Long preparation never released");
+                return new { scenario = "melee-stat-extends-held-pose-not-strike-speed", passed = true };
+            }
+            finally { Object.Destroy(arena); }
+        }
+
+        private static async Task<object> ZeroDelayWarning(float x)
+        {
+            GameObject arena = Arena(x);
+            try
+            {
+                EnemyBase enemy = Spawn(Ghost, arena, x);
+                enemy.GetModule<IStatModule>().GetStat(AssetDatabase.LoadAssetAtPath<StatData>(Delay)).SetBaseValue(0f);
+                enemy.SetTarget(Target(arena, x + 4f).transform);
+                await Wait(0.15f);
+                Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Zero delay begin");
+                float started = Time.time;
+                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
+                await ObserveUntil(() => skill.IsHoldingWarning, () => Check(Shots(enemy).Length == 0, "Zero delay skipped blink"));
+                float held = Time.time;
+                await ObserveUntil(() => !skill.IsPreparing, () => Check(Shots(enemy).Length == 0 && !ui.IsBlinking, "Zero delay skipped hold"));
+                Check(Time.time - held >= 0.149f && Time.time - started >= ui.BlinkDuration + 0.149f && Shots(enemy).Length == 1, "Zero delay warning minimum");
+                return new { scenario = "zero-stat-still-preserves-blink-and-hold", passed = true };
+            }
+            finally { DestroyShots(x); Object.Destroy(arena); }
         }
 
         private static async Task<object> Chase(string path, float x)
@@ -153,22 +477,22 @@ namespace CTJ.Tools
                 await Wait(0.2f);
                 Check(skill.IsPreparing && target.ReceivedHitCount == 0, "Melee released before stat delay");
                 if (dodge) target.transform.position += Vector3.up * 3f;
-                bool blink = false, blinkOff = false, blinkOn = false;
+                bool steadyWarning = false;
                 await ObserveUntil(() => !skill.IsUsing, () =>
                 {
-                    blink |= ui.IsBlinking;
-                    if (ui.IsBlinking)
+                    Check(!ui.IsBlinking, "Melee warning blinked");
+                    if (ui.IsVisible)
                     {
                         float alpha = ui.GetComponentInChildren<Image>().color.a;
-                        blinkOff |= alpha < 0.001f;
-                        blinkOn |= alpha > 0.1f;
+                        Check(Mathf.Abs(alpha - 50f / 255f) < 0.001f, "Melee warning alpha changed");
+                        steadyWarning = true;
                     }
                 });
-                Check(blink && blinkOff && blinkOn && !ui.IsVisible, "Melee flash/hide sequence");
+                Check(steadyWarning && !ui.IsVisible, "Melee steady warning/hide sequence");
                 Check(target.ReceivedHitCount == (dodge ? 0 : 1), "Melee event contact damage");
                 enemy.OnAttackHit(); enemy.OnAttackHit();
                 Check(target.ReceivedHitCount == (dodge ? 0 : 1), "Late duplicate event");
-                return new { scenario = dodge ? "left-melee-dodge-and-ui" : "melee-delay-event-flash-and-ui", passed = true, duration = Time.time - start, hits = target.ReceivedHitCount };
+                return new { scenario = dodge ? "left-melee-dodge-and-ui" : "melee-delay-event-steady-ui", passed = true, duration = Time.time - start, hits = target.ReceivedHitCount };
             }
             finally { Object.Destroy(arena); }
         }

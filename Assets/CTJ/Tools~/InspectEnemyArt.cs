@@ -15,6 +15,13 @@ namespace CTJ.Tools
         private const string SessionKey = "CTJ.EnemyArtTest.PreviousStartScene";
         private const string SessionActive = "CTJ.EnemyArtTest.Active";
 
+        public static object ReadEditorState() => new
+        {
+            playing = EditorApplication.isPlayingOrWillChangePlaymode,
+            compiling = EditorApplication.isCompiling,
+            ctjTestSession = SessionState.GetBool(SessionActive, false)
+        };
+
         public static string BeginPlayTest()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

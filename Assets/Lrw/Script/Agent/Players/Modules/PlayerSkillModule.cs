@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
-    public class PlayerSkillModule : SkillModule, IPlayerSkillModule
+    public class PlayerSkillModule : SkillModule, IPlayerSkillModule,ICanInputOnOff
     {
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
@@ -13,6 +13,8 @@ namespace Lrw.Script.Agent.Players.Modules
         
         private PlayerController _playerController;
         private PlayerInputSo _input;
+
+        private bool inputActive;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -26,6 +28,8 @@ namespace Lrw.Script.Agent.Players.Modules
             _input.OnMeleeSkillKeyPressed += AttackKeyPressed;
             _input.OnSkill1KeyPressed += Skill1KeyPressed;
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
+
+            inputActive = true;
         }
 
         private void OnDestroy()
@@ -62,12 +66,18 @@ namespace Lrw.Script.Agent.Players.Modules
 
         private void TryUseSkill(SkillSO skillSo,bool pressed)
         {
+            if(!inputActive) return;
             if (CanUseSkill(skillSo))
             {
                 UseSkill(skillSo, pressed);
             }
         }
-        
+
+
+        public void SetActive(bool active)
+        {
+            inputActive = active;
+        }
         
     }
 }

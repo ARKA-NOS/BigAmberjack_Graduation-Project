@@ -19,22 +19,27 @@ namespace Lrw.Script.UI.Template
         private Coroutine coroutine;
         public override void Open(object data)
         {
+            KillCoroutine();
             coroutine = StartCoroutine(Fade(1));
         }
 
         public override void Close()
         {
+            KillCoroutine();
             coroutine = StartCoroutine(Fade(0));
         }
 
-        private IEnumerator Fade(float targetValue)
+        private void KillCoroutine()
         {
             if (coroutine != null)
             {
                 StopCoroutine(coroutine);
                 coroutine = null;   
             }
-            
+        }
+        
+        private IEnumerator Fade(float targetValue)
+        {
             float currentValue = canvasGroup.alpha;
             float dir = (targetValue - currentValue) > 0 ? 1 : -1;
             while (true)

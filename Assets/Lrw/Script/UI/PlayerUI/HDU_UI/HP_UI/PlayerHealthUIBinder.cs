@@ -8,14 +8,21 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
     public class PlayerHealthUIBinder : AbstractUIBinder<Gauge>
     {
         [Header("Health Bar")]
-        [SerializeField] private Image healthBar;
+        [SerializeField] private Image currentBar;
+        [SerializeField] private Image lagBar;
         [SerializeField] private float lagSpeed;
         
         [SerializeField] private Text healthText;
         
         protected override void DataUpdate()
         {
+            HealthBarUpdate();
             HealthTextUpdate();
+        }
+
+        private void HealthBarUpdate()
+        {
+            
         }
 
         private void HealthTextUpdate()

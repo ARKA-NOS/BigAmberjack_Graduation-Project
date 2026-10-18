@@ -101,7 +101,7 @@ namespace CTJ.Enemies
 
         public bool TryUseAttack()
         {
-            if (!Ready || IsBusy) return false;
+            if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
             foreach (SkillEntry entry in skills)
             {
                 if (!IsValid(entry) || !entry.Matches(_enemy, _movement) || !CanUseSkill(entry.Skill.SkillSo)) continue;

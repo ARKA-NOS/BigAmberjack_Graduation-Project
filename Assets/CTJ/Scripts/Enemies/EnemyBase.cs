@@ -40,6 +40,7 @@ namespace CTJ.Enemies
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
         private EnemySkillModule _skills;
+        private EnemyHitReactionModule _hitReaction;
         private StateMachine<EnemyStateType> _stateMachine;
         private float _nextAttackTime;
 
@@ -50,6 +51,7 @@ namespace CTJ.Enemies
         public float AttackInterval => attackInterval;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
+        public bool IsHitReacting => _hitReaction != null && _hitReaction.IsKnockedBack;
 
         protected override void Awake()
         {
@@ -61,6 +63,7 @@ namespace CTJ.Enemies
             _rigidbody = GetComponent<Rigidbody2D>();
             _movement = GetModule<EnemyMovementModule>();
             _skills = GetModule<EnemySkillModule>();
+            _hitReaction = GetModule<EnemyHitReactionModule>();
             InitializeStateMachine();
             if (HealthModule != null)
             {
@@ -80,14 +83,15 @@ namespace CTJ.Enemies
 
         private void Update()
         {
-            if (!IsDead)
+            if (!IsDead && !IsHitReacting)
                 _stateMachine.Update();
         }
 
         private void FixedUpdate()
         {
-            if (!IsDead)
-                _stateMachine.FixedUpdate();
+            if (IsDead) return;
+            if (_hitReaction != null && _hitReaction.TickKnockback()) return;
+            _stateMachine.FixedUpdate();
         }
 
         private void InitializeStateMachine()
@@ -161,6 +165,7 @@ namespace CTJ.Enemies
 
         internal bool CanAttackTarget()
         {
+            if (IsHitReacting) return false;
             if (_skills != null)
                 return _skills.CanAttackTarget();
             if (!IsTargetInRange(AttackRange) || _movement == null || !_movement.IsGrounded)
@@ -221,6 +226,8 @@ namespace CTJ.Enemies
                 return;
 
             HealthModule.CurrentHealth -= amount;
+            // HP 0이 되는 피해는 사망 연출을 우선합니다. 깜빡임은 무적 시간을 만들지 않습니다.
+            if (!IsDead && _hitReaction != null) _hitReaction.React(damageData, hitDirection);
             OnHit?.Invoke();
         }
 
@@ -237,6 +244,7 @@ namespace CTJ.Enemies
 
             // 외부 콜백이나 남은 Animation Event보다 먼저 사망 상태를 확정합니다.
             IsDead = true;
+            if (_hitReaction != null) _hitReaction.ClearReaction();
             _skills?.StopAttack();
             StopAllCoroutines();
             _rigidbody.linearVelocity = Vector2.zero;
@@ -262,6 +270,7 @@ namespace CTJ.Enemies
 
         protected virtual void OnDisable()
         {
+            if (_hitReaction != null) _hitReaction.ClearReaction();
             _skills?.StopAttack();
             if (_rigidbody != null) StopHorizontalMovement();
         }

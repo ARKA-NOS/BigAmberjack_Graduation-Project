@@ -1,5 +1,7 @@
 # 적 스킬 모듈 구성·양산·테스트 (2026-10-14)
 
+2026-10-18: 선택형 EnemyHitReactionModule이 추가되었다. Mad Ghost는 피격 시 공격 준비를 취소하고 Catto는 준비/타격/회수 동작을 취소한다. 두 적은 짧은 넉백과 단색 빨강 실루엣 점멸을 사용한다. 보스 등에서는 Cancel Attack On Hit을 끌 수 있다. 설정과 테스트는 [EnemyHitReactionGuide.md](EnemyHitReactionGuide.md)를 참고한다.
+
 현재 공격 설정은 이 문서를 기준으로 한다. 기존 EnemyCombatGuide/EnemyDamageDeathGuide의 MeleeEnemy·RangedEnemy 내부 공격 필드 설명은 이전 구조다. 이동 설정은 EnemyMovementGuide를 그대로 사용한다.
 
 추가된 추적 해제 거리, HP 40/30, 준비 스탯과 Canvas 공격 예고의 상세 설정/테스트는 `EnemyCombatRulesGuide.md`를 참고한다. 10월 16일 정정으로 Catto는 Telegraph Prefab=None으로 범위 UI 자체를 생성하지 않는다. Ghost의 알파 30 경고와 기존 공격 타이밍은 유지한다. 피격용 Trigger 몸통과 Ground 전용 TerrainBody를 분리했으며 사거리 안에서는 멈춰 공격한다.

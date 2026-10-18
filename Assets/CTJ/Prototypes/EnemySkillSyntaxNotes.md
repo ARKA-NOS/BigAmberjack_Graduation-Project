@@ -88,3 +88,32 @@ try/finally는 검사 중 예외가 발생해도 테스트용 GameObject를 제�
 ## 근접 범위 표시 제거 (2026-10-16)
 
 런타임 C# 문법이나 시스템은 추가하지 않았다. Catto 프리팹의 `Telegraph Prefab` 참조만 None(`{fileID: 0}`)으로 비웠다. 기존 `telegraphPrefab != null` 조건이 Canvas 생성을 건너뛰고, `Telegraph?.EndBlink()`/`?.Hide()`는 참조가 없으면 호출하지 않는다. 준비·타격·후딜 타이머는 UI와 별도로 실행되므로 그대로 유지된다. 알파를 0으로 해서 숨긴 것이 아니라 UI 인스턴스를 생성하지 않는 방식이다. 검증에서는 `GetComponentsInChildren<AttackTelegraphUI>(true)`와 Canvas 배열 길이가 0인지 검사해 비활성 UI까지 남지 않았는지 확인한다.
+
+## 피격 넉백·깜빡임·선택적 취소 (2026-10-18)
+
+- `EnemyHitReactionModule : Module` / `override Initialize(ModuleOwner owner)`: 기존 모듈 수집·초기화 규칙을 그대로 쓴다. EnemyBase는 `GetModule<EnemyHitReactionModule>()`로 선택적으로 찾으므로 모든 적에 강제로 붙이지 않는다. 보스를 위한 별도 추상 클래스나 인터페이스는 추가하지 않았다.
+- `[SerializeField] private bool`은 필드를 외부 코드에 공개하지 않고 Inspector에서 효과를 켜고 끄도록 한다. `[Min]`, `[Range]`, `[Tooltip]`은 설정 의도와 입력 범위를 표시한다. 세 효과의 스위치를 분리했기 때문에 넉백만 면역인 적, 깜빡임만 있는 적 등을 같은 컴포넌트로 구성한다.
+- `skill is EnemyAttackSkill { IsPreparing: true }`는 기존에 쓰던 속성 패턴 매칭이다. null 검사·타입 확인·준비 중인지 확인을 함께 한다. `IChargeSkill { IsCharging: true }`도 함께 검사한다. 최신 수정에서는 `skill is EnemyMeleeSkill`도 허용해 근접은 준비/타격/회수 전체를 기존 StopAttack으로 취소한다. 발사된 탄을 찾아 지우지는 않는다.
+- `Time.time + duration`으로 종료 시각을 저장한다. 코루틴을 연타마다 추가하지 않고 종료 시각과 초기 속도를 갱신한다. `Mathf.Clamp01(남은 시간 / 전체 시간)`을 속력에 곱해 선형 감속한다. 명목 이동량은 속력×시간÷2지만 실제 물리 이동량은 프레임과 접촉 조건의 영향을 받는다.
+- `EnemyBase.FixedUpdate`에서 `TickKnockback()`이 true면 `return`한다. Unity 스크립트 실행 순서 설정에 의존하지 않고, 같은 물리 틱에 FSM이 넉백 속도를 덮어쓰는 것을 막는다. `linearVelocityX`만 바꾸므로 Y 속도와 중력은 유지된다. `Update`의 FSM도 이 짧은 구간에는 쉬어 Attack.Enter 등의 정지 명령과 새 공격을 막는다.
+- `Color[] _originalColors`에 각 스프라이트의 원래 RGBA를 저장한다. Color는 값 형식이므로 원본이 별도로 보존된다. 연타 중에는 다시 저장하지 않아 피격 붉은색이 원래 색으로 남는 것을 막는다. 최신 단색 채우기는 `Material[] _originalMaterials`에 원래 머티리얼 참조도 보관한다. SpriteRenderer.enabled와 공용 머티리얼 에셋의 내용은 바꾸지 않는다.
+- `Mathf.FloorToInt(경과 시간 / 간격) % 2`는 구간 번호의 짝수/홀수로 붉은색/원래 색을 번갈아 선택한다. `LateUpdate`에서 적용하고 종료·OnDisable·사망 시 원래 RGBA를 돌려준다. 피격 판정이나 HP 코드를 막지 않아 깜빡임과 무적은 분리되어 있다.
+- `UnityEngine.Object`인 모듈은 `!= null`로 확인한다. Unity에서 Destroy된 컴포넌트는 관리 객체 참조가 남을 수 있어 `?.`만으로 삭제 여부를 판단하면 안 된다. 선택 모듈을 제거해도 피해/사망은 유지되도록 이 경계에 명시적인 검사를 사용했다.
+- 효과 확장은 새 이벤트를 만들지 않고 Agent의 기존 `UnityEvent OnHit`를 이용한다. Inspector에서 AudioSource.Play/ParticleSystem.Play 등을 연결할 수 있다. 검증 코드의 `AddListener(() => additionalEffects++)`는 람다를 콜백으로 등록해 실제 한 번 호출되는지 확인하는 예다.
+
+### 추가 피드백: 거리 1.7배·붉은 점멸
+
+- 넉백 시간 0.18초는 유지하고 속력을 3에서 5.1로 바꿨다. 같은 선형 감속에서 이동량은 초기 속력에 비례하므로 명목상 5.1 / 3 = 1.7배다. 시간이 늘어 적이 더 오래 행동하지 못하는 변화는 피했다. 실제 물리 거리도 이전 값의 복제본과 나란히 비교했다.
+- `[ColorUsage(false)]`는 Inspector 색상 선택기에서 알파 입력을 숨긴다. `hitColor`는 RGB만 사용하고 투명도는 원래 SpriteRenderer 값을 유지하려는 의도를 표시한다.
+- `Color color = flash ? hitColor : _originalColors[i]`는 삼항 연산자로 이번 프레임의 색을 선택한다. 그 뒤 `color.a = _originalColors[i].a`로 원래 알파를 고정하고 `sprites[i].color = color`로 대입한다. 이제 색만 깜빡이며 투명해지지 않는다.
+- `blinkDuration`은 0.3초에서 0.35초로 조정했다. 점멸 간격 0.05초, 공격 준비 취소, 피격 무적 없음 등의 기존 규칙은 유지한다.
+
+### 최신 정정: 근접 공격 취소·실루엣 단색 채우기
+
+- `FormerlySerializedAs("cancelPreparingAttack")`: Unity에 이전 필드 이름을 알려 기존 프리팹/Variant에 저장된 토글 값을 새 `cancelAttackOnHit` 필드로 읽게 한다. 이제 근접은 타격 중에도 취소하므로 Inspector 이름도 Cancel Attack On Hit으로 바꿨다. Catto/Ghost 모두 켰으며 보스에서는 끌 수 있다.
+- 근접 스킬은 `StopAttack()` → 공용 `ForceStopCurrentSkill()` → 기존 `OnStopSkill()` 순서로 정리된다. `EnemyMeleeSkill.ReturnToIdle()`가 준비/타격 자세를 풀고, ActiveSkill이 사라져 남은 Animation Event가 피해를 주지 않는다. 이미 전달한 피해까지 되돌리지는 않는다.
+- 단순 `SpriteRenderer.color = Color.red`는 일반 스프라이트 셰이더에서 원본 픽셀 RGB에 빨강을 **곱한다**. 그래서 검은 몸체는 검게 남는다. 이번 `EnemySolidHitFlash.shader`는 텍스처에서 `.a`(알파)만 읽어 윤곽을 가져오고 `.rgb`(그림 색)는 사용하지 않는다.
+- HLSL의 `half4(input.color.rgb, alpha)`는 최종 RGB를 지정한 단색으로 채우고 알파만 원본에서 얻은 값으로 내보낸다. `half4`는 색상 4성분을 담는 GPU용 벡터 타입이다. `SAMPLE_TEXTURE2D(...).a`가 투명한 배경/실루엣 구멍을 보존하고, 여기에 SpriteRenderer의 알파를 곱해 원래 반투명도도 유지한다.
+- `Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha`는 알파에 맞춰 화면 배경과 섞는 렌더링 설정이다. `Cull Off`는 좌우 반전 시에도 스프라이트를 보이게 하고, `ZWrite Off`는 투명 스프라이트가 깊이를 기록해 뒤 그림을 가리는 문제를 피한다. 현재 설치된 URP 17.3의 2D include를 사용하며 패키지는 설치하지 않았다.
+- `renderer.sharedMaterial = hitMaterial`은 공유 머티리얼 **참조를 해당 Renderer에 연결**하는 작업이다. sharedMaterial.SetColor처럼 공유 에셋 내용을 바꾸지 않으므로 다른 적 색을 변경하지 않는다. `.material`로 매번 복제하지도 않는다. 점멸의 원래 모습 구간/종료/사망/비활성화에서 원래 참조와 RGBA를 돌려준다.
+- 기본 피격 색은 `Color.red` 즉 RGB(1, 0, 0)이다. 이전의 RGB(1, 0.25, 0.25) 틴트는 더 이상 쓰지 않는다. 실제 검증은 스프라이트 색 속성만 확인하지 않고 RenderTexture로 카메라 출력 픽셀을 읽어 검은 픽셀도 빨강으로 바뀌고 알파가 같음을 확인했다.

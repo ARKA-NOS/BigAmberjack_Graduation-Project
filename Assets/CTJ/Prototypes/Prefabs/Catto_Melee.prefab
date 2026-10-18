@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8810647111667320001}
   - component: {fileID: 8810647111667320100}
   - component: {fileID: 8810647111667320101}
+  - component: {fileID: 8810647111667320300}
   m_Layer: 8
   m_Name: Catto_Melee
   m_TagString: Untagged
@@ -24,6 +25,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8810647111667320300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5683942725659162458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31dfaa11bc3b4d629e100b203f9e5311, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
+  enableKnockback: 1
+  knockbackSpeed: 5.1
+  knockbackDuration: 0.18
+  cancelAttackOnHit: 1
+  enableBlink: 1
+  blinkDuration: 0.35
+  blinkInterval: 0.05
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
+  sprites:
+  - {fileID: 9213350838558911084}
 --- !u!4 &1121222997207652652
 Transform:
   m_ObjectHideFlags: 0

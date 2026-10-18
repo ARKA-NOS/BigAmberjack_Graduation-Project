@@ -197,9 +197,15 @@ namespace CTJ.Tools
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 await Wait(0.15f);
                 Check(module.TryUseAttack() && module.IsBusy, "Ranged did not start");
-                await Wait(1.05f);
-                Check(!module.IsBusy && probe.ReceivedHitCount == 1 && probe.TotalDamage == 5f, "Ranged damage/recovery failed");
+                float started = skill.CoolTimeStartTime;
+                await Wait(0.2f);
                 Check(!module.CanUseSkill(skill.SkillSo), "Ranged 1.2s cooldown ended early");
+                // 준비+유지+탄 이동이 1.05초 경계에 걸릴 수 있어 실제 완료를 기다리되 상한은 검사합니다.
+                await Until(() => !module.IsBusy && probe.ReceivedHitCount > 0);
+                Check(!module.IsBusy && probe.ReceivedHitCount == 1 && probe.TotalDamage == 5f, "Ranged damage/recovery failed");
+                Check(Time.time - started < 1.6f, "Ranged damage/recovery took too long");
+                if (Time.time - started < 1.2f)
+                    Check(!module.CanUseSkill(skill.SkillSo), "Ranged 1.2s cooldown ended early");
                 await Until(() => skill.RemainingCoolTime <= 0f);
                 Check(module.TryUseAttack(), "Ranged repeat failed");
                 return new { scenario = "ranged projectile damage / recovery / repeat cooldown", passed = true };

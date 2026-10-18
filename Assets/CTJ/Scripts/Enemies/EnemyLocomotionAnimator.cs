@@ -26,7 +26,7 @@ namespace CTJ.Enemies
             if (enemy == null || _body == null || !_animator.isActiveAndEnabled)
                 return;
 
-            bool isMoving = enemy.isActiveAndEnabled && !enemy.IsAttackInProgress &&
+            bool isMoving = enemy.isActiveAndEnabled && !enemy.IsAttackInProgress && !enemy.IsHitReacting &&
                             Mathf.Abs(_body.linearVelocityX) > 0.01f;
             _animator.SetBool(IsMovingHash, isMoving);
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
-    public class PlayerMovement : Module, IControlMovement,IAfterInitModule
+    public class PlayerMovement : Module, IControlMovement,IAfterInitModule,ICanInputOnOff
     {
         [SerializeField] private StatData moveSpeed;
         private Rigidbody2D _playerRb;
@@ -61,7 +61,11 @@ namespace Lrw.Script.Agent.Players.Modules
 
         public void AddForce(Vector2 force, ForceMode2D impulse = ForceMode2D.Impulse) 
             => _playerRb.AddForce(force,impulse);
-        
-        
+
+
+        public void SetActive(bool active)
+        {
+            
+        }
     }
 }

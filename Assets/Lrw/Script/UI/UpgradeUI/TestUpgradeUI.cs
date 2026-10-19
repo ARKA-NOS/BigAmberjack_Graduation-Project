@@ -1,5 +1,6 @@
 ﻿using Lrw.Script._Core._Debug;
 using Lrw.Script._Core._ServiceLocator;
+using Lrw.Script.Agent.Players;
 using Lrw.Script.UI.Template;
 using Lrw.Script.Upgrade;
 using Lrw.Script.Upgrade.SO;
@@ -34,6 +35,8 @@ namespace Lrw.Script.UI.UpgradeUI
                 return;
             }
 
+            ServiceLocator.Get<IPlayerController>().SetInputActive(false);
+            
             tree = ServiceLocator.Get<IUpgradeManager>().GetUpgradeTree(treeSo.TreeName);
 
             foreach (TestUpgradeNodeButton button in buttons)
@@ -41,9 +44,11 @@ namespace Lrw.Script.UI.UpgradeUI
                 button.SetTree(tree);
             }
         }
-        
-        
-        
-        
+
+        public override void Close()
+        {
+            base.Close();
+            ServiceLocator.Get<IPlayerController>().SetInputActive(true);
+        }
     }
 }

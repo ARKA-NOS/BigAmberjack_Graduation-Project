@@ -12,7 +12,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
         [SerializeField] private Image currentBar;
         [SerializeField] private Image lagBar;
         [SerializeField,Range(0,1f)] private float lagSpeed;
-
+        
         private float _lagValue = 0f;
         
         [Header("Health Text")]
@@ -27,13 +27,13 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
                 SetBarSize(normal, _lagValue);
             }
         }
-
+        
         protected override void DataUpdate()
         {
             HealthBarUpdate();
             HealthTextUpdate();
         }
-
+        
         private void HealthBarUpdate()
         {
             float normal = CurrentValue.Normalized;
@@ -41,13 +41,13 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
             _lagValue = Mathf.MoveTowards(_lagValue,normal , Time.deltaTime * lagSpeed);
             SetBarSize(normal,_lagValue);
         }
-
+        
         private void SetBarSize(float currentBarSize, float lagBarSize)
         {
             currentBar.rectTransform.localScale = new Vector3(currentBarSize, 1, 1);
             lagBar.rectTransform.localScale = new Vector3(lagBarSize, 1, 1);
         }
-
+        
         private void HealthTextUpdate()
         {
             if (healthText != null)
@@ -55,7 +55,6 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
                 healthText.text = $"{CurrentValue.CurrentValue} / {CurrentValue.MaxValue}";
             }
         }
-        
         
     }
 }

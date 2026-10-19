@@ -26,19 +26,6 @@ namespace KHO.Scripts.ItemSystem
 
         public int TagCount => ItemTags.Length;
 
-        // 에셋 없이 쓰는 테스트용 아이템을 만든다.
-        public static ItemSO CreateRuntime(string itemId, string itemName, Sprite icon, Grade grade, Tags[] tags)
-        {
-            ItemSO item = CreateInstance<ItemSO>();
-            item.name = itemName;
-            item.ItemId = itemId;
-            item.ItemName = itemName;
-            item.Icon = icon;
-            item.Grade = grade;
-            item.ItemTags = tags;
-            return item;
-        }
-
         private void OnValidate()
         {
             if (ItemTags.Length > MaxTagCount)

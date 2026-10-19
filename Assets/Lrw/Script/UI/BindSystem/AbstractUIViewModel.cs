@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Lrw.Script.UI.BindSystem
 {
@@ -7,10 +8,13 @@ namespace Lrw.Script.UI.BindSystem
     {
         public T BindData { get; private set; }
         
+        public event Action OnBind;
         public void Bind(T data)
         {
             BindData = data;
+            OnBind?.Invoke();
         }
+        
         
     }
 }

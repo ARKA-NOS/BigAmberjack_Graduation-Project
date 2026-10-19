@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Lrw.Script._Core._Debug;
+using UnityEngine;
 
 namespace Lrw.Script.UI.BindSystem
 {
@@ -8,6 +10,23 @@ namespace Lrw.Script.UI.BindSystem
 
         protected T CurrentValue => bindData != null ? bindData.BindData : default;
 
+        protected virtual void OnEnable()
+        {
+            if (bindData != null)
+            {
+                bindData.OnBind += OnDataChanged;
+            }
+            else FDebug.LogError($"[{name}] BindData is null");
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (bindData != null)
+            {
+                bindData.OnBind -= OnDataChanged;
+            }
+        }
+
         protected virtual void Update()
         {
             if (bindData != null)
@@ -15,6 +34,8 @@ namespace Lrw.Script.UI.BindSystem
         }
         
         protected abstract void DataUpdate();
-        
+
+        protected virtual void OnDataChanged() {}
+
     }
 }

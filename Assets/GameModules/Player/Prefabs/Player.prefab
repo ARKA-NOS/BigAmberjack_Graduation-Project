@@ -703,6 +703,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkillModule
       objectReference: {fileID: 0}
+    - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
+      propertyPath: skill1ViewModel
+      value: 
+      objectReference: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
+    - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
+      propertyPath: skill2ViewModel
+      value: 
+      objectReference: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

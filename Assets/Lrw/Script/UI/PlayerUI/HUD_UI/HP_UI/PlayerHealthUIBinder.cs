@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public class PlayerHealthUIBinder : AbstractUIBinder<Gauge>
     {
@@ -17,12 +17,15 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
         
         [Header("Health Text")]
         [SerializeField] private TextMeshProUGUI healthText;
-
-        private void Start()
+        
+        protected override void OnDataChanged()
         {
-            float normal = CurrentValue.Normalized;
-            _lagValue = normal;
-            SetBarSize(normal, _lagValue);
+            if (CurrentValue != null)
+            {
+                float normal = CurrentValue.Normalized;
+                _lagValue = normal;
+                SetBarSize(normal, _lagValue);
+            }
         }
 
         protected override void DataUpdate()
@@ -49,7 +52,7 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
         {
             if (healthText != null)
             {
-                healthText.text = CurrentValue.ToString();
+                healthText.text = $"{CurrentValue.CurrentValue} / {CurrentValue.MaxValue}";
             }
         }
         

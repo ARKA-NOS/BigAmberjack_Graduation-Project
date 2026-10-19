@@ -19,8 +19,5 @@
             MaxValue = maxValue;
         }
 
-        public override string ToString()
-            => $"{CurrentValue} / {MaxValue}";
-
     }
 }

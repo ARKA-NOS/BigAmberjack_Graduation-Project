@@ -1,6 +1,6 @@
 using DevLib.ModuleSystem;
 using KHO.Scripts.InventorySystem;
-using Lrw.Script.Player.InteractSystem;
+using Lrw.Script.Agent.Players.InteractSystem;
 using UnityEngine;
 
 namespace KHO.Scripts.ItemSystem

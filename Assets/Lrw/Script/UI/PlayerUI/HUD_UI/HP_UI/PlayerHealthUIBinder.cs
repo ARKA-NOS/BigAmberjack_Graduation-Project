@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public class PlayerHealthUIBinder : AbstractUIBinder<Gauge>
     {
@@ -49,7 +49,7 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
         {
             if (healthText != null)
             {
-                healthText.text = CurrentValue.ToString();
+                healthText.text = $"{CurrentValue.CurrentValue} / {CurrentValue.MaxValue}";
             }
         }
         

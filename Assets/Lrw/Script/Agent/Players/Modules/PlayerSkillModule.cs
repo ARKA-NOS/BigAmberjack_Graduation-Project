@@ -1,15 +1,21 @@
 ﻿using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
+using Lrw.Script.UI.PlayerUI.HUD_UI.Skill_UI;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerSkillModule : SkillModule, IPlayerSkillModule,ICanInputOnOff
     {
+        [Header("Skill Key")]
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
         [SerializeField] private SkillSO skill2;
+        
+        [Header("View Model")]
+        [SerializeField] private SkillViewModel skill1ViewModel;
+        [SerializeField] private SkillViewModel skill2ViewModel;
         
         private PlayerController _playerController;
         private PlayerInputSo _input;

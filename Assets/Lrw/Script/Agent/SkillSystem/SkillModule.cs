@@ -48,6 +48,9 @@ namespace Lrw.Script.Agent.SkillSystem
             return skillDict;
         }
         
+        public ISkill GetSkill(SkillSO skill)
+            => skill != null ? _skillPlayers.GetValueOrDefault(skill) : null;
+        
         public bool CanUseSkill(SkillSO skillSo)
         {
             if(skillSo == null) return false;

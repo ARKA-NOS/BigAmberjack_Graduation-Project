@@ -1,18 +1,27 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
+using Lrw.Script.UI.PlayerUI.HUD_UI.Skill_UI;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
-    public class PlayerSkillModule : SkillModule, IPlayerSkillModule
+    public class PlayerSkillModule : SkillModule, IPlayerSkillModule,ICanInputOnOff
     {
+        [Header("Skill Key")]
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
         [SerializeField] private SkillSO skill2;
         
+        [Header("View Model")]
+        [SerializeField] private SkillViewModel skill1ViewModel;
+        [SerializeField] private SkillViewModel skill2ViewModel;
+        
         private PlayerController _playerController;
         private PlayerInputSo _input;
+
+        private bool inputActive;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -26,6 +35,9 @@ namespace Lrw.Script.Agent.Players.Modules
             _input.OnMeleeSkillKeyPressed += AttackKeyPressed;
             _input.OnSkill1KeyPressed += Skill1KeyPressed;
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
+
+            inputActive = true;
+            
         }
 
         private void OnDestroy()
@@ -33,6 +45,12 @@ namespace Lrw.Script.Agent.Players.Modules
             _input.OnMeleeSkillKeyPressed -= AttackKeyPressed;
             _input.OnSkill1KeyPressed -= Skill1KeyPressed;
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
+        }
+
+        protected void Update()
+        {
+            if(skill1ViewModel != null) skill1ViewModel.Bind(GetSkill(skill1));
+            if(skill2ViewModel != null) skill2ViewModel.Bind(GetSkill(skill2));
         }
 
         public void SetSkill(PlayerSkillSlot slot,SkillSO skill)
@@ -62,12 +80,17 @@ namespace Lrw.Script.Agent.Players.Modules
 
         private void TryUseSkill(SkillSO skillSo,bool pressed)
         {
+            if(!inputActive) return;
             if (CanUseSkill(skillSo))
             {
                 UseSkill(skillSo, pressed);
             }
         }
         
+        public void SetActive(bool active)
+        {
+            inputActive = active;
+        }
         
     }
 }

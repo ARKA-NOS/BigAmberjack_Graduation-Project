@@ -6,7 +6,7 @@ namespace Lrw.Script.Agent.Players
 {
     public class PlayerSpawner : MonoBehaviour
     {
-        private void Start()
+        private void Awake()
         {
             ServiceLocator.Get<ICharacterManager>().CreateCharacter(transform.position);
         }

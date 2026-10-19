@@ -20,13 +20,14 @@ namespace Lrw.Script.UI
         
         private void OpenClose(UIOpenCloseEvent evt)
         {
+            IWindow prevWindow = _currentWindow;
             if (_currentWindow != null)
             {
                 _currentWindow.Close();
                 _currentWindow = null;
             }
             
-            if (evt.Window == null) return;
+            if (evt.Window == null || evt.Window == prevWindow) return;
             
             _currentWindow = evt.Window;
             _currentWindow.Open(evt.Data);

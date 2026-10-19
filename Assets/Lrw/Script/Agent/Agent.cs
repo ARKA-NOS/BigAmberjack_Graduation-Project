@@ -10,7 +10,7 @@ namespace Lrw.Script.Agent
     {
         [SerializeField] protected UnityEvent OnHit;
         
-        public IHealthModule HealthModule { get; private set; }
+        protected IHealthModule HealthModule { get; private set; }
         
         protected override void Awake()
         {

@@ -1,10 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DevLib.ModuleSystem;
+using Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI;
+using UnityEngine;
 
 namespace Lrw.Script.Agent.EffectSystem
 {
     public class EffectModule : Module
     {
+        [SerializeField] private EffectViewModel effectViewModel;
+
+        private EffectList _effectList;
+        
         private Dictionary<AbstractEffectDataSo,List<IEffect>> _effects;
         
         private Queue<(AbstractEffectDataSo,IEffect)> queue;
@@ -15,6 +22,14 @@ namespace Lrw.Script.Agent.EffectSystem
             
             _effects = new();
             queue = new();
+            
+            _effectList = new EffectList(_effects);
+        }
+
+        private void Start()
+        {
+            if(effectViewModel != null)
+                effectViewModel.Bind(_effectList);
         }
 
         public void TakeEffect(AbstractEffectDataSo effectDataSo)
@@ -32,8 +47,9 @@ namespace Lrw.Script.Agent.EffectSystem
         {
             QueueUpdate();
             EffectUpdate();
+            ViewModelUpdate();
         }
-
+        
         private void QueueUpdate()
         {
             while (queue.Count > 0)
@@ -67,6 +83,13 @@ namespace Lrw.Script.Agent.EffectSystem
                     effectList.RemoveAt(i);
                 }
             }
+        }
+        
+        private void ViewModelUpdate()
+        {
+            if(effectViewModel == null || _effectList == null) return;
+            
+            _effectList.Update();
         }
         
     }

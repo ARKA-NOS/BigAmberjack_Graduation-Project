@@ -14,20 +14,45 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Skill_UI
         
         protected override void DataUpdate()
         {
+            SkillImageUpdate();
             CoolTimeImageUpdate();
             BlockImageUpdate();
+        }
+
+        private void SkillImageUpdate()
+        {
+            if(skillImage == null) return;
+
+            Sprite sprite = CurrentValue?.SkillSo?.SkillImage;
+            
+            skillImage.gameObject.SetActive(sprite != null);
+            skillImage.sprite = sprite;
         }
         
         private void CoolTimeImageUpdate()
         {
-            coolTimeImage.fillAmount = CurrentValue is IHasCoolTime coolTime 
-                ? coolTime.RemainingCoolTime / coolTime.CoolTime 
-                : 0f;
+            if(coolTimeImage == null) return;
+            
+            if (CurrentValue is IHasCoolTime coolTime)
+            {
+                coolTimeImage.gameObject.SetActive(true);
+                coolTimeImage.fillAmount = coolTime.RemainingCoolTime / coolTime.CoolTime;
+            }
+            else
+            {
+                coolTimeImage.gameObject.SetActive(false);
+                coolTimeImage.fillAmount = 0f;
+            }
         }
 
         private void BlockImageUpdate()
         {
-            blockImage.gameObject.SetActive(CurrentValue?.CanUseSkill() ?? false);
+            if(blockImage == null) return;
+
+            bool isSkillUse = CurrentValue?.CanUseSkill() ?? false;
+            IHasCoolTime coolTime = CurrentValue as IHasCoolTime;
+            bool isNotCoolTime = coolTime != null && Mathf.Approximately(coolTime.RemainingCoolTime,0f);
+            blockImage.gameObject.SetActive(!isSkillUse && (coolTime == null || isNotCoolTime));
         }
         
     }

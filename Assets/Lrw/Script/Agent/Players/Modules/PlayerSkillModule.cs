@@ -1,4 +1,5 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.SkillSystem;
 using Lrw.Script.UI.PlayerUI.HUD_UI.Skill_UI;
@@ -36,6 +37,7 @@ namespace Lrw.Script.Agent.Players.Modules
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
 
             inputActive = true;
+            
         }
 
         private void OnDestroy()
@@ -43,6 +45,12 @@ namespace Lrw.Script.Agent.Players.Modules
             _input.OnMeleeSkillKeyPressed -= AttackKeyPressed;
             _input.OnSkill1KeyPressed -= Skill1KeyPressed;
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
+        }
+
+        protected void Update()
+        {
+            if(skill1ViewModel != null) skill1ViewModel.Bind(GetSkill(skill1));
+            if(skill2ViewModel != null) skill2ViewModel.Bind(GetSkill(skill2));
         }
 
         public void SetSkill(PlayerSkillSlot slot,SkillSO skill)
@@ -78,8 +86,7 @@ namespace Lrw.Script.Agent.Players.Modules
                 UseSkill(skillSo, pressed);
             }
         }
-
-
+        
         public void SetActive(bool active)
         {
             inputActive = active;

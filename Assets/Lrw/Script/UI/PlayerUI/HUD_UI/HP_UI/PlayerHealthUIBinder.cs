@@ -17,12 +17,15 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
         
         [Header("Health Text")]
         [SerializeField] private TextMeshProUGUI healthText;
-
-        private void Start()
+        
+        protected override void OnDataChanged()
         {
-            float normal = CurrentValue.Normalized;
-            _lagValue = normal;
-            SetBarSize(normal, _lagValue);
+            if (CurrentValue != null)
+            {
+                float normal = CurrentValue.Normalized;
+                _lagValue = normal;
+                SetBarSize(normal, _lagValue);
+            }
         }
 
         protected override void DataUpdate()

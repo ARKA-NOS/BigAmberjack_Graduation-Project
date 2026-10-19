@@ -5,6 +5,8 @@ namespace Lrw.Script.Agent.SkillSystem
     [CreateAssetMenu(fileName = "Skill SO", menuName = "SkillSystem/Skill SO", order = 0)]
     public class SkillSO : ScriptableObject
     {
+        [field:SerializeField] public Sprite SkillImage { get; private set; }
+        
         /// <summary>
         /// 다른 공격이 이걸 취소할 수 있는가?
         /// </summary>

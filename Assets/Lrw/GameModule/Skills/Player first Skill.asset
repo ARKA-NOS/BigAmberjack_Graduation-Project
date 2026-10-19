@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4925160ab20a49d299424707793bc60c, type: 3}
   m_Name: Player first Skill
   m_EditorClassIdentifier: SkillSystemAssembly::Lrw.Script.Agent.SkillSystem.SkillSO
-  <BaseCooldown>k__BackingField: 1
-  <IsCooldownBackUpdate>k__BackingField: 0
+  <SkillImage>k__BackingField: {fileID: 21300000, guid: 5ca38f46fb0ec0842bb1308f91141f57, type: 3}
+  <Cancelable>k__BackingField: 0
+  <CanInterrupt>k__BackingField: 0
+  <Uninterruptible>k__BackingField: 0

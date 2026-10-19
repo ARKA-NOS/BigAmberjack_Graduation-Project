@@ -13,15 +13,16 @@ namespace CTJ.Enemies.FSM
 
         public override void StateUpdate()
         {
-            // 근접 공격의 준비/타격/후딜 동안은 정지 상태를 유지합니다.
-            if (Enemy.IsAttackInProgress)
-                return;
-
-            if (!Enemy.IsTargetInRange(Enemy.DetectionRange))
+            // 준비 중이어도 추적 해제/타깃 소멸은 먼저 처리합니다.
+            if (!Enemy.IsTargetInRange(Enemy.ChaseReleaseRange))
             {
+                Enemy.CancelAttack();
                 Enemy.ChangeState(EnemyStateType.Idle);
                 return;
             }
+
+            if (Enemy.IsAttackInProgress)
+                return;
 
             if (!Enemy.CanAttackTarget())
             {

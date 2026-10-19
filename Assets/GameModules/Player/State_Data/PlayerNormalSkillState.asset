@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fb1d096c83541e9a47d871fe03e72db, type: 3}
   m_Name: PlayerNormalSkillState
   m_EditorClassIdentifier: Assembly-CSharp::Agents.FSM.StateSo
-  stateName: SKILL
-  className: Agents.FSM.States.SkillState
+  stateName: NORMAL_SKILL
+  className: Lrw.Script.Agent.FSM.States.SkillState
   assetIndex: 5
   layerIndex: 0
   stateParam: {fileID: 11400000, guid: f3998c7a134f34c4a9b135d2263495b9, type: 2}

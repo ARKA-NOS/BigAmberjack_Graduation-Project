@@ -1,8 +1,10 @@
 using System.Collections.Generic;
-using Agents.Players;
+using Lrw.Script.Agent.Players;
 using SDW.Scripts.Maps.Data;
 using SDW.Scripts.UI;
 using UnityEngine;
+using Lrw.Script._Core._ServiceLocator;
+using Lrw.Script.Agent.Players.CharacterSystem;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -16,9 +18,6 @@ namespace SDW.Scripts.Maps
         [Header("Stage")]
         [SerializeField] private StageSO stage;
         [SerializeField] private Portal portalPrefab;
-
-        [Header("Player")]
-        [SerializeField] private PlayerController playerPrefab;
 
         [Header("UI")]
         [SerializeField] private ScreenFader screenFader;
@@ -138,17 +137,15 @@ namespace SDW.Scripts.Maps
             if (!Application.isPlaying)
                 return;
 
-            if (playerPrefab == null)
-            {
-                Debug.LogWarning("Player Prefab이 지정되지 않아 플레이어를 생성하지 않았습니다.");
-                return;
-            }
-
             Vector3 spawnPosition = GetSpawnPosition(_rooms[0]);
 
             if (_player == null)
             {
-                _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+                ServiceLocator.Get<ICharacterManager>().CreateCharacter(spawnPosition);
+                _player = FindAnyObjectByType<PlayerController>();
+
+                if (_player == null)
+                    Debug.LogWarning("플레이어 생성 후 PlayerController를 찾지 못했습니다.");
                 return;
             }
 
@@ -170,7 +167,7 @@ namespace SDW.Scripts.Maps
 
         private static Vector3 GetSpawnPosition(RoomController room)
         {
-            Transform spawnPoint = room.Definition != null ? room.Definition.SpawnPoint : null;
+            Transform spawnPoint = room.Definition != null ? room.Definition.PlayerSpawnPoint : null;
             return spawnPoint != null ? spawnPoint.position : room.transform.position;
         }
 

@@ -195,7 +195,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -220,7 +220,7 @@ Transform:
   m_GameObject: {fileID: 385935171}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.64, y: -0.23, z: 0}
+  m_LocalPosition: {x: 0.64, y: -2, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -949,8 +949,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c76c7a1d41914b7bb53be72f0981afe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Test.TestDamage
-  healthModule: {fileID: 0}
+  playerController: {fileID: 0}
   value: 10
+  knockbackForce: 3
+  delay: 5
 --- !u!114 &1508976585
 MonoBehaviour:
   m_ObjectHideFlags: 0

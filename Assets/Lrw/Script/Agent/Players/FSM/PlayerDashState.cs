@@ -1,0 +1,38 @@
+﻿using System.Collections;
+using Lrw.Script.Agent.Players.Enum;
+using Lrw.Script.Agent.Players.Modules;
+using UnityEngine;
+
+namespace Lrw.Script.Agent.Players.FSM
+{
+    public class PlayerDashState : AbstractPlayerState
+    {
+        private readonly IControlDasher _controlDasher;
+        private readonly IControlJumper _controlJumper;
+        
+        public PlayerDashState(Agent agent, int stateClipHash, int layerIndex) : base(agent, stateClipHash, layerIndex)
+        {
+            _controlDasher = agent.GetModule<IControlDasher>();
+            Debug.Assert(_controlDasher != null, "대쉬 친구가 없어영");            
+            _controlJumper = agent.GetModule<IControlJumper>();
+            Debug.Assert(_controlJumper != null, "점퍼 친구가 없어영");
+        }
+
+        public override void Enter()
+        {
+            base.Enter();
+            Player.StartCoroutine(DashEndTime());
+        }
+
+        private IEnumerator DashEndTime()
+        {
+            yield return new WaitForSeconds(_controlDasher.DashTime);
+            DashEnd();
+        }
+
+        private void DashEnd()
+        {
+            Player.ChangeState(PlayerStateEnum.FALL);
+        }
+    }
+}

@@ -12,8 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdc557735de2bef4b8aad05e3eb0d488, type: 3}
   m_Name: Room_Combat_01
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Data.CombatRoomDataSO
-  roomPrefab: {fileID: 6865504822459006744, guid: 4c96a4b5b9e655943bf9997452c9b530, type: 3}
+  roomPrefab: {fileID: 2034662788396023387, guid: 2cc28f7dab2d69f4588a3ad8d172cd1d, type: 3}
   clearCondition: {fileID: 11400000, guid: c573c51b584e5d84aae592bde3bb161d, type: 2}
+  npcPrefab: {fileID: 7028137219439099567, guid: 93f5d809add517e4aafc465e606b746c, type: 3}
+  npcSpawnChance: 0.4
+  npcOffset: {x: 2, y: 0.5}
+  chestSpawnChance: 1
+  chestCandidates: []
+  chestOffset: {x: -2, y: 0.5}
   enemies:
   - enemyPrefab: {fileID: 6002371313276815539, guid: b0941f89b32ef3740b47c30833d9b4ef, type: 3}
     count: 2

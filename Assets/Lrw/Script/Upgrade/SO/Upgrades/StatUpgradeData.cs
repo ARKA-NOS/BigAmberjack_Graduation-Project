@@ -15,9 +15,8 @@ namespace Lrw.Script.Upgrade.SO.Upgrades
              if(!owner.TryGetModule(out IStatModule statModule)) return;
              
              Stat stat = statModule.GetStat(StatType);
-
-             object obj = new object();
-             stat.SetModify(obj,Modify);
+             
+             stat.SetModify(this,Modify);
         }
         
     }

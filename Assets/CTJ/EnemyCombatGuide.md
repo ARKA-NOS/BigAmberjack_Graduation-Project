@@ -1,5 +1,7 @@
 # CTJ 근접·원거리 적 설정과 테스트
 
+2026-10-14: 공격을 공용 스킬 모듈로 전환했다. 아래의 MeleeEnemy/RangedEnemy 공격 필드 대신 `Prototypes/EnemySkillGuide.md`의 스킬 설정·프리팹 양산·테스트 절차를 우선 적용한다. 문법 설명은 `Prototypes/EnemySkillSyntaxNotes.md`에 있다.
+
 2026-10-12: 현재 적은 `EnemyMovementModule`로 이동·점프하며 공격 전에 지면/지형 시야를 확인한다. 최신 이동 설정·제한·테스트는 `Prototypes/EnemyMovementGuide.md`를 참고한다. 아래의 점프 미지원 설명은 최초 구현 기록이다.
 
 2026-09-11: Catto(근접), Mad Ghost(원거리)의 연결된 프리팹과 `Assets/CTJ/Prototypes/Scenes/EnemyArtTest.unity` 테스트 씬을 추가했다. 바로 실행하는 절차와 에셋별 값/문법 설명은 `Assets/CTJ/Prototypes/README.md`에 있다. 아래는 직접 구성할 때의 공통 안내다.

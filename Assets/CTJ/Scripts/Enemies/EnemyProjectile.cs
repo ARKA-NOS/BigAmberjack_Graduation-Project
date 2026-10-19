@@ -23,6 +23,17 @@ namespace CTJ.Enemies
         private bool _launched;
         private bool _consumed;
 
+        public float TravelDistance => Mathf.Max(0.01f, speed) * Mathf.Max(0.01f, lifetime);
+        public float Diameter
+        {
+            get
+            {
+                CircleCollider2D circle = GetComponent<CircleCollider2D>();
+                Vector3 scale = transform.lossyScale;
+                return circle.radius * 2f * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            }
+        }
+
         private void Awake()
         {
             _body = GetComponent<Rigidbody2D>();

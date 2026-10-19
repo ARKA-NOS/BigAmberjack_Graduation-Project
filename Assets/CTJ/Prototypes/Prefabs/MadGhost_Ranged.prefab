@@ -175,6 +175,9 @@ GameObject:
   - component: {fileID: 8723470578380016151}
   - component: {fileID: 6997909808753225010}
   - component: {fileID: 8810647111667320002}
+  - component: {fileID: 8810647111667320100}
+  - component: {fileID: 8810647111667320101}
+  - component: {fileID: 8810647111667320300}
   m_Layer: 8
   m_Name: MadGhost_Ranged
   m_TagString: Untagged
@@ -182,6 +185,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8810647111667320300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6205686831997271556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31dfaa11bc3b4d629e100b203f9e5311, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
+  enableKnockback: 1
+  knockbackSpeed: 5.1
+  knockbackDuration: 0.18
+  cancelAttackOnHit: 1
+  enableBlink: 1
+  blinkDuration: 0.35
+  blinkInterval: 0.05
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
+  sprites:
+  - {fileID: 5380734442815516668}
 --- !u!4 &2151710724508395455
 Transform:
   m_ObjectHideFlags: 0
@@ -196,6 +222,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2731410536611583012}
+  - {fileID: 8810647111667320201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6860041732567769696
@@ -255,7 +282,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -288,16 +315,13 @@ MonoBehaviour:
       m_Calls: []
   target: {fileID: 0}
   detectionRange: 10
+  chaseReleaseRange: 14
   attackRange: 7
   moveSpeed: 1.5
   facingRoot: {fileID: 2731410536611583012}
   attackInterval: 1.2
   deathAnimator: {fileID: 4331447859663706226}
   deathDespawnDelay: 1.1
-  projectilePrefab: {fileID: 2047930768211004358, guid: 8c1b987081c789f4f8e722cd6155c3ff, type: 3}
-  firePoint: {fileID: 5779205006524218080}
-  damage: 5
-  attackAnimator: {fileID: 4331447859663706226}
 --- !u!114 &8810647111667320002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 767ddf0b3b914298956643af414a1661, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyMovementModule
-  bodyCollider: {fileID: 7521109547185970852}
+  bodyCollider: {fileID: 8810647111667320202}
   terrainLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -348,3 +372,117 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.HealthModule
   maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
   currentHealth: 0
+--- !u!114 &8810647111667320100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6205686831997271556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70001, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
+  skills:
+  - skill: {fileID: 8810647111667320101}
+    useSkill: 1
+    minRange: 0
+    maxRange: 7
+    maxHeightDifference: -1
+    requireGrounded: 1
+    requireClearPath: 1
+    origin: {fileID: 5779205006524218080}
+    chargeDuration: 0
+--- !u!114 &8810647111667320101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6205686831997271556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70004, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Skills.EnemyProjectileSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: b730ad5eb65f41b19f4e410fc0d70006, type: 2}
+  <BaseCoolTime>k__BackingField: 1.2
+  attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
+  fallbackAttackDelay: 0.5
+  telegraphPrefab: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+  postBlinkDelay: 0.15
+  blinkBeforeAttack: 1
+  telegraphOpacity: 0.6
+  projectilePrefab: {fileID: 2047930768211004358, guid: 8c1b987081c789f4f8e722cd6155c3ff, type: 3}
+  firePoint: {fileID: 5779205006524218080}
+  damage: 5
+  attackAnimator: {fileID: 4331447859663706226}
+  attackStateName: Base Layer.Attack
+  recoveryTime: 0.3
+--- !u!1 &8810647111667320200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8810647111667320201}
+  - component: {fileID: 8810647111667320202}
+  m_Layer: 2
+  m_Name: TerrainBody
+  m_TagString: Untagged
+  m_IsActive: 1
+--- !u!4 &8810647111667320201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667320200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2151710724508395455}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &8810647111667320202
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667320200}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 37d01f2a464ab0041bb2e6e9d70d16eb, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 4294967231
+  m_LayerOverridePriority: 1
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.575}
+  m_AutoTiling: 0
+  m_Size: {x: 0.6, y: 1.15}
+  m_EdgeRadius: 0

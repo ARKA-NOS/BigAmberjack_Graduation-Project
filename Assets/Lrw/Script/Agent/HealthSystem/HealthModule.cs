@@ -2,13 +2,15 @@
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
+using Lrw.Script.DataStructure;
+using Lrw.Script.UI.BindSystem.ViewModel;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Lrw.Script.Agent.HealthSystem
 {
     public class HealthModule : Module, IHealthModule
     {
+        [SerializeField] private GaugeViewModel healthGaugeViewModel;
         [SerializeField] private StatData maxHpStatData;
         
         [SerializeField] private float currentHealth;
@@ -17,11 +19,11 @@ namespace Lrw.Script.Agent.HealthSystem
         
         public event HealthChanged OnHealthChanged;
         public event Action OnDead;
-        private bool _isDead = false;
+        public bool IsDead { get; private set; }
         
         public float CurrentHealth
         {
-            get => currentHealth;
+            get =>  currentHealth;
             set
             {
                 float prevValue = currentHealth;
@@ -29,9 +31,9 @@ namespace Lrw.Script.Agent.HealthSystem
                 if(Mathf.Approximately(currentHealth, prevValue)) return;
                 OnHealthChanged?.Invoke(currentHealth, currentHealth - prevValue,MaxHealth);
                 
-                if (!_isDead && Mathf.Approximately(currentHealth, 0f))
+                if (!IsDead && Mathf.Approximately(currentHealth, 0f))
                 {
-                    _isDead = true;
+                    IsDead = true;
                     OnDead?.Invoke();
                 }
             }
@@ -42,6 +44,8 @@ namespace Lrw.Script.Agent.HealthSystem
         private IStatModule _statModule;
         private Stat _maxHpStat;
         
+        private Gauge _healthGauge;
+        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -49,18 +53,30 @@ namespace Lrw.Script.Agent.HealthSystem
             
             FDebug.Assert(_statModule != null,"StatModule is null");
             
-            _maxHpStat = _statModule?.GetStat(maxHpStatData);
+            _maxHpStat = _statModule.GetStat(maxHpStatData);
             
             FDebug.Assert(_maxHpStat != null,"MaxHpStat is null");
 
-            _maxHpStat!.OnValueChanged += MaxHpChanged;
-
+            _maxHpStat.OnValueChanged += MaxHpChanged;
+            
             CurrentHealth = MaxHealth;
+
+            _healthGauge = new Gauge(CurrentHealth, MaxHealth);
+
+            if (healthGaugeViewModel != null)
+            {
+                healthGaugeViewModel.Bind(_healthGauge);
+            }
+
+            OnHealthChanged += ViewModelUpdate;
+            
+            IsDead = false;
         }
 
         private void OnDestroy()
         {
             _maxHpStat.OnValueChanged -= MaxHpChanged;
+            OnHealthChanged -= ViewModelUpdate;
         }
 
         private void MaxHpChanged(float newValue, float delta)
@@ -69,6 +85,9 @@ namespace Lrw.Script.Agent.HealthSystem
             
             CurrentHealth += Mathf.Max(delta,0f);
         }
+
+        private void ViewModelUpdate(float newValue, float delta, float max)
+            => _healthGauge.SetValue(newValue, max);
         
         public override string ToString()
             => $"{CurrentHealth} / {MaxHealth}";

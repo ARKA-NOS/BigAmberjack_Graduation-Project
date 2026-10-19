@@ -1,5 +1,7 @@
 ﻿using DevLib.ModuleSystem;
-using Lrw.Script.Player.InteractSystem;
+using Lrw.Script._Core._ServiceLocator;
+using Lrw.Script.Agent.Players;
+using Lrw.Script.Agent.Players.InteractSystem;
 using Lrw.Script.UI;
 using Lrw.Script.UI.UpgradeUI;
 using Lrw.Script.Upgrade.SO;

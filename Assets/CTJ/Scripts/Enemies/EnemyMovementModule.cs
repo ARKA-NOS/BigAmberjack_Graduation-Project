@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Agents;
 using DevLib.ModuleSystem;
+using Lrw.Script.Agent;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -57,9 +57,9 @@ namespace CTJ.Enemies
             _body = owner.GetComponent<Rigidbody2D>();
             if (bodyCollider == null)
             {
-                foreach (Collider2D candidate in owner.GetComponents<Collider2D>())
+                foreach (Collider2D candidate in owner.GetComponentsInChildren<Collider2D>())
                 {
-                    if (candidate.isTrigger)
+                    if (candidate.isTrigger || candidate.attachedRigidbody != _body)
                         continue;
                     bodyCollider = candidate;
                     break;

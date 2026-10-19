@@ -38,8 +38,8 @@ namespace CTJ.Tools
                 Check(enemy != null, "Enemy prefab missing: " + path);
                 foreach (Transform child in enemy.GetComponentsInChildren<Transform>(true))
                     Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(child.gameObject) == 0, "Missing script: " + path);
-                EnemySkillModule module = enemy.GetComponent<EnemySkillModule>();
-                AbstractCoolTimeSkill skill = enemy.GetComponent<AbstractCoolTimeSkill>();
+                EnemySkillModule module = enemy.GetComponentInChildren<EnemySkillModule>();
+                AbstractCoolTimeSkill skill = enemy.GetComponentInChildren<AbstractCoolTimeSkill>();
                 Check(module != null && skill != null && module.Skills.Count == 1 && module.Skills[0].Skill == skill,
                     "Skill/module reference: " + path);
                 Check(skill.SkillSo != null, "Skill SO missing: " + path);
@@ -70,8 +70,8 @@ namespace CTJ.Tools
                 EnemyDamageProbe targetA = Target(arena, 3001f);
                 EnemyDamageProbe targetB = Target(arena, 3005f);
                 a.SetTarget(targetA.transform); b.SetTarget(targetB.transform);
-                EnemyMeleeSkill sa = a.GetComponent<EnemyMeleeSkill>();
-                EnemyMeleeSkill sb = b.GetComponent<EnemyMeleeSkill>();
+                EnemyMeleeSkill sa = a.GetComponentInChildren<EnemyMeleeSkill>();
+                EnemyMeleeSkill sb = b.GetComponentInChildren<EnemyMeleeSkill>();
                 Set(sa, "<BaseCoolTime>k__BackingField", 2.2f);
                 await Wait(0.15f);
                 EnemySkillModule ma = a.GetModule<EnemySkillModule>();
@@ -105,7 +105,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(Cat, arena, 3100f);
                 EnemyDamageProbe probe = Target(arena, 3101f);
                 enemy.SetTarget(probe.transform);
-                EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
+                EnemyMeleeSkill skill = enemy.GetComponentInChildren<EnemyMeleeSkill>();
                 Set(skill, "<BaseCoolTime>k__BackingField", 0f);
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 await Wait(0.15f);
@@ -143,9 +143,9 @@ namespace CTJ.Tools
             {
                 EnemyBase enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyBase>(Cat), inactive.transform);
                 enemy.transform.position = new Vector3(3200f, 0.05f, 0f);
-                EnemyMeleeSkill melee = enemy.GetComponent<EnemyMeleeSkill>();
-                EnemyProjectileSkill shot = enemy.gameObject.AddComponent<EnemyProjectileSkill>();
-                EnemyProjectileSkill source = AssetDatabase.LoadAssetAtPath<EnemyBase>(Ghost).GetComponent<EnemyProjectileSkill>();
+                EnemyMeleeSkill melee = enemy.GetComponentInChildren<EnemyMeleeSkill>();
+                EnemyProjectileSkill shot = enemy.GetComponentInChildren<EnemySkillModule>().gameObject.AddComponent<EnemyProjectileSkill>();
+                EnemyProjectileSkill source = AssetDatabase.LoadAssetAtPath<EnemyBase>(Ghost).GetComponentInChildren<EnemyProjectileSkill>();
                 Set(shot, "<SkillSo>k__BackingField", source.SkillSo);
                 Set(shot, "<BaseCoolTime>k__BackingField", 2f);
                 Set(shot, "projectilePrefab", new SerializedObject(source).FindProperty("projectilePrefab").objectReferenceValue);
@@ -155,7 +155,7 @@ namespace CTJ.Tools
                 Set(shot, "firePoint", muzzle.transform);
                 Set(shot, "recoveryTime", 0.1f);
                 Set(melee, "<BaseCoolTime>k__BackingField", 5f);
-                EnemySkillModule module = enemy.GetComponent<EnemySkillModule>();
+                EnemySkillModule module = enemy.GetComponentInChildren<EnemySkillModule>();
                 SerializedObject sm = new SerializedObject(module);
                 SerializedProperty entries = sm.FindProperty("skills");
                 entries.arraySize = 2;
@@ -193,7 +193,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(Ghost, arena, 3300f);
                 EnemyDamageProbe probe = Target(arena, 3304f);
                 enemy.SetTarget(probe.transform);
-                EnemyProjectileSkill skill = enemy.GetComponent<EnemyProjectileSkill>();
+                EnemyProjectileSkill skill = enemy.GetComponentInChildren<EnemyProjectileSkill>();
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 await Wait(0.15f);
                 Check(module.TryUseAttack() && module.IsBusy, "Ranged did not start");
@@ -223,10 +223,10 @@ namespace CTJ.Tools
             {
                 EnemyBase enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyBase>(Cat), inactive.transform);
                 enemy.transform.position = new Vector3(3400f, 0.05f, 0f);
-                VerificationChargeSkill charge = enemy.gameObject.AddComponent<VerificationChargeSkill>();
+                VerificationChargeSkill charge = enemy.GetComponentInChildren<EnemySkillModule>().gameObject.AddComponent<VerificationChargeSkill>();
                 Set(charge, "<SkillSo>k__BackingField", key);
                 Set(charge, "<BaseCoolTime>k__BackingField", 0.5f);
-                EnemySkillModule module = enemy.GetComponent<EnemySkillModule>();
+                EnemySkillModule module = enemy.GetComponentInChildren<EnemySkillModule>();
                 SerializedObject sm = new SerializedObject(module);
                 SerializedProperty entry = sm.FindProperty("skills").GetArrayElementAtIndex(0);
                 entry.FindPropertyRelative("skill").objectReferenceValue = charge;

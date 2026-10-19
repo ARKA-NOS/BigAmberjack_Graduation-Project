@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CTJ.Enemies
 {
-    [RequireComponent(typeof(Rigidbody2D), typeof(EnemyMovementModule))]
+    [RequireComponent(typeof(Rigidbody2D))]
     public abstract class EnemyBase : Agent, IDamageable
     {
         private const float TargetSearchInterval = 0.2f;
@@ -41,6 +41,7 @@ namespace CTJ.Enemies
         private EnemyMovementModule _movement;
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
+        private EnemyCurrencyRewardModule _currencyReward;
         private StateMachine<EnemyStateType> _stateMachine;
         private float _nextAttackTime;
 
@@ -55,7 +56,7 @@ namespace CTJ.Enemies
 
         protected override void Awake()
         {
-            // RequireComponent는 기존 프리팹에 소급되지 않습니다. 공용 ModuleOwner가 수집하기 전에 보완합니다.
+            // 이동 모듈은 자식에 둘 수 있습니다. 구형 프리팹에 없는 경우에만 수집 전에 보완합니다.
             if (GetComponentInChildren<EnemyMovementModule>() == null)
                 gameObject.AddComponent<EnemyMovementModule>();
             base.Awake();
@@ -64,6 +65,7 @@ namespace CTJ.Enemies
             _movement = GetModule<EnemyMovementModule>();
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
+            _currencyReward = GetModule<EnemyCurrencyRewardModule>();
             InitializeStateMachine();
             if (HealthModule != null)
             {
@@ -260,6 +262,8 @@ namespace CTJ.Enemies
                 deathAnimator.Play(DeathStateHash, 0, 0f);
             }
             Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay));
+            // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
+            if (_currencyReward != null) _currencyReward.GrantDeathReward();
         }
 
         private void OnDestroy()

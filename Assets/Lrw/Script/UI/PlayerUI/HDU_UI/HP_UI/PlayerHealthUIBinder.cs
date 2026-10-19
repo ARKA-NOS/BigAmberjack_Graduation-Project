@@ -1,5 +1,4 @@
-﻿using System;
-using Lrw.Script.DataStructure;
+﻿using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem;
 using TMPro;
 using UnityEngine;

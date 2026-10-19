@@ -1,5 +1,7 @@
-﻿using Lrw.Script.DataStructure;
+﻿using System;
+using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,10 +12,20 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
         [Header("Health Bar")]
         [SerializeField] private Image currentBar;
         [SerializeField] private Image lagBar;
-        [SerializeField] private float lagSpeed;
+        [SerializeField,Range(0,1f)] private float lagSpeed;
+
+        private float _lagValue = 0f;
         
-        [SerializeField] private Text healthText;
-        
+        [Header("Health Text")]
+        [SerializeField] private TextMeshProUGUI healthText;
+
+        private void Start()
+        {
+            float normal = CurrentValue.Normalized;
+            _lagValue = normal;
+            SetBarSize(normal, _lagValue);
+        }
+
         protected override void DataUpdate()
         {
             HealthBarUpdate();
@@ -22,7 +34,16 @@ namespace Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI
 
         private void HealthBarUpdate()
         {
+            float normal = CurrentValue.Normalized;
             
+            _lagValue = Mathf.MoveTowards(_lagValue,normal , Time.deltaTime * lagSpeed);
+            SetBarSize(normal,_lagValue);
+        }
+
+        private void SetBarSize(float currentBarSize, float lagBarSize)
+        {
+            currentBar.rectTransform.localScale = new Vector3(currentBarSize, 1, 1);
+            lagBar.rectTransform.localScale = new Vector3(lagBarSize, 1, 1);
         }
 
         private void HealthTextUpdate()

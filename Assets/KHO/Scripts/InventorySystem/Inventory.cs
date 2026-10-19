@@ -3,7 +3,6 @@ using KHO.Scripts.ItemSystem;
 
 namespace KHO.Scripts.InventorySystem
 {
-    // 슬롯 데이터만 다룬다. 효과 적용은 InventoryModule이 맡으므로, 씬을 넘어 유지해야 할 때 이 클래스만 옮기면 된다.
     public class Inventory
     {
         public const int SlotCount = 9;
@@ -32,7 +31,6 @@ namespace KHO.Scripts.InventorySystem
             return true;
         }
 
-        // 해당 슬롯의 아이템을 바꾸고 이전 아이템을 돌려준다. item이 null이면 비운다.
         public ItemInstance Set(int slot, ItemInstance item)
         {
             ItemInstance prev = _slots[slot];

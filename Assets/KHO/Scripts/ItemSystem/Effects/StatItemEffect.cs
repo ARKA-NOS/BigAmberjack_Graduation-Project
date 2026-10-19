@@ -26,7 +26,6 @@ namespace KHO.Scripts.ItemSystem.Effects
             statModule.GetStat(targetStat).RemoveModify(ModifyKey(key));
         }
 
-        // 한 아이템에 같은 스탯을 바꾸는 효과가 여러 개 있어도 덮어쓰지 않도록 효과 자신도 키에 포함한다.
         private object ModifyKey(object key) => (key, this);
     }
 }

@@ -1,69 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script._Core;
-using Lrw.Script._Core.EnumSystem;
-using Lrw.Script.Agent.EffectSystem.BaseEffects;
-using Lrw.Script.Agent.EffectSystem.Interface;
-using UnityEngine;
 
 namespace Lrw.Script.Agent.EffectSystem
 {
-    public class EffectModule : Module, IEffectModule
+    public class EffectModule : Module
     {
-        [SerializeField] private AbstractEffectSO[] startEffects;
+        private Dictionary<AbstractEffectDataSo,List<IEffect>> _effects;
         
-        private List<AbstractEffectSO> _currentEffects;
+        private Queue<(AbstractEffectDataSo,IEffect)> queue;
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            _currentEffects = new();
+            
+            _effects = new();
+            queue = new();
         }
 
-        private void Start()
+        public void TakeEffect(AbstractEffectDataSo effectDataSo)
         {
-            foreach (AbstractEffectSO effect in startEffects)
+            if(effectDataSo == null) return;
+            
+            IEffect effect = effectDataSo.CreateEffect(_owner);
+            
+            effect.Enter();
+            
+            queue.Enqueue((effectDataSo, effect));
+        }
+
+        private void Update()
+        {
+            QueueUpdate();
+            EffectUpdate();
+        }
+
+        private void QueueUpdate()
+        {
+            while (queue.Count > 0)
             {
-                if(effect == null) continue;
-                Effect(effect);
+                (AbstractEffectDataSo effectDataSo,IEffect effect) 
+                    data = queue.Dequeue();
+                
+                if (!_effects.TryGetValue(data.effectDataSo, out List<IEffect> effects))
+                {
+                    effects = new List<IEffect>();
+                    _effects.Add(data.effectDataSo, effects);
+                }
+                
+                effects.Add(data.effect);
             }
         }
 
-        public void Effect(AbstractEffectSO effect)
+        private void EffectUpdate()
         {
-            AbstractEffectSO effectClone = AbstractEffectSO.CloneEffect(effect);
-            effectClone.EffectStart(_owner);
-            _currentEffects.Add(effectClone);
-        }
-        
-        private void Update()
-        {
-            for (int i = _currentEffects.Count - 1; i >= 0; i--)
+            foreach (List<IEffect> effectList in _effects.Values)
             {
-                AbstractEffectSO effect = _currentEffects[i];
-                effect.Update();
+                int count = effectList.Count;
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    IEffect currentEffect = effectList[i];
+                    currentEffect.Update();
 
-                if (effect.IsEffectEnd) _currentEffects.RemoveAt(i);
-            } 
-            
+                    if (!currentEffect.IsEnd) continue;
+                    
+                    currentEffect.Exit();
+                    effectList.RemoveAt(i);
+                }
+            }
         }
-
-        public void EffectClear()
-        {
-            _currentEffects.ForEach(x => x.EffectEnd());
-            _currentEffects.Clear();
-        }
-        
-        
-        public void EffectClear(EffectType type)
-        {
-            var targetEffects = _currentEffects.Where(x => x.Type == type);
-            targetEffects.Foreach(x => x.EffectEnd());
-            _currentEffects.RemoveAll(x => x.Type == type);
-        }
-        
         
     }
 }

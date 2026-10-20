@@ -12,15 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98aa2f212a410e6458dd79a41461b16a, type: 3}
   m_Name: Stage_01
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Data.StageSO
-  slots:
-  - candidates:
-    - {fileID: 11400000, guid: b0b11dadd32d0c44e92a28cac966e053, type: 2}
-  - candidates:
-    - {fileID: 11400000, guid: 7a6c2a6da4920604d9f7acc5fb1af58b, type: 2}
-    - {fileID: 11400000, guid: a0b59a7b6b208984fafde5eca180c896, type: 2}
-  - candidates:
-    - {fileID: 11400000, guid: 7a6c2a6da4920604d9f7acc5fb1af58b, type: 2}
-    - {fileID: 11400000, guid: a0b59a7b6b208984fafde5eca180c896, type: 2}
-  - candidates:
-    - {fileID: 11400000, guid: 171bc2de424c7c24e954d873dc63c195, type: 2}
+  startRoom: {fileID: 11400000, guid: b0b11dadd32d0c44e92a28cac966e053, type: 2}
+  bossRoom: {fileID: 11400000, guid: 171bc2de424c7c24e954d873dc63c195, type: 2}
+  randomRoomCount: 3
+  randomRoomPool:
+  - {fileID: 11400000, guid: 7a6c2a6da4920604d9f7acc5fb1af58b, type: 2}
+  - {fileID: 11400000, guid: a0b59a7b6b208984fafde5eca180c896, type: 2}
+  - {fileID: 11400000, guid: 7b2466726b284ff4187fcf99751269e9, type: 2}
   avoidDuplicateInStage: 1

@@ -11,7 +11,7 @@ using UnityEditor;
 
 namespace SDW.Scripts.Maps
 {
-    // StageSO의 슬롯 순서대로 방을 왼쪽에서 오른쪽으로 일직선 배치하고,
+    // StageSO가 고른 방 순서대로 방을 왼쪽에서 오른쪽으로 일직선 배치하고,
     // 인접한 방끼리 좌/우 Portal로 연결한다.
     public class LinearStageGenerator : MonoBehaviour
     {

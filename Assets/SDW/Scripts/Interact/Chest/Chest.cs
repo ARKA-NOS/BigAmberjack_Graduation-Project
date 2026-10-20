@@ -35,6 +35,7 @@ namespace SDW.Scripts.Interact.Chest
             if (IsOpened || data == null)
                 return;
 
+            Debug.Log($"{data.ChestName} 열림");
             IsOpened = true;
 
             foreach (ChoiceEffectSO reward in data.Rewards)

@@ -28,7 +28,7 @@ namespace CTJ.Tools
             Check(enemy.GetComponents<EnemyHitReactionModule>().Length == 1, "Exactly one reaction module");
             foreach (Transform child in enemy.GetComponentsInChildren<Transform>(true))
                 Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(child.gameObject) == 0, "Missing script");
-            SerializedObject so = new SerializedObject(enemy.GetComponent<EnemyHitReactionModule>());
+            SerializedObject so = new SerializedObject(enemy.GetComponentInChildren<EnemyHitReactionModule>());
             Check(so.FindProperty("enableKnockback").boolValue && so.FindProperty("enableBlink").boolValue, "Feedback defaults");
             Check(so.FindProperty("cancelAttackOnHit").boolValue, "Both enemies interrupt attacks");
             Check(Mathf.Approximately(so.FindProperty("knockbackSpeed").floatValue, 5.1f) &&
@@ -77,7 +77,7 @@ namespace CTJ.Tools
                 Material originalMaterial = sprite.sharedMaterial;
                 Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
                 float start = body.position.x;
-                float hp = enemy.HealthModule.CurrentHealth;
+                float hp = enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth;
                 float vy = body.linearVelocityY;
                 Hit(enemy, 2f, -direction, dealer); // 전달 방향이 반대여도 가해자 반대쪽으로 밀려야 함.
                 Check(enemy.IsHitReacting && body.linearVelocityX * direction > 0f, "Direction/lock");
@@ -87,7 +87,7 @@ namespace CTJ.Tools
                 await Wait(0.07f);
                 Check(body.linearVelocityX * direction > 0f, "FSM overwrote knockback");
                 Hit(enemy, 2f, -direction, dealer);
-                Check(Mathf.Approximately(enemy.HealthModule.CurrentHealth, hp - 4f), "Blink must not grant invulnerability");
+                Check(Mathf.Approximately(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth, hp - 4f), "Blink must not grant invulnerability");
                 Check(sprite.color == new Color(1f, 0f, 0f, 0.6f) && IsSolidFlash(sprite), "Repeated hit color/material");
                 float lastHitTime = Time.time;
                 bool sawOriginal = false, sawRed = false;
@@ -122,7 +122,7 @@ namespace CTJ.Tools
                 enemy.SetTarget(target.transform);
                 await Wait(0.15f);
                 EnemySkillModule skills = enemy.GetModule<EnemySkillModule>();
-                EnemyProjectileSkill shot = enemy.GetComponent<EnemyProjectileSkill>();
+                EnemyProjectileSkill shot = enemy.GetComponentInChildren<EnemyProjectileSkill>();
                 Check(skills.TryUseAttack(), "Ghost preparation start");
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
                 if (phase == 1) await Until(() => ui.IsBlinking);
@@ -155,7 +155,7 @@ namespace CTJ.Tools
                 await Until(() => Shots(x).Length == 1);
                 EnemyProjectile projectile = Shots(x).Single();
                 Hit(enemy);
-                Check(projectile != null && enemy.GetComponent<EnemyProjectileSkill>().IsUsing, "Released attack incorrectly canceled");
+                Check(projectile != null && enemy.GetComponentInChildren<EnemyProjectileSkill>().IsUsing, "Released attack incorrectly canceled");
                 await Until(() => target.ReceivedHitCount == 1);
                 return new { scenario = "released-projectile-survives-hit", passed = true };
             }
@@ -175,7 +175,7 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 EnemySkillModule skills = enemy.GetModule<EnemySkillModule>();
                 Check(skills.TryUseAttack(), "Cat preparation start");
-                EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
+                EnemyMeleeSkill skill = enemy.GetComponentInChildren<EnemyMeleeSkill>();
                 if (phase >= 1) await Until(() => !skill.IsPreparing);
                 if (phase == 2) await Until(() => target.ReceivedHitCount == 1);
                 int hitsBefore = target.ReceivedHitCount;
@@ -205,7 +205,7 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Cat opt-out attack start");
                 Hit(enemy);
-                Check(enemy.GetComponent<EnemyMeleeSkill>().IsPreparing, "Melee interruption opt-out ignored");
+                Check(enemy.GetComponentInChildren<EnemyMeleeSkill>().IsPreparing, "Melee interruption opt-out ignored");
                 return new { scenario = "cat-attack-cancel-opt-out", passed = true };
             }
             finally { CleanupArena(arena, x); }
@@ -230,8 +230,8 @@ namespace CTJ.Tools
                 Color color = enemy.GetComponentInChildren<SpriteRenderer>().color;
                 Check((color == Color.red && IsSolidFlash(enemy.GetComponentInChildren<SpriteRenderer>())) == blink &&
                     Mathf.Approximately(color.a, 1f), "Independent solid blink toggle / alpha");
-                Check(enemy.GetComponent<EnemyProjectileSkill>().IsUsing != cancel, "Independent interruption toggle");
-                Check(enemy.HealthModule.CurrentHealth == 28f && additionalEffects == 1, "Damage/OnHit must work with effects off");
+                Check(enemy.GetComponentInChildren<EnemyProjectileSkill>().IsUsing != cancel, "Independent interruption toggle");
+                Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth == 28f && additionalEffects == 1, "Damage/OnHit must work with effects off");
                 return new { scenario = "independent-effect-toggles-and-OnHit", knockback, blink, cancel, passed = true };
             }
             finally { CleanupArena(arena, x); }
@@ -285,7 +285,7 @@ namespace CTJ.Tools
                 wall.AddComponent<BoxCollider2D>().size = new Vector2(0.3f, 3f);
                 await Wait(0.15f);
                 foreach (float amount in new[] { 0f, -1f, float.NaN, float.PositiveInfinity }) Hit(enemy, amount);
-                Check(enemy.HealthModule.CurrentHealth == 40f && !enemy.IsHitReacting, "Invalid damage caused reaction");
+                Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth == 40f && !enemy.IsHitReacting, "Invalid damage caused reaction");
                 Hit(enemy, 2f, 1f);
                 await Wait(0.4f);
                 Check(enemy.transform.Find("TerrainBody").GetComponent<Collider2D>().bounds.max.x < x + 0.73f, "Knockback crossed wall");
@@ -305,7 +305,7 @@ namespace CTJ.Tools
                 Object.Destroy(enemy.GetModule<EnemyHitReactionModule>());
                 await Wait(0.15f);
                 Hit(enemy);
-                Check(enemy.HealthModule.CurrentHealth == 38f && !enemy.IsHitReacting, "Optional module compatibility");
+                Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth == 38f && !enemy.IsHitReacting, "Optional module compatibility");
                 return new { scenario = "optional-module-removed", passed = true };
             }
             finally { CleanupArena(arena, x); }

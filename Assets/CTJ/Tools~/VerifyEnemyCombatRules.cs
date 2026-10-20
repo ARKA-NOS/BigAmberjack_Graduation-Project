@@ -45,7 +45,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = AssetDatabase.LoadAssetAtPath<EnemyBase>(path);
                 foreach (Transform child in enemy.GetComponentsInChildren<Transform>(true))
                     Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(child.gameObject) == 0, "Missing script: " + path);
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 SerializedObject serialized = new SerializedObject(skill);
                 Check(serialized.FindProperty("attackDelayStat").objectReferenceValue == AssetDatabase.LoadAssetAtPath<StatData>(Delay), "Delay reference");
                 AttackTelegraphUI ui = (AttackTelegraphUI)serialized.FindProperty("telegraphPrefab").objectReferenceValue;
@@ -62,9 +62,9 @@ namespace CTJ.Tools
                 BoxCollider2D terrain = enemy.transform.Find("TerrainBody").GetComponent<BoxCollider2D>();
                 Check(hurtbox.isTrigger && !terrain.isTrigger && terrain.includeLayers.value == (1 << 6) && terrain.excludeLayers.value == ~(1 << 6), "Trigger/terrain layer split");
                 Check(hurtbox.offset == terrain.offset && hurtbox.size == terrain.size && terrain.gameObject.layer == 2, "Terrain collider geometry/layer");
-                Check(new SerializedObject(enemy.GetComponent<EnemyMovementModule>()).FindProperty("bodyCollider").objectReferenceValue == terrain, "Movement collider reference");
+                Check(new SerializedObject(enemy.GetComponentInChildren<EnemyMovementModule>()).FindProperty("bodyCollider").objectReferenceValue == terrain, "Movement collider reference");
                 Check(!terrain.TryGetComponent<IDamageable>(out _), "Terrain collider must not receive duplicate damage");
-                StatGroup group = (StatGroup)new SerializedObject(enemy.GetComponent<StatModule>()).FindProperty("baseStats").objectReferenceValue;
+                StatGroup group = (StatGroup)new SerializedObject(enemy.GetComponentInChildren<StatModule>()).FindProperty("baseStats").objectReferenceValue;
                 float hp = group.Stats.First(s => s.StatData.name == "MaxHealth").BaseValue;
                 float delay = group.Stats.First(s => s.StatData.name == "EnemyAttackDelay").BaseValue;
                 Check(enemy.ChaseReleaseRange > enemy.DetectionRange && hp > damage && delay > 0f, "Enemy config values");
@@ -181,10 +181,10 @@ namespace CTJ.Tools
                 OverlapDamageCaster caster = Object.Instantiate(source, enemy.GetComponent<Collider2D>().bounds.center, Quaternion.identity, arena.transform);
                 caster.InitCaster(null);
                 Physics2D.SyncTransforms();
-                float before = enemy.HealthModule.CurrentHealth;
+                float before = enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth;
                 float damage = PlayerDamage();
                 Check(caster.CastDamage(damage, Vector2.right, 0f), "Player caster failed to query trigger");
-                Check(Mathf.Approximately(enemy.HealthModule.CurrentHealth, before - damage), "Trigger body missed or duplicated player damage");
+                Check(Mathf.Approximately(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth, before - damage), "Trigger body missed or duplicated player damage");
                 return new { scenario = "existing-player-caster-single-damage-to-trigger", prefab = path, passed = true, damage };
             }
             finally { Object.Destroy(arena); }
@@ -198,7 +198,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(Cat, arena, x, false);
                 EnemyDamageProbe target = SolidActor(arena, x + 4f, 7);
                 enemy.SetTarget(target.transform);
-                EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
+                EnemyMeleeSkill skill = enemy.GetComponentInChildren<EnemyMeleeSkill>();
                 Set(skill, "<BaseCoolTime>k__BackingField", 3f);
                 await ObserveUntil(() => skill.IsPreparing, () => { });
                 float stoppedX = enemy.transform.position.x;
@@ -266,7 +266,7 @@ namespace CTJ.Tools
                 enemy.SetTarget(target.transform);
                 await Wait(0.15f);
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 Check(module.TryUseAttack(), "Timing begin");
                 float started = Time.time;
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
@@ -337,7 +337,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(path, arena, x);
                 EnemyDamageProbe target = Target(arena, x + 1f);
                 enemy.SetTarget(target.transform);
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 Set(skill, "<BaseCoolTime>k__BackingField", 0f);
                 await Wait(0.15f);
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
@@ -372,7 +372,7 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Long preparation begin");
                 await Wait(0.7f);
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 Check(skill.IsPreparing && target.ReceivedHitCount == 0 && enemy.GetComponentInChildren<SpriteRenderer>().sprite.name == "Catto_019", "Preparation clip auto-released or looped");
                 await ObserveUntil(() => !skill.IsUsing, () => { });
                 Check(target.ReceivedHitCount == 1, "Long preparation never released");
@@ -392,7 +392,7 @@ namespace CTJ.Tools
                 await Wait(0.15f);
                 Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Zero delay begin");
                 float started = Time.time;
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
                 await ObserveUntil(() => skill.IsHoldingWarning, () => Check(Shots(enemy).Length == 0, "Zero delay skipped blink"));
                 float held = Time.time;
@@ -445,12 +445,12 @@ namespace CTJ.Tools
             {
                 EnemyBase enemy = Spawn(path, arena, x);
                 float damage = PlayerDamage();
-                float initial = enemy.HealthModule.CurrentHealth;
-                Check(initial == enemy.HealthModule.MaxHealth && initial == expectedHits * damage, "HP initialization");
+                float initial = enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth;
+                Check(initial == enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().MaxHealth && initial == expectedHits * damage, "HP initialization");
                 for (int i = 1; i <= expectedHits; i++)
                 {
                     ((IDamageable)(Agent)enemy).ApplyDamage(new DamageData { DamageAmount = damage }, Vector2.zero, Vector2.zero, Vector2.zero);
-                    Check(enemy.HealthModule.CurrentHealth == initial - damage * i && enemy.IsDead == (i == expectedHits), "HP/death threshold");
+                    Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth == initial - damage * i && enemy.IsDead == (i == expectedHits), "HP/death threshold");
                 }
                 Check(!enemy.GetComponent<Rigidbody2D>().simulated && enemy.GetComponentsInChildren<Collider2D>().All(c => !c.enabled), "Death collision cleanup");
                 await Wait(1.2f);
@@ -470,7 +470,7 @@ namespace CTJ.Tools
                 EnemyDamageProbe target = Target(arena, x + (dodge ? -1f : 1f));
                 enemy.SetTarget(target.transform);
                 await Wait(0.15f);
-                EnemyMeleeSkill skill = enemy.GetComponent<EnemyMeleeSkill>();
+                EnemyMeleeSkill skill = enemy.GetComponentInChildren<EnemyMeleeSkill>();
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
                 Check(module.TryUseAttack(), "Melee begin");
                 CheckNoMeleeTelegraph(enemy);
@@ -500,7 +500,7 @@ namespace CTJ.Tools
                 EnemyDamageProbe target = Target(arena, x + 4f);
                 enemy.SetTarget(target.transform);
                 await Wait(0.15f);
-                EnemyProjectileSkill skill = enemy.GetComponent<EnemyProjectileSkill>();
+                EnemyProjectileSkill skill = enemy.GetComponentInChildren<EnemyProjectileSkill>();
                 Check(enemy.GetModule<EnemySkillModule>().TryUseAttack(), "Ranged begin");
                 AttackTelegraphUI ui = enemy.GetComponentInChildren<AttackTelegraphUI>();
                 Vector3 direction = ui.transform.right;
@@ -536,7 +536,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(path, arena, x);
                 EnemyDamageProbe target = Target(arena, x + 1f);
                 enemy.SetTarget(target.transform);
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 Set(skill, "<BaseCoolTime>k__BackingField", 0f);
                 await Wait(0.15f);
                 EnemySkillModule module = enemy.GetModule<EnemySkillModule>();
@@ -577,7 +577,7 @@ namespace CTJ.Tools
                 EnemyBase enemy = Spawn(path, arena, x, false);
                 EnemyDamageProbe target = Target(arena, x + 1f);
                 enemy.SetTarget(target.transform);
-                EnemyAttackSkill skill = enemy.GetComponent<EnemyAttackSkill>();
+                EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 await ObserveUntil(() => skill.IsPreparing, () => { });
                 target.transform.position = enemy.transform.position + Vector3.right * (enemy.ChaseReleaseRange + 2f);
                 await Wait(0.1f);
@@ -599,8 +599,8 @@ namespace CTJ.Tools
                 EnemyBase b = Spawn(Ghost, arena, x + 10f);
                 StatData data = AssetDatabase.LoadAssetAtPath<StatData>(Delay);
                 a.GetModule<IStatModule>().GetStat(data).SetBaseValue(0.8f);
-                EnemyAttackSkill skill = a.GetComponent<EnemyAttackSkill>();
-                Check(Mathf.Approximately(skill.AttackDelay, 0.8f) && Mathf.Approximately(b.GetComponent<EnemyAttackSkill>().AttackDelay, 0.5f), "Stat isolation");
+                EnemyAttackSkill skill = a.GetComponentInChildren<EnemyAttackSkill>();
+                Check(Mathf.Approximately(skill.AttackDelay, 0.8f) && Mathf.Approximately(b.GetComponentInChildren<EnemyAttackSkill>().AttackDelay, 0.5f), "Stat isolation");
                 EnemyDamageProbe target = Target(arena, x + 4f);
                 a.SetTarget(target.transform);
                 await Wait(0.15f);
@@ -620,7 +620,7 @@ namespace CTJ.Tools
             foreach (EnemyBase enemy in Object.FindObjectsByType<EnemyBase>(FindObjectsSortMode.None))
             {
                 enemy.GetModule<EnemySkillModule>().StopAttack();
-                Set(enemy.GetComponent<EnemyAttackSkill>(), "<BaseCoolTime>k__BackingField", 0f);
+                Set(enemy.GetComponentInChildren<EnemyAttackSkill>(), "<BaseCoolTime>k__BackingField", 0f);
                 enemy.GetModule<IStatModule>().GetStat(AssetDatabase.LoadAssetAtPath<StatData>(Delay)).SetBaseValue(10f);
             }
             await Wait(0.2f);

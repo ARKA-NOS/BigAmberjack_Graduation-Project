@@ -27,7 +27,7 @@ namespace CTJ.Tools
             return new[] { CatPath, GhostPath }.Select(path =>
             {
                 EnemyBase enemy = AssetDatabase.LoadAssetAtPath<EnemyBase>(path);
-                EnemyMovementModule movement = enemy.GetComponent<EnemyMovementModule>();
+                EnemyMovementModule movement = enemy.GetComponentInChildren<EnemyMovementModule>();
                 if (movement == null || GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(enemy.gameObject) != 0)
                     throw new InvalidOperationException("Missing movement module/script: " + path);
                 SerializedObject serialized = new SerializedObject(movement);
@@ -112,7 +112,7 @@ namespace CTJ.Tools
                         damagedBeforeLanding = true;
                     if (scenario == "death" && body.linearVelocityY > 1f && enemy.transform.position.y > 0.2f && !enemy.IsDead)
                     {
-                        enemy.HealthModule.CurrentHealth = 0f;
+                        enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth = 0f;
                         deadStable = enemy.IsDead && !body.simulated && body.linearVelocity.sqrMagnitude < 0.0001f;
                     }
                 });

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CTJ.Enemies;
 using CTJ.Testing;
+using Lrw.Script.Agent.HealthSystem;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -49,8 +50,8 @@ namespace CTJ.Tools
                     position = enemy.transform.position.ToString(),
                     target = enemy.Target != null ? enemy.Target.name : null,
                     attacking = enemy.IsAttackInProgress,
-                    healthModuleReady = enemy.HealthModule != null,
-                    maxHealth = enemy.HealthModule != null ? enemy.HealthModule.MaxHealth : 0f,
+                    healthModuleReady = enemy.GetModule<IHealthModule>() != null,
+                    maxHealth = enemy.GetModule<IHealthModule>()?.MaxHealth ?? 0f,
                     moving = enemy.GetComponentInChildren<Animator>().GetBool("IsMoving"),
                     sprite = enemy.GetComponentInChildren<SpriteRenderer>().sprite.name
                 }).ToArray(),

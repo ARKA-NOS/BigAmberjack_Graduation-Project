@@ -11,7 +11,8 @@ namespace SDW.Scripts.Interact.Chest.Effects
         [Tooltip("지급할 재화 종류")]
         [SerializeField] private CurrencySO currency;
         [Tooltip("지급할 수량")]
-        [SerializeField, Min(1)] private int amount = 10;
+        [SerializeField, Min(1)] private int minAmount = 10;
+        [SerializeField] private int maxAmount = 10;
 
         public override bool CanApply(ModuleOwner owner)
         {
@@ -20,6 +21,7 @@ namespace SDW.Scripts.Interact.Chest.Effects
 
         public override void Apply(ModuleOwner owner)
         {
+            int amount = Random.Range(minAmount, maxAmount + 1);
             CurrencySystem.GetCurrencyData(currency)?.Add(amount);
         }
     }

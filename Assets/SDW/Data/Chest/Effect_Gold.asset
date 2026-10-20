@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c938edc33a2a0b4a938e24003afdda1, type: 3}
-  m_Name: Effect_Gold_10
+  m_Name: Effect_Gold
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Interact.Chest.Effects.CurrencyRewardEffectSO
   currency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
-  amount: 10
+  minAmount: 10
+  maxAmount: 50

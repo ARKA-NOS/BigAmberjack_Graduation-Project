@@ -60,9 +60,9 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
             ITimedEffect shortest = null;
             float minRemainingTime = float.MaxValue;
 
-            for (int i = 0; i < list.Count; i++)
+            foreach (IEffect effect in list)
             {
-                if (list[i] is not ITimedEffect timedEffect) continue;
+                if (effect is not ITimedEffect timedEffect) continue;
 
                 float remainingTime = timedEffect.RemainingTime;
                 if (remainingTime >= minRemainingTime) continue;
@@ -71,7 +71,9 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
                 shortest = timedEffect;
             }
 
-            return shortest != null ? new Gauge(minRemainingTime, shortest.Duration) : new Gauge(0, 0);
+            return shortest != null ?
+                new Gauge(minRemainingTime, shortest.Duration) 
+                : new Gauge(0, 0);
         }
     }
 }

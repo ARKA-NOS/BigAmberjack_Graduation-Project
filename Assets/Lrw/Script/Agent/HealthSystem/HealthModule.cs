@@ -44,8 +44,6 @@ namespace Lrw.Script.Agent.HealthSystem
         private IStatModule _statModule;
         private Stat _maxHpStat;
         
-        private Gauge _healthGauge;
-        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -60,17 +58,15 @@ namespace Lrw.Script.Agent.HealthSystem
             _maxHpStat.OnValueChanged += MaxHpChanged;
             
             CurrentHealth = MaxHealth;
-
-            _healthGauge = new Gauge(CurrentHealth, MaxHealth);
-
-            if (healthGaugeViewModel != null)
-            {
-                healthGaugeViewModel.Bind(_healthGauge);
-            }
-
+            
             OnHealthChanged += ViewModelUpdate;
             
             IsDead = false;
+        }
+
+        private void Start()
+        {
+            ViewModelUpdate(CurrentHealth, 0f, MaxHealth);
         }
 
         private void OnDestroy()
@@ -87,7 +83,12 @@ namespace Lrw.Script.Agent.HealthSystem
         }
 
         private void ViewModelUpdate(float newValue, float delta, float max)
-            => _healthGauge.SetValue(newValue, max);
+        {
+            if (healthGaugeViewModel != null)
+            {
+                healthGaugeViewModel.Bind(new Gauge(newValue,max));
+            }
+        }
         
         public override string ToString()
             => $"{CurrentHealth} / {MaxHealth}";

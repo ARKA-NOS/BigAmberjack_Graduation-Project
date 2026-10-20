@@ -46,6 +46,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출한다.
 
+**UI(바인드 시스템)** — 게임 데이터를 화면에 보여주는 UI는 반드시 `Lrw/Script/UI/BindSystem`의 ViewModel–Binder 구조로 만든다. 게임 로직(모듈 등)은 UI 컴포넌트를 직접 참조하지 않고, ScriptableObject ViewModel 에셋을 사이에 두고 데이터만 넘긴다.
+- `AbstractUIViewModel<T>`(ScriptableObject) — 데이터를 가진 쪽이 `[SerializeField]`로 들고 있다가 값이 바뀌면 `Bind(data)`를 호출한다. 값은 `BindData`에 저장되고 `OnBind` 이벤트가 발생한다.
+- `AbstractUIBinder<T>`(MonoBehaviour) — UI 오브젝트에 붙이고 인스펙터에서 같은 ViewModel 에셋을 연결한다. `CurrentValue`로 값을 읽어 UI를 갱신한다.
+  - `DataUpdate()`(필수) — 매 프레임 호출. 쿨타임, 지연 바처럼 계속 변하는 표시를 갱신한다.
+  - `OnDataChanged()`(선택) — `Bind`가 호출된 순간에만 실행. 값이 바뀔 때 한 번만 할 처리를 넣는다.
+- 새 UI를 만드는 순서:
+  1. 넘길 데이터 타입을 정한다. 기존 타입(`string`, `Gauge`, `ISkill`, `EffectList`)으로 되면 그대로 쓴다.
+  2. 그 타입의 ViewModel이 없으면 `AbstractUIViewModel<T>`를 상속한 빈 클래스에 `[CreateAssetMenu(fileName = "Xxx View Module", menuName = "UI/Xxx View Module")]`를 붙여 만든다.
+  3. `AbstractUIBinder<T>`를 상속한 Binder를 만들고 `DataUpdate()`를 구현한다.
+  4. `Create > UI > ...`로 ViewModel 에셋을 만들고, 데이터를 가진 컴포넌트와 Binder 양쪽에 같은 에셋을 연결한다.
+  5. 데이터를 가진 쪽에서 값이 바뀔 때 `viewModel.Bind(...)`를 호출한다(ViewModel 필드는 null 체크).
+- 파일 위치 — 여러 UI에서 쓰는 범용 ViewModel/Binder는 `BindSystem/ViewModel/`, `BindSystem/Binder/`에(`TextViewModel`, `GaugeViewModel`, `TextUIBinder`), 특정 UI 전용은 그 UI 폴더에 둔다(`UI/PlayerUI/HUD_UI/...`).
+- 참고 예시 — `HealthModule` → `GaugeViewModel` → `PlayerHealthUIBinder`(체력 바 + 지연 바), `PlayerSkillModule` → `SkillViewModel` → `PlayerSkillUIBinder`(아이콘, 쿨타임).
+- 주의:
+  - Binder에서 `Awake`/`OnDestroy`/`Update`가 필요하면 `protected override`로 만들고 `base.Xxx()`를 꼭 호출한다. `private void Awake()`처럼 새로 선언해 베이스를 가리면 `OnBind` 구독이 빠진다.
+  - `Bind` 전의 `CurrentValue`는 `default`(참조 타입이면 null)이므로 null을 처리한다.
+  - ViewModel 에셋은 공유 상태다. 데이터 소스 하나당 에셋 하나를 둔다. 여러 오브젝트가 같은 에셋에 `Bind`하면 마지막 값으로 덮어써진다(예: 스킬 1/2는 에셋을 따로 만든다).
+  - `BindData`는 직렬화되지 않는 런타임 값이라 에셋에 저장되지 않는다. 저장이 필요한 값은 ViewModel에 두지 않는다.
+
 ## 컨벤션
 
 - 코드는 SOLID 원칙을 지켜서 작성한다.

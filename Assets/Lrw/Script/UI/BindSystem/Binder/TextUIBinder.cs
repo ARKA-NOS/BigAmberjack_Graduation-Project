@@ -8,8 +8,9 @@ namespace Lrw.Script.UI.BindSystem.Binder
     {
         private TextMeshProUGUI _tmp;
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _tmp = GetComponent<TextMeshProUGUI>();
         }
 

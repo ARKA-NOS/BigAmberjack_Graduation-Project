@@ -10,7 +10,7 @@ namespace Lrw.Script.UI.BindSystem
 
         protected T CurrentValue => bindData != null ? bindData.BindData : default;
 
-        protected virtual void OnEnable()
+        protected virtual void Awake()
         {
             if (bindData != null)
             {
@@ -19,7 +19,7 @@ namespace Lrw.Script.UI.BindSystem
             else FDebug.LogError($"[{name}] BindData is null");
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
             if (bindData != null)
             {

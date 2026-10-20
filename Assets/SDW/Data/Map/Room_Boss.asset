@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2056e540f0e24a49890197edf3382b6, type: 3}
   m_Name: Room_Boss
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Data.BossRoomDataSO
-  roomPrefab: {fileID: 2034662788396023387, guid: 2cc28f7dab2d69f4588a3ad8d172cd1d, type: 3}
+  roomPrefab: {fileID: 2034662788396023387, guid: 462e948d40ca56e4f95bc2e43c6b69ed, type: 3}
   clearCondition: {fileID: 11400000, guid: c573c51b584e5d84aae592bde3bb161d, type: 2}
-  bossPrefab: {fileID: 6002371313276815539, guid: b0941f89b32ef3740b47c30833d9b4ef, type: 3}
-  minions:
-  - enemyPrefab: {fileID: 6002371313276815539, guid: b0941f89b32ef3740b47c30833d9b4ef, type: 3}
-    count: 1
+  npcPrefab: {fileID: 0}
+  npcSpawnChance: 1
+  npcOffset: {x: 2, y: 0.5}
+  chestSpawnChance: 1
+  chestCandidates: []
+  chestOffset: {x: -2, y: 0.5}
+  bossPrefab: {fileID: 6244073572630414717, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
+  minions: []

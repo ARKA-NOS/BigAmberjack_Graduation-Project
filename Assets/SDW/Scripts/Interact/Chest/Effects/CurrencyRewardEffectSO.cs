@@ -23,6 +23,7 @@ namespace SDW.Scripts.Interact.Chest.Effects
         {
             int amount = Random.Range(minAmount, maxAmount + 1);
             CurrencySystem.GetCurrencyData(currency)?.Add(amount);
+            Debug.Log($"[Chest] 코인 획득: {currency.CurrencyName} +{amount}");
         }
     }
 }

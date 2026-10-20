@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3825ae334a74445399440722b8f61f2e, type: 3}
+  m_Name: Chest_Item
+  m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Interact.Chest.Data.ChestDataSO
+  <ChestName>k__BackingField: "\uC544\uC774\uD15C \uC0C1\uC790"
+  <ChestId>k__BackingField: 
+  <AppearChapters>k__BackingField: 
+  <AppearRoomName>k__BackingField: 
+  <Preconditions>k__BackingField: []
+  <Rewards>k__BackingField:
+  - {fileID: 11400000, guid: f2b89e57de5ca0647bf4bb173e2bd6e3, type: 2}
+  <ClosedSprite>k__BackingField: {fileID: 0}
+  <OpenedSprite>k__BackingField: {fileID: 0}

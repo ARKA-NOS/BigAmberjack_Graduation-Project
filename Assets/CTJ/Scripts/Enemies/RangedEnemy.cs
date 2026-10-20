@@ -7,7 +7,6 @@ namespace CTJ.Enemies
         private void Reset()
         {
             detectionRange = 10f;
-            attackRange = 7f;
         }
     }
 }

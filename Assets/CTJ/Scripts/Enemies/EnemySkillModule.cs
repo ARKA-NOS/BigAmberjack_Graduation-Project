@@ -18,6 +18,8 @@ namespace CTJ.Enemies
         {
             [SerializeField] private AbstractSkill skill;
             [SerializeField] private bool useSkill = true;
+            [Tooltip("끄면 거리 기반 자동 선택에서는 제외하고, 보스 패턴의 지정 실행으로만 사용합니다.")]
+            [SerializeField] private bool useForAutomaticSelection = true;
             [SerializeField, Min(0f)] private float minRange;
             [SerializeField, Min(0f)] private float maxRange = 1.5f;
             [Tooltip("발 높이 차이. 음수면 높이 제한 없음. 근접은 0.5 권장.")]
@@ -31,6 +33,7 @@ namespace CTJ.Enemies
 
             public AbstractSkill Skill => skill;
             public bool Enabled => useSkill && skill != null && skill.isActiveAndEnabled && skill.SkillSo != null;
+            public bool UseForAutomaticSelection => useForAutomaticSelection;
             public float MaxRange => Mathf.Max(0f, maxRange);
             public float ChargeDuration => Mathf.Max(0f, chargeDuration);
 
@@ -69,7 +72,7 @@ namespace CTJ.Enemies
             {
                 float range = 0f;
                 foreach (SkillEntry entry in skills)
-                    if (entry != null && entry.Enabled) range = Mathf.Max(range, entry.MaxRange);
+                    if (entry != null && entry.Enabled && entry.UseForAutomaticSelection) range = Mathf.Max(range, entry.MaxRange);
                 return range;
             }
         }
@@ -95,7 +98,7 @@ namespace CTJ.Enemies
         {
             if (!Ready) return false;
             foreach (SkillEntry entry in skills)
-                if (IsValid(entry) && entry.Matches(_enemy, _movement)) return true;
+                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement)) return true;
             return false;
         }
 
@@ -104,7 +107,7 @@ namespace CTJ.Enemies
             if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
             foreach (SkillEntry entry in skills)
             {
-                if (!IsValid(entry) || !entry.Matches(_enemy, _movement) || !CanUseSkill(entry.Skill.SkillSo)) continue;
+                if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement) || !CanUseSkill(entry.Skill.SkillSo)) continue;
                 _activeSkill = entry.Skill;
                 _castTarget = _enemy.Target;
                 _chargeReleaseTime = Time.time + entry.ChargeDuration;
@@ -114,12 +117,44 @@ namespace CTJ.Enemies
             return false;
         }
 
+        // 보스 FSM 등 실행할 스킬이 이미 정해진 호출자용. 잡몹의 거리/지상 선택 규칙은 건너뛰되
+        // Skills 목록의 사용 설정/차징 시간과 공용 등록·쿨타임 검사를 그대로 적용합니다.
+        public bool TryUseSpecifiedSkill(AbstractSkill skill)
+        {
+            if (!Ready || IsBusy || _enemy.IsHitReacting ||
+                !TryGetEnabledEntry(skill, out SkillEntry entry) ||
+                _enemy.Target == null || !_enemy.Target.gameObject.activeInHierarchy || !CanUseSkill(skill.SkillSo))
+                return false;
+            _activeSkill = skill;
+            _castTarget = _enemy.Target;
+            _chargeReleaseTime = Time.time + entry.ChargeDuration;
+            UseSkill(skill.SkillSo, true);
+            return true;
+        }
+
+        // 쿨타임과 분리된 구성 검사. 패턴 FSM이 사용 해제된 스킬을 무한히 기다리지 않도록 합니다.
+        public bool IsSkillEnabled(AbstractSkill skill) => isActiveAndEnabled && TryGetEnabledEntry(skill, out _);
+
+        private bool TryGetEnabledEntry(AbstractSkill skill, out SkillEntry entry)
+        {
+            foreach (SkillEntry candidate in skills)
+            {
+                if (IsValid(candidate) && candidate.Skill == skill)
+                {
+                    entry = candidate;
+                    return true;
+                }
+            }
+            entry = null;
+            return false;
+        }
+
         private bool IsValid(SkillEntry entry) => entry != null && entry.Enabled && _registeredSkills.Contains(entry.Skill);
 
         private void Update()
         {
             if (!IsBusy) return;
-            if (!Ready || !_activeSkill.isActiveAndEnabled || _castTarget == null ||
+            if (!Ready || !IsSkillEnabled(_activeSkill) || _castTarget == null ||
                 !_castTarget.gameObject.activeInHierarchy || _enemy.Target != _castTarget)
             {
                 StopAttack();

@@ -156,10 +156,8 @@ MonoBehaviour:
   target: {fileID: 0}
   detectionRange: 6
   chaseReleaseRange: 9
-  attackRange: 1.05
   moveSpeed: 2
   facingRoot: {fileID: 2368432189235151295}
-  attackInterval: 1
   deathAnimator: {fileID: 2391880773380209860}
   deathDespawnDelay: 1.1
 --- !u!114 &2547612643200237385
@@ -448,6 +446,7 @@ MonoBehaviour:
   skills:
   - skill: {fileID: 8810647111667320101}
     useSkill: 1
+    useForAutomaticSelection: 1
     minRange: 0
     maxRange: 1.05
     maxHeightDifference: 0.5

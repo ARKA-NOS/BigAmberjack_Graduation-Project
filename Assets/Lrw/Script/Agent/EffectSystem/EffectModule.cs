@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI;
+using Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.EffectSystem
@@ -22,12 +22,12 @@ namespace Lrw.Script.Agent.EffectSystem
             
             _effects = new();
             queue = new();
-            
-            _effectList = new EffectList(_effects);
         }
 
         private void Start()
         {
+            _effectList = new EffectList(_effects);
+            
             if(effectViewModel != null)
                 effectViewModel.Bind(_effectList);
         }

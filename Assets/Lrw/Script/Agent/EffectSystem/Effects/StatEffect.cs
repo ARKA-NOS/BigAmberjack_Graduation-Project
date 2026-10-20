@@ -10,7 +10,7 @@ namespace Lrw.Script.Agent.EffectSystem.Effects
         
         public StatEffect(EffectType type,ModuleOwner owner, StatData statData ,StatModifyData modifyData) : base(type,owner)
         {
-            if(Owner.TryGetModule(out IStatModule statModule)) return;
+            if(!Owner.TryGetModule(out IStatModule statModule)) return;
             
             _stat = statModule.GetStat(statData);
             

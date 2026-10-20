@@ -19,17 +19,11 @@ namespace CTJ.Enemies
         [SerializeField, Min(0f)] protected float detectionRange = 6f;
         [Tooltip("한 번 추적한 뒤 이 거리 밖으로 나가야 해제합니다. 해제 후 현재 위치에서 대기합니다.")]
         [SerializeField, Min(0f)] private float chaseReleaseRange = 12f;
-        [Tooltip("EnemySkillModule이 없는 구형 EnemyPrototype에서만 사용합니다.")]
-        [SerializeField, Min(0f)] protected float attackRange = 1.5f;
 
         [Header("Movement")]
         [SerializeField, Min(0f)] private float moveSpeed = 3f;
         [Tooltip("오른쪽을 기본 방향으로 만든 비주얼 자식. 공격 판정과 발사 위치도 이 아래에 둡니다.")]
         [SerializeField] private Transform facingRoot;
-
-        [Header("Legacy Attack (EnemyPrototype only)")]
-        [Tooltip("모듈 적의 간격은 스킬의 Base Cool Time에서 설정합니다. 이 값은 구형 EnemyPrototype 전용입니다.")]
-        [SerializeField, Min(0.01f)] private float attackInterval = 1f;
 
         [Header("Death")]
         [Tooltip("선택 사항. 사망 시 Base Layer.Death 상태를 재생합니다.")]
@@ -43,21 +37,20 @@ namespace CTJ.Enemies
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
         private StateMachine<EnemyStateType> _stateMachine;
-        private float _nextAttackTime;
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
         public float ChaseReleaseRange => Mathf.Max(detectionRange, chaseReleaseRange);
-        public float AttackRange => _skills != null ? _skills.MaximumRange : attackRange;
-        public float AttackInterval => attackInterval;
+        public float AttackRange => _skills != null ? _skills.MaximumRange : 0f;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsKnockedBack;
+        protected virtual bool UsesGroundMovement => true;
 
         protected override void Awake()
         {
             // 이동 모듈은 자식에 둘 수 있습니다. 구형 프리팹에 없는 경우에만 수집 전에 보완합니다.
-            if (GetComponentInChildren<EnemyMovementModule>() == null)
+            if (UsesGroundMovement && GetComponentInChildren<EnemyMovementModule>() == null)
                 gameObject.AddComponent<EnemyMovementModule>();
             base.Awake();
 
@@ -66,7 +59,7 @@ namespace CTJ.Enemies
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
-            InitializeStateMachine();
+            InitializeAI();
             if (HealthModule != null)
             {
                 HealthModule.OnHealthChanged += HandleHealthChanged;
@@ -86,17 +79,20 @@ namespace CTJ.Enemies
         private void Update()
         {
             if (!IsDead && !IsHitReacting)
-                _stateMachine.Update();
+                UpdateAI();
         }
 
         private void FixedUpdate()
         {
             if (IsDead) return;
             if (_hitReaction != null && _hitReaction.TickKnockback()) return;
-            _stateMachine.FixedUpdate();
+            FixedUpdateAI();
         }
 
-        private void InitializeStateMachine()
+        protected virtual void UpdateAI() => _stateMachine.Update();
+        protected virtual void FixedUpdateAI() => _stateMachine.FixedUpdate();
+
+        protected virtual void InitializeAI()
         {
             _stateMachine = new StateMachine<EnemyStateType>();
             _stateMachine.AddState(EnemyStateType.Idle, new EnemyIdleState(this));
@@ -105,7 +101,7 @@ namespace CTJ.Enemies
             _stateMachine.ChangeState(EnemyStateType.Idle);
         }
 
-        public void SetTarget(Transform newTarget)
+        public virtual void SetTarget(Transform newTarget)
         {
             if (target != newTarget && _skills != null)
                 _skills.StopAttack();
@@ -121,7 +117,7 @@ namespace CTJ.Enemies
                 PlayerController player = FindFirstObjectByType<PlayerController>();
                 if (player != null)
                 {
-                    target = player.transform;
+                    SetTarget(player.transform);
                     yield break;
                 }
 
@@ -167,19 +163,8 @@ namespace CTJ.Enemies
 
         internal bool CanAttackTarget()
         {
-            if (IsHitReacting) return false;
-            if (_skills != null)
-                return _skills.CanAttackTarget();
-            if (!IsTargetInRange(AttackRange) || _movement == null || !_movement.IsGrounded)
-                return false;
-            Collider2D targetBody = target.GetComponent<Collider2D>();
-            Vector2 aimPoint = targetBody != null ? (Vector2)targetBody.bounds.center : (Vector2)target.position;
-            return IsTargetAtAttackHeight() && _movement.HasClearPath(AttackOrigin, aimPoint);
+            return !IsHitReacting && _skills != null && _skills.CanAttackTarget();
         }
-
-        protected virtual Vector2 AttackOrigin => _movement.BodyCenter;
-        protected float TargetHeightDifference => _movement.GetTargetHeightDifference(target);
-        protected virtual bool IsTargetAtAttackHeight() => true;
 
         internal void ExecuteAttack()
         {
@@ -188,15 +173,7 @@ namespace CTJ.Enemies
 
             if (target != null)
                 OnMoveDirectionChanged(target.position.x - transform.position.x);
-            if (_skills != null)
-            {
-                _skills.TryUseAttack();
-                return;
-            }
-            // 기존 EnemyPrototype만 호환용 간격을 사용합니다. 모듈 적에는 이중 쿨타임을 걸지 않습니다.
-            if (Time.time < _nextAttackTime) return;
-            _nextAttackTime = Time.time + AttackInterval;
-            Attack();
+            _skills.TryUseAttack();
         }
 
         protected virtual void OnMoveDirectionChanged(float direction)
@@ -208,8 +185,6 @@ namespace CTJ.Enemies
             scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction);
             facingRoot.localScale = scale;
         }
-
-        protected virtual void Attack() { }
 
         public void OnAttackWarning() => _skills?.OnAttackWarning();
         public void OnAttackHit() => _skills?.OnAttackHit();
@@ -237,7 +212,10 @@ namespace CTJ.Enemies
         {
             if (current <= 0f)
                 Die();
+            OnHealthChanged(current, delta, max);
         }
+
+        protected virtual void OnHealthChanged(float current, float delta, float max) { }
 
         private void Die()
         {
@@ -294,9 +272,7 @@ namespace CTJ.Enemies
         {
             detectionRange = Mathf.Max(0f, detectionRange);
             chaseReleaseRange = Mathf.Max(detectionRange, chaseReleaseRange);
-            attackRange = Mathf.Clamp(attackRange, 0f, detectionRange);
             moveSpeed = Mathf.Max(0f, moveSpeed);
-            attackInterval = Mathf.Max(0.01f, attackInterval);
         }
 
         private void OnDrawGizmosSelected()
@@ -309,7 +285,7 @@ namespace CTJ.Enemies
 
             Gizmos.color = Color.red;
             EnemySkillModule skillModule = _skills != null ? _skills : GetComponentInChildren<EnemySkillModule>();
-            Gizmos.DrawWireSphere(transform.position, skillModule != null ? skillModule.MaximumRange : attackRange);
+            Gizmos.DrawWireSphere(transform.position, skillModule != null ? skillModule.MaximumRange : 0f);
         }
     }
 }

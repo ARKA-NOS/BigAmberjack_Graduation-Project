@@ -77,9 +77,7 @@ namespace CTJ.Tools
                 Set(melee, "attackHitbox", hitbox);
                 Set(melee, "attackAnimator", visual.GetComponent<Animator>());
                 Set(melee, "detectionRange", 6f);
-                Set(melee, "attackRange", 1.05f);
                 Set(melee, "moveSpeed", 2f);
-                Set(melee, "attackInterval", 1f);
                 Set(melee, "attackTimeout", 1.5f);
                 EnemyAnimationEventRelay relay = visual.gameObject.AddComponent<EnemyAnimationEventRelay>();
                 Set(relay, "enemy", melee);
@@ -96,9 +94,7 @@ namespace CTJ.Tools
                 Set(ranged, "attackAnimator", ghostVisual.GetComponent<Animator>());
                 Set(ranged, "projectilePrefab", projectilePrefab.GetComponent<EnemyProjectile>());
                 Set(ranged, "detectionRange", 10f);
-                Set(ranged, "attackRange", 7f);
                 Set(ranged, "moveSpeed", 1.5f);
-                Set(ranged, "attackInterval", 1.2f);
                 GameObject ghostPrefab = PrefabUtility.SaveAsPrefabAsset(ghostRoot, Root + "/Prefabs/MadGhost_Ranged.prefab");
                 Object.DestroyImmediate(ghostRoot);
 

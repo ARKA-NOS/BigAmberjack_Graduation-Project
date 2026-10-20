@@ -48,9 +48,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7174407812854829976, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: data
+      value: 
+      objectReference: {fileID: 11400000, guid: 47366735b7f4bc94b9d40b45683f3238, type: 2}
     - target: {fileID: 9150914726007896175, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
       propertyPath: m_Name
-      value: Chest_Base
+      value: Chest_Coin
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

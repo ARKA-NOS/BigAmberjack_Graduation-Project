@@ -107,15 +107,24 @@ namespace SDW.Scripts.Maps.Data
             if (Random.value >= chestSpawnChance)
                 return false;
 
+            return SpawnRandomChest(room, GetDefaultChestPosition(room)) != null;
+        }
+
+        // 후보 중 가중치로 하나를 골라 지정 위치에 배치한다. 후보가 없으면 null.
+        protected Chest SpawnRandomChest(RoomController room, Vector3 position)
+        {
             Chest chestPrefab = PickChestByWeight();
             if (chestPrefab == null)
-                return false;
+                return null;
 
+            return Instantiate(chestPrefab, position, Quaternion.identity, room.transform);
+        }
+
+        // Chest Spawn Point가 있으면 그 위치, 없으면 방 원점 + 오프셋.
+        protected Vector3 GetDefaultChestPosition(RoomController room)
+        {
             Transform spawnPoint = room.Definition != null ? room.Definition.ChestSpawnPoint : null;
-            Vector3 basePosition = spawnPoint != null ? spawnPoint.position : room.transform.position + (Vector3)chestOffset;
-
-            Instantiate(chestPrefab, basePosition, Quaternion.identity, room.transform);
-            return true;
+            return spawnPoint != null ? spawnPoint.position : room.transform.position + (Vector3)chestOffset;
         }
 
         // 프리팹이 비어 있거나 가중치가 0인 후보는 제외하고, 가중치 비율로 하나를 고른다.

@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4300c7f53414bfbb53ba33e6c919dc9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyDeathModule
 --- !u!1 &5683942725659162458
 GameObject:
@@ -63,29 +63,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &8810647111667320300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330050}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31dfaa11bc3b4d629e100b203f9e5311, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
-  enableKnockback: 1
-  knockbackSpeed: 5.1
-  knockbackDuration: 0.18
-  cancelAttackOnHit: 1
-  enableBlink: 1
-  blinkDuration: 0.35
-  blinkInterval: 0.05
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
-  hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
-  sprites:
-  - {fileID: 9213350838558911084}
 --- !u!4 &1121222997207652652
 Transform:
   m_ObjectHideFlags: 0
@@ -205,56 +182,6 @@ MonoBehaviour:
   facingRoot: {fileID: 2368432189235151295}
   deathAnimator: {fileID: 2391880773380209860}
   deathDespawnDelay: 1.1
---- !u!114 &2547612643200237385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1c9a460acba483d8ce48f70ea98b66c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatModule
-  baseStats: {fileID: 11400000, guid: 89aca48440d01e24ba499dd20bbe6ce3, type: 2}
---- !u!114 &1001759245267349421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1c2a7de7bdb4bad899b57a041df3e4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.HealthModule
-  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
-  currentHealth: 0
---- !u!114 &8810647111667320001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 767ddf0b3b914298956643af414a1661, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyMovementModule
-  bodyCollider: {fileID: 8810647111667320202}
-  terrainLayers:
-    serializedVersion: 2
-    m_Bits: 64
-  groundCheckDistance: 0.1
-  obstacleCheckDistance: 0.3
-  horizontalTolerance: 0.06
-  jumpHeight: 3
-  minimumTargetHeight: 0.45
-  jumpCooldown: 0.5
-  maxLedgeDetour: 3
 --- !u!1 &6940560111538749771
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,56 +403,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.65}
   m_EdgeRadius: 0
---- !u!114 &8810647111667320100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70001, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
-  skills:
-  - skill: {fileID: 8810647111667320101}
-    useSkill: 1
-    useForAutomaticSelection: 1
-    minRange: 0
-    maxRange: 1.05
-    maxHeightDifference: 0.5
-    requireGrounded: 1
-    requireClearPath: 1
-    origin: {fileID: 0}
-    chargeDuration: 0
---- !u!114 &8810647111667320101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8810647111667330040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70003, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Skills.EnemyMeleeSkill
-  <SkillSo>k__BackingField: {fileID: 11400000, guid: b730ad5eb65f41b19f4e410fc0d70005, type: 2}
-  <BaseCoolTime>k__BackingField: 1
-  attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
-  fallbackAttackDelay: 0.35
-  telegraphPrefab: {fileID: 0}
-  postBlinkDelay: 0.15
-  blinkBeforeAttack: 0
-  telegraphOpacity: 1
-  attackAnimator: {fileID: 2391880773380209860}
-  preparationStateName: Base Layer.AttackPreparation
-  attackStateName: Base Layer.Attack
-  idleStateName: Base Layer.Idle
-  attackHitbox: {fileID: 7373078564446817729}
-  damage: 10
-  attackTimeout: 1.5
 --- !u!1 &8810647111667320200
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,6 +416,9 @@ GameObject:
   m_Layer: 2
   m_Name: TerrainBody
   m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &8810647111667320201
 Transform:
@@ -551,6 +431,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -589,6 +470,14 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.28}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.56}
   m_EdgeRadius: 0
@@ -624,6 +513,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8810647111667320001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 767ddf0b3b914298956643af414a1661, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyMovementModule
+  bodyCollider: {fileID: 8810647111667320202}
+  terrainLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckDistance: 0.1
+  obstacleCheckDistance: 0.3
+  horizontalTolerance: 0.06
+  jumpHeight: 3
+  minimumTargetHeight: 0.45
+  jumpCooldown: 0.5
+  maxLedgeDetour: 3
 --- !u!1 &8810647111667330010
 GameObject:
   m_ObjectHideFlags: 0
@@ -656,6 +568,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2547612643200237385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1c9a460acba483d8ce48f70ea98b66c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatModule
+  baseStats: {fileID: 11400000, guid: 89aca48440d01e24ba499dd20bbe6ce3, type: 2}
 --- !u!1 &8810647111667330020
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,6 +613,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1001759245267349421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1c2a7de7bdb4bad899b57a041df3e4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.HealthModule
+  healthGaugeViewModel: {fileID: 0}
+  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
+  currentHealth: 0
 --- !u!1 &8810647111667330030
 GameObject:
   m_ObjectHideFlags: 0
@@ -721,6 +661,29 @@ Transform:
   - {fileID: 8810647111667330041}
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8810647111667320100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70001, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
+  skills:
+  - skill: {fileID: 8810647111667320101}
+    useSkill: 1
+    useForAutomaticSelection: 1
+    minRange: 0
+    maxRange: 1.05
+    maxHeightDifference: 0.5
+    requireGrounded: 1
+    requireClearPath: 1
+    origin: {fileID: 0}
+    chargeDuration: 0
 --- !u!1 &8810647111667330040
 GameObject:
   m_ObjectHideFlags: 0
@@ -753,6 +716,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8810647111667330031}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8810647111667320101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Skills.EnemyMeleeSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: b730ad5eb65f41b19f4e410fc0d70005, type: 2}
+  <BaseCoolTime>k__BackingField: 1
+  attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
+  fallbackAttackDelay: 0.35
+  postBlinkDelay: 0.15
+  blinkBeforeAttack: 0
+  telegraphOpacity: 1
+  telegraphPrefab: {fileID: 0}
+  attackAnimator: {fileID: 2391880773380209860}
+  preparationStateName: Base Layer.AttackPreparation
+  attackStateName: Base Layer.Attack
+  idleStateName: Base Layer.Idle
+  attackHitbox: {fileID: 7373078564446817729}
+  damage: 10
+  attackTimeout: 1.5
 --- !u!1 &8810647111667330050
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,6 +775,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1121222997207652652}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8810647111667320300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810647111667330050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31dfaa11bc3b4d629e100b203f9e5311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
+  enableKnockback: 1
+  knockbackSpeed: 5.1
+  knockbackDuration: 0.18
+  cancelAttackOnHit: 1
+  enableBlink: 1
+  blinkDuration: 0.35
+  blinkInterval: 0.05
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
+  sprites:
+  - {fileID: 9213350838558911084}
 --- !u!1 &8810647111667330060
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,7 +840,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 486510af03804e6cbdeba10c45a1f620, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyCurrencyRewardModule
   rewardCurrency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
   rewardAmountStat: {fileID: 11400000, guid: 829d06c7a4914e7c96e6d3b72587ca04, type: 2}

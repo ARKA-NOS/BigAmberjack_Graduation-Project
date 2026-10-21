@@ -11,13 +11,6 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
         
         private List<PlayerEffectUI> playerEffectUIs;
         
-        protected override void Awake()
-        {
-            base.Awake();
-            
-        }
-        
-        
         protected override void DataUpdate()
         {
             List<EffectViewData> effectList = CurrentValue.ViewDataList;

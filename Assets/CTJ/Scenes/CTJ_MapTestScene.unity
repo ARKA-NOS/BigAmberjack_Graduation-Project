@@ -479,11 +479,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7497900406210868822, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
+      propertyPath: easeDuration
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
+--- !u!1001 &910007001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 81f00c8426cc43b79190334cd2a3b44d, type: 3}
 --- !u!1 &1234567890
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,6 +831,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 910007001}
   - {fileID: 520799849}
   - {fileID: 1756723267}
   - {fileID: 1234567891}

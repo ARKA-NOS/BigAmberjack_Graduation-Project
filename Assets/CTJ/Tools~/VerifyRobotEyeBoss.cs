@@ -79,7 +79,8 @@ namespace CTJ.Tools
             Check(boss.GetComponentsInChildren<Collider2D>().All(c => c.isTrigger), "No body collision");
             Check(boss.gameObject.layer == LayerMask.NameToLayer("Enemy"), "Player attack target layer");
             IModule[] modules = boss.GetComponentsInChildren<IModule>();
-            Check(modules.Length == 7 && modules.Select(m => m.GetType()).Distinct().Count() == 7, "Module uniqueness");
+            Check(modules.Length == 8 && modules.Select(m => m.GetType()).Distinct().Count() == 8, "Module uniqueness");
+            Check(boss.GetComponentInChildren<EnemyDeathModule>() != null, "Death notification module");
             Check(boss.GetComponentInChildren<BossArenaModule>() != null, "Separate arena module");
             EnemySkillModule skills = boss.GetComponentInChildren<EnemySkillModule>();
             Check(skills.Skills.Count == 2 && skills.Skills.All(e => e.Skill != null && e.Skill.enabled && e.Skill.SkillSo != null && !e.UseForAutomaticSelection),
@@ -90,6 +91,10 @@ namespace CTJ.Tools
             Check(skills.Skills[0].Skill == boss.GetComponentInChildren<BossRadialVolleySkill>() &&
                 skills.Skills[1].Skill == boss.GetComponentInChildren<BossLaserSkill>(), "Pattern skill references");
             Check(new SerializedObject(boss).FindProperty("arenaHalfWidth") == null, "Arena settings must not remain on boss");
+            SerializedObject tuning = new SerializedObject(boss);
+            Check(tuning.FindProperty("targetMoveSpeed").floatValue == 8f &&
+                tuning.FindProperty("flightSpeed").floatValue == 4f &&
+                tuning.FindProperty("laserSweepSpeed").floatValue == 6f, "Only target movement speed increased: 4 / 8 / 6");
             foreach (string path in new[] { Root + "/RobotEyeBoss.prefab", "Assets/CTJ/Prototypes/Prefabs/Catto_Melee.prefab", "Assets/CTJ/Prototypes/Prefabs/MadGhost_Ranged.prefab" })
             {
                 SerializedObject so = new SerializedObject(AssetDatabase.LoadAssetAtPath<EnemyBase>(path));
@@ -185,6 +190,7 @@ namespace CTJ.Tools
                 BossArenaModule arena = Boss.GetComponentInChildren<BossArenaModule>();
                 Set(arena, "introHeight", 0.4f);
                 Set(Boss, "flightSpeed", 30f);
+                Set(Boss, "targetMoveSpeed", 8f);
                 Set(arena, "halfWidth", 2f);
                 Set(Boss, "laserSweepSpeed", 8f);
                 Set(Boss, "firstVolleyDelay", firstDelay);
@@ -223,6 +229,12 @@ namespace CTJ.Tools
                 Check(f.Boss.CurrentState == RobotEyeBossState.RadialVolley && Vector2.Distance(origin, f.Boss.transform.position) < 0.02f, "Do not move during 0.5s recovery");
                 await Until(() => f.Boss.CurrentState == RobotEyeBossState.MoveToTarget);
                 Check(Time.time - fired >= 0.48f, "0.5s recovery duration");
+                BossFlightModule flight = f.Boss.GetModule<BossFlightModule>();
+                Vector2 beforeMove = f.Boss.GetComponent<Rigidbody2D>().position;
+                flight.Tick();
+                float step = Vector2.Distance(beforeMove, f.Boss.GetComponent<Rigidbody2D>().position);
+                Check(step > 0f && step <= 8f * Time.fixedDeltaTime + 0.001f,
+                    "Target movement must accelerate without exceeding 8 units/s");
                 await Until(() => f.Boss.CurrentState == RobotEyeBossState.Waiting);
                 Check(Vector2.Distance(destination, f.Boss.transform.position) < 0.02f, "Move toward snapshot, not current target position");
             }

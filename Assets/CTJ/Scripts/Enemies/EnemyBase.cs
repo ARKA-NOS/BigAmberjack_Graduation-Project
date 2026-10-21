@@ -36,6 +36,7 @@ namespace CTJ.Enemies
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
+        private EnemyDeathModule _death;
         private StateMachine<EnemyStateType> _stateMachine;
 
         public Transform Target => target;
@@ -59,6 +60,7 @@ namespace CTJ.Enemies
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
+            _death = GetModule<EnemyDeathModule>();
             InitializeAI();
             if (HealthModule != null)
             {
@@ -240,6 +242,7 @@ namespace CTJ.Enemies
                 deathAnimator.Play(DeathStateHash, 0, 0f);
             }
             Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay));
+            if (_death != null) _death.ReportDeath();
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
             if (_currencyReward != null) _currencyReward.GrantDeathReward();
         }

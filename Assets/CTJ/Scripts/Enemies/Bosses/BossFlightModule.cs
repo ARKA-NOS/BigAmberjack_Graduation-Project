@@ -7,11 +7,19 @@ namespace CTJ.Enemies.Bosses
     [DisallowMultipleComponent]
     public sealed class BossFlightModule : Module
     {
+        [Tooltip("최고 속도까지 가속하는 시간이며 감속에도 같은 값을 사용합니다. 짧은 이동은 최고 속도를 낮춥니다.")]
+        [SerializeField, Min(0.01f)] private float easeDuration = 0.2f;
         private Rigidbody2D _body;
+        private Vector2 _start;
         private Vector2 _destination;
-        private float _speed;
+        private float _distance;
+        private float _peakSpeed;
+        private float _rampTime;
+        private float _cruiseTime;
+        private float _duration;
+        private float _elapsed;
         public bool IsMoving { get; private set; }
-        public bool HasArrived => _body != null && Vector2.Distance(_body.position, _destination) <= 0.01f;
+        public bool HasArrived => _body != null && !IsMoving && Vector2.Distance(_body.position, _destination) <= 0.01f;
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -30,17 +38,49 @@ namespace CTJ.Enemies.Bosses
 
         public void MoveTo(Vector2 destination, float speed)
         {
+            _start = _body.position;
             _destination = destination;
-            _speed = Mathf.Max(0.01f, speed);
+            _distance = Vector2.Distance(_start, destination);
+            _elapsed = 0f;
+            if (_distance <= 0.0001f)
+            {
+                Place(destination);
+                return;
+            }
+
+            float maxSpeed = Mathf.Max(0.01f, speed);
+            float ramp = Mathf.Max(0.01f, easeDuration);
+            // 가속+감속만으로 목적지를 넘어갈 짧은 거리에서는 최고 속도를 낮추고 등속 구간을 생략합니다.
+            _rampTime = Mathf.Min(ramp, Mathf.Sqrt(_distance * ramp / maxSpeed));
+            _peakSpeed = maxSpeed * _rampTime / ramp;
+            _cruiseTime = Mathf.Max(0f, _distance / _peakSpeed - _rampTime);
+            _duration = 2f * _rampTime + _cruiseTime;
             IsMoving = true;
         }
 
         public void Tick()
         {
             if (!isActiveAndEnabled || _body == null || !IsMoving) return;
-            // 벽/접촉 충돌 없는 기획의 비행체. 실제 이동 위치로 같은 틱의 레이저 판정도 갱신합니다.
-            SetPosition(Vector2.MoveTowards(_body.position, _destination, _speed * Time.fixedDeltaTime));
-            if (HasArrived) IsMoving = false;
+            _elapsed = Mathf.Min(_duration, _elapsed + Time.fixedDeltaTime);
+            float travelled;
+            float acceleration = _peakSpeed / _rampTime;
+            if (_elapsed < _rampTime)
+                travelled = 0.5f * acceleration * _elapsed * _elapsed;
+            else if (_elapsed < _rampTime + _cruiseTime)
+                travelled = _peakSpeed * (_elapsed - 0.5f * _rampTime);
+            else
+            {
+                float remaining = _duration - _elapsed;
+                travelled = _distance - 0.5f * acceleration * remaining * remaining;
+            }
+
+            // 매 틱 현재 위치를 Lerp하지 않고 출발점 기준 누적 거리를 사용해, 유한 시간 안에 정확히 도착합니다.
+            SetPosition(Vector2.Lerp(_start, _destination, travelled / _distance));
+            if (_elapsed >= _duration)
+            {
+                SetPosition(_destination);
+                IsMoving = false;
+            }
         }
 
         private void SetPosition(Vector2 position)
@@ -54,6 +94,7 @@ namespace CTJ.Enemies.Bosses
         public void Stop()
         {
             IsMoving = false;
+            _elapsed = 0f;
             if (_body == null) return;
             _body.linearVelocity = Vector2.zero;
             _destination = _body.position;

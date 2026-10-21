@@ -46,10 +46,10 @@ namespace CTJ.Tools
                 Check(enemy != null, "Missing prefab");
                 Check(enemy.GetComponents<Component>().Length == 4, "Root components: " + string.Join(", ", enemy.GetComponents<Component>().Select(c => c != null ? c.GetType().Name : "Missing")));
                 string[] names = { "Visual", "EnemyMovement", "TerrainBody", "StatModule", "HealthModule",
-                    "SkillModule", "HitReactionModule", "CurrencyRewardModule" };
+                    "SkillModule", "HitReactionModule", "CurrencyRewardModule", "DeathModule" };
                 Check(enemy.transform.Cast<Transform>().Select(t => t.name).SequenceEqual(names), "Hierarchy/order differs");
                 IModule[] modules = enemy.GetComponentsInChildren<IModule>();
-                Check(modules.Length == 6 && modules.Select(m => m.GetType()).Distinct().Count() == 6, "Missing/duplicate modules");
+                Check(modules.Length == 7 && modules.Select(m => m.GetType()).Distinct().Count() == 7, "Missing/duplicate modules");
                 Check(Array.FindIndex(modules, m => m is StatModule) < Array.FindIndex(modules, m => m is HealthModule), "Stat must precede Health");
                 EnemySkillModule skills = enemy.GetComponentInChildren<EnemySkillModule>();
                 EnemyAttackSkill attack = skills.GetComponentInChildren<EnemyAttackSkill>();

@@ -13,6 +13,8 @@ namespace CTJ.Enemies.Bosses
         [SerializeField, Min(0f)] private float firstVolleyDelay = 10f;
         [SerializeField, Min(0f)] private float normalRestTime = 3f;
         [SerializeField, Min(0.01f)] private float flightSpeed = 4f;
+        [Tooltip("원형 탄막 후 플레이어 위치를 향해 이동할 때의 속도입니다. 등장·복귀·레이저 이동에는 적용하지 않습니다.")]
+        [SerializeField, Min(0.01f)] private float targetMoveSpeed = 8f;
         [SerializeField, Min(0.01f)] private float laserSweepSpeed = 6f;
         [SerializeField, Min(0f)] private float laserHealthThreshold = 1000f;
         private StateMachine<RobotEyeBossState> _fsm;
@@ -105,7 +107,7 @@ namespace CTJ.Enemies.Bosses
                     _skillStarted = Skills.TryUseSpecifiedSkill(radialVolley);
                     break;
                 case RobotEyeBossState.MoveToTarget:
-                    Flight.MoveTo(_moveDestination, flightSpeed);
+                    Flight.MoveTo(_moveDestination, targetMoveSpeed);
                     break;
                 case RobotEyeBossState.LaserPositioning:
                     Flight.MoveTo(_arena.LaserLeft, flightSpeed);

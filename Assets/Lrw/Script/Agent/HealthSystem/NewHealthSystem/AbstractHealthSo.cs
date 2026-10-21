@@ -1,21 +1,19 @@
-﻿using DevLib.BattleSystem;
+﻿using DevLib.ModuleSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    [CreateAssetMenu(fileName = "??? Health SO", menuName = "Health/??? Health SO", order = 0)]
+    //[CreateAssetMenu(fileName = "??? Health SO", menuName = "Health/??? Health SO")]
     public abstract class AbstractHealthSo : ScriptableObject
     {
-        [field: SerializeField] public Color HealthColor { get; private set; } = Color.red;
+        [field: SerializeField] public Color HealthColor { get; private set; } = Color.white;
+        [field: Header("NewHealthModule에 처음부터 있을 때 부여되는 양")]
+        [field: SerializeField] public float BaseValue { get; private set; }
+        [field: Space]
+        [field: Header("클수록 데미지를 먼저 받는다")]
+        [field: SerializeField] public int Priority { get; private set; }
+        [field: SerializeField] public HealType AcceptHealTypes { get; private set; }
         
-        [Header("설명 (RunTime 사용 X)")]
-        [SerializeField,TextArea] private string healthDescription = "Health SO";
-        
-        public virtual HealthData ApplyDamage(HealthData data)
-            => new HealthData(
-                Mathf.Max(data.Damage - data.Health, 0f),
-                Mathf.Max(data.Health - data.Damage, 0f)
-                );
-        
+        public abstract AbstractHealth CreateHealth(ModuleOwner owner);
     }
 }

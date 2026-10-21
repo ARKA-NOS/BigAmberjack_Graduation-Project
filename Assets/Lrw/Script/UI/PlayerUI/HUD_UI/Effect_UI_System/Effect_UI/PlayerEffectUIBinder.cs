@@ -52,7 +52,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
         {
             for(int i = 0; i < playerEffectUIs.Count;i++)
             {
-                if (i < playerEffectUIs.Count)
+                if (i < effectList.Count)
                 {
                     playerEffectUIs[i].gameObject.SetActive(true);
                     playerEffectUIs[i].SetViewData(effectList[i]);

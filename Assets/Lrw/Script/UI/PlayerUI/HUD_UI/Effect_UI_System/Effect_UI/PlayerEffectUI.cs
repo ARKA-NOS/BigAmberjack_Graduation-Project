@@ -28,16 +28,26 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
         
         private void UpdateUI()
         {
+            EffectImageUpdate();
+            EffectTimeUpdate();
+        }
+
+        private void EffectImageUpdate()
+        {
             effectImage.sprite = effectData.EffectIcon;
-            
+        }
+
+        private void EffectTimeUpdate()
+        {
             Gauge gauge = effectData.EffectGauge;
-            normalTimeImage.fillAmount = gauge.Normalized;
+            normalTimeImage.fillAmount = (1f - gauge.Normalized);
             effectTimeText.text = GetRemainingTime(gauge.CurrentValue);
             effectStackText.text = GetStackText(effectData.EffectStack);
         }
         
         private string GetRemainingTime(float gaugeCurrentValue)
         {
+            if(gaugeCurrentValue < 0f || gaugeCurrentValue > 10f) return "";
             float remainingTime = Mathf.Max(0f, gaugeCurrentValue);
             return remainingTime.ToString("F2", CultureInfo.InvariantCulture);
         }

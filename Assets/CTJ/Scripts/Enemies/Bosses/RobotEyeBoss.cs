@@ -15,7 +15,8 @@ namespace CTJ.Enemies.Bosses
         [SerializeField, Min(0.01f)] private float flightSpeed = 4f;
         [Tooltip("원형 탄막 후 플레이어 위치를 향해 이동할 때의 속도입니다. 등장·복귀·레이저 이동에는 적용하지 않습니다.")]
         [SerializeField, Min(0.01f)] private float targetMoveSpeed = 8f;
-        [SerializeField, Min(0.01f)] private float laserSweepSpeed = 6f;
+        [SerializeField, Min(0.01f)] private float laserPositionSpeed = 12f;
+        [SerializeField, Min(0.01f)] private float laserSweepSpeed = 20f;
         [SerializeField, Min(0f)] private float laserHealthThreshold = 1000f;
         private StateMachine<RobotEyeBossState> _fsm;
         private BossArenaModule _arena;
@@ -110,13 +111,13 @@ namespace CTJ.Enemies.Bosses
                     Flight.MoveTo(_moveDestination, targetMoveSpeed);
                     break;
                 case RobotEyeBossState.LaserPositioning:
-                    Flight.MoveTo(_arena.LaserLeft, flightSpeed);
+                    Flight.MoveTo(_arena.GetLaserStart(0), laserPositionSpeed);
                     break;
                 case RobotEyeBossState.LaserSweep:
                     Flight.Stop();
                     _sweepMoving = false;
-                    _sweepDestination = CompletedTraversals % 2 == 0 ? _arena.LaserRight : _arena.LaserLeft;
-                    laser.ConfigureTraversal(_arena.FloorY);
+                    _sweepDestination = _arena.GetLaserEnd(CompletedTraversals);
+                    laser.ConfigureTraversal(_arena.GetLaserDangerBounds(CompletedTraversals), transform.position, _sweepDestination);
                     _skillStarted = Skills.TryUseSpecifiedSkill(laser);
                     break;
                 case RobotEyeBossState.ReturnCenter:

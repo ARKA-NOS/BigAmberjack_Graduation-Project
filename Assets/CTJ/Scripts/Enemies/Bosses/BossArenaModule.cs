@@ -13,12 +13,36 @@ namespace CTJ.Enemies.Bosses
         [SerializeField, Min(0.1f)] private float floorDistance = 4f;
         [SerializeField, Min(0f)] private float laserHeight = 2.5f;
         [SerializeField, Min(0f)] private float introHeight = 4f;
+        [Tooltip("레이저 횡단마다 오른쪽/왼쪽에 번갈아 남길 안전 구역의 가로 비율입니다.")]
+        [SerializeField, Range(0.05f, 0.45f)] private float laserSafeWidthRatio = 0.2f;
 
         public Vector2 Center { get; private set; }
         public float FloorY => Center.y - Mathf.Max(0.1f, floorDistance);
         public Vector2 IntroPosition => Center + Vector2.up * Mathf.Max(0f, introHeight);
         public Vector2 LaserLeft => Center + new Vector2(-Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
         public Vector2 LaserRight => Center + new Vector2(Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
+
+        public Bounds GetLaserDangerBounds(int traversal)
+        {
+            float left = LaserLeft.x;
+            float right = LaserRight.x;
+            float safeWidth = (right - left) * Mathf.Clamp(laserSafeWidthRatio, 0.05f, 0.45f);
+            if (traversal % 2 == 0) right -= safeWidth; // 1·3회: 오른쪽 안전
+            else left += safeWidth;                  // 2회: 왼쪽 안전
+            return new Bounds(new Vector3((left + right) * 0.5f, (FloorY + LaserLeft.y) * 0.5f, 0f),
+                new Vector3(right - left, LaserLeft.y - FloorY, 0f));
+        }
+
+        public Vector2 GetLaserStart(int traversal) => LaserTravelPoint(traversal, false);
+        public Vector2 GetLaserEnd(int traversal) => LaserTravelPoint(traversal, true);
+
+        private Vector2 LaserTravelPoint(int traversal, bool end)
+        {
+            Bounds danger = GetLaserDangerBounds(traversal);
+            float inset = Mathf.Min(0.75f, danger.size.x * 0.2f);
+            bool right = (traversal % 2 == 0) == end;
+            return new Vector2(right ? danger.max.x - inset : danger.min.x + inset, danger.max.y);
+        }
 
         public override void Initialize(ModuleOwner owner)
         {

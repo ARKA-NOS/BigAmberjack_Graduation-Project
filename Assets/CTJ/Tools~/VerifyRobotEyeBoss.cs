@@ -94,7 +94,8 @@ namespace CTJ.Tools
             SerializedObject tuning = new SerializedObject(boss);
             Check(tuning.FindProperty("targetMoveSpeed").floatValue == 8f &&
                 tuning.FindProperty("flightSpeed").floatValue == 4f &&
-                tuning.FindProperty("laserSweepSpeed").floatValue == 6f, "Only target movement speed increased: 4 / 8 / 6");
+                tuning.FindProperty("laserSweepSpeed").floatValue == 20f &&
+                tuning.FindProperty("laserPositionSpeed").floatValue == 12f, "Flight / target / laser speeds: 4 / 8 / 20 / 12");
             foreach (string path in new[] { Root + "/RobotEyeBoss.prefab", "Assets/CTJ/Prototypes/Prefabs/Catto_Melee.prefab", "Assets/CTJ/Prototypes/Prefabs/MadGhost_Ranged.prefab" })
             {
                 SerializedObject so = new SerializedObject(AssetDatabase.LoadAssetAtPath<EnemyBase>(path));
@@ -255,12 +256,12 @@ namespace CTJ.Tools
                 Check(f.Target.ReceivedHitCount == 0, "No warning damage");
                 await Until(() => f.Beam.IsFiring);
                 Check(Vector2.Distance(preparationPosition, f.Boss.transform.position) < 0.3f, "No movement during warning");
-                f.Target.transform.position = new Vector3(f.Boss.transform.position.x, 0.6f, 0f);
+                f.Target.transform.position = f.Beam.BeamCenter;
                 for (int i = 0; i < 20; i++) f.Beam.TickBeam();
                 Check(f.Target.ReceivedHitCount == 1 && f.Target.TotalDamage == 30f, "Multi-collider / sustained detection must hit once");
                 f.Target.transform.position += Vector3.right * 3f;
                 f.Beam.TickBeam();
-                f.Target.transform.position = new Vector3(f.Boss.transform.position.x, 0.6f, 0f);
+                f.Target.transform.position = f.Beam.BeamCenter;
                 f.Beam.TickBeam();
                 Check(f.Target.ReceivedHitCount == 1, "Re-entry in same traversal must not hit again");
                 f.Target.transform.position = new Vector3(1100f, 0.6f, 0f);
@@ -270,7 +271,8 @@ namespace CTJ.Tools
                     int wanted = pass;
                     await Until(() => f.Boss.CompletedTraversals >= wanted);
                     completions.Add(f.Boss.CompletedTraversals);
-                    Check(Mathf.Abs(f.Boss.transform.position.x - (1100f + (pass % 2 == 1 ? 2f : -2f))) < 0.1f, "One-way endpoint " + pass);
+                    Check(Mathf.Abs(f.Boss.transform.position.x - f.Boss.GetModule<BossArenaModule>().GetLaserEnd(pass - 1).x) < 0.1f,
+                        "One-way endpoint inside danger region " + pass);
                 }
                 Check(f.Target.ReceivedHitCount == 3 && f.Target.TotalDamage == 90f, "Exactly one hit per traversal / 3 traversals");
                 await Until(() => !f.Boss.IsInvulnerable);
@@ -358,7 +360,8 @@ namespace CTJ.Tools
                 await Until(() => f.Boss.CurrentState == RobotEyeBossState.Waiting);
                 EnemyDamageProbe childReceiver = f.Target.transform.GetChild(0).gameObject.AddComponent<EnemyDamageProbe>();
                 f.Boss.GetModule<BossFlightModule>().Place(new Vector2(1598f, 6.5f));
-                f.Beam.ConfigureTraversal(0f);
+                f.Beam.ConfigureTraversal(new Bounds(new Vector3(1600f, 3.25f, 0f), new Vector3(4f, 6.5f, 0f)),
+                    new Vector2(1598f, 6.5f), new Vector2(1602f, 6.5f));
                 Check(f.Skills.TryUseSpecifiedSkill(f.Beam), "Start independent sustained beam");
                 await Until(() => f.Beam.IsFiring);
                 Check(f.Target.ReceivedHitCount + childReceiver.ReceivedHitCount == 0, "No hit outside beam");

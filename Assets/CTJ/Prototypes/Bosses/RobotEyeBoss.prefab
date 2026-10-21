@@ -417,7 +417,8 @@ MonoBehaviour:
   normalRestTime: 3
   flightSpeed: 4
   targetMoveSpeed: 8
-  laserSweepSpeed: 6
+  laserPositionSpeed: 12
+  laserSweepSpeed: 20
   laserHealthThreshold: 1000
 --- !u!1 &2975368419601417831
 GameObject:
@@ -555,6 +556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1915573769389995309}
   - component: {fileID: 3826693451304991770}
+  - component: {fileID: 9200030001}
   m_Layer: 0
   m_Name: MovingLaser
   m_TagString: Untagged
@@ -592,8 +594,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossLaserSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: 065636f2feed0f2478038f1b9ea93fa8, type: 2}
   <BaseCoolTime>k__BackingField: 0
-  attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
-  fallbackAttackDelay: 0.35
+  attackDelayStat: {fileID: 11400000, guid: 1fae390c338e42a793389e0619007b47, type: 2}
+  fallbackAttackDelay: 0.25
   postBlinkDelay: 0.15
   blinkBeforeAttack: 1
   telegraphOpacity: 1
@@ -602,6 +604,8 @@ MonoBehaviour:
   beamVisual: {fileID: 8900915903831047696}
   damageStat: {fileID: 11400000, guid: 9ff90c5310699ce4e85c014ff641df8d, type: 2}
   beamWidth: 0.65
+  sweepLag: 2
+  cameraShake: {fileID: 9200030001}
 --- !u!1 &4437513269368970921
 GameObject:
   m_ObjectHideFlags: 0
@@ -1081,3 +1085,18 @@ MonoBehaviour:
   floorDistance: 4
   laserHeight: 2.5
   introHeight: 4
+  laserSafeWidthRatio: 0.2
+--- !u!114 &9200030001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3406262996069424318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90f8fd23e811482b89fce48b5fd6214e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossLaserShake
+  amplitude: 0.35
+  frequency: 32

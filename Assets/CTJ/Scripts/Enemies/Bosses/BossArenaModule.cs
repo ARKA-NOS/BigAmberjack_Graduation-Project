@@ -9,6 +9,7 @@ namespace CTJ.Enemies.Bosses
     {
         [Tooltip("비워두면 생성 위치를 중앙으로 기억합니다. 움직이는 보스 자체가 아닌 고정 앵커를 지정하세요.")]
         [SerializeField] private Transform centerAnchor;
+        [Tooltip("중심에서 한쪽 벽까지의 거리입니다. 전체 가로 폭은 이 값의 두 배입니다.")]
         [SerializeField, Min(1f)] private float halfWidth = 8f;
         [SerializeField, Min(0.1f)] private float floorDistance = 4f;
         [SerializeField, Min(0f)] private float laserHeight = 2.5f;
@@ -71,5 +72,58 @@ namespace CTJ.Enemies.Bosses
             float bottom = Mathf.Min(FloorY + 1f, top);
             return new Vector2(Mathf.Clamp(position.x, LaserLeft.x, LaserRight.x), Mathf.Clamp(position.y, bottom, top));
         }
+
+#if UNITY_EDITOR
+        private Vector2 GetGizmoCenter()
+        {
+            // Play 중에는 움직이는 보스가 아니라 Initialize에서 기억한 전투 중심을 표시합니다.
+            if (Application.isPlaying && _owner != null) return Center;
+            if (centerAnchor != null) return centerAnchor.position;
+            // 편집 중에는 Initialize가 호출되지 않습니다. 자식 모듈 위치가 아닌 보스 생성 위치를 씁니다.
+            ModuleOwner owner = GetComponentInParent<ModuleOwner>();
+            return owner != null ? (Vector2)owner.transform.position : (Vector2)transform.position;
+        }
+
+        private Bounds GetGizmoBounds()
+        {
+            Vector2 center = GetGizmoCenter();
+            float bottom = center.y - Mathf.Max(0.1f, floorDistance);
+            float top = center.y + Mathf.Max(0f, laserHeight);
+            return new Bounds(new Vector3(center.x, (bottom + top) * 0.5f, 0f),
+                new Vector3(Mathf.Max(1f, halfWidth) * 2f, top - bottom, 0f));
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Bounds bounds = GetGizmoBounds();
+            Color previousColor = Gizmos.color;
+            Matrix4x4 previousMatrix = Gizmos.matrix;
+            Gizmos.matrix = Matrix4x4.identity; // 아레나 크기는 보스 스케일과 무관한 월드 단위입니다.
+            try
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireCube(bounds.center, bounds.size);
+                Vector3 left = new Vector3(bounds.min.x, bounds.max.y + 0.4f, 0f);
+                Vector3 right = new Vector3(bounds.max.x, left.y, 0f);
+                Gizmos.DrawLine(left, right);
+                Gizmos.DrawLine(left - Vector3.up * 0.15f, left + Vector3.up * 0.15f);
+                Gizmos.DrawLine(right - Vector3.up * 0.15f, right + Vector3.up * 0.15f);
+                UnityEditor.Handles.Label(left + Vector3.up * 0.25f,
+                    $"Arena width: {bounds.size.x:0.##} / height: {bounds.size.y:0.##}", UnityEditor.EditorStyles.boldLabel);
+
+                Gizmos.color = new Color(1f, 0.6f, 0.15f);
+                Gizmos.DrawLine(bounds.min, new Vector3(bounds.max.x, bounds.min.y, 0f));
+                Gizmos.color = Color.yellow;
+                Vector3 center = GetGizmoCenter();
+                Gizmos.DrawLine(center - Vector3.right * 0.2f, center + Vector3.right * 0.2f);
+                Gizmos.DrawLine(center - Vector3.up * 0.2f, center + Vector3.up * 0.2f);
+            }
+            finally
+            {
+                Gizmos.color = previousColor;
+                Gizmos.matrix = previousMatrix;
+            }
+        }
+#endif
     }
 }

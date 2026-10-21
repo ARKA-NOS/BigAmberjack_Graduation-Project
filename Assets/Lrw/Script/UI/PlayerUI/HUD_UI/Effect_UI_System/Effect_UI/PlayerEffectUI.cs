@@ -11,6 +11,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
         [SerializeField] private Image effectImage;
         [SerializeField] private Image normalTimeImage;
         [SerializeField] private TextMeshProUGUI effectTimeText;
+        [SerializeField] private TextMeshProUGUI effectStackText;
         
         private EffectViewData effectData;
 
@@ -32,12 +33,17 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
             Gauge gauge = effectData.EffectGauge;
             normalTimeImage.fillAmount = gauge.Normalized;
             effectTimeText.text = GetRemainingTime(gauge.CurrentValue);
+            effectStackText.text = GetStackText(effectData.EffectStack);
         }
-
+        
         private string GetRemainingTime(float gaugeCurrentValue)
         {
             float remainingTime = Mathf.Max(0f, gaugeCurrentValue);
             return remainingTime.ToString("F2", CultureInfo.InvariantCulture);
         }
+        
+        private string GetStackText(int stack)
+            => stack <= 1 ? "" : stack.ToString();
+        
     }
 }

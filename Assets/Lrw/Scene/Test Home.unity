@@ -1743,7 +1743,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1508976587}
-  - component: {fileID: 1508976586}
   - component: {fileID: 1508976585}
   - component: {fileID: 1508976584}
   - component: {fileID: 1508976583}
@@ -1799,20 +1798,6 @@ MonoBehaviour:
   statData: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
   statModule: {fileID: 0}
   changeValue: 4
---- !u!114 &1508976586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508976581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba0256a58ff407db688e7086f85274f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.EffectSystem.Test.EffectTester
-  effectModule: {fileID: 0}
-  effectSo: {fileID: 11400000, guid: cbe233e139e065348b5c7b33676ce1aa, type: 2}
 --- !u!4 &1508976587
 Transform:
   m_ObjectHideFlags: 0

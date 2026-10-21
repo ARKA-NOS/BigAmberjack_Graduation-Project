@@ -10,9 +10,26 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
         [SerializeField] private GameObject playerEffectUIPrefab;
         
         private List<PlayerEffectUI> playerEffectUIs;
-        
+
+        protected override void Awake()
+        {
+            base.Awake();
+            playerEffectUIs = new();
+
+            if (playerEffectUIPrefab == null)
+            {
+                FDebug.LogError("[PlayerEffectUIBinder] playerEffectUIPrefab is null");
+            }
+        }
+
         protected override void DataUpdate()
         {
+            if (CurrentValue == null)
+            {
+                FDebug.LogError("[PlayerEffectUIBinder] EffectList is null");
+                return;
+            }
+            
             List<EffectViewData> effectList = CurrentValue.ViewDataList;
 
             SecuringEffectUI(effectList.Count);

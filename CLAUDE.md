@@ -23,28 +23,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `Assets/` 최상위 폴더는 팀원별로 나뉜다. 작업은 자기 영역 안에서 하고, 그 작업이 목적이 아니면 공용 모듈/데이터나 다른 팀원의 폴더는 수정하지 않는다.
 - `Assets/DevLib/` — 공용 재사용 라이브러리. 각각 `.asmdef`가 있다(ModuleSystem, BattleSystem, EventChannelSystem, ObjectPool, PolyNavMesh, SoundSystem, AnimatorSystem).
-- `Assets/Lrw/` — 코어 게임 프레임워크(`Script/_Core`), 에이전트 시스템, 재화, 업그레이드, 캐릭터 선택, UI.
-- `Assets/Scripts/` — `Agents`(Agent 베이스, 플레이어)와 `CoreSystem`(VFX, 이벤트, 코드 생성 템플릿).
-- `Assets/CTJ/` — 적.
-- `Assets/SDW/` — 절차적 던전 생성.
+- `Assets/Lrw/` — 코어 게임 프레임워크(`Script/_Core`: 매니저, 서비스 로케이터, 이벤트, 저장, FSM, 코드 생성 템플릿), 에이전트 시스템(`Script/Agent`: Agent 베이스, 플레이어, 스탯/체력/스킬/효과 모듈), VFX(`Script/VFXSystem`), 재화, 업그레이드, 캐릭터 선택, UI.
+- `Assets/CTJ/` — 적(일반 적, 보스).
+- `Assets/KHO/` — 인벤토리와 아이템.
+- `Assets/SDW/` — 절차적 던전(스테이지/방) 생성, 상호작용 오브젝트(상자, NPC).
 - `Assets/PBG/` — 타일맵과 맵 프리팹.
-- `Assets/GameModules/`, `Assets/Lrw/GameModule/` — ScriptableObject 데이터 에셋.
+- `Assets/GameModules/` — 공용 데이터 에셋(`PlayerInputSo`, 애니메이터 파라미터, VFX 에셋 이름 등).
+- `Assets/Lrw/GameModule/` — Lrw 시스템의 데이터 에셋과 프리팹(매니저, 모듈, 플레이어, 스탯, 스킬 등).
+- 서드파티 에셋 — `Plugins/Demigiant`(DOTween), `NamuFX`, `Essential 2D Particle FX`, `TextMesh Pro`, `Lrw/Asset/_Heathen Engineering`.
 
-게임플레이 코드 대부분은 `Assembly-CSharp`에 있다. DevLib, StatSystem, `_Debug`만 별도 어셈블리이므로 이 asmdef 안의 코드는 게임 코드를 참조할 수 없다.
+게임플레이 코드 대부분은 `Assembly-CSharp`에 있다. 프로젝트 코드 중에서는 DevLib, StatSystem(`Lrw/Script/Agent/StatSystem`), `_Debug`(`Lrw/Script/_Core/_Debug`)만 별도 어셈블리이므로 이 asmdef 안의 코드는 게임 코드를 참조할 수 없다.
 
 ## 공용 아키텍처
 
-**모듈 시스템(엔티티 구성)** — `DevLib.ModuleSystem.ModuleOwner`는 `Awake`에서 자식의 모든 `IModule`을 구체 타입을 키로 수집하고, 각각 `Initialize(owner)`를 호출한 뒤 `IAfterInitModule`을 구현한 모듈에 `AfterInit()`를 호출한다. 조회는 `GetModule<T>()` / `TryGetModule<T>()`(정확한 타입 우선, 없으면 할당 가능한 타입 검색 — 그래서 인터페이스로도 찾을 수 있다). 한 오너에 같은 구체 타입 모듈은 하나만 둘 수 있다. `Agents.Agent : ModuleOwner, IDamageable`는 플레이어와 적의 베이스이며 `IHealthModule`이 필수다.
+**모듈 시스템(엔티티 구성)** — `DevLib.ModuleSystem.ModuleOwner`는 `Awake`에서 자식의 모든 `IModule`을 구체 타입을 키로 수집하고, 각각 `Initialize(owner)`를 호출한 뒤 `IAfterInitModule`을 구현한 모듈에 `AfterInit()`를 호출한다. 조회는 `GetModule<T>()` / `TryGetModule<T>()`(정확한 타입 우선, 없으면 할당 가능한 타입 검색 — 그래서 인터페이스로도 찾을 수 있다). 같은 인터페이스를 구현한 모듈을 모두 가져올 때는 `GetModules<T>()`를 쓴다. 한 오너에 같은 구체 타입 모듈은 하나만 둘 수 있다. `Lrw.Script.Agent.Agent : ModuleOwner, IDamageable`는 플레이어(`PlayerController`)와 적(CTJ `EnemyBase`)의 베이스이며 `IHealthModule`이 필수다.
 
 **전역 매니저 + 서비스 로케이터** — `GameManager`(`DontDestroyOnLoad`, 실행 순서 -20)는 `Awake`에서 자식 `AbstractManager`들의 `Initialize()`를, 파괴 시 `GameEnd()`를 호출한다. 매니저는 자기 인터페이스로 정적 `ServiceLocator`에 등록하고, `GameEnd`에서 상태를 저장한 뒤 Null 객체 구현을 다시 등록한다. 사용하는 쪽은 `ServiceLocator.Get<IXxxManager>()`를 호출한다. 매니저를 추가할 때는 인터페이스 + Null 객체 패턴을 따른다.
 
 **이벤트** — 두 가지 방식이 공존한다.
 - `Lrw/Script/_Core/_EventSystem`의 `EventBus<T> where T : IEvent`(정적, 타입별, 선택적 키 범위).
-- DevLib의 `EventChannelSO`(`GameEvent` 하위 클래스를 전달하는 ScriptableObject 채널). 사운드/VFX 생성 이벤트 등에 사용.
+- DevLib의 `EventChannelSO`(`GameEvent` 하위 클래스를 전달하는 ScriptableObject 채널). 사운드/VFX 생성 이벤트 등에 사용(VFX 이벤트는 `Lrw/Script/VFXSystem/Events/CreateEvents.cs`).
 
 **저장** — `SaveSystem`은 `JsonUtility`로 JSON을 `Application.persistentDataPath`에 `{TypeName}_{name}.save`로 저장한다(임시 파일 교체 방식). `JsonUtility`는 Dictionary를 직렬화하지 못하므로 `JsonDict<K,V>`로 감싼다. 저장은 매니저의 `GameEnd()`에서 한다. 에디터 메뉴 `Tools/Open Save Folder`로 저장 폴더를 연다.
 
-**입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출한다.
+**입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`(`Lrw/Script/Agent/Players/PlayerInputSo.cs`, 에셋은 `Assets/GameModules/PlayerInputSo.asset`)가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출한다.
 
 **UI(바인드 시스템)** — 게임 데이터를 화면에 보여주는 UI는 반드시 `Lrw/Script/UI/BindSystem`의 ViewModel–Binder 구조로 만든다. 게임 로직(모듈 등)은 UI 컴포넌트를 직접 참조하지 않고, ScriptableObject ViewModel 에셋을 사이에 두고 데이터만 넘긴다.
 - `AbstractUIViewModel<T>`(ScriptableObject) — 데이터를 가진 쪽이 `[SerializeField]`로 들고 있다가 값이 바뀌면 `Bind(data)`를 호출한다. 값은 `BindData`에 저장되고 `OnBind` 이벤트가 발생한다.
@@ -73,7 +75,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - **리스코프 치환(LSP)** — 하위 클래스는 베이스(`Agent`, `AbstractManager` 등)의 계약을 깨지 않는다. 베이스가 보장하는 동작을 무효화하는 오버라이드를 만들지 않는다.
   - **인터페이스 분리(ISP)** — 큰 인터페이스 하나보다 역할별 작은 인터페이스(`IHealthModule`, `IDamageable` 등)를 둔다.
   - **의존성 역전(DIP)** — 구체 클래스 대신 인터페이스에 의존한다. 매니저는 `ServiceLocator.Get<IXxxManager>()`로, 모듈은 `GetModule<인터페이스>()`로 가져오고, 시스템 간 통신은 직접 참조보다 이벤트(`EventBus`)를 우선한다.
-- 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Agents.Players.FSM`, `DevLib.ModuleSystem`).
+- 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Lrw.Script.Agent.Players.FSM`, `DevLib.ModuleSystem`).
 - private 필드는 `_camelCase`. 직렬화 자동 프로퍼티는 `[field: SerializeField] public T X { get; private set; }`.
 - 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다.
 - PR 대상은 `main`이며 `main`에 직접 커밋하지 않는다.

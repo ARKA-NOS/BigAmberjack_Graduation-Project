@@ -14,7 +14,11 @@ namespace SDW.Scripts.Maps.Data
         [SerializeField] private RoomDefinition roomPrefab;
         [Tooltip("문 해제 조건. 비워두면 방 종류별 기본 조건(CreateDefaultClearCondition)을 사용한다.")]
         [SerializeField] private RoomClearConditionSO clearCondition;
-        
+
+        [Header("Enemy")]
+        [Tooltip("적 수가 스폰 포인트보다 많아 같은 포인트를 다시 쓸 때, 좌우로 띄워 생성하는 간격")]
+        [SerializeField, Min(0f)] private float sameSpawnPointSpacing = 1.5f;
+
         // 등장 확률은 모두 방에서 정한다. 같은 NPC/상자라도 방마다 다른 확률을 줄 수 있다.
         [Header("NPC")]
         [Tooltip("방에 배치할 NPC. 비워두면 배치하지 않는다.")]
@@ -54,7 +58,9 @@ namespace SDW.Scripts.Maps.Data
         }
 
         // 프리팹의 적 스폰 포인트를 순서대로 돌아가며 엔트리의 적을 생성한다.
-        protected static void SpawnEnemies(RoomController room, IReadOnlyList<EnemySpawnEntry> entries)
+        // 적 수가 스폰 포인트보다 많아 같은 포인트를 다시 쓰면, 겹치지 않도록 좌우 랜덤으로 옆에 생성한다.
+        // (겹쳐 있으면 한 번의 공격에 여러 마리가 같이 죽는다)
+        protected void SpawnEnemies(RoomController room, IReadOnlyList<EnemySpawnEntry> entries)
         {
             IReadOnlyList<Transform> spawnPoints = room.EnemySpawnPoints;
             if (spawnPoints.Count == 0)
@@ -72,13 +78,25 @@ namespace SDW.Scripts.Maps.Data
 
                 for (int i = 0; i < entry.Count; i++)
                 {
+                    // 몇 번째로 같은 포인트를 쓰는지 (0이면 처음)
+                    int reuseCount = pointIndex / spawnPoints.Count;
                     Transform spawnPoint = spawnPoints[pointIndex++ % spawnPoints.Count];
                     if (spawnPoint == null)
                         continue;
 
-                    SpawnEnemy(room, entry.EnemyPrefab, spawnPoint.position);
+                    SpawnEnemy(room, entry.EnemyPrefab, spawnPoint.position + GetReuseOffset(reuseCount));
                 }
             }
+        }
+
+        // 다시 쓸수록 더 멀리, 좌우는 랜덤으로 밀어서 같은 포인트의 적끼리 겹치지 않게 한다.
+        private Vector3 GetReuseOffset(int reuseCount)
+        {
+            if (reuseCount == 0)
+                return Vector3.zero;
+
+            float side = Random.value < 0.5f ? -1f : 1f;
+            return Vector3.right * (side * sameSpawnPointSpacing * reuseCount);
         }
 
         protected static EnemyBase SpawnEnemy(RoomController room, EnemyBase enemyPrefab, Vector3 position)

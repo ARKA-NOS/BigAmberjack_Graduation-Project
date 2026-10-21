@@ -5,6 +5,8 @@ using SDW.Scripts.UI;
 using UnityEngine;
 using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Agent.Players.CharacterSystem;
+using Lrw.Script.Agent.HealthSystem;
+using SDW.Scripts.RunEnd;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -31,12 +33,19 @@ namespace SDW.Scripts.Maps
         private readonly List<RoomController> _rooms = new();
 
         private PlayerController _player;
+        private IHealthModule _playerHealth;
 
         public IReadOnlyList<RoomController> Rooms => _rooms;
 
         private void Start()
         {
             GenerateStage();
+        }
+
+        private void OnDestroy()
+        {
+            if (_playerHealth != null)
+                _playerHealth.OnDead -= HandlePlayerDead;
         }
 
         [ContextMenu("Test")]
@@ -146,6 +155,8 @@ namespace SDW.Scripts.Maps
 
                 if (_player == null)
                     Debug.LogWarning("플레이어 생성 후 PlayerController를 찾지 못했습니다.");
+                else
+                    WatchPlayerDeath();
                 return;
             }
 
@@ -154,6 +165,21 @@ namespace SDW.Scripts.Maps
             Rigidbody2D playerBody = _player.GetComponent<Rigidbody2D>();
             if (playerBody != null)
                 playerBody.position = spawnPosition;
+        }
+
+        // 플레이어가 죽으면 탐험 종료를 알린다.
+        // TODO: Lrw에 공용 플레이어 사망 이벤트가 생기면 그 이벤트로 교체한다.
+        private void WatchPlayerDeath()
+        {
+            if (!_player.TryGetModule(out _playerHealth))
+                return;
+
+            _playerHealth.OnDead += HandlePlayerDead;
+        }
+
+        private void HandlePlayerDead()
+        {
+            RunEndEvents.RaiseRunEnded(RunEndReason.PlayerDead);
         }
 
         // 시작 방은 Portal을 거치지 않고 곧바로 활성화되므로, 스테이지 생성 직후 별도로 입장 처리한다.

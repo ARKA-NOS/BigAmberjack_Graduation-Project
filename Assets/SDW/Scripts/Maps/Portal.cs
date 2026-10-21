@@ -11,7 +11,7 @@ namespace SDW.Scripts.Maps
     public class Portal : InteractableBase
     {
         [SerializeField] private float arrivalOffset = 1.5f;
-        [Tooltip("방에 남은 적이 있을 때 통로를 막는 시각적 문. 비워두면 잠금 기능이 무시된다.")]
+        [Tooltip("방에 남은 적이 있을 때 통로를 막는 시각적 문. 비워두면 포탈 비활성화")]
         [SerializeField] private GameObject doorVisual;
         [Tooltip("포탈 자체를 가리지 않도록, 문을 포탈에서 방 안쪽으로 얼마나 띄울지.")]
         [SerializeField] private float doorOffsetDistance = 1f;
@@ -36,6 +36,8 @@ namespace SDW.Scripts.Maps
 
             if (doorVisual != null)
                 doorVisual.SetActive(locked);
+            else
+                gameObject.SetActive(!locked);
         }
 
         public void Initialize(RoomDirection direction, RoomController ownerRoom, RoomController targetRoom, ScreenFader screenFader)

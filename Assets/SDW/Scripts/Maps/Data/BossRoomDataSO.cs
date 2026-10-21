@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CTJ.Enemies;
 using SDW.Scripts.Maps.Conditions;
+using SDW.Scripts.RunEnd;
 using UnityEngine;
 
 namespace SDW.Scripts.Maps.Data
@@ -31,10 +32,11 @@ namespace SDW.Scripts.Maps.Data
             return new KillAllEnemiesCondition(room);
         }
 
-        // TODO: 스테이지 클리어 처리(결과 화면, 다음 스테이지 이동 등)가 생기면 여기서 호출한다.
+        // 보스 방을 클리어하면 탐험 종료를 알린다. (결과 화면은 RunResultPresenter가 처리)
         public override void OnCleared(RoomController room)
         {
             Debug.Log($"{name} : 보스 방 클리어");
+            RunEndEvents.RaiseRunEnded(RunEndReason.BossCleared);
         }
     }
 }

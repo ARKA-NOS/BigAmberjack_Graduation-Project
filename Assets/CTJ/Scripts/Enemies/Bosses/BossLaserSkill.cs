@@ -7,35 +7,42 @@ using UnityEngine;
 
 namespace CTJ.Enemies.Bosses
 {
-    // 경고와 빔 판정이 같은 고정 위험 구역을 사용합니다. 회전 빔은 이동 중간 구간도 검사합니다.
+    // 각도는 횡단 시작 시 고정합니다. 경고는 빔 두께를 포함한 전체 횡단의 위험 다각형입니다.
     public sealed class BossLaserSkill : EnemyAttackSkill
     {
         [SerializeField] private Transform firePoint;
         [SerializeField] private SpriteRenderer beamVisual;
         [SerializeField] private StatData damageStat;
         [SerializeField, Min(0.05f)] private float beamWidth = 0.65f;
-        [Tooltip("바닥을 훑는 진행을 보스보다 늦춰 빔이 비스듬하게 회전하게 합니다. 1이면 선형 진행입니다.")]
-        [SerializeField, Range(1f, 3f)] private float sweepLag = 2f;
+        [Tooltip("월드 단위의 고정 빔 길이입니다. 바닥/벽에 닿아도 시각 길이를 줄이지 않습니다.")]
+        [SerializeField, Min(0.1f)] private float beamLength = 18f;
+        [Tooltip("수직 아래에서 아레나 안쪽으로 기울이는 고정 각도입니다.")]
+        [SerializeField, Range(15f, 65f)] private float diagonalAngle = 45f;
         [SerializeField] private BossLaserShake cameraShake;
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private bool _hitTargetThisTraversal;
         private Stat _damage;
         private Bounds _dangerBounds;
-        private Vector2 _traversalStart;
-        private Vector2 _traversalEnd;
+        private readonly List<Vector2> _dangerPolygon = new List<Vector2>(5);
+        private readonly List<Vector2> _clipBuffer = new List<Vector2>(8);
+        private Vector2 _direction;
+        private float _castLength;
+        private float _castWidth;
         private Vector2 _previousOrigin;
-        private float _previousProgress;
         private bool _configured;
         public bool IsFiring => IsUsing && HasReleased;
         public bool HasHitTargetThisTraversal => _hitTargetThisTraversal;
         public Bounds DangerBounds => _dangerBounds;
+        public IReadOnlyList<Vector2> DangerPolygon => _dangerPolygon;
+        // BeamBounds/Center/Size는 아레나 안의 피해 판정입니다. 시각 빔은 별도로 고정 길이를 유지합니다.
         public Bounds BeamBounds => CurrentBeam.Bounds;
-        public Vector2 BeamDirection => CurrentBeam.Direction;
+        public float VisualBeamLength => _castLength;
+        public Vector2 BeamDirection => _direction;
         public Vector2 BeamCenter => CurrentBeam.Center;
         public Vector2 BeamSize => CurrentBeam.Size;
         public float BeamAngle => CurrentBeam.Angle;
         private Vector2 Origin => firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
-        private BeamPose CurrentBeam => MakeBeam(Origin, Progress(Origin));
+        private BeamPose CurrentBeam => MakeBeam(Origin);
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -43,15 +50,56 @@ namespace CTJ.Enemies.Bosses
             if (damageStat != null && owner.TryGetModule(out IStatModule stats)) _damage = stats.GetStat(damageStat);
             if (beamVisual != null) beamVisual.enabled = false;
             BossArenaModule arena = owner.GetModule<BossArenaModule>();
-            if (arena != null) ConfigureTraversal(arena.GetLaserDangerBounds(0), arena.GetLaserStart(0), arena.GetLaserEnd(0));
+            if (arena != null) ConfigureTraversal(arena.LaserBounds, arena.GetLaserStart(0), arena.GetLaserEnd(0));
         }
 
         public void ConfigureTraversal(Bounds danger, Vector2 start, Vector2 end)
         {
             _dangerBounds = danger;
-            _traversalStart = start;
-            _traversalEnd = end;
+            float angle = Mathf.Clamp(diagonalAngle, 15f, 65f) * Mathf.Deg2Rad;
+            float sign = end.x >= start.x ? 1f : -1f;
+            _direction = new Vector2(sign * Mathf.Sin(angle), -Mathf.Cos(angle));
+            _castLength = Mathf.Max(0.1f, beamLength);
+            _castWidth = Mathf.Max(0.05f, beamWidth);
+            BuildDangerPolygon(start, end, new Vector2(sign * Mathf.Cos(angle), Mathf.Sin(angle)), sign);
             _configured = danger.size.x > 0f && danger.size.y > 0f;
+        }
+
+        private void BuildDangerPolygon(Vector2 start, Vector2 end, Vector2 normal, float sign)
+        {
+            _dangerPolygon.Clear();
+            Vector2 min = _dangerBounds.min, max = _dangerBounds.max;
+            _dangerPolygon.Add(min);
+            _dangerPolygon.Add(new Vector2(min.x, max.y));
+            _dangerPolygon.Add(max);
+            _dangerPolygon.Add(new Vector2(max.x, min.y));
+            Vector2 halfWidth = normal * (_castWidth * 0.5f), tip = _direction * _castLength;
+            // 유한 길이 사각 빔이 수평으로 지나가는 전체 윤곽입니다. 짧게 설정해도 경고가 바닥까지 과장되지 않습니다.
+            Vector2[] outline = { start - halfWidth, start + halfWidth, end + halfWidth,
+                end + tip + halfWidth, end + tip - halfWidth, start + tip - halfWidth };
+            for (int i = 0; i < outline.Length && _dangerPolygon.Count > 0; i++)
+            {
+                Vector2 edge = outline[(i + 1) % outline.Length] - outline[i];
+                ClipWarning(outline[i], new Vector2(edge.y, -edge.x) * sign);
+            }
+        }
+
+        private void ClipWarning(Vector2 edgePoint, Vector2 inwardNormal)
+        {
+            _clipBuffer.Clear();
+            Vector2 previous = _dangerPolygon[_dangerPolygon.Count - 1];
+            float previousSide = Vector2.Dot(previous - edgePoint, inwardNormal);
+            foreach (Vector2 current in _dangerPolygon)
+            {
+                float side = Vector2.Dot(current - edgePoint, inwardNormal);
+                if ((side >= 0f) != (previousSide >= 0f))
+                    _clipBuffer.Add(Vector2.Lerp(previous, current, previousSide / (previousSide - side)));
+                if (side >= 0f) _clipBuffer.Add(current);
+                previous = current;
+                previousSide = side;
+            }
+            _dangerPolygon.Clear();
+            _dangerPolygon.AddRange(_clipBuffer);
         }
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() && _configured && firePoint != null && beamVisual != null;
@@ -63,41 +111,28 @@ namespace CTJ.Enemies.Bosses
             cameraShake?.StopShake();
         }
 
-        protected override void UpdateTelegraph() => Telegraph.SetBounds(_dangerBounds);
+        protected override void UpdateTelegraph() => Telegraph.SetPolygon(_dangerBounds, _dangerPolygon);
 
         protected override void OnReleaseAttack()
         {
             // 발사 중에도 영역 표시를 유지해 교대한 안전 구역을 알 수 있도록 합니다.
             Telegraph?.EndBlink();
             _previousOrigin = Origin;
-            _previousProgress = Progress(Origin);
             cameraShake?.StartShake(_dangerBounds);
             TickBeam();
         }
 
-        private float Progress(Vector2 origin)
+        private BeamPose MakeBeam(Vector2 origin)
         {
-            Vector2 path = _traversalEnd - _traversalStart;
-            return path.sqrMagnitude > 0.0001f ? Mathf.Clamp01(Vector2.Dot(origin - _traversalStart, path) / path.sqrMagnitude) : 1f;
-        }
-
-        private BeamPose MakeBeam(Vector2 origin, float progress)
-        {
-            float width = Mathf.Max(0.05f, beamWidth);
-            float inset = Mathf.Min(width * 0.5f, _dangerBounds.size.x * 0.25f);
-            float left = _dangerBounds.min.x + inset;
-            float right = _dangerBounds.max.x - inset;
-            float t = Mathf.Pow(Mathf.Clamp01(progress), Mathf.Clamp(sweepLag, 1f, 3f));
-            float aimX = _traversalEnd.x >= _traversalStart.x ? Mathf.Lerp(left, right, t) : Mathf.Lerp(right, left, t);
-            Vector2 direction = (new Vector2(aimX, _dangerBounds.min.y) - origin).normalized;
-            if (direction.sqrMagnitude < 0.001f) direction = Vector2.down;
+            float width = _castWidth;
+            Vector2 direction = _direction;
             Vector2 normal = new Vector2(-direction.y, direction.x);
             // 빔의 두께까지 위험 구역 안에 들어오도록 중심선이 사용할 영역을 안쪽으로 줄입니다.
             Vector2 padding = new Vector2(Mathf.Abs(normal.x), Mathf.Abs(normal.y)) * (width * 0.5f);
             Vector2 min = (Vector2)_dangerBounds.min + padding;
             Vector2 max = (Vector2)_dangerBounds.max - padding;
             float near = 0f;
-            float far = float.PositiveInfinity;
+            float far = _castLength;
             if (min.x > max.x || min.y > max.y ||
                 !ClipAxis(origin.x, direction.x, min.x, max.x, ref near, ref far) ||
                 !ClipAxis(origin.y, direction.y, min.y, max.y, ref near, ref far) || far <= near)
@@ -119,24 +154,21 @@ namespace CTJ.Enemies.Bosses
         {
             if (!IsFiring || !CanContinue) return;
             Vector2 origin = Origin;
-            float progress = Progress(origin);
-            BeamPose pose = MakeBeam(origin, progress);
-            UpdateVisual(pose);
+            // 지형까지의 거리로 메시를 잘라내지 않습니다. 벽/바닥이 앞에서 그려져 자연스럽게 가립니다.
+            UpdateVisual(new BeamPose(origin, origin + _direction * _castLength, _castWidth));
             if (!_hitTargetThisTraversal)
             {
-                // AABB 전체에 피해를 주지 않습니다. 중간 위치·각도의 실제 회전 사각형을 촘촘히 검사합니다.
-                float travel = Vector2.Distance(_previousOrigin, origin) +
-                    _dangerBounds.size.magnitude * Mathf.Abs(progress - _previousProgress) * Mathf.Max(1f, sweepLag);
-                int steps = Mathf.Max(1, Mathf.CeilToInt(travel / (Mathf.Max(0.05f, beamWidth) * 0.25f)));
+                // 고정 각도의 빔이 지나간 중간 위치도 검사합니다. AABB 전체에는 피해를 주지 않습니다.
+                float travel = Vector2.Distance(_previousOrigin, origin);
+                int steps = Mathf.Max(1, Mathf.CeilToInt(travel / (_castWidth * 0.25f)));
                 Physics2D.SyncTransforms();
                 for (int i = 0; i <= steps && !_hitTargetThisTraversal; i++)
                 {
                     float t = (float)i / steps;
-                    CheckDamage(MakeBeam(Vector2.Lerp(_previousOrigin, origin, t), Mathf.Lerp(_previousProgress, progress, t)));
+                    CheckDamage(MakeBeam(Vector2.Lerp(_previousOrigin, origin, t)));
                 }
             }
             _previousOrigin = origin;
-            _previousProgress = progress;
         }
 
         private void UpdateVisual(BeamPose pose)

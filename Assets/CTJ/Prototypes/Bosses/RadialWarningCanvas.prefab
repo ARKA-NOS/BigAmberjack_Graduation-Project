@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 22300000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+      propertyPath: m_SortingOrder
+      value: -5
+      objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
       propertyPath: m_Name
       value: RadialWarningCanvas

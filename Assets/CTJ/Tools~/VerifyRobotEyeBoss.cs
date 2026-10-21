@@ -95,7 +95,13 @@ namespace CTJ.Tools
             Check(tuning.FindProperty("targetMoveSpeed").floatValue == 8f &&
                 tuning.FindProperty("flightSpeed").floatValue == 4f &&
                 tuning.FindProperty("laserSweepSpeed").floatValue == 20f &&
-                tuning.FindProperty("laserPositionSpeed").floatValue == 12f, "Flight / target / laser speeds: 4 / 8 / 20 / 12");
+                tuning.FindProperty("laserPositionSpeed").floatValue == 20f, "Flight / target / laser sweep / positioning speeds: 4 / 8 / 20 / 20");
+            Check(tuning.FindProperty("laserReturnSpeed").floatValue == 12f &&
+                tuning.FindProperty("laserMoveEaseDuration").floatValue == 0.2f &&
+                tuning.FindProperty("normalRestTime").floatValue == 1.5f &&
+                tuning.FindProperty("offscreenHoldTime").floatValue == 0.1f, "Laser tempo and normal rest tuning");
+            Check(new SerializedObject(boss.GetComponentInChildren<BossFlightModule>()).FindProperty("easeDuration").floatValue == 1f,
+                "Preserve general flight easing");
             foreach (string path in new[] { Root + "/RobotEyeBoss.prefab", "Assets/CTJ/Prototypes/Prefabs/Catto_Melee.prefab", "Assets/CTJ/Prototypes/Prefabs/MadGhost_Ranged.prefab" })
             {
                 SerializedObject so = new SerializedObject(AssetDatabase.LoadAssetAtPath<EnemyBase>(path));
@@ -194,6 +200,8 @@ namespace CTJ.Tools
                 Set(Boss, "targetMoveSpeed", 8f);
                 Set(arena, "halfWidth", 2f);
                 Set(Boss, "laserSweepSpeed", 8f);
+                Set(Boss.GetComponentInChildren<BossFlightModule>(), "easeDuration", 0.2f); // 작은 회귀 fixture의 고정 가감속 조건
+                Set(Beam, "diagonalAngle", 15f); // 이 회귀 fixture는 폭 4의 작은 아레나입니다.
                 Set(Boss, "firstVolleyDelay", firstDelay);
                 Set(Boss, "normalRestTime", 100f);
                 foreach (Object skill in new Object[] { Radial, Beam })
@@ -203,6 +211,7 @@ namespace CTJ.Tools
                 }
                 Root.SetActive(true);
                 Boss.GetModule<IStatModule>().GetStat(AssetDatabase.LoadAssetAtPath<StatData>("Assets/CTJ/Prototypes/Stats/EnemyAttackDelay.asset")).SetBaseValue(0.05f);
+                Boss.GetModule<IStatModule>().GetStat(AssetDatabase.LoadAssetAtPath<StatData>("Assets/CTJ/Prototypes/Bosses/BossLaserDelay.asset")).SetBaseValue(0.05f);
                 Physics2D.SyncTransforms();
             }
             private const string RootPath = "Assets/CTJ/Prototypes/Bosses/RobotEyeBoss.prefab";
@@ -271,8 +280,10 @@ namespace CTJ.Tools
                     int wanted = pass;
                     await Until(() => f.Boss.CompletedTraversals >= wanted);
                     completions.Add(f.Boss.CompletedTraversals);
-                    Check(Mathf.Abs(f.Boss.transform.position.x - f.Boss.GetModule<BossArenaModule>().GetLaserEnd(pass - 1).x) < 0.1f,
-                        "One-way endpoint inside danger region " + pass);
+                    float crossed = (f.Boss.transform.position.x - f.Boss.GetModule<BossArenaModule>().GetLaserEnd(pass - 1).x) * (pass % 2 == 1 ? 1f : -1f);
+                    // Update에서 재개되기 전에 FixedUpdate가 여러 번 진행될 수 있으므로 1틱 오버슈트로 제한하지 않습니다.
+                    Check(crossed >= -0.001f && f.Boss.CurrentState == RobotEyeBossState.LaserExiting && f.Boss.GetModule<BossFlightModule>().IsMoving,
+                        "One-way wall crossing without stop " + pass);
                 }
                 Check(f.Target.ReceivedHitCount == 3 && f.Target.TotalDamage == 90f, "Exactly one hit per traversal / 3 traversals");
                 await Until(() => !f.Boss.IsInvulnerable);
@@ -359,6 +370,7 @@ namespace CTJ.Tools
             {
                 await Until(() => f.Boss.CurrentState == RobotEyeBossState.Waiting);
                 EnemyDamageProbe childReceiver = f.Target.transform.GetChild(0).gameObject.AddComponent<EnemyDamageProbe>();
+                f.Target.transform.position = new Vector3(1601f, 0.6f, 0f); // 시작 대각선 빔 밖, 횡단 중에는 맞는 위치
                 f.Boss.GetModule<BossFlightModule>().Place(new Vector2(1598f, 6.5f));
                 f.Beam.ConfigureTraversal(new Bounds(new Vector3(1600f, 3.25f, 0f), new Vector3(4f, 6.5f, 0f)),
                     new Vector2(1598f, 6.5f), new Vector2(1602f, 6.5f));

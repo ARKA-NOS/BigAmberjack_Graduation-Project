@@ -7,7 +7,7 @@ namespace CTJ.UI
     [RequireComponent(typeof(Canvas), typeof(RectTransform))]
     public sealed class AttackTelegraphUI : MonoBehaviour
     {
-        [SerializeField] private Image areaImage;
+        [SerializeField] private Graphic areaImage;
         [SerializeField] private Color areaColor = new Color32(255, 110, 110, 50);
         [SerializeField, Min(0f)] private float blinkDuration = 0.12f;
         [SerializeField, Min(0.01f)] private float blinkInterval = 0.04f;
@@ -77,6 +77,12 @@ namespace CTJ.UI
         }
 
         public void SetBounds(Bounds bounds) => SetWorldRect(bounds.center, bounds.size, Quaternion.identity);
+
+        public void SetPolygon(Bounds bounds, System.Collections.Generic.IReadOnlyList<Vector2> worldPoints)
+        {
+            SetWorldRect(bounds.center, bounds.size, Quaternion.identity);
+            if (areaImage is ConvexPolygonGraphic polygon) polygon.SetPoints(worldPoints, bounds.center);
+        }
 
         public void SetLane(Vector2 origin, Vector2 direction, float distance, float width)
         {

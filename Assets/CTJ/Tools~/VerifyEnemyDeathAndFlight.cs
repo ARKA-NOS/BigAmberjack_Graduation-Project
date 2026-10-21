@@ -184,6 +184,10 @@ namespace CTJ.Tools
             EnemyBase boss = Spawn(Prefabs[2], spawned);
             boss.enabled = false; // 보스 FSM 대신 동일 프레임 안에서 물리 틱을 직접 검사합니다.
             BossFlightModule flight = boss.GetModule<BossFlightModule>();
+            // 이 검사는 프리팹 튜닝과 무관하게 기존 0.2초 이동 프로필을 재현합니다. 에셋은 수정하지 않습니다.
+            SerializedObject flightSettings = new SerializedObject(flight);
+            flightSettings.FindProperty("easeDuration").floatValue = 0.2f;
+            flightSettings.ApplyModifiedPropertiesWithoutUndo();
             Rigidbody2D body = boss.GetComponent<Rigidbody2D>();
             float dt = Time.fixedDeltaTime;
             foreach (float distance in new[] { 8f, 0.1f })
@@ -219,6 +223,21 @@ namespace CTJ.Tools
             Check(Vector2.Distance(body.position, stopped) < 8f * dt, "New move restarts easing, no old speed carried over");
             for (int i = 0; flight.IsMoving && i < 500; i++) flight.Tick();
             Check(flight.HasArrived && body.position == Vector2.zero, "Retarget completes at new destination");
+
+            Check(Mathf.Abs(flight.GetBrakingDistance(8f) - 0.8f) < 0.0001f &&
+                Mathf.Abs(flight.GetBrakingDistance(8f, 0.05f) - 0.2f) < 0.0001f, "Braking distance uses the same per-move easing");
+            foreach (float? easing in new float?[] { 0.05f, null })
+            {
+                flight.Place(Vector2.zero);
+                flight.MoveTo(Vector2.right * 8f, 8f, easing);
+                int ticks = 0;
+                while (flight.IsMoving && ticks < 500) { flight.Tick(); ticks++; }
+                float expectedDuration = 1f + (easing ?? 0.2f);
+                Check(flight.HasArrived && Mathf.Abs(ticks * dt - expectedDuration) <= dt + 0.001f,
+                    "Per-move override is temporary; next default move keeps its original easing");
+            }
+            flightSettings.Update();
+            Check(flightSettings.FindProperty("easeDuration").floatValue == 0.2f, "Move override never mutates serialized general tuning");
         }
 
         private static EnemyBase Spawn(string path, List<GameObject> spawned)

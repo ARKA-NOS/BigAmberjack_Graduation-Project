@@ -21,6 +21,12 @@ namespace CTJ.Enemies.Bosses
         public bool IsMoving { get; private set; }
         public bool HasArrived => _body != null && !IsMoving && Vector2.Distance(_body.position, _destination) <= 0.01f;
 
+        // 최고 속도에서 정지하는 데 필요한 거리. 레이저 퇴장 목적지를 화면 밖으로 연장할 때 사용합니다.
+        public float GetBrakingDistance(float speed, float? easeOverride = null) =>
+            0.5f * Mathf.Max(0.01f, speed) * ResolveEaseDuration(easeOverride);
+
+        private float ResolveEaseDuration(float? easeOverride) => Mathf.Max(0.01f, easeOverride ?? easeDuration);
+
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -36,7 +42,8 @@ namespace CTJ.Enemies.Bosses
             Stop();
         }
 
-        public void MoveTo(Vector2 destination, float speed)
+        // 이번 이동만 가감속을 다르게 지정할 수 있습니다. 생략하면 일반 이동 설정을 그대로 사용합니다.
+        public void MoveTo(Vector2 destination, float speed, float? easeOverride = null)
         {
             _start = _body.position;
             _destination = destination;
@@ -49,7 +56,7 @@ namespace CTJ.Enemies.Bosses
             }
 
             float maxSpeed = Mathf.Max(0.01f, speed);
-            float ramp = Mathf.Max(0.01f, easeDuration);
+            float ramp = ResolveEaseDuration(easeOverride);
             // 가속+감속만으로 목적지를 넘어갈 짧은 거리에서는 최고 속도를 낮추고 등속 구간을 생략합니다.
             _rampTime = Mathf.Min(ramp, Mathf.Sqrt(_distance * ramp / maxSpeed));
             _peakSpeed = maxSpeed * _rampTime / ramp;

@@ -13,8 +13,10 @@ namespace CTJ.Enemies.Bosses
         [SerializeField, Min(0.1f)] private float floorDistance = 4f;
         [SerializeField, Min(0f)] private float laserHeight = 2.5f;
         [SerializeField, Min(0f)] private float introHeight = 4f;
-        [Tooltip("레이저 횡단마다 오른쪽/왼쪽에 번갈아 남길 안전 구역의 가로 비율입니다.")]
-        [SerializeField, Range(0.05f, 0.45f)] private float laserSafeWidthRatio = 0.2f;
+        [Tooltip("화면 밖 경유점 계산용. 비워두면 Main Camera를 사용합니다.")]
+        [SerializeField] private Camera arenaCamera;
+        [Tooltip("화면/아레나 경계 바깥의 여유 거리. 보스 크기는 별도로 더합니다.")]
+        [SerializeField, Min(0.1f)] private float offscreenPadding = 1f;
 
         public Vector2 Center { get; private set; }
         public float FloorY => Center.y - Mathf.Max(0.1f, floorDistance);
@@ -22,26 +24,39 @@ namespace CTJ.Enemies.Bosses
         public Vector2 LaserLeft => Center + new Vector2(-Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
         public Vector2 LaserRight => Center + new Vector2(Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
 
-        public Bounds GetLaserDangerBounds(int traversal)
+        public Bounds LaserBounds => new Bounds(new Vector3(Center.x, (FloorY + LaserLeft.y) * 0.5f, 0f),
+            new Vector3(LaserRight.x - LaserLeft.x, LaserLeft.y - FloorY, 0f));
+        // 중심을 벽의 내측 경계에 맞추고, 바깥 절반은 벽의 렌더링으로 가립니다.
+        public Vector2 GetLaserStart(int traversal) => traversal % 2 == 0 ? LaserLeft : LaserRight;
+        public Vector2 GetLaserEnd(int traversal) => traversal % 2 == 0 ? LaserRight : LaserLeft;
+
+        public Vector2 GetOutsidePoint(bool right, float bodyRadius, float brakingDistance = 0f)
         {
-            float left = LaserLeft.x;
-            float right = LaserRight.x;
-            float safeWidth = (right - left) * Mathf.Clamp(laserSafeWidthRatio, 0.05f, 0.45f);
-            if (traversal % 2 == 0) right -= safeWidth; // 1·3회: 오른쪽 안전
-            else left += safeWidth;                  // 2회: 왼쪽 안전
-            return new Bounds(new Vector3((left + right) * 0.5f, (FloorY + LaserLeft.y) * 0.5f, 0f),
-                new Vector3(right - left, LaserLeft.y - FloorY, 0f));
+            Bounds view = GetViewBounds();
+            float margin = Mathf.Max(0f, bodyRadius) + Mathf.Max(0.1f, offscreenPadding) + Mathf.Max(0f, brakingDistance);
+            return new Vector2(right ? Mathf.Max(LaserRight.x, view.max.x) + margin :
+                Mathf.Min(LaserLeft.x, view.min.x) - margin, LaserLeft.y);
         }
 
-        public Vector2 GetLaserStart(int traversal) => LaserTravelPoint(traversal, false);
-        public Vector2 GetLaserEnd(int traversal) => LaserTravelPoint(traversal, true);
+        public float GetAboveScreenY(float bodyRadius) => Mathf.Max(IntroPosition.y, GetViewBounds().max.y) +
+            Mathf.Max(0f, bodyRadius) + Mathf.Max(0.1f, offscreenPadding);
 
-        private Vector2 LaserTravelPoint(int traversal, bool end)
+        private Bounds GetViewBounds()
         {
-            Bounds danger = GetLaserDangerBounds(traversal);
-            float inset = Mathf.Min(0.75f, danger.size.x * 0.2f);
-            bool right = (traversal % 2 == 0) == end;
-            return new Vector2(right ? danger.max.x - inset : danger.min.x + inset, danger.max.y);
+            Camera camera = arenaCamera != null ? arenaCamera : Camera.main;
+            Bounds arena = LaserBounds;
+            if (camera == null) return arena;
+            float depth = Vector3.Dot((Vector3)Center - camera.transform.position, camera.transform.forward);
+            if (depth <= 0f) return arena;
+            Bounds view = new Bounds(camera.ViewportToWorldPoint(new Vector3(0f, 0f, depth)), Vector3.zero);
+            for (int x = 0; x <= 1; x++)
+                for (int y = 0; y <= 1; y++)
+                    view.Encapsulate(camera.ViewportToWorldPoint(new Vector3(x, y, depth)));
+            // 이미 화면과 떨어진 다른 방/테스트 보스를 카메라가 있는 방까지 이동시키지 않습니다.
+            if (view.max.x < arena.min.x || view.min.x > arena.max.x || view.max.y < arena.min.y || view.min.y > arena.max.y)
+                return arena;
+            arena.Encapsulate(view);
+            return arena;
         }
 
         public override void Initialize(ModuleOwner owner)

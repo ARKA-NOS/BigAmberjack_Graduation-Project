@@ -42,8 +42,59 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4300c7f53414bfbb53ba33e6c919dc9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyDeathModule
+--- !u!1 &910000010001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 910000010002}
+  - component: {fileID: 910000010003}
+  m_Layer: 0
+  m_Name: ArenaModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &910000010002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000010001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7220857079902644831}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &910000010003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000010001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f01a29db07462ba5b6de92ae4d3551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossArenaModule
+  centerAnchor: {fileID: 0}
+  halfWidth: 8
+  floorDistance: 4
+  laserHeight: 2.5
+  introHeight: 4
+  arenaCamera: {fileID: 0}
+  offscreenPadding: 1
 --- !u!1 &1193894897454532693
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,7 +277,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: -3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -282,7 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eab0d781a90c874bb1e3f966f94520b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossFlightModule
-  easeDuration: 0.2
+  easeDuration: 1
 --- !u!1 &2258381662096536882
 GameObject:
   m_ObjectHideFlags: 0
@@ -414,11 +465,15 @@ MonoBehaviour:
   radialVolley: {fileID: 9054037765004109793}
   laser: {fileID: 3826693451304991770}
   firstVolleyDelay: 10
-  normalRestTime: 3
+  normalRestTime: 1.5
   flightSpeed: 4
   targetMoveSpeed: 8
-  laserPositionSpeed: 12
-  laserSweepSpeed: 20
+  laserPositionSpeed: 6
+  laserSweepSpeed: 30
+  laserReturnSpeed: 6
+  laserMoveEaseDuration: 0.2
+  offscreenHoldTime: 0.1
+  bodyVisual: {fileID: 4092812976807612984}
   laserHealthThreshold: 1000
 --- !u!1 &2975368419601417831
 GameObject:
@@ -499,7 +554,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: -2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 0.28, b: 0.18, a: 1}
@@ -595,17 +650,32 @@ MonoBehaviour:
   <SkillSo>k__BackingField: {fileID: 11400000, guid: 065636f2feed0f2478038f1b9ea93fa8, type: 2}
   <BaseCoolTime>k__BackingField: 0
   attackDelayStat: {fileID: 11400000, guid: 1fae390c338e42a793389e0619007b47, type: 2}
-  fallbackAttackDelay: 0.25
+  fallbackAttackDelay: 0.65
   postBlinkDelay: 0.15
   blinkBeforeAttack: 1
   telegraphOpacity: 1
-  telegraphPrefab: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+  telegraphPrefab: {fileID: 11400001, guid: 1b632104bd3a43598d7914bda070944a, type: 3}
   firePoint: {fileID: 2885612780743093848}
   beamVisual: {fileID: 8900915903831047696}
   damageStat: {fileID: 11400000, guid: 9ff90c5310699ce4e85c014ff641df8d, type: 2}
   beamWidth: 0.65
-  sweepLag: 2
+  beamLength: 18
+  diagonalAngle: 45
   cameraShake: {fileID: 9200030001}
+--- !u!114 &9200030001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3406262996069424318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90f8fd23e811482b89fce48b5fd6214e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossLaserShake
+  amplitude: 0.35
+  frequency: 32
 --- !u!1 &4437513269368970921
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,7 +802,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 0.08, g: 0.09, b: 0.12, a: 1}
@@ -869,7 +939,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: -4
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: d458cb5e3a4c2bf46bcfea7f0950736b, type: 3}
   m_Color: {r: 1, g: 0.12, b: 0.08, a: 0.85}
@@ -1036,67 +1106,3 @@ MonoBehaviour:
     requireClearPath: 0
     origin: {fileID: 0}
     chargeDuration: 0
---- !u!1 &910000010001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 910000010002}
-  - component: {fileID: 910000010003}
-  m_Layer: 0
-  m_Name: ArenaModule
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &910000010002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910000010001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7220857079902644831}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &910000010003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910000010001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2f01a29db07462ba5b6de92ae4d3551, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossArenaModule
-  centerAnchor: {fileID: 0}
-  halfWidth: 8
-  floorDistance: 4
-  laserHeight: 2.5
-  introHeight: 4
-  laserSafeWidthRatio: 0.2
---- !u!114 &9200030001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3406262996069424318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90f8fd23e811482b89fce48b5fd6214e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossLaserShake
-  amplitude: 0.35
-  frequency: 32

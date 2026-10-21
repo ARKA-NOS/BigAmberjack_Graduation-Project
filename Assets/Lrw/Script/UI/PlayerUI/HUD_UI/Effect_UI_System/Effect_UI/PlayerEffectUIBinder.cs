@@ -23,6 +23,8 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
             List<EffectViewData> effectList = CurrentValue.ViewDataList;
 
             SecuringEffectUI(effectList.Count);
+
+            UpdateUI(effectList);
         }
 
         private void SecuringEffectUI(int count)
@@ -34,6 +36,23 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
                     "[PlayerEffectUIBinder] playerEffectUIPrefab is not have PlayerEffectUI");
                 playerEffectUIs.Add(playerEffectUI);
             }
+        }
+
+        private void UpdateUI(List<EffectViewData> effectList)
+        {
+            for(int i = 0; i < playerEffectUIs.Count;i++)
+            {
+                if (i < playerEffectUIs.Count)
+                {
+                    playerEffectUIs[i].gameObject.SetActive(true);
+                    playerEffectUIs[i].SetViewData(effectList[i]);
+                }
+                else
+                {
+                    playerEffectUIs[i].gameObject.SetActive(false);
+                }
+            }
+            
         }
         
     }

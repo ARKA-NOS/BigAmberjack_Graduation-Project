@@ -14,6 +14,8 @@ namespace Lrw.Script.Agent.Players
             if (!playerPack.IsExist())
                 CreatePlayer();
             
+            playerPack.SetPos(transform.position);
+            
             Destroy(gameObject);
         }
         

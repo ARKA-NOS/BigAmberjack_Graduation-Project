@@ -14,6 +14,9 @@ namespace SDW.Scripts.Interact.NPC.Data
         [field: Tooltip("선택 취소용 선택지. 고르면 취소 대사만 출력하고 아무것도 소모하지 않는다.")]
         [field: SerializeField] public bool IsCancel { get; private set; }
 
+        [field: Tooltip("선택 시 치를 비용들. 하나라도 치를 수 없으면 선택할 수 없다.")]
+        [field: SerializeField] public List<ChoiceCostSO> Costs { get; private set; } = new();
+
         [field: Tooltip("선택 시 실제로 적용할 효과들")]
         [field: SerializeField] public List<ChoiceEffectSO> Effects { get; private set; } = new();
     }

@@ -17,22 +17,25 @@ MonoBehaviour:
   <Role>k__BackingField: "\uC0C1\uD638\uC791\uC6A9 NPC"
   <AppearChapters>k__BackingField: 
   <AppearRoomName>k__BackingField: "\uAD34\uC9DC \uC758\uC0AC\uC758 \uBC29"
-  <SpawnChance>k__BackingField: 0.4
   <Preconditions>k__BackingField: []
-  <RequiredCurrencies>k__BackingField:
-  - <Type>k__BackingField: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
-    <Amount>k__BackingField: 0
-  <RequiredItemIds>k__BackingField: []
-  <HpCost>k__BackingField: 0
   <Choices>k__BackingField:
   - <ChoiceText>k__BackingField: "\uC2DC\uC220 \uBC1B\uB294\uB2E4"
     <IsCancel>k__BackingField: 0
+    <Costs>k__BackingField:
+    - {fileID: 11400000, guid: c48aa5b31d5dd4f478ed5798025712d5, type: 2}
     <Effects>k__BackingField:
-    - {fileID: 0}
+    - {fileID: 11400000, guid: c2e0c068bab53f5438a3a6200482251f, type: 2}
+    - {fileID: 11400000, guid: 54b9b201cd8bb944a9ed2053c3f9ace1, type: 2}
+    - {fileID: 11400000, guid: 1d3f2723a3f7a534a918e5463737de2a, type: 2}
+    - {fileID: 11400000, guid: 63cd28ab68df827499b508dc7a33630b, type: 2}
   - <ChoiceText>k__BackingField: "\uAC70\uC808\uD55C\uB2E4"
     <IsCancel>k__BackingField: 1
+    <Costs>k__BackingField: []
     <Effects>k__BackingField: []
-  <InsufficientCostMessage>k__BackingField: "\uBE44\uC6A9 \uBD80\uC871 \uC5C6\uC74C"
+  <InsufficientCostMessage>k__BackingField: "\uACE8\uB4DC\uAC00 \uBD80\uC871\uD558\uAD70.
+    50\uACE8\uB4DC\uB294 \uAC00\uC838\uC624\uAC8C."
+  <RewardBlockedMessage>k__BackingField: "\uC9C0\uAE08\uC740 \uC2DC\uC220\uC744 \uBC1B\uC744
+    \uC218 \uC5C6\uACA0\uAD70."
   <CancelDialogue>k__BackingField: "\uC544\uC27D\uAD70"
   <Reusable>k__BackingField: 0
   <UiFeedback>k__BackingField: 

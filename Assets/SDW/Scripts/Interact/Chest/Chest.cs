@@ -36,7 +36,7 @@ namespace SDW.Scripts.Interact.Chest
                 return;
 
             // 받을 수 있는 보상이 하나도 없으면(예: 인벤토리 가득 참) 열지 않아서 아이템이 사라지지 않게 한다.
-            if (!HasApplicableReward(owner))
+            if (!ChoiceEffectSO.AnyApplicable(data.Rewards, owner))
             {
                 Debug.LogWarning($"[Chest] {data.ChestName} 열 수 없음: 받을 수 있는 보상이 없습니다.");
                 return;
@@ -45,28 +45,13 @@ namespace SDW.Scripts.Interact.Chest
             Debug.Log($"[Chest] {data.ChestName} 열림");
             IsOpened = true;
 
-            foreach (ChoiceEffectSO reward in data.Rewards)
-            {
-                if (reward != null && reward.CanApply(owner))
-                    reward.Apply(owner);
-            }
+            ChoiceEffectSO.ApplyAll(data.Rewards, owner);
 
             if (data.OpenedSprite != null && _spriteRenderer != null)
                 _spriteRenderer.sprite = data.OpenedSprite;
 
             // 열린 상자는 더 이상 상호작용 대상으로 잡히지 않게 한다.
             _col.enabled = false;
-        }
-
-        private bool HasApplicableReward(ModuleOwner owner)
-        {
-            foreach (ChoiceEffectSO reward in data.Rewards)
-            {
-                if (reward != null && reward.CanApply(owner))
-                    return true;
-            }
-
-            return false;
         }
     }
 }

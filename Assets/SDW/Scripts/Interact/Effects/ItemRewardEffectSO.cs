@@ -3,10 +3,10 @@ using KHO.Scripts.InventorySystem;
 using KHO.Scripts.ItemSystem;
 using UnityEngine;
 
-namespace SDW.Scripts.Interact.Chest.Effects
+namespace SDW.Scripts.Interact.Effects
 {
     // 아이템을 인벤토리에 지급하는 효과. ItemSO는 ChoiceEffectSO가 아니라서 이 효과로 감싸 상자의 Rewards나 NPC 선택지 Effects에 넣는다.
-    [CreateAssetMenu(fileName = "Effect_Item", menuName = "Chest/Effect/Item Reward", order = 2)]
+    [CreateAssetMenu(fileName = "Effect_Item", menuName = "Interact/Effect/Item Reward", order = 2)]
     public class ItemRewardEffectSO : ChoiceEffectSO
     {
         [Tooltip("지급할 아이템")]
@@ -25,9 +25,9 @@ namespace SDW.Scripts.Interact.Chest.Effects
                 return;
 
             if (inventory.TryAddItem(item))
-                Debug.Log($"[Chest] 아이템 획득: {item.ItemName}");
+                Debug.Log($"[Reward] 아이템 획득: {item.ItemName}");
             else
-                Debug.LogWarning($"[Chest] 아이템 획득 실패(인벤토리 가득 참): {item.ItemName}");
+                Debug.LogWarning($"[Reward] 아이템 획득 실패(인벤토리 가득 참): {item.ItemName}");
         }
     }
 }

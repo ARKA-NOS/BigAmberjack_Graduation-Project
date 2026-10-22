@@ -76,7 +76,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 2368432189235151295}
+  - {fileID: 1773774380650762863}
   - {fileID: 8810647111667330001}
   - {fileID: 8810647111667320201}
   - {fileID: 8810647111667330011}
@@ -179,9 +179,42 @@ MonoBehaviour:
   detectionRange: 6
   chaseReleaseRange: 9
   moveSpeed: 2
-  facingRoot: {fileID: 2368432189235151295}
+  facingRoot: {fileID: 1773774380650762863}
   deathAnimator: {fileID: 2391880773380209860}
   deathDespawnDelay: 1.1
+--- !u!1 &6877266787495892129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1773774380650762863}
+  m_Layer: 8
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1773774380650762863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6877266787495892129}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2368432189235151295}
+  - {fileID: 2085888416399312410}
+  m_Father: {fileID: 1121222997207652652}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6940560111538749771
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +229,7 @@ GameObject:
   - component: {fileID: 2199800615149879351}
   - component: {fileID: 1079500581702826696}
   m_Layer: 8
-  m_Name: Visual
+  m_Name: HitVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214,9 +247,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2085888416399312410}
-  m_Father: {fileID: 1121222997207652652}
+  m_Children: []
+  m_Father: {fileID: 1773774380650762863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &9213350838558911084
 SpriteRenderer:
@@ -355,7 +387,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2368432189235151295}
+  m_Father: {fileID: 1773774380650762863}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &7373078564446817729
 BoxCollider2D:
@@ -736,6 +768,7 @@ MonoBehaviour:
   blinkBeforeAttack: 0
   telegraphOpacity: 1
   telegraphPrefab: {fileID: 0}
+  preparationWarning: {fileID: 0}
   attackAnimator: {fileID: 2391880773380209860}
   preparationStateName: Base Layer.AttackPreparation
   attackStateName: Base Layer.Attack
@@ -788,8 +821,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 1
-  knockbackSpeed: 5.1
+  knockbackSpeed: 6.4
   knockbackDuration: 0.18
+  hitStunDuration: 0
   cancelAttackOnHit: 1
   enableBlink: 1
   blinkDuration: 0.35
@@ -798,6 +832,11 @@ MonoBehaviour:
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
   sprites:
   - {fileID: 9213350838558911084}
+  enableScalePulse: 1
+  scaleTargets:
+  - {fileID: 2368432189235151295}
+  scalePulseAmount: 0.2
+  scalePulseDuration: 0.2
 --- !u!1 &8810647111667330060
 GameObject:
   m_ObjectHideFlags: 0

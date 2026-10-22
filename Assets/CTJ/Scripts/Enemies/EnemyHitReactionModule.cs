@@ -13,7 +13,7 @@ namespace CTJ.Enemies
     {
         [Header("Knockback")]
         [SerializeField] private bool enableKnockback = true;
-        [SerializeField, Min(0f)] private float knockbackSpeed = 5.1f;
+        [SerializeField, Min(0f)] private float knockbackSpeed = 6.4f;
         [SerializeField, Min(0f)] private float knockbackDuration = 0.18f;
         [Tooltip("넉백 없이도 행동을 제한하는 피격 경직 시간. 0이면 기존 넉백 시간만 사용합니다.")]
         [SerializeField, Min(0f)] private float hitStunDuration;
@@ -33,6 +33,15 @@ namespace CTJ.Enemies
         [Tooltip("피격 표시용 SpriteRenderer만 지정합니다. 비워두면 소유 적의 자식에서 찾습니다.")]
         [SerializeField] private SpriteRenderer[] sprites;
 
+        [Header("Scale Pulse")]
+        [Tooltip("피격마다 가로/세로를 약하게 눌렀다가 복원합니다. 보스 등에서는 별도로 켤 수 있습니다.")]
+        [SerializeField] private bool enableScalePulse;
+        [Tooltip("그림만 가진 자식 Transform. 방향 전환 루트, 콜라이더, 발사 위치가 포함된 부모는 지정하지 않습니다.")]
+        [SerializeField] private Transform[] scaleTargets;
+        [Tooltip("최대 변형 비율. 실제 변형은 이 값의 50~100%이며 가로/세로 방향은 매번 무작위입니다.")]
+        [SerializeField, Range(0f, 0.2f)] private float scalePulseAmount = 0.08f;
+        [SerializeField, Min(0f)] private float scalePulseDuration = 0.16f;
+
         private EnemyBase _enemy;
         private Rigidbody2D _body;
         private EnemySkillModule _skills;
@@ -47,6 +56,12 @@ namespace CTJ.Enemies
         private float _blinkEnd;
         private Color[] _originalColors;
         private Material[] _originalMaterials;
+        private Transform[] _scaleTargets;
+        private Vector3[] _originalScales;
+        private bool _scaling;
+        private float _scaleStart;
+        private float _scaleLength;
+        private float _scaleOffset;
 
         public bool IsKnockedBack => Ready && enableKnockback && _knockingBack && Time.time < _knockbackEnd;
         public bool IsStunned => Ready && Time.time < _stunEnd;
@@ -65,6 +80,17 @@ namespace CTJ.Enemies
                 sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
             _originalColors = new Color[sprites.Length];
             _originalMaterials = new Material[sprites.Length];
+            // 피격마다 배열을 만들지 않고, 초기화 때 시각 전용 대상을 확보합니다.
+            _scaleTargets = scaleTargets != null ? (Transform[])scaleTargets.Clone() : new Transform[0];
+            _originalScales = new Vector3[_scaleTargets.Length];
+            for (int i = 0; i < _scaleTargets.Length; i++)
+            {
+                Transform target = _scaleTargets[i];
+                if (target == null || target == owner.transform || !target.IsChildOf(owner.transform) ||
+                    target.GetComponentInChildren<Collider2D>(true) != null ||
+                    target.GetComponentInChildren<Rigidbody2D>(true) != null)
+                    _scaleTargets[i] = null;
+            }
         }
 
         internal void React(DamageData damage, Vector2 hitDirection)
@@ -104,6 +130,7 @@ namespace CTJ.Enemies
                 _blinkEnd = Time.time + blinkDuration;
                 SetBlinkColor(true);
             }
+            StartScalePulse();
         }
 
         private float KnockbackDirection(DamageData damage, Vector2 hitDirection)
@@ -143,6 +170,7 @@ namespace CTJ.Enemies
 
         private void LateUpdate()
         {
+            TickScalePulse(); // 점멸을 꺼도 스케일 연출은 독립적으로 재생/복원됩니다.
             if (!_blinking) return;
             if (!Ready || !enableBlink || hitMaterial == null || Time.time >= _blinkEnd)
             {
@@ -151,6 +179,52 @@ namespace CTJ.Enemies
             }
             bool flash = Mathf.FloorToInt((Time.time - _blinkStart) / Mathf.Max(0.01f, blinkInterval)) % 2 == 0;
             SetBlinkColor(flash);
+        }
+
+        private void StartScalePulse()
+        {
+            // 연타 시 이전 변형을 원본으로 다시 저장하지 않아 크기가 누적되지 않습니다.
+            RestoreScale();
+            if (!enableScalePulse || scalePulseAmount <= 0f || scalePulseDuration <= 0f ||
+                _scaleTargets == null || _scaleTargets.Length == 0) return;
+
+            _scaleOffset = Random.Range(0.5f, 1f) * Mathf.Clamp(scalePulseAmount, 0f, 0.2f);
+            if (Random.value < 0.5f) _scaleOffset = -_scaleOffset;
+            _scaleStart = Time.time;
+            _scaleLength = scalePulseDuration;
+            for (int i = 0; i < _scaleTargets.Length; i++)
+                if (_scaleTargets[i] != null) _originalScales[i] = _scaleTargets[i].localScale;
+            _scaling = true;
+            ApplyScale(1f);
+        }
+
+        private void TickScalePulse()
+        {
+            if (!_scaling) return;
+            float elapsed = Time.time - _scaleStart;
+            if (!Ready || !enableScalePulse || elapsed >= _scaleLength)
+            {
+                RestoreScale();
+                return;
+            }
+            ApplyScale(1f - Mathf.SmoothStep(0f, 1f, elapsed / _scaleLength));
+        }
+
+        private void ApplyScale(float weight)
+        {
+            float offset = _scaleOffset * weight;
+            Vector3 multiplier = new Vector3(1f + offset, 1f - offset, 1f);
+            for (int i = 0; i < _scaleTargets.Length; i++)
+                if (_scaleTargets[i] != null)
+                    _scaleTargets[i].localScale = Vector3.Scale(_originalScales[i], multiplier);
+        }
+
+        private void RestoreScale()
+        {
+            if (!_scaling) return;
+            for (int i = 0; i < _scaleTargets.Length; i++)
+                if (_scaleTargets[i] != null) _scaleTargets[i].localScale = _originalScales[i];
+            _scaling = false;
         }
 
         private void SetBlinkColor(bool flash)
@@ -184,6 +258,7 @@ namespace CTJ.Enemies
             _stunEnd = 0f;
             EndKnockback();
             RestoreColor();
+            RestoreScale();
         }
 
         private void OnDisable() => ClearReaction();

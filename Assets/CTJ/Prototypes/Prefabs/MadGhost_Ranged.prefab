@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 4331447859663706226}
   - component: {fileID: 3876773841220750734}
   m_Layer: 8
-  m_Name: Visual
+  m_Name: HitVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,9 +75,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5779205006524218080}
-  m_Father: {fileID: 2151710724508395455}
+  m_Children: []
+  m_Father: {fileID: 2895655080480913809}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5380734442815516668
 SpriteRenderer:
@@ -202,7 +201,40 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2731410536611583012}
+  m_Father: {fileID: 2895655080480913809}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3737818410564629646
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2895655080480913809}
+  m_Layer: 8
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2895655080480913809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3737818410564629646}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2731410536611583012}
+  - {fileID: 5779205006524218080}
+  m_Father: {fileID: 2151710724508395455}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6205686831997271556
 GameObject:
@@ -236,7 +268,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 2731410536611583012}
+  - {fileID: 2895655080480913809}
   - {fileID: 8810647111667330001}
   - {fileID: 8810647111667320201}
   - {fileID: 8810647111667330011}
@@ -339,7 +371,7 @@ MonoBehaviour:
   detectionRange: 10
   chaseReleaseRange: 14
   moveSpeed: 1.5
-  facingRoot: {fileID: 2731410536611583012}
+  facingRoot: {fileID: 2895655080480913809}
   deathAnimator: {fileID: 4331447859663706226}
   deathDespawnDelay: 1.1
 --- !u!1 &8810647111667320200
@@ -675,12 +707,20 @@ MonoBehaviour:
   blinkBeforeAttack: 1
   telegraphOpacity: 0.6
   telegraphPrefab: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+  preparationWarning: {fileID: 0}
   projectilePrefab: {fileID: 2047930768211004358, guid: 8c1b987081c789f4f8e722cd6155c3ff, type: 3}
   firePoint: {fileID: 5779205006524218080}
+  projectileSpeed: 0
+  projectileLifetime: 0
   damage: 5
   attackAnimator: {fileID: 4331447859663706226}
   attackStateName: Base Layer.Attack
   recoveryTime: 0.3
+  showAimLine: 1
+  trackTargetDuringPreparation: 0
+  aimAtTargetCenter: 0
+  aimLineWidth: 0
+  turret: {fileID: 0}
 --- !u!1 &8810647111667330050
 GameObject:
   m_ObjectHideFlags: 0
@@ -726,8 +766,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 1
-  knockbackSpeed: 5.1
+  knockbackSpeed: 6.4
   knockbackDuration: 0.18
+  hitStunDuration: 0
   cancelAttackOnHit: 1
   enableBlink: 1
   blinkDuration: 0.35
@@ -736,6 +777,11 @@ MonoBehaviour:
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
   sprites:
   - {fileID: 5380734442815516668}
+  enableScalePulse: 1
+  scaleTargets:
+  - {fileID: 2731410536611583012}
+  scalePulseAmount: 0.2
+  scalePulseDuration: 0.2
 --- !u!1 &8810647111667330060
 GameObject:
   m_ObjectHideFlags: 0

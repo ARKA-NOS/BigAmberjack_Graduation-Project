@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff42ea1717c342a9a7c56b2fba1da9ea, type: 3}
+  m_Name: Overheal Health SO
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths.HealthSO.DefaultHealthSo
+  <HealthName>k__BackingField: "\uD761\uD608 \uCD08\uACFC \uCCB4\uB825"
+  <HealthColor>k__BackingField: {r: 0.6, g: 1, b: 0.4, a: 1}
+  <Icon>k__BackingField: {fileID: 0}
+  <Tags>k__BackingField: 8
+  <Priority>k__BackingField: 4
+  <MaxStat>k__BackingField: {fileID: 0}
+  <FixedMax>k__BackingField: 30
+  <HealOnMaxIncrease>k__BackingField: 0
+  <StartRatio>k__BackingField: 0
+  <HealSources>k__BackingField: 2
+  <RemoveWhenEmpty>k__BackingField: 0
+  <Duration>k__BackingField: 0

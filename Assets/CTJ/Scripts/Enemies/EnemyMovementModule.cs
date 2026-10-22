@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CTJ.Enemies
 {
-    // FSM이 Chase 중에만 호출합니다. 이 모듈 자체에는 Update/FixedUpdate가 없습니다.
+    // FSM/배회 모듈이 호출합니다. 이 모듈 자체에는 Update/FixedUpdate가 없습니다.
     [DisallowMultipleComponent]
     public sealed class EnemyMovementModule : Module
     {
@@ -149,6 +149,40 @@ namespace CTJ.Enemies
             _body.linearVelocityY = Mathf.Sqrt(2f * gravity * jumpHeight);
             _nextJumpTime = Time.time + jumpCooldown;
             return true;
+        }
+
+        // 배회는 도약/발판 우회를 하지 않습니다. 벽이나 낭떠러지 앞에서는 목적지 재선택을 요청합니다.
+        public float MoveOnGroundTowards(float destinationX, float speed, out bool blocked)
+        {
+            blocked = false;
+            CancelRoute();
+            if (!Ready || !IsGrounded || speed <= 0f)
+            {
+                Stop();
+                return 0f;
+            }
+            float difference = destinationX - _body.position.x;
+            if (Mathf.Abs(difference) <= horizontalTolerance)
+            {
+                Stop();
+                return 0f;
+            }
+            float direction = Mathf.Sign(difference);
+            Bounds bounds = bodyCollider.bounds;
+            float lookAhead = Mathf.Max(obstacleCheckDistance, speed * Time.fixedDeltaTime + Skin);
+            Vector2 nextFoot = new Vector2(bounds.center.x + direction * (bounds.extents.x + lookAhead),
+                bounds.min.y + Skin);
+            bool wall = CastTerrain(bounds.center, ProbeSize, Vector2.right * direction,
+                lookAhead, out RaycastHit2D hit) && Mathf.Abs(hit.normal.x) > 0.5f;
+            bool floor = CastTerrain(nextFoot, Vector2.one * Skin, Vector2.down,
+                groundCheckDistance + Skin * 2f, out _, 0.5f);
+            if (wall || !floor)
+            {
+                blocked = true;
+                Stop();
+                return 0f;
+            }
+            return SetHorizontal(destinationX, speed);
         }
 
         private bool TryPlanLedge(Transform target, Bounds bounds)

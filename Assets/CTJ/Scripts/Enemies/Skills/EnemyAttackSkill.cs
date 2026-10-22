@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace CTJ.Enemies.Skills
 {
-    // 두 공격에서 실제로 공유하는 소유자/타깃 고정/취소 처리를 모읍니다.
     public abstract class EnemyAttackSkill : AbstractCoolTimeSkill
     {
         [Header("Attack Preparation")]
@@ -19,6 +18,8 @@ namespace CTJ.Enemies.Skills
         [Tooltip("공용 경고 색의 알파 배율. 0.6이면 기본 알파 50이 30이 됩니다.")]
         [SerializeField, Range(0f, 1f)] private float telegraphOpacity = 1f;
         [SerializeField] private AttackTelegraphUI telegraphPrefab;
+        [Tooltip("선택 사항. 마지막 Post Blink Delay 동안 적 비주얼을 단색으로 표시합니다. 범위 UI와는 독립적입니다.")]
+        [SerializeField] private EnemyAttackWarningModule preparationWarning;
         private enum PreparationPhase { Waiting, Blinking, Holding }
         private Stat _attackDelay;
         private PreparationPhase _preparationPhase;
@@ -49,13 +50,12 @@ namespace CTJ.Enemies.Skills
 
         protected override void OnUseSkill()
         {
-            // 이 호출이 공용 쿨타임을 시작합니다. SO에 실행 상태를 저장하지 않습니다.
             base.OnUseSkill();
             CastTarget = Enemy.Target;
             HasReleased = false;
             if (Telegraph == null && telegraphPrefab != null)
                 Telegraph = Instantiate(telegraphPrefab, Enemy.transform);
-            // 이번 공격의 시간은 시작 시 고정합니다. 준비 스탯이 짧아도 점멸/마지막 유지는 생략하지 않습니다.
+
             _blinkDuration = blinkBeforeAttack && Telegraph != null ? Telegraph.BlinkDuration : 0f;
             _holdDuration = PostBlinkDelay;
             _preparationPhase = PreparationPhase.Waiting;
@@ -101,8 +101,8 @@ namespace CTJ.Enemies.Skills
         private void BeginHold()
         {
             Telegraph?.EndBlink();
+            if (_holdDuration > 0f && preparationWarning != null) preparationWarning.Show();
             _preparationPhase = PreparationPhase.Holding;
-            // 실제로 경고가 다시 켜진 프레임부터 셉니다. 저프레임에서도 유지 시간이 사라지지 않습니다.
             _phaseEndTime = Time.time + _holdDuration;
         }
 
@@ -114,10 +114,10 @@ namespace CTJ.Enemies.Skills
         {
             if (!IsUsing || !CanContinue || HasReleased) return;
             HasReleased = true;
+            if (preparationWarning != null) preparationWarning.Hide();
             OnReleaseAttack();
         }
 
-        // 구형 클립/Relay 호환용. 점멸은 공통 준비 타이머만 시작하며 늦은 이벤트로 재시작하지 않습니다.
         public virtual void OnAttackWarning() { }
         public virtual void OnAttackHit() { }
         public virtual void OnAttackFinished()
@@ -129,6 +129,7 @@ namespace CTJ.Enemies.Skills
         private void ClearAttack()
         {
             Telegraph?.Hide();
+            if (preparationWarning != null) preparationWarning.Hide();
             HasReleased = false;
             CastTarget = null;
         }

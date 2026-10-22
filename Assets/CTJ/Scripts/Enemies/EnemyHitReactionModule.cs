@@ -34,6 +34,7 @@ namespace CTJ.Enemies
         private EnemyBase _enemy;
         private Rigidbody2D _body;
         private EnemySkillModule _skills;
+        private EnemyAttackWarningModule _attackWarning;
         private bool _knockingBack;
         private float _knockbackEnd;
         private float _knockbackLength;
@@ -45,6 +46,7 @@ namespace CTJ.Enemies
         private Material[] _originalMaterials;
 
         public bool IsKnockedBack => Ready && enableKnockback && _knockingBack && Time.time < _knockbackEnd;
+        public bool IsBlinking => _blinking;
         private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
 
         public override void Initialize(ModuleOwner owner)
@@ -53,6 +55,7 @@ namespace CTJ.Enemies
             _enemy = owner as EnemyBase;
             _body = owner.GetComponent<Rigidbody2D>();
             _skills = owner.GetModule<EnemySkillModule>();
+            _attackWarning = owner.GetModule<EnemyAttackWarningModule>();
             if (sprites == null || sprites.Length == 0)
                 sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
             _originalColors = new Color[sprites.Length];
@@ -81,6 +84,7 @@ namespace CTJ.Enemies
 
             if (enableBlink && blinkDuration > 0f && hitMaterial != null)
             {
+                if (_attackWarning != null) _attackWarning.SuspendForHit();
                 // 연타 중에는 피격 색을 원본으로 덮어쓰지 않습니다.
                 if (!_blinking)
                     for (int i = 0; i < sprites.Length; i++)

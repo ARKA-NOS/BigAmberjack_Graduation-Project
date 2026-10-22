@@ -17,7 +17,7 @@ namespace CTJ.Enemies
         [Header("Target")]
         [SerializeField] private Transform target;
         [SerializeField, Min(0f)] protected float detectionRange = 6f;
-        [Tooltip("한 번 추적한 뒤 이 거리 밖으로 나가야 해제합니다. 해제 후 현재 위치에서 대기합니다.")]
+        [Tooltip("한 번 추적한 뒤 이 거리 밖으로 나가야 해제합니다. 배회 모듈이 있으면 배회를 재개하고, 없으면 현재 위치에서 대기합니다.")]
         [SerializeField, Min(0f)] private float chaseReleaseRange = 12f;
 
         [Header("Movement")]
@@ -33,6 +33,7 @@ namespace CTJ.Enemies
 
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
+        private EnemyPatrolModule _patrol;
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
@@ -57,6 +58,7 @@ namespace CTJ.Enemies
 
             _rigidbody = GetComponent<Rigidbody2D>();
             _movement = GetModule<EnemyMovementModule>();
+            _patrol = GetModule<EnemyPatrolModule>();
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
@@ -161,6 +163,28 @@ namespace CTJ.Enemies
                 _movement.Stop();
             else
                 _rigidbody.linearVelocityX = 0f;
+        }
+
+        internal void BeginPatrol()
+        {
+            StopHorizontalMovement();
+            if (_patrol != null) _patrol.BeginPatrol();
+        }
+
+        internal void TickPatrol()
+        {
+            if (_patrol == null || !_patrol.isActiveAndEnabled)
+            {
+                StopHorizontalMovement();
+                return;
+            }
+            OnMoveDirectionChanged(_patrol.TickPatrol());
+        }
+
+        internal void EndPatrol()
+        {
+            if (_patrol != null) _patrol.EndPatrol();
+            StopHorizontalMovement();
         }
 
         internal bool CanAttackTarget()

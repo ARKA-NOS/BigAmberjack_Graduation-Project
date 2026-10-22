@@ -1,4 +1,5 @@
-﻿using Lrw.Script.DataStructure;
+﻿using System;
+using Lrw.Script.DataStructure;
 using UnityEngine;
 
 namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System

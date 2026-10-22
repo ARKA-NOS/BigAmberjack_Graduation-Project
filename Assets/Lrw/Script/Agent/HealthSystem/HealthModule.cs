@@ -1,7 +1,6 @@
 ﻿using System;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem.ViewModel;
@@ -39,26 +38,7 @@ namespace Lrw.Script.Agent.HealthSystem
         }
         
         public float MaxHealth => _maxHpStat?.Value ?? 0f;
-
-        public HealthChangeResult TakeDamage(HealthChangeData data)
-        {
-            if (IsDead || !data.IsValid) return default;
-
-            float prevValue = CurrentHealth;
-            CurrentHealth -= data.Amount;
-            float applied = prevValue - CurrentHealth;
-            return new HealthChangeResult(applied, data.Amount - applied);
-        }
-
-        public HealthChangeResult Heal(HealthChangeData data)
-        {
-            if (IsDead || !data.IsValid) return default;
-
-            float prevValue = CurrentHealth;
-            CurrentHealth += data.Amount;
-            float applied = CurrentHealth - prevValue;
-            return new HealthChangeResult(applied, data.Amount - applied);
-        }
+        
 
         private IStatModule _statModule;
         private Stat _maxHpStat;

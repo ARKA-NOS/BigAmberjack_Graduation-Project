@@ -176,53 +176,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2dd48505c173c04ea2ff6887c23357e, type: 3}
---- !u!1 &218909026
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 218909028}
-  - component: {fileID: 218909027}
-  m_Layer: 0
-  m_Name: Tester
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &218909027
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 218909026}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1e53ca7adc1e0e46b54b2f3eafd19fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Testing.BossTestControls
-  boss: {fileID: 0}
-  probe: {fileID: 0}
-  targetBody: {fileID: 0}
---- !u!4 &218909028
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 218909026}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.59327, y: 0.95435, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &520799846
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +743,5 @@ SceneRoots:
   - {fileID: 1234567891}
   - {fileID: 1721267676}
   - {fileID: 1399369283}
-  - {fileID: 218909028}
   - {fileID: 1798528338}
   - {fileID: 28016647}

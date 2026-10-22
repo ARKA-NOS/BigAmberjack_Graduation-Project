@@ -253,6 +253,9 @@ namespace CTJ.Tools
         {
             GameObject inactive = new GameObject("Configuration staging"); inactive.SetActive(false);
             EnemyBase enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyBase>(Path), new Vector3(x, 0.05f), Quaternion.identity, inactive.transform);
+            // 검증 범위/시간은 테스트 복제본에만 고정합니다. 프리팹에서 조정한 배회 수치는 보존합니다.
+            Set(enemy.GetComponentInChildren<EnemyPatrolModule>(), "halfWidth", 3f);
+            Set(enemy.GetComponentInChildren<EnemyPatrolModule>(), "pauseDuration", 0.6f);
             if (manualCombat)
             {
                 Set(enemy, "detectionRange", 0f); Set(enemy, "moveSpeed", 0f);

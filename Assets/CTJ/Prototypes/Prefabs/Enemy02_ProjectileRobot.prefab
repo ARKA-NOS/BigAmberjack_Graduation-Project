@@ -1225,7 +1225,7 @@ MonoBehaviour:
   emergeDuration: 1
   retractDuration: 1
   maxRotationSpeed: 720
-  rotationSmoothTime: 0.05
+  rotationSmoothTime: 0.1
 --- !u!1 &6244834307535624764
 GameObject:
   m_ObjectHideFlags: 0
@@ -1542,6 +1542,12 @@ MonoBehaviour:
   - {fileID: 3951798348850558489}
   - {fileID: 2511740910181684683}
   - {fileID: 6716274046145799369}
+  enableScalePulse: 1
+  scaleTargets:
+  - {fileID: 3378619630861131687}
+  - {fileID: 566111834872860712}
+  scalePulseAmount: 0.2
+  scalePulseDuration: 0.2
 --- !u!1 &9139517797483866563
 GameObject:
   m_ObjectHideFlags: 0

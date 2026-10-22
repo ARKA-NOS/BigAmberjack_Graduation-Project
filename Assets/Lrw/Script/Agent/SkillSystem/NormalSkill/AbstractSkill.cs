@@ -17,6 +17,15 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
         {
             Owner = owner;
         }
+        
+        public virtual bool CanUseSkill() => !IsUsing;
+        
+        public void UseSkill()
+        {
+            IsUsing = true;
+
+            OnUseSkill();
+        }
 
         protected virtual void Update()
         {
@@ -26,24 +35,11 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
             }
         }
 
-        public abstract bool CanUseSkill();
-
-        public void UseSkill()
-        {
-            if (IsUsing) return;
-            IsUsing = true;
-
-            OnUseSkill();
-        }
-        
-        public virtual void UpdateSkill() {}
-
         /// <summary>
         /// 외부에서 스킬을 끊을 때(캔슬, 강제 종료) 호출한다.
         /// </summary>
         public void StopSkill()
         {
-            if (!IsUsing) return;
             IsUsing = false;
             OnStopSkill();
         }
@@ -53,7 +49,6 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
         /// </summary>
         protected void EndSkill()
         {
-            if (!IsUsing) return;
             IsUsing = false;
             OnEndSkill();
         }
@@ -63,6 +58,7 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
         /// </summary>
         protected abstract void OnUseSkill();
 
+        public virtual void UpdateSkill() {}
         /// <summary>
         /// 정상 종료됐을 때 정리
         /// </summary>

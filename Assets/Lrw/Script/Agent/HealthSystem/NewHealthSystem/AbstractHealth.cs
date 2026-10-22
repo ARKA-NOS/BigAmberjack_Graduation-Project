@@ -5,23 +5,54 @@ using UnityEngine.PlayerLoop;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    /// <summary>
-    /// 체력 한 층. 값과 자기 규칙만 가지고, 데미지/회복 분배와 외부 알림은 NewHealthModule이 맡는다.
-    /// </summary>
     public abstract class AbstractHealth
     {
-        public readonly int Priority;
-
+        public readonly AbstractHealthSo HealthSo;
         protected readonly ModuleOwner Owner;
+        public float Hp { get; protected set; }
+        public HealthType Type {get; private set;}
 
-        protected AbstractHealth(int priority, ModuleOwner owner)
+        protected AbstractHealth(AbstractHealthSo healthSo, ModuleOwner owner,float baseHp = 0)
         {
-            Priority = priority;
+            HealthSo = healthSo;
             Owner = owner;
+            Hp = baseHp;
+        }
+
+        public virtual void Init()
+        {
+            
         }
         
-        public virtual void Update() {}
+        public virtual bool UpdateHealth()
+            => false;
+
+        public virtual HealthChangeData ApplyDamage(HealthChangeData damage)
+        {
+            float taken = Mathf.Min(Hp, damage.Amount);
+            Hp -= taken;
+            damage.Amount -= taken;
+            return damage;
+        }
         
+        public virtual HealthChangeData ApplyHeal(HealthChangeData heal)
+        {
+            if (heal.Amount < 0)
+            {
+                heal.Amount = 0f;
+                return heal;
+            }
+            Hp += heal.Amount;
+            heal.Amount = 0f;
+            return heal;
+        }
+        
+        public virtual void SetHp(float hp)
+        {
+            Hp = hp;
+        }
+
+
         
     }
 }

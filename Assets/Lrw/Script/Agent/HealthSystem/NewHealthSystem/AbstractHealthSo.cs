@@ -7,12 +7,9 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
     public abstract class AbstractHealthSo : ScriptableObject
     {
         [field: SerializeField] public Color HealthColor { get; private set; } = Color.white;
-        [field: Header("NewHealthModule에 처음부터 있을 때 부여되는 양")]
-        [field: SerializeField] public float BaseValue { get; private set; }
-        [field: Space]
         [field: Header("클수록 데미지를 먼저 받는다")]
         [field: SerializeField] public int Priority { get; private set; }
-        [field: SerializeField] public HealType AcceptHealTypes { get; private set; }
+        [field: SerializeField] public HealthType Type { get; private set; }
         
         public abstract AbstractHealth CreateHealth(ModuleOwner owner);
     }

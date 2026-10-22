@@ -25,8 +25,9 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             base.Initialize(owner);
 
-            _poolBundle = new GameObject($"{sourceRenderer.transform.parent.name}_AfterImageGhost");
-
+            _poolBundle = new GameObject($"{owner.name}_AfterImageGhost");
+            _poolBundle.transform.SetParent(owner.transform.parent);
+            
             _pool = new ObjectPool<AfterImageGhost>(
                 CreateGhost,
                 OnGetGhost,

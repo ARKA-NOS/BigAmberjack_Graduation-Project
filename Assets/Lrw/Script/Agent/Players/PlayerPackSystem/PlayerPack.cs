@@ -1,5 +1,4 @@
-﻿using System;
-using Lrw.Script._Core._ServiceLocator;
+﻿using Lrw.Script._Core._ServiceLocator;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.PlayerPackSystem
@@ -8,6 +7,7 @@ namespace Lrw.Script.Agent.Players.PlayerPackSystem
     {
         private void Awake()
         {
+            DontDestroyOnLoad(gameObject);
             ServiceLocator.Register<IPlayerPack>(this);
         }
 
@@ -16,6 +16,13 @@ namespace Lrw.Script.Agent.Players.PlayerPackSystem
             ServiceLocator.Register<IPlayerPack>(new NullPlayerPack());
         }
 
-        public bool IsExist() => true;
+        public bool IsExist() 
+            => true;
+        public void SetPos(Vector3 pos) 
+            => transform.position = pos;
+        public void Destroy() 
+            => Destroy(gameObject);
+        
+        
     }
 }

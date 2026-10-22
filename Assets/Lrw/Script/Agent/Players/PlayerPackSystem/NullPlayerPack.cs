@@ -6,6 +6,8 @@ namespace Lrw.Script.Agent.Players.PlayerPackSystem
     public class NullPlayerPack : IPlayerPack
     {
         public bool IsExist() => false;
+        public void SetPos(Vector3 pos) {}
+        public void Destroy() {}
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void Init()

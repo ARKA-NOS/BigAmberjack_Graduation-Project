@@ -15,6 +15,8 @@ namespace CTJ.Enemies
         [SerializeField] private bool enableKnockback = true;
         [SerializeField, Min(0f)] private float knockbackSpeed = 5.1f;
         [SerializeField, Min(0f)] private float knockbackDuration = 0.18f;
+        [Tooltip("넉백 없이도 행동을 제한하는 피격 경직 시간. 0이면 기존 넉백 시간만 사용합니다.")]
+        [SerializeField, Min(0f)] private float hitStunDuration;
 
         [Header("Attack Interruption")]
         [Tooltip("근접은 준비/타격/회수 동작을 취소하고, 나머지 스킬은 준비/차징 중에만 취소합니다. 이미 발사된 탄은 유지합니다.")]
@@ -39,6 +41,7 @@ namespace CTJ.Enemies
         private float _knockbackEnd;
         private float _knockbackLength;
         private float _initialVelocityX;
+        private float _stunEnd;
         private bool _blinking;
         private float _blinkStart;
         private float _blinkEnd;
@@ -46,6 +49,8 @@ namespace CTJ.Enemies
         private Material[] _originalMaterials;
 
         public bool IsKnockedBack => Ready && enableKnockback && _knockingBack && Time.time < _knockbackEnd;
+        public bool IsStunned => Ready && Time.time < _stunEnd;
+        public bool IsReacting => IsKnockedBack || IsStunned;
         public bool IsBlinking => _blinking;
         private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
 
@@ -65,6 +70,7 @@ namespace CTJ.Enemies
         internal void React(DamageData damage, Vector2 hitDirection)
         {
             if (!Ready) return;
+            if (hitStunDuration > 0f) _stunEnd = Time.time + hitStunDuration;
 
             if (cancelAttackOnHit && _skills != null &&
                 (_skills.ActiveSkill is EnemyMeleeSkill ||
@@ -113,7 +119,15 @@ namespace CTJ.Enemies
 
         private static bool HasDirection(float value) => !float.IsNaN(value) && !float.IsInfinity(value) && Mathf.Abs(value) > 0.001f;
 
-        // EnemyBase.FixedUpdate가 FSM보다 먼저 호출합니다. 중력/지형 충돌은 그대로 사용합니다.
+        // EnemyBase.FixedUpdate가 FSM보다 먼저 호출합니다. 경직과 실제 밀림은 독립적입니다.
+        internal bool TickReaction()
+        {
+            if (TickKnockback()) return true;
+            if (!IsStunned) return false;
+            _enemy.StopHorizontalMovement();
+            return true;
+        }
+
         internal bool TickKnockback()
         {
             if (!_knockingBack) return false;
@@ -167,6 +181,7 @@ namespace CTJ.Enemies
 
         internal void ClearReaction()
         {
+            _stunEnd = 0f;
             EndKnockback();
             RestoreColor();
         }

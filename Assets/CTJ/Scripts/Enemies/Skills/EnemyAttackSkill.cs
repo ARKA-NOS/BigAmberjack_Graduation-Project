@@ -28,6 +28,7 @@ namespace CTJ.Enemies.Skills
         private float _holdDuration;
         protected AttackTelegraphUI Telegraph { get; private set; }
         protected bool HasReleased { get; private set; }
+        protected virtual bool ShouldShowTelegraph => true;
         public bool IsPreparing => IsUsing && !HasReleased;
         public bool IsHoldingWarning => IsPreparing && _preparationPhase == PreparationPhase.Holding;
         public float AttackDelay => Mathf.Max(0f, _attackDelay?.Value ?? fallbackAttackDelay);
@@ -61,7 +62,7 @@ namespace CTJ.Enemies.Skills
             _preparationPhase = PreparationPhase.Waiting;
             _phaseEndTime = Time.time + Mathf.Max(0f, AttackDelay - _blinkDuration);
             PrepareAttack();
-            if (IsUsing && Telegraph != null)
+            if (IsUsing && Telegraph != null && ShouldShowTelegraph)
             {
                 Telegraph.Show(telegraphOpacity);
                 UpdateTelegraph();
@@ -74,6 +75,15 @@ namespace CTJ.Enemies.Skills
             {
                 StopSkill();
                 return;
+            }
+            if (IsPreparing && Telegraph != null)
+            {
+                if (!ShouldShowTelegraph) Telegraph.Hide();
+                else if (!Telegraph.IsVisible)
+                {
+                    Telegraph.Show(telegraphOpacity);
+                    if (_preparationPhase == PreparationPhase.Blinking) Telegraph.BeginBlink();
+                }
             }
             if (Telegraph != null && Telegraph.IsVisible) UpdateTelegraph();
             if (!IsPreparing || Time.time < _phaseEndTime) return;

@@ -23,7 +23,18 @@ namespace CTJ.Enemies
         private bool _launched;
         private bool _consumed;
 
-        public float TravelDistance => Mathf.Max(0.01f, speed) * Mathf.Max(0.01f, lifetime);
+        public float Speed
+        {
+            get => Mathf.Max(0.01f, speed);
+            set => speed = Mathf.Max(0.01f, value);
+        }
+        public float Lifetime
+        {
+            get => Mathf.Max(0.01f, lifetime);
+            set => lifetime = Mathf.Max(0.01f, value);
+        }
+
+        public float TravelDistance => Speed * Lifetime;
         public float Diameter
         {
             get
@@ -49,7 +60,7 @@ namespace CTJ.Enemies
             _target = target;
             _damage = damage;
             _direction = direction.sqrMagnitude > 0f ? direction.normalized : Vector2.right;
-            _expiresAt = Time.time + Mathf.Max(0.01f, lifetime);
+            _expiresAt = Time.time + Lifetime;
             _launched = true;
             transform.rotation = Quaternion.Euler(0f, 0f,
                 Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg);
@@ -86,7 +97,7 @@ namespace CTJ.Enemies
                 }
             }
 
-            float distance = Mathf.Max(0.01f, speed) * Time.fixedDeltaTime;
+            float distance = Speed * Time.fixedDeltaTime;
             _collider.Cast(_direction, filter, _castHits, distance);
             RaycastHit2D nearestHit = default;
             float nearestDistance = float.PositiveInfinity;

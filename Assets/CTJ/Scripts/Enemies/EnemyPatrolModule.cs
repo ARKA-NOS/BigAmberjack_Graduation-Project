@@ -90,8 +90,10 @@ namespace CTJ.Enemies
         private void ChooseDestination()
         {
             float x = _enemy.transform.position.x;
-            if (x < MinX) { _destinationX = MinX; _nextDirection = 1f; return; }
-            if (x > MaxX) { _destinationX = MaxX; _nextDirection = -1f; return; }
+            // 경계 바로 밖에서는 경계점이 이동 허용 오차 안에 있어 정지만 반복할 수 있습니다.
+            // 구간 안쪽을 목적지로 정해 실제로 복귀한 뒤 다음 배회 지점을 선택합니다.
+            if (x < MinX) { _destinationX = Center.x; _nextDirection = 1f; return; }
+            if (x > MaxX) { _destinationX = Center.x; _nextDirection = -1f; return; }
             float end = _nextDirection > 0f ? MaxX : MinX;
             _destinationX = Mathf.Lerp(x, end, Random.Range(0.5f, 1f));
             _nextDirection = -_nextDirection;

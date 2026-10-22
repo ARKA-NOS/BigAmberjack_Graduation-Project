@@ -170,6 +170,7 @@ MonoBehaviour:
   enableKnockback: 1
   knockbackSpeed: 5.1
   knockbackDuration: 0.2
+  hitStunDuration: 0
   cancelAttackOnHit: 1
   enableBlink: 1
   blinkDuration: 0.35
@@ -703,7 +704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyPatrolModule
   centerOverride: {fileID: 0}
-  halfWidth: 3
+  halfWidth: 6
   centerOffsetX: 0
   patrolSpeed: 2
   pauseDuration: 3

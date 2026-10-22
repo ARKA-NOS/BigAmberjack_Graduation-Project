@@ -46,7 +46,7 @@ namespace CTJ.Enemies
         public float AttackRange => _skills != null ? _skills.MaximumRange : 0f;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
-        public bool IsHitReacting => _hitReaction != null && _hitReaction.IsKnockedBack;
+        public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         protected virtual bool UsesGroundMovement => true;
 
         protected override void Awake()
@@ -89,7 +89,7 @@ namespace CTJ.Enemies
         private void FixedUpdate()
         {
             if (IsDead) return;
-            if (_hitReaction != null && _hitReaction.TickKnockback()) return;
+            if (_hitReaction != null && _hitReaction.TickReaction()) return;
             FixedUpdateAI();
         }
 

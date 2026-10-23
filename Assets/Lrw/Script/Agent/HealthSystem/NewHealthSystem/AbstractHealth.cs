@@ -1,7 +1,41 @@
-﻿namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
+﻿using System;
+using DevLib.ModuleSystem;
+
+namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    public class AbstractHealth
+    public abstract class AbstractHealth : IHealth
     {
+        protected readonly ModuleOwner Owner;
+
+        public AbstractHealth(ModuleOwner owner)
+        {
+            Owner = owner;
+        }
+        
+        public float HP { get; protected set; }
+        
+        public virtual float ApplyDamage(float damage)
+        {
+            float a = MathF.Min(HP, damage);
+            HP -= a;
+            return damage - a;
+        }
+
+        public float ApplyHeal(float heal)
+        {
+            HP += heal;
+            return 0f;
+        }
+
+        public void SetHp(float hp)
+        {
+            HP = hp;
+        }
+
+        public virtual bool HealthUpdate()
+        {
+            return false;
+        }
         
     }
 }

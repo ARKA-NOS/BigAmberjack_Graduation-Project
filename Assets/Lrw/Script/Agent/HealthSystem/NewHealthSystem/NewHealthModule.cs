@@ -29,7 +29,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
             _maxHpStat.OnValueChanged += MaxHpChanged;
             
-            currentHealth = MaxHealth;
         }
 
 
@@ -40,9 +39,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
         private void MaxHpChanged(float newValue, float delta)
         {
-            if(Mathf.Approximately(delta,0f)) return;
-            currentHealth += Mathf.Max(delta,0f);
-            currentHealth = Mathf.Min(currentHealth, MaxHealth);
+            
+            
         }
         
     }

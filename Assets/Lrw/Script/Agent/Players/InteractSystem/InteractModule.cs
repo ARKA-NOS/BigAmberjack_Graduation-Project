@@ -51,7 +51,7 @@ namespace Lrw.Script.Agent.Players.InteractSystem
             _interact = null;
 
             int count = Physics2D.OverlapCircle(transform.position, interactDistance, contactFilter, result);
-
+            
             float minDistance = float.MaxValue;
 
             for (int i = 0; i < count; i++)

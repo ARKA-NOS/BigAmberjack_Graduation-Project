@@ -30,7 +30,7 @@ namespace Lrw.Script.Agent.StatSystem
             if (statData == null) throw new Exception("StatData is null");
             if (_stats.TryGetValue(statData, out Stat stat)) return stat;
             stat = new Stat(statData,baseValue);
-            _stats.Add(statData,stat);
+            _stats[statData] = stat;
             return stat;
         }
         

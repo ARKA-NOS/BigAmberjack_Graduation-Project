@@ -663,7 +663,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 698393938}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.43998864
+  m_Size: 0.44
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2249,12 +2249,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1512371852}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 920d5e48f60740e5b6e237f57a177389, type: 3}
+  m_Script: {fileID: 11500000, guid: fa754aad030844f69e3fa6b7f9036c88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.NewHealthModule
-  baseHealthSo: {fileID: 11400000, guid: 0653475e29e580044b74a5eb1251affe, type: 2}
-  healthSos:
-  - {fileID: 11400000, guid: 92a79dad41c46544fbcc6d503c16df03, type: 2}
+  currentHealth: 0
+  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
 --- !u!1 &1743605181
 GameObject:
   m_ObjectHideFlags: 0

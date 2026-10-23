@@ -21,13 +21,13 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             return damage - a;
         }
 
-        public float ApplyHeal(float heal)
+        public virtual float ApplyHeal(float heal)
         {
             HP += heal;
             return 0f;
         }
 
-        public void SetHp(float hp)
+        public virtual void SetHp(float hp)
         {
             HP = hp;
         }

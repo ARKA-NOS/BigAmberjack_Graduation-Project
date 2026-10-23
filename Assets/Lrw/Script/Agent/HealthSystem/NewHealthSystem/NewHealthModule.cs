@@ -1,47 +1,56 @@
-﻿using DevLib.ModuleSystem;
-using Lrw.Script._Core._Debug;
+﻿using System.Collections.Generic;
+using DevLib.ModuleSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
+using Lrw.Script.Utility.ReadOnlySystem.Attributes;
 using UnityEngine;
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    public class NewHealthModule : Module
+    public class NewHealthModule : Module,IAfterInitModule
     {
+        [SerializeField,InspectorReadOnly] private float currentHealth;
+        
         [SerializeField] private StatData maxHpStatData;
         
-        [SerializeField] private float currentHealth;
-        
-        public float MaxHealth => _maxHpStat?.Value ?? 0f;
-        
-
-        private IStatModule _statModule;
         private Stat _maxHpStat;
+        
+        private AbstractHealth _baseHealth;
+        private List<AbstractHealth> _healths;
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            _statModule = owner.GetModule<IStatModule>();
             
-            FDebug.Assert(_statModule != null,"StatModule is null");
-            
-            _maxHpStat = _statModule.GetStat(maxHpStatData);
-            
-            FDebug.Assert(_maxHpStat != null,"MaxHpStat is null");
-
-            _maxHpStat.OnValueChanged += MaxHpChanged;
-            
+            _healths = new();
         }
-
-
-        private void OnDestroy()
+        
+        public void AfterInit()
         {
-            _maxHpStat.OnValueChanged -= MaxHpChanged;
+            _baseHealth = new RangeHealth(_owner, maxHpStatData);
         }
+        private void Update()
+        {
+            UpdateHealths();
+        }
+        
 
-        private void MaxHpChanged(float newValue, float delta)
+        private void UpdateHealths()
         {
             
+        }
+
+        public void ApplyDamage(float damage)
+        {
+            
             
         }
+
+        public void ApplyHeal(float heal)
+        {
+            
+            
+        }
+
         
     }
 }

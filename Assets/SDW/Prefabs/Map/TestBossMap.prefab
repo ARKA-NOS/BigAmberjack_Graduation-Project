@@ -88,7 +88,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9169105350454586473}
   m_Layer: 6
-  m_Name: Left
+  m_Name: PlayerSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -219,69 +219,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 16.558552}
   m_EdgeRadius: 0
---- !u!1 &5574339431285306629
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5006355913074330982}
-  m_Layer: 6
-  m_Name: point
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5006355913074330982
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5574339431285306629}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: -1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8433539267650970376}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5718892038248327252
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8433539267650970376}
-  m_Layer: 6
-  m_Name: NPCSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8433539267650970376
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5718892038248327252}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5006355913074330982}
-  m_Father: {fileID: 4202876571930396220}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6518235161363189977
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2134668570228601855}
   m_Layer: 6
-  m_Name: Right
+  m_Name: ExitPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2232,7 +2169,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4749279938712986726}
   m_Layer: 6
-  m_Name: Portal
+  m_Name: Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2323,7 +2260,6 @@ Transform:
   - {fileID: 1256417244268351965}
   - {fileID: 4749279938712986726}
   - {fileID: 2656269782819376484}
-  - {fileID: 8433539267650970376}
   - {fileID: 904077802811344503}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2351,12 +2287,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdfc9a39b7a6484691ebaa1cf50d328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.RoomDefinition
-  leftPortalPoint: {fileID: 9169105350454586473}
-  rightPortalPoint: {fileID: 2134668570228601855}
-  playerSpawnPoint: {fileID: 0}
-  npcSpawnPoint: {fileID: 5006355913074330982}
-  chestSpawnPoint: {fileID: 0}
-  rewardChestSpawnPoints: []
+  playerSpawnPoint: {fileID: 9169105350454586473}
+  exitPoint: {fileID: 2134668570228601855}
+  gizmoSize: 1
 --- !u!114 &1410875503540484554
 MonoBehaviour:
   m_ObjectHideFlags: 0

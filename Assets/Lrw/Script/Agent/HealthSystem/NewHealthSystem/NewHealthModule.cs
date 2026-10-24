@@ -15,7 +15,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         private Stat _maxHpStat;
         
         private AbstractHealth _baseHealth;
-        private List<AbstractHealth> _healths;
+        private List<KeyValuePair<AbstractHealthSo,AbstractHealth>> _healths;
+        private Dictionary<AbstractHealthSo, AbstractHealth> _healthDict;
         
         public override void Initialize(ModuleOwner owner)
         {

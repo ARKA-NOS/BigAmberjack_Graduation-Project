@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
 using Lrw.Script.Utility.ReadOnlySystem.Attributes;
@@ -27,6 +28,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
             _healthDict = new();
             _healths = new();
+            
+            FDebug.Assert(coreHealth != null, "[NewHealthModule] coreHealth is null");
         }
         
         public void AfterInit()

@@ -1308,6 +1308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d946c976c2740449c5f9f04fc371a01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Home.Upgrade.UpgradeBuilding
+  interactUIOffset: {x: 0, y: 0}
   testUI: {fileID: 1890496752}
   treeData: {fileID: 11400000, guid: a2a8281ba51caef4f8b7e74e26f5d45d, type: 2}
 --- !u!1 &905850442
@@ -1881,7 +1882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1119.9999}
+  m_AnchoredPosition: {x: 0, y: 1120.0001}
   m_SizeDelta: {x: 0, y: 2000}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1306633456
@@ -2252,8 +2253,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa754aad030844f69e3fa6b7f9036c88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.NewHealthModule
+  coreHealth: {fileID: 11400000, guid: 0653475e29e580044b74a5eb1251affe, type: 2}
   currentHealth: 0
-  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
+  otherHealths: []
 --- !u!1 &1743605181
 GameObject:
   m_ObjectHideFlags: 0
@@ -2285,6 +2287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13d0c0421f95d124ab5cd8c68070ed92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Map.MoveSceneObject
+  interactUIOffset: {x: 0, y: 0}
   targetScene: {fileID: 11400000, guid: 2993235f8b087584d826a6f189eb1d22, type: 2}
 --- !u!61 &1743605183
 BoxCollider2D:

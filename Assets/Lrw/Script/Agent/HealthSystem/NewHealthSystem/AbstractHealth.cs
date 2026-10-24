@@ -1,15 +1,19 @@
 ﻿using System;
 using DevLib.ModuleSystem;
+using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
     public abstract class AbstractHealth : IHealth
     {
         protected readonly ModuleOwner Owner;
-
-        public AbstractHealth(ModuleOwner owner)
+        
+        public Color CurrentColor { get; protected set; }
+        
+        public AbstractHealth(ModuleOwner owner, Color color)
         {
             Owner = owner;
+            CurrentColor = color;
         }
         
         public float HP { get; protected set; }
@@ -32,10 +36,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             HP = hp;
         }
 
-        public virtual bool HealthUpdate()
-        {
-            return false;
-        }
+        public virtual bool HealthUpdate() => false;
+        
         
     }
 }

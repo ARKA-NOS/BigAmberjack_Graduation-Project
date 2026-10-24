@@ -8,27 +8,50 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
     public class NewHealthModule : Module,IAfterInitModule
     {
+        [Header("Default Health Setting")]
+        [SerializeField] private AbstractHealthSo coreHealth;
         [SerializeField,InspectorReadOnly] private float currentHealth;
-        
-        [SerializeField] private StatData maxHpStatData;
+
+        [Header("Other Setting")] 
+        [SerializeField] private AbstractHealthSo[] otherHealths;
         
         private Stat _maxHpStat;
         
-        private AbstractHealth _baseHealth;
-        private List<KeyValuePair<AbstractHealthSo,AbstractHealth>> _healths;
-        private Dictionary<AbstractHealthSo, AbstractHealth> _healthDict;
+        private IHealth _baseHealth;
+        private Dictionary<AbstractHealthSo, IHealth> _healthDict;
+        private List<KeyValuePair<AbstractHealthSo,IHealth>> _healths;
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            
+
+            _healthDict = new();
             _healths = new();
         }
         
         public void AfterInit()
         {
-            _baseHealth = new RangeHealth(_owner, maxHpStatData);
+            _baseHealth = coreHealth.CreateHealth(_owner);
+            _healthDict.Add(coreHealth, _baseHealth);
+
+            foreach (AbstractHealthSo abstractHealthSo in otherHealths)
+            {
+                IHealth health = abstractHealthSo.CreateHealth(_owner);
+                _healthDict.Add(abstractHealthSo,health);
+            }
+
+            foreach (KeyValuePair<AbstractHealthSo, IHealth> abstractHealth in _healthDict)
+            {
+                _healths.Add(abstractHealth);
+            }
+            
+            _healths.Sort(Compere);
         }
+
+        private static int Compere(KeyValuePair<AbstractHealthSo, IHealth> pair1, KeyValuePair<AbstractHealthSo, IHealth> pair2)
+            => pair1.Key.Priority.CompareTo(pair2.Key.Priority);
+        
+        
         private void Update()
         {
             UpdateHealths();

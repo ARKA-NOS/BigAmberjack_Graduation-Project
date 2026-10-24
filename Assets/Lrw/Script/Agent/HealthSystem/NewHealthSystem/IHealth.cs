@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
@@ -9,5 +10,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         float ApplyHeal(float heal);
         void SetHp(float hp);
         bool HealthUpdate();
+        
+        //UI 관련
+        Color CurrentColor { get; }
     }
 }

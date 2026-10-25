@@ -8,7 +8,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
     {
         [field:SerializeField] public int Priority { get; private set; }
         [field:SerializeField] public HealthType HealthType { get; protected set; }
-        [SerializeField] protected Color healthColor = Color.red;
         
         public abstract IHealth CreateHealth(ModuleOwner owner);
     }

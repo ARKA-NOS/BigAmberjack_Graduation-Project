@@ -6,22 +6,25 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
 {
-    public class RangeHealth : AbstractHealth, IRangeHealth
+    public class RangeHealth : AbstractHealth
     {
         private readonly Stat _maxHealthStat;
         
-        private float MaxHealthValue => _maxHealthStat.Value;
+        protected float MaxHealthValue => _maxHealthStat.Value;
         
-        public Gauge Health => new Gauge(HP, MaxHealthValue);
-        
-        public RangeHealth(ModuleOwner owner, Color color, StatData maxStatData) : base(owner, color)
+        public override Gauge HpGauge => new Gauge(HP, MaxHealthValue);
+        protected Color CurrentColor;
+        public RangeHealth(int priority, ModuleOwner owner, Color color, StatData maxStatData) : base(priority,owner)
         {
             FDebug.Assert(owner.TryGetModule(out IStatModule statModule),
                 "[RangeHealth] owner is not found IStatModule");
 
             _maxHealthStat = statModule.GetStat(maxStatData);
+
+            CurrentColor = color;
         }
 
+        public override Color GetHealthColor() => CurrentColor;
 
         public override float ApplyHeal(float heal)
         {
@@ -35,7 +38,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
         {
             base.SetHp(Mathf.Clamp(hp, 0f, MaxHealthValue));
         }
-
         
     }
 }

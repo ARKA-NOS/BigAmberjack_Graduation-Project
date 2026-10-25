@@ -9,8 +9,9 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos
     public class RangeHealthSo : AbstractHealthSo
     {
         [SerializeField] protected StatData maxHpStatData;
+        [SerializeField] protected Color healthColor;
         
         public override IHealth CreateHealth(ModuleOwner owner)
-            => new RangeHealth(owner,healthColor,maxHpStatData);
+            => new RangeHealth(Priority, owner,healthColor,maxHpStatData);
     }
 }

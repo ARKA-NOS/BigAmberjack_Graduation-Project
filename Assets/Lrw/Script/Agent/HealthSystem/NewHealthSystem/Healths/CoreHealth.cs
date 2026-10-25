@@ -9,9 +9,9 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
         private const float RedHealthLine = 0.3f;
         private const float OrangeHealthLine = 0.6f;
         
-        public CoreHealth(ModuleOwner owner, Color color, StatData maxStatData) : base(owner, color, maxStatData)
+        public CoreHealth(int priority, ModuleOwner owner, Color color, StatData maxStatData) : base(priority, owner, color, maxStatData)
         {
-            
+            HP = MaxHealthValue;
         }
 
         public override void HealthUpdate()
@@ -19,9 +19,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
         
         private void UpdateHealthColor()
         {
-            float normalValue = Health.Normalized;
-            
-            Color prevColor = CurrentColor;
+            float normalValue = HpGauge.Normalized;
             
             CurrentColor = normalValue switch
             {

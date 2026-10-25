@@ -1,5 +1,6 @@
 ﻿using System;
 using DevLib.ModuleSystem;
+using Lrw.Script.DataStructure;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
@@ -7,16 +8,17 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
     public abstract class AbstractHealth : IHealth
     {
         protected readonly ModuleOwner Owner;
-        
-        public Color CurrentColor { get; protected set; }
-        
-        public AbstractHealth(ModuleOwner owner, Color color)
+        public int Priority { get; private set; }
+        public virtual Gauge HpGauge => new Gauge(HP,HP);
+        public AbstractHealth(int priority, ModuleOwner owner)
         {
+            Priority = priority;
             Owner = owner;
-            CurrentColor = color;
         }
+
+        public float HP { get; protected set; } = 0f;
         
-        public float HP { get; protected set; }
+        public abstract Color GetHealthColor();
         
         public virtual float ApplyDamage(float damage)
         {
@@ -37,7 +39,5 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         }
 
         public virtual void HealthUpdate() {}
-        
-        
     }
 }

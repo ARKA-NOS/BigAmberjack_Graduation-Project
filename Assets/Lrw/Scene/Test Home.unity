@@ -662,7 +662,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 698393939}
   m_HandleRect: {fileID: 698393938}
   m_Direction: 2
-  m_Value: 0
+  m_Value: -0.0000008719308
   m_Size: 0.44
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1882,7 +1882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1120.0001}
+  m_AnchoredPosition: {x: 0, y: 1120.0011}
   m_SizeDelta: {x: 0, y: 2000}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1306633456
@@ -2255,7 +2255,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.NewHealthModule
   coreHealth: {fileID: 11400000, guid: 0653475e29e580044b74a5eb1251affe, type: 2}
   currentHealth: 0
-  otherHealths: []
+  otherHealths:
+  - {fileID: 11400000, guid: 9f9eb9ff0a521ba478c2415a61991a1c, type: 2}
+  - {fileID: 11400000, guid: 912e49173a517d841850d7495b0b6965, type: 2}
+  healthViewModel: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
 --- !u!1 &1743605181
 GameObject:
   m_ObjectHideFlags: 0

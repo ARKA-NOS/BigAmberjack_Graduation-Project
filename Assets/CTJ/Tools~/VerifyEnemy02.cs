@@ -50,8 +50,8 @@ namespace CTJ.Tools
             SerializedObject oldShot = new SerializedObject(ghost.GetComponentInChildren<EnemyProjectileSkill>());
             Check(!oldShot.FindProperty("trackTargetDuringPreparation").boolValue && oldShot.FindProperty("showAimLine").boolValue &&
                 oldShot.FindProperty("turret").objectReferenceValue == null, "MadGhost defaults changed");
-            Check(new SerializedObject(ghost.GetComponentInChildren<EnemyHitReactionModule>()).FindProperty("hitStunDuration").floatValue == 0f,
-                "Existing hit timing changed");
+            Check(Mathf.Approximately(new SerializedObject(ghost.GetComponentInChildren<EnemyHitReactionModule>()).FindProperty("hitStunDuration").floatValue, 0.3f),
+                "Updated hit stun duration");
             return new { passed = true, scope = "scripts / prefab references / stationary physics / mask isolation / original defaults" };
         }
 
@@ -347,7 +347,8 @@ namespace CTJ.Tools
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, origin, Vector2.right, Vector2.left);
                 Check(!skills.IsBusy && !Line(shot).IsVisible && enemy.IsHitReacting, "Preparation cancellation / line cleanup");
                 await Wait(0.1f); Check(enemy.IsHitReacting, "Configured stagger too short");
-                await Wait(0.15f); Check(!enemy.IsHitReacting && Vector3.Distance(enemy.transform.position, origin) < 0.001f && hp.CurrentHealth == 28f, "Stagger ends without displacement");
+                await Wait(enemy.GetModule<EnemyHitReactionModule>().RemainingReactionTime + 0.03f);
+                Check(!enemy.IsHitReacting && Vector3.Distance(enemy.transform.position, origin) < 0.001f && hp.CurrentHealth == 28f, "Stagger ends without displacement");
                 return new { scenario = "idle / emergence / tracking / line toggle / final lock / 15 damage / retract / stationary stagger and cancel", passed = true };
             }
             finally { Object.Destroy(arena); }

@@ -53,6 +53,7 @@ namespace CTJ.Enemies
         private float _knockbackLength;
         private float _initialVelocityX;
         private float _stunEnd;
+        private float _reactionDuration;
         private bool _blinking;
         private float _blinkStart;
         private float _blinkEnd;
@@ -72,6 +73,12 @@ namespace CTJ.Enemies
         public bool IsKnockedBack => Ready && enableKnockback && _knockingBack && Time.time < _knockbackEnd;
         public bool IsStunned => Ready && Time.time < _stunEnd;
         public bool IsReacting => IsKnockedBack || IsStunned;
+        // UI는 이 값을 읽기만 합니다. 실제 행동 잠금과 같은 종료 시각을 사용합니다.
+        public float RemainingReactionTime => Mathf.Max(
+            IsKnockedBack ? _knockbackEnd - Time.time : 0f,
+            IsStunned ? _stunEnd - Time.time : 0f);
+        public float ReactionRemainingNormalized => _reactionDuration > 0f
+            ? Mathf.Clamp01(RemainingReactionTime / _reactionDuration) : 0f;
         public bool IsBlinking => _blinking;
         private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
 
@@ -122,6 +129,8 @@ namespace CTJ.Enemies
                 _initialVelocityX = KnockbackDirection(damage, hitDirection) * knockbackSpeed;
                 _body.linearVelocityX = _initialVelocityX;
             }
+            // 연타 시 합산하지 않고, 실제로 갱신된 남은 경직 구간을 다시 1부터 표시합니다.
+            _reactionDuration = RemainingReactionTime;
 
             if (enableBlink && blinkDuration > 0f && hitMaterial != null)
             {
@@ -281,6 +290,7 @@ namespace CTJ.Enemies
         internal void ClearReaction()
         {
             _stunEnd = 0f;
+            _reactionDuration = 0f;
             EndKnockback();
             RestoreColor();
             RestoreScale();

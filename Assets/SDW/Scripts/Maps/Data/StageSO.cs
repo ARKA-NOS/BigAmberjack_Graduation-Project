@@ -12,6 +12,12 @@ namespace SDW.Scripts.Maps.Data
         [Tooltip("이 순서대로 방을 생성한다. 마지막 방은 출구가 없고, 클리어하면 탐험이 끝난다.")]
         [SerializeField] private List<RoomDataSO> rooms = new();
 
+        [Header("Presentation")]
+        [Tooltip("적이 등장할 때 쓰는 포탈 연출. 비워두면 적이 바로 생성된다.")]
+        [SerializeField] private EnemySpawnPortal enemySpawnPortal;
+
+        public EnemySpawnPortal EnemySpawnPortal => enemySpawnPortal;
+
         public List<RoomDataSO> ResolveRooms()
         {
             List<RoomDataSO> result = new();

@@ -46,9 +46,12 @@ namespace SDW.Scripts.Maps
             return spawned;
         }
 
+        // 방에 스폰 포탈이 지정되어 있으면 포탈 연출이 끝난 뒤에 적이 나온다. 없으면 바로 생성한다.
         public static EnemyBase SpawnEnemy(RoomController room, EnemyBase enemyPrefab, Vector3 position)
         {
-            EnemyBase enemy = Object.Instantiate(enemyPrefab, position, Quaternion.identity, room.transform);
+            EnemyBase enemy = room.EnemySpawnPortalPrefab != null
+                ? EnemySpawnPortal.Spawn(room.EnemySpawnPortalPrefab, enemyPrefab, position, room.transform)
+                : Object.Instantiate(enemyPrefab, position, Quaternion.identity, room.transform);
             room.RegisterEnemy(enemy);
             return enemy;
         }

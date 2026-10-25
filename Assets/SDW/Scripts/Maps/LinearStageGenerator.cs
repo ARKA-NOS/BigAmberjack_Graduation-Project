@@ -106,7 +106,11 @@ namespace SDW.Scripts.Maps
                 if (!instance.TryGetComponent(out RoomController room))
                     room = instance.gameObject.AddComponent<RoomController>();
 
-                room.Initialize(roomData, index);
+                room.Initialize(roomData, index, stage.EnemySpawnPortal);
+
+                if (!instance.TryGetComponent(out RoomCameraBounds _))
+                    instance.gameObject.AddComponent<RoomCameraBounds>();
+
                 _rooms.Add(room);
             }
         }

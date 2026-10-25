@@ -28,6 +28,11 @@ namespace SDW.Scripts.Maps
         public RoomDefinition Definition { get; private set; }
         public int Index { get; private set; }
         public bool IsCleared { get; private set; }
+        // 적이 등장할 때 쓰는 포탈 연출. 비어 있으면 적이 바로 생성된다.
+        public EnemySpawnPortal EnemySpawnPortalPrefab { get; private set; }
+
+        // 방에 들어올 때마다(활성화 직후) 호출된다. 카메라 범위처럼 현재 방 기준으로 맞춰야 하는 것들이 구독한다.
+        public event Action Entered;
 
         // 클리어 조건을 달성한 직후 호출된다. 스테이지 마지막 방이면 생성기가 이 시점에 탐험 종료를 알린다.
         public event Action Cleared;
@@ -35,18 +40,21 @@ namespace SDW.Scripts.Maps
         public IReadOnlyList<Transform> EnemySpawnPoints => enemySpawnPoints;
         public IReadOnlyList<EnemyBase> SpawnedEnemies => _spawnedEnemies;
 
-        public void Initialize(RoomDataSO data, int index)
+        public void Initialize(RoomDataSO data, int index, EnemySpawnPortal enemySpawnPortalPrefab)
         {
             Data = data;
             Index = index;
+            EnemySpawnPortalPrefab = enemySpawnPortalPrefab;
             Definition = GetComponent<RoomDefinition>();
             _encounterZones = GetComponentsInChildren<EncounterZone>(true);
         }
 
         // LinearStageGenerator(첫 방)와 Portal(그 외 방)이 방을 활성화한 직후 호출한다.
-        // 처음 입장할 때만 동작한다.
+        // Entered는 매번 알리고, 적/상호작용 생성과 출구 조건은 처음 입장할 때만 동작한다.
         public void Enter()
         {
+            Entered?.Invoke();
+
             if (_hasEntered)
                 return;
 

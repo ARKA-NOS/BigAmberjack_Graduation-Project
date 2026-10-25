@@ -11,6 +11,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos
         [SerializeField] protected StatData maxHpStatData;
         
         public override IHealth CreateHealth(ModuleOwner owner)
-            => new RangeHealth(owner,HealthColor,maxHpStatData);
+            => new RangeHealth(owner,healthColor,maxHpStatData);
     }
 }

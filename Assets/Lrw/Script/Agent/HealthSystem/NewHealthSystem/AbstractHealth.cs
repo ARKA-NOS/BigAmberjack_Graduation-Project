@@ -36,7 +36,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             HP = hp;
         }
 
-        public virtual bool HealthUpdate() => false;
+        public virtual void HealthUpdate() {}
         
         
     }

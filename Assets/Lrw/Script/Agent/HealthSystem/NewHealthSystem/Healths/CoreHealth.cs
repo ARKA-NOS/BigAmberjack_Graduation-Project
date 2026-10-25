@@ -14,10 +14,10 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
             
         }
 
-        public override bool HealthUpdate()
+        public override void HealthUpdate()
             => UpdateHealthColor();
         
-        private bool UpdateHealthColor()
+        private void UpdateHealthColor()
         {
             float normalValue = Health.Normalized;
             
@@ -29,8 +29,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
                 <= OrangeHealthLine => Color.orange,
                 _ => Color.green
             };
-            
-            return CurrentColor != prevColor;
         }
         
     }

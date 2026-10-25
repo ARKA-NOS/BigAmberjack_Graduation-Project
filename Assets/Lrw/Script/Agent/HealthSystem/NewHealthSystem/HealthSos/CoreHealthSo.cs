@@ -9,7 +9,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos
     {
         
         public override IHealth CreateHealth(ModuleOwner owner)
-            => new CoreHealth(owner, HealthColor, maxHpStatData);
+            => new CoreHealth(owner, healthColor, maxHpStatData);
         
     }
 }

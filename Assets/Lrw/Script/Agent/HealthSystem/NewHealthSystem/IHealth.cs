@@ -9,7 +9,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         float ApplyDamage(float damage);
         float ApplyHeal(float heal);
         void SetHp(float hp);
-        bool HealthUpdate();
+        void HealthUpdate();
         
         //UI 관련
         Color CurrentColor { get; }

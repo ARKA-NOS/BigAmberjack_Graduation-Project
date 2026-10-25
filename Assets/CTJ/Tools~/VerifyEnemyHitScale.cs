@@ -123,7 +123,7 @@ namespace CTJ.Tools
                 Check(Mathf.Approximately(new SerializedObject(after.GetModule<EnemyHitReactionModule>()).FindProperty("knockbackSpeed").floatValue, 6.4f), "Updated prefab speed");
                 await Wait(0.3f);
                 float a = before.transform.position.x, b = after.transform.position.x;
-                Hit(before); Hit(after); await Wait(0.3f);
+                Hit(before); Hit(after); await Wait(after.GetModule<EnemyHitReactionModule>().RemainingReactionTime + 0.04f);
                 float oldDistance = before.transform.position.x - a, newDistance = after.transform.position.x - b;
                 Check(oldDistance > 0.1f && newDistance / oldDistance > 1.2f && newDistance / oldDistance < 1.3f, "Knockback distance ratio");
                 Check(!after.IsHitReacting, "Hit stun lingered");

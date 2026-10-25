@@ -828,7 +828,8 @@ MonoBehaviour:
   enableBlink: 1
   blinkDuration: 0.35
   blinkInterval: 0.05
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitColor: {r: 1, g: 1, b: 1, a: 1}
+  hitColorBlend: 0.35
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
   sprites:
   - {fileID: 9213350838558911084}

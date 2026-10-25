@@ -26,9 +26,11 @@ namespace CTJ.Enemies
         [SerializeField] private bool enableBlink = true;
         [SerializeField, Min(0f)] private float blinkDuration = 0.35f;
         [SerializeField, Min(0.01f)] private float blinkInterval = 0.05f;
-        [Tooltip("원본 무늬 대신 채울 단색. 투명도는 각 SpriteRenderer의 원래 값을 유지합니다.")]
-        [SerializeField, ColorUsage(false)] private Color hitColor = Color.red;
-        [Tooltip("텍스처 RGB를 사용하지 않고 알파 윤곽만 사용하는 CTJ 피격 머티리얼.")]
+        [Tooltip("원본 그림 위에 섞을 피격 색. 스프라이트 자체의 투명도는 유지합니다.")]
+        [SerializeField, ColorUsage(false)] private Color hitColor = Color.white;
+        [Tooltip("0: 원본 그림, 1: 피격 색으로 완전히 덮기. 중간 값은 무늬가 보이는 점멸입니다.")]
+        [SerializeField, Range(0f, 1f)] private float hitColorBlend = 0.35f;
+        [Tooltip("원본 RGB와 피격 색을 혼합하는 CTJ 피격 머티리얼.")]
         [SerializeField] private Material hitMaterial;
         [Tooltip("피격 표시용 SpriteRenderer만 지정합니다. 비워두면 소유 적의 자식에서 찾습니다.")]
         [SerializeField] private SpriteRenderer[] sprites;
@@ -39,7 +41,7 @@ namespace CTJ.Enemies
         [Tooltip("그림만 가진 자식 Transform. 방향 전환 루트, 콜라이더, 발사 위치가 포함된 부모는 지정하지 않습니다.")]
         [SerializeField] private Transform[] scaleTargets;
         [Tooltip("최대 변형 비율. 실제 변형은 이 값의 50~100%이며 가로/세로 방향은 매번 무작위입니다.")]
-        [SerializeField, Range(0f, 0.2f)] private float scalePulseAmount = 0.08f;
+        [SerializeField, Range(0f, 0.8f)] private float scalePulseAmount = 0.08f;
         [SerializeField, Min(0f)] private float scalePulseDuration = 0.16f;
 
         private EnemyBase _enemy;
@@ -56,6 +58,10 @@ namespace CTJ.Enemies
         private float _blinkEnd;
         private Color[] _originalColors;
         private Material[] _originalMaterials;
+        private MaterialPropertyBlock[] _originalProperties;
+        private MaterialPropertyBlock _flashProperties;
+        private static readonly int HitBlendId = Shader.PropertyToID("_HitBlend");
+        private static readonly int OriginalTintId = Shader.PropertyToID("_OriginalTint");
         private Transform[] _scaleTargets;
         private Vector3[] _originalScales;
         private bool _scaling;
@@ -80,6 +86,9 @@ namespace CTJ.Enemies
                 sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
             _originalColors = new Color[sprites.Length];
             _originalMaterials = new Material[sprites.Length];
+            _originalProperties = new MaterialPropertyBlock[sprites.Length];
+            for (int i = 0; i < sprites.Length; i++) _originalProperties[i] = new MaterialPropertyBlock();
+            _flashProperties = new MaterialPropertyBlock();
             // 피격마다 배열을 만들지 않고, 초기화 때 시각 전용 대상을 확보합니다.
             _scaleTargets = scaleTargets != null ? (Transform[])scaleTargets.Clone() : new Transform[0];
             _originalScales = new Vector3[_scaleTargets.Length];
@@ -124,6 +133,7 @@ namespace CTJ.Enemies
                         if (sprites[i] == null) continue;
                         _originalColors[i] = sprites[i].color;
                         _originalMaterials[i] = sprites[i].sharedMaterial;
+                        sprites[i].GetPropertyBlock(_originalProperties[i]);
                     }
                 _blinking = true;
                 _blinkStart = Time.time;
@@ -188,7 +198,8 @@ namespace CTJ.Enemies
             if (!enableScalePulse || scalePulseAmount <= 0f || scalePulseDuration <= 0f ||
                 _scaleTargets == null || _scaleTargets.Length == 0) return;
 
-            _scaleOffset = Random.Range(0.5f, 1f) * Mathf.Clamp(scalePulseAmount, 0f, 0.2f);
+            // Inspector 범위와 실제 제한을 함께 넓힙니다. 1 미만으로 제한해 0 크기/반전을 막습니다.
+            _scaleOffset = Random.Range(0.5f, 1f) * Mathf.Clamp(scalePulseAmount, 0f, 0.8f);
             if (Random.value < 0.5f) _scaleOffset = -_scaleOffset;
             _scaleStart = Time.time;
             _scaleLength = scalePulseDuration;
@@ -229,6 +240,8 @@ namespace CTJ.Enemies
 
         private void SetBlinkColor(bool flash)
         {
+            // 0에서는 셰이더/색상 변환조차 하지 않아 원본 렌더링을 그대로 유지합니다.
+            flash = flash && hitColorBlend > 0f;
             for (int i = 0; i < sprites.Length; i++)
             {
                 if (sprites[i] == null) continue;
@@ -237,6 +250,18 @@ namespace CTJ.Enemies
                 // 공유 에셋 내용은 수정하지 않고 참조만 교체합니다. 매번 material 복제도 하지 않습니다.
                 sprites[i].sharedMaterial = flash ? hitMaterial : _originalMaterials[i];
                 sprites[i].color = color;
+                if (flash)
+                {
+                    // 같은 머티리얼을 쓰는 다른 적/공격 경고에는 영향을 주지 않습니다.
+                    sprites[i].GetPropertyBlock(_flashProperties);
+                    _flashProperties.SetFloat(HitBlendId, Mathf.Clamp01(hitColorBlend));
+                    _flashProperties.SetColor(OriginalTintId, _originalColors[i]);
+                    sprites[i].SetPropertyBlock(_flashProperties);
+                }
+                else
+                {
+                    sprites[i].SetPropertyBlock(_originalProperties[i].isEmpty ? null : _originalProperties[i]);
+                }
             }
         }
 

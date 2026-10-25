@@ -1,5 +1,4 @@
 using DevLib.ModuleSystem;
-using SDW.Scripts.Maps;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -7,8 +6,9 @@ namespace CTJ.Enemies
     [DisallowMultipleComponent]
     public sealed class EnemyPatrolModule : Module
     {
-        [SerializeField] private Transform centerOverride;
+        [Tooltip("스폰 위치에서 좌우로 배회할 수 있는 거리. 룸의 중심이나 포탈 위치는 사용하지 않습니다.")]
         [SerializeField, Min(0f)] private float halfWidth = 3f;
+        [Tooltip("저장된 스폰 위치에 더할 배회 중심의 X 오프셋.")]
         [SerializeField] private float centerOffsetX;
         [SerializeField, Min(0f)] private float patrolSpeed = 2f;
         [SerializeField, Min(0f)] private float pauseDuration = 0.6f;
@@ -16,14 +16,13 @@ namespace CTJ.Enemies
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
         private Vector2 _spawnPosition;
-        private Vector2 _center;
         private float _destinationX;
         private float _waitUntil;
         private bool _patrolling;
         private bool _waiting;
         private float _nextDirection;
 
-        public Vector2 Center => _center + Vector2.right * centerOffsetX;
+        public Vector2 Center => _spawnPosition + Vector2.right * centerOffsetX;
         public float MinX => Center.x - Mathf.Max(0f, halfWidth);
         public float MaxX => Center.x + Mathf.Max(0f, halfWidth);
 
@@ -32,26 +31,13 @@ namespace CTJ.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _movement = owner.GetModule<EnemyMovementModule>();
+            // 포탈의 비활성 홀더에서 꺼내져 처음 초기화되는 위치를 한 번만 저장합니다.
             _spawnPosition = owner.transform.position;
-            _center = ResolveCenter(owner.transform, _spawnPosition);
-        }
-
-        private Vector2 ResolveCenter(Transform enemyRoot, Vector2 fallback)
-        {
-            if (centerOverride != null && centerOverride != enemyRoot && !centerOverride.IsChildOf(enemyRoot))
-                return centerOverride.position;
-            RoomDefinition room = enemyRoot.GetComponentInParent<RoomDefinition>();
-            if (room == null) return fallback;
-            Transform left = room.GetPortalPoint(RoomDirection.Left);
-            Transform right = room.GetPortalPoint(RoomDirection.Right);
-            return left != null && right != null ? (Vector2)((left.position + right.position) * 0.5f)
-                : (Vector2)room.transform.position;
         }
 
         internal void BeginPatrol()
         {
             if (_enemy == null) return;
-            _center = ResolveCenter(_enemy.transform, _spawnPosition);
             _patrolling = true;
             _waiting = false;
             _nextDirection = Random.value < 0.5f ? -1f : 1f;
@@ -113,7 +99,7 @@ namespace CTJ.Enemies
             EnemyBase owner = GetComponentInParent<EnemyBase>();
             Transform root = owner != null ? owner.transform : transform;
             Vector2 center = Application.isPlaying && _enemy != null ? Center
-                : ResolveCenter(root, root.position) + Vector2.right * centerOffsetX;
+                : (Vector2)root.position + Vector2.right * centerOffsetX;
             float width = Mathf.Max(0f, halfWidth);
             float y = root.position.y + 0.15f;
             Vector3 left = new Vector3(center.x - width, y, 0f);
@@ -124,7 +110,7 @@ namespace CTJ.Enemies
             Gizmos.DrawLine(left - Vector3.up * 0.4f, left + Vector3.up * 0.4f);
             Gizmos.DrawLine(right - Vector3.up * 0.4f, right + Vector3.up * 0.4f);
             Gizmos.DrawWireSphere(new Vector3(center.x, y, 0f), 0.1f);
-            UnityEditor.Handles.Label(new Vector3(center.x, y + 0.5f, 0f), $"Patrol width: {width * 2f:0.##}");
+            UnityEditor.Handles.Label(new Vector3(center.x, y + 0.5f, 0f), $"Spawn patrol width: {width * 2f:0.##}");
             Gizmos.color = previous;
         }
 #endif

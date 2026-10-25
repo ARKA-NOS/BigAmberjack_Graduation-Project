@@ -3,6 +3,8 @@ Shader "CTJ/Enemies/SolidHitFlash"
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
+        [PerRendererData] _HitBlend ("Hit Color Blend", Range(0, 1)) = 1
+        [PerRendererData] _OriginalTint ("Original Sprite Tint", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -34,6 +36,11 @@ Shader "CTJ/Enemies/SolidHitFlash"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/2DCommon.hlsl"
 
+            CBUFFER_START(UnityPerMaterial)
+                half _HitBlend;
+                half4 _OriginalTint;
+            CBUFFER_END
+
             Varyings HitVertex(Attributes input)
             {
                 UNITY_SETUP_INSTANCE_ID(input);
@@ -47,9 +54,12 @@ Shader "CTJ/Enemies/SolidHitFlash"
 
             half4 HitFragment(Varyings input) : SV_Target
             {
-                // 검은 윤곽선/무늬의 RGB도 버립니다. 텍스처 알파로 실루엣만 보존합니다.
-                half alpha = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv).a * input.color.a;
-                return half4(input.color.rgb, alpha);
+                half4 textureColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+                // 알파가 아닌 RGB를 혼합해 윤곽과 원래 투명도는 유지합니다.
+                half3 original = textureColor.rgb * _OriginalTint.rgb;
+                half3 color = lerp(original, input.color.rgb, saturate(_HitBlend));
+                // 기본 혼합값 1은 기존의 단색 공격 준비 경고를 그대로 보존합니다.
+                return half4(color, textureColor.a * input.color.a);
             }
             ENDHLSL
         }

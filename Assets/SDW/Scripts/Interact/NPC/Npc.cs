@@ -134,21 +134,27 @@ namespace SDW.Scripts.Interact.NPC
 
             if (choice.IsCancel)
             {
-                // 선택지 없이 취소 대사만 보여준다.
-                BindDialogue(new DialogueData(data.NpcName, data.CancelDialogue));
-                _closeRoutine = StartCoroutine(CloseAfterDelay());
+                ShowLineAndClose(data.CancelDialogue);
                 return;
             }
 
-            // TODO: 비용 검사 → InsufficientCostMessage 표시
+            if (!ChoiceCostSO.CanPayAll(choice.Costs, _owner))
+            {
+                ShowLineAndClose(data.InsufficientCostMessage);
+                return;
+            }
+
+            // 받을 수 있는 효과가 하나도 없으면 비용을 걷지 않고 막는다. (상자와 같은 원칙)
+            if (choice.Effects.Count > 0 && !ChoiceEffectSO.AnyApplicable(choice.Effects, _owner))
+            {
+                ShowLineAndClose(data.RewardBlockedMessage);
+                return;
+            }
 
             Debug.Log($"{data.NpcName} : '{choice.ChoiceText}' 선택");
 
-            foreach (ChoiceEffectSO effect in choice.Effects)
-            {
-                if (effect != null && effect.CanApply(_owner))
-                    effect.Apply(_owner);
-            }
+            ChoiceCostSO.PayAll(choice.Costs, _owner);
+            ChoiceEffectSO.ApplyAll(choice.Effects, _owner);
 
             _used = true;
             Close();
@@ -156,6 +162,13 @@ namespace SDW.Scripts.Interact.NPC
             // 재이용 불가 NPC는 첫 번째 이용 후 사라진다.
             if (!data.Reusable)
                 SetVisible(false);
+        }
+
+        // 선택지 없이 대사 한 줄만 보여준 뒤 잠시 후 대화창을 닫는다. (취소, 비용 부족, 보상 불가 안내)
+        private void ShowLineAndClose(string line)
+        {
+            BindDialogue(new DialogueData(data.NpcName, line));
+            _closeRoutine = StartCoroutine(CloseAfterDelay());
         }
 
         private void BindDialogue(DialogueData dialogue)

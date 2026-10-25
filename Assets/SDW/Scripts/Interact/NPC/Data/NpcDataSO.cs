@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Lrw.Script.Currency;
 using UnityEngine;
 
 namespace SDW.Scripts.Interact.NPC.Data
@@ -23,20 +22,15 @@ namespace SDW.Scripts.Interact.NPC.Data
         [field: Tooltip("선행 조건: 해금, 클리어, 보유 조건 등")]
         [field: SerializeField] public List<string> Preconditions { get; private set; } = new();
 
-        [field: Header("이용 조건과 비용")]
-        [field: Tooltip("필요 재화: 재화 종류와 수량")]
-        [field: SerializeField] public List<Cost> RequiredCurrencies { get; private set; } = new();
-        [field: Tooltip("필요 아이템 ID")]
-        [field: SerializeField] public List<string> RequiredItemIds { get; private set; } = new();
-        [field: Tooltip("HP 조건: 필요하거나 소모하는 HP")]
-        [field: SerializeField] public int HpCost { get; private set; }
-
         [field: Header("선택과 결과")]
+        [field: Tooltip("선택지마다 비용(Costs)과 효과(Effects)를 따로 설정한다.")]
         [field: SerializeField] public List<NpcChoiceData> Choices { get; private set; } = new();
 
         [field: Header("예외 처리와 UI")]
-        [field: Tooltip("비용 부족 시 표시할 이용 불가 안내")]
+        [field: Tooltip("선택지의 비용을 치를 수 없을 때 표시할 이용 불가 안내")]
         [field: SerializeField] public string InsufficientCostMessage { get; private set; }
+        [field: Tooltip("받을 수 있는 효과가 하나도 없을 때(예: 인벤토리 가득 참) 표시할 안내. 비용은 소모하지 않는다.")]
+        [field: SerializeField] public string RewardBlockedMessage { get; private set; }
         [field: Tooltip("취소 선택지를 골랐을 때 출력할 대사")]
         [field: SerializeField, TextArea] public string CancelDialogue { get; private set; }
         [field: Tooltip("체크하면 여러 번 사용 가능, 해제하면 첫 번째 이용 후 사라진다.")]

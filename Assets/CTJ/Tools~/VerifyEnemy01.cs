@@ -45,32 +45,9 @@ namespace CTJ.Tools
             Check(stats.Stats[0].BaseValue == 50f && Mathf.Approximately(stats.Stats[1].BaseValue + attack.PostBlinkDelay, 0.8f), "HP / preparation");
             Check(prefab.GetComponentInChildren<EnemyCurrencyRewardModule>() != null && prefab.GetComponentInChildren<EnemyDeathModule>() != null, "Reward/death wiring");
 
-            Scene preview = EditorSceneManager.NewPreviewScene();
-            try
-            {
-                GameObject room = new GameObject("Room");
-                SceneManager.MoveGameObjectToScene(room, preview);
-                room.transform.position = new Vector3(30f, 0f);
-                RoomDefinition definition = room.AddComponent<RoomDefinition>();
-                GameObject enemy = Object.Instantiate(prefab.gameObject, new Vector3(34f, 0f), Quaternion.identity, room.transform);
-                EnemyPatrolModule patrol = enemy.GetComponentInChildren<EnemyPatrolModule>();
-                MethodInfo resolver = typeof(EnemyPatrolModule).GetMethod("ResolveCenter", BindingFlags.NonPublic | BindingFlags.Instance);
-                Func<Vector2> center = () => (Vector2)resolver.Invoke(patrol, new object[] { enemy.transform, (Vector2)enemy.transform.position });
-                Check(center().x == 30f, "Room root fallback, not spawn position");
-                Transform left = Child(room, "Left", new Vector2(24f, 0f));
-                Transform right = Child(room, "Right", new Vector2(40f, 0f));
-                Set(definition, "leftPortalPoint", left); Set(definition, "rightPortalPoint", right);
-                Check(center().x == 32f, "Portal midpoint, not root pivot");
-                Set(patrol, "centerOverride", left);
-                Check(center().x == 24f, "Manual center override");
-                Set(patrol, "centerOverride", enemy.transform);
-                Check(center().x == 32f, "Moving owner cannot be its own center");
-                enemy.transform.SetParent(null);
-                Check(center().x == 34f, "Standalone fallback");
-                Object.DestroyImmediate(enemy);
-            }
-            finally { EditorSceneManager.ClosePreviewScene(preview); }
-            return new { passed = true, scope = "prefab / references / stats / room midpoint / manual and standalone center" };
+            Check(new SerializedObject(prefab.GetComponentInChildren<EnemyPatrolModule>()).FindProperty("centerOverride") == null,
+                "Obsolete room/override center field remains");
+            return new { passed = true, scope = "prefab / references / stats / spawn-only patrol configuration" };
         }
 
         public static string BeginPlay()
@@ -97,17 +74,18 @@ namespace CTJ.Tools
             try
             {
                 RoomDefinition room = arena.AddComponent<RoomDefinition>();
-                Set(room, "leftPortalPoint", Child(arena, "Left", new Vector2(990f, 0f)));
-                Set(room, "rightPortalPoint", Child(arena, "Right", new Vector2(1010f, 0f)));
                 EnemyBase enemy = Spawn(arena, 1001f);
                 EnemyPatrolModule patrol = enemy.GetModule<EnemyPatrolModule>();
-                Check(Mathf.Approximately(patrol.Center.x, 1000f), "Runtime room center");
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Must use spawn, not room/portal center");
+                Set(patrol, "centerOffsetX", 0.5f);
+                Check(Mathf.Approximately(patrol.Center.x, 1001.5f), "Spawn-relative center offset");
+                Set(patrol, "centerOffsetX", 0f);
                 float min = enemy.transform.position.x, max = min;
                 float end = Time.time + 3f;
                 while (Time.time < end)
                 {
                     min = Mathf.Min(min, enemy.transform.position.x); max = Mathf.Max(max, enemy.transform.position.x);
-                    Check(enemy.transform.position.x >= 996.95f && enemy.transform.position.x <= 1003.05f, "Patrol escaped range");
+                    Check(enemy.transform.position.x >= patrol.MinX - 0.05f && enemy.transform.position.x <= patrol.MaxX + 0.05f, "Patrol escaped range");
                     await Task.Yield();
                 }
                 Check(max - min > 0.5f, "Patrol did not walk");
@@ -121,13 +99,17 @@ namespace CTJ.Tools
                 Check(!enemy.IsAttackInProgress && Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) <= 2.01f, "Patrol did not resume after chase release");
                 Set(patrol, "halfWidth", 1f);
                 await Wait(3f);
-                Check(enemy.transform.position.x >= 998.95f && enemy.transform.position.x <= 1001.05f, "Live range change");
+                Check(enemy.transform.position.x >= patrol.MinX - 0.05f && enemy.transform.position.x <= patrol.MaxX + 0.05f, "Live range change");
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Chase/release changed spawn center");
                 patrol.enabled = false;
                 await Wait(0.1f);
                 Check(Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.01f, "Disabled patrol did not stop");
                 patrol.enabled = true;
                 await Until(() => Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) > 0.1f);
-                return new { scenario = "room centered patrol / bounds / chase / release / adjustable width", passed = true };
+                enemy.gameObject.SetActive(false); enemy.gameObject.SetActive(true);
+                enemy.transform.SetParent(null, true); enemy.transform.SetParent(arena.transform, true);
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Reactivation/reparent changed spawn center");
+                return new { scenario = "spawn centered patrol / bounds / chase / release / width / offset / reactivation", passed = true };
             }
             finally { Object.Destroy(arena); }
         }

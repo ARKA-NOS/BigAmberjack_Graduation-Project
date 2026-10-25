@@ -443,11 +443,13 @@ namespace CTJ.Tools
                 CheckMask(idle, "idle");
                 EnemyHitReactionModule reaction = enemy.GetModule<EnemyHitReactionModule>();
                 Set(reaction, "blinkDuration", 0.4f); Set(reaction, "blinkInterval", 1f);
+                Set(reaction, "enableScalePulse", false); // 이 검사는 원본과 마스크 윤곽을 비교합니다.
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, enemy.transform.position, Vector2.right, Vector2.left);
                 await Frames(4); hit = Read(rt); CheckMask(hit, "hit while buried");
                 Color32[] p0 = idle.GetPixels32(), p1 = hit.GetPixels32();
                 Check(p0.Zip(p1, (a, b) => Math.Abs(a.a - b.a) <= 2).All(v => v), "Hit flash ignores burial mask");
-                Check(p1.Where(c => c.a > 100).All(c => c.r > 100 && c.g <= 2 && c.b <= 2), "Hit flash is not solid red");
+                Check(p1.Where(c => c.a > 100).Select(c => (c.r << 16) | (c.g << 8) | c.b).Distinct().Count() >= 3,
+                    "White hit blend erased body / launcher details");
                 await Wait(0.45f);
                 EnemyDamageProbe target = Target(arena, new Vector2(4003f, 1.7f)); enemy.SetTarget(target.transform);
                 await Until(() => enemy.GetModule<EnemyTurretModule>().IsDeployed); await Wait(0.9f); await Frames(4);

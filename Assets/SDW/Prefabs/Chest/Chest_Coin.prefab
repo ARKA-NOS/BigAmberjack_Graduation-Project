@@ -48,10 +48,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Size.x
+      value: 2.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Size.y
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7174407812854829976, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
       propertyPath: data
       value: 
       objectReference: {fileID: 11400000, guid: 47366735b7f4bc94b9d40b45683f3238, type: 2}
+    - target: {fileID: 7174407812854829976, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: uiAnchorOffset.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7791256228869521806, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c0347a33570ce7a4a9913485817130cf, type: 2}
     - target: {fileID: 9150914726007896175, guid: 298f84ce5b885e647b9925493f25d38d, type: 3}
       propertyPath: m_Name
       value: Chest_Coin

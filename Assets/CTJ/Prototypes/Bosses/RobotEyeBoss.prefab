@@ -377,6 +377,7 @@ Transform:
   - {fileID: 7142586467833284330}
   - {fileID: 9200020002}
   - {fileID: 7667576954800837611}
+  - {fileID: 1320256228298482322}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &113815925355041630
@@ -477,6 +478,59 @@ MonoBehaviour:
   offscreenHoldTime: 0.1
   bodyVisual: {fileID: 4092812976807612984}
   laserHealthThreshold: 1000
+--- !u!1 &2668324275663385387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1320256228298482322}
+  - component: {fileID: 8606559505753812843}
+  m_Layer: 8
+  m_Name: OutlineModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1320256228298482322
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2668324275663385387}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7220857079902644831}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8606559505753812843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2668324275663385387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d1dbe5648ecb34389598922337e57f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyOutlineModule
+  sprites:
+  - {fileID: 4092812976807612984}
+  - {fileID: 8111773361233567663}
+  - {fileID: 1609697502842519262}
+  outlineMaterial: {fileID: 2100000, guid: 111859d1d17dee245b7ef0e9b591c410, type: 2}
+  normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
+  hitColor: {r: 1, g: 1, b: 1, a: 1}
+  width: 2
+  hitDuration: 0.25
 --- !u!1 &2975368419601417831
 GameObject:
   m_ObjectHideFlags: 0

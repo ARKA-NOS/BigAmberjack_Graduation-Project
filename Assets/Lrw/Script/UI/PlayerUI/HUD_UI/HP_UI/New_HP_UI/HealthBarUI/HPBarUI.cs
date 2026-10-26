@@ -23,11 +23,12 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI
             _healthImage = GetComponent<Image>();
         }
 
-        public void SetBar(Color color, float flexible, Gauge gauge , bool isMaxHealth)
+        public void SetBar(Color color, Color textColor, float flexible, Gauge gauge , bool isMaxHealth)
         {
             _healthImage.color = color;
             _healthLayout.flexibleWidth = flexible;
             
+            healthText.color = textColor;
             healthText.text = GetHealthText(gauge, isMaxHealth);
         }
 

@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem;
 using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI;
@@ -20,7 +23,9 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
         protected override void Awake()
         {
             base.Awake();
-            _healthBarList = new();
+            
+            _healthBarList = GetComponentsInChildren<HPBarUI>().ToList();
+            
         }
 
         protected override void OnDataChanged()
@@ -51,7 +56,12 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
             {
                 HPBarUI currentHpBarUI = _healthBarList[i];
                 HealthViewData currentViewData = healthViewDataList[i];
-                Gauge healthGauge = currentViewData.HealthGauge;
+                
+                IHealth health = currentViewData.Health;
+                
+                Gauge healthGauge = health is IRangeHealth rangeHealth ?
+                    rangeHealth.HpGauge : new Gauge(health.HP, health.HP);
+                
                 float currentHealth = healthGauge.CurrentValue;
 
                 // 체력이 남은 바만 켠다 (항목마다 따로 판정)
@@ -59,10 +69,11 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 currentHpBarUI.SetActive(isShow);
                 if (isShow)
                 {
-                    currentHpBarUI.SetBar(currentViewData.HealthColor,
+                    currentHpBarUI.SetBar(health.GetHealthColor(),
+                        currentViewData.HealthSo.HealthTextColor,
                         currentHealth,
                         healthGauge,
-                        currentViewData.HasMaxHealth
+                        health is IRangeHealth
                         );
                     sumCurrentHealth += currentHealth;
                 }

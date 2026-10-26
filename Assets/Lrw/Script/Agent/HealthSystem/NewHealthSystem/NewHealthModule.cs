@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
@@ -25,6 +26,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         
         private IHealth _baseHealth;
         private Dictionary<AbstractHealthSo, IHealth> _healthDict;
+        private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
         private List<IHealth> _healths;
         
         public override void Initialize(ModuleOwner owner)
@@ -32,6 +34,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             base.Initialize(owner);
 
             _healthDict = new();
+            _healthSoDict = new();
             _healths = new();
             
             FDebug.Assert(coreHealth != null, "[NewHealthModule] coreHealth is null");
@@ -41,11 +44,13 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         {
             _baseHealth = coreHealth.CreateHealth(_owner);
             _healthDict.Add(coreHealth, _baseHealth);
-            
+            _healthSoDict.Add(_baseHealth, coreHealth);
+                
             foreach (AbstractHealthSo abstractHealthSo in otherHealths)
             {
                 IHealth health = abstractHealthSo.CreateHealth(_owner);
                 _healthDict.Add(abstractHealthSo,health);
+                _healthSoDict.Add(health, abstractHealthSo);
             }
 
             foreach(IHealth health in _healthDict.Values)
@@ -90,13 +95,12 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
             foreach (IHealth health in _healths)
             {
-                IRangeHealth rangeHealth = health as IRangeHealth;
-                bool hasMaxHealth = rangeHealth != null;
+                AbstractHealthSo healthSo = _healthSoDict[health];
+                
                 healthData.Add(new HealthViewData
                 (
-                    health.GetHealthColor(),
-                    hasMaxHealth,
-                    hasMaxHealth ? rangeHealth.HpGauge : new Gauge(health.HP,health.HP)
+                    healthSo,
+                    health
                 ));
             }
         }

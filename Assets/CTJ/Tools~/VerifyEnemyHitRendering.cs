@@ -56,6 +56,9 @@ namespace CTJ.Tools
                     EnemyBase prefab = AssetDatabase.LoadAssetAtPath<EnemyBase>("Assets/CTJ/Prototypes/Prefabs/" + names[i] + ".prefab");
                     // 멀리 떨어진 좌표의 GPU 정밀도 차이를 제외하고 색/알파만 비교합니다.
                     enemies[i] = Object.Instantiate(prefab, new Vector3((i - 1) * 2.3f, 0f), Quaternion.identity, root.transform);
+                    // 이 검사는 원본 피격 RGB/알파만 비교합니다. 선택형 아웃라인은 별도 렌더 검사에서 검증합니다.
+                    EnemyOutlineModule outline = enemies[i].GetComponentInChildren<EnemyOutlineModule>();
+                    if (outline != null) outline.enabled = false;
                     enemies[i].GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
                     Animator animator = enemies[i].GetComponentInChildren<Animator>(); if (animator != null) animator.enabled = false;
                     EnemyTurretModule turret = enemies[i].GetComponentInChildren<EnemyTurretModule>();

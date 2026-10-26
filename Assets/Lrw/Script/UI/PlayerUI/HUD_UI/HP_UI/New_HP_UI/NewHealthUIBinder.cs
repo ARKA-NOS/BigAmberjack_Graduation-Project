@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem;
 using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI;
 using UnityEngine;
@@ -50,30 +51,31 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
             {
                 HPBarUI currentHpBarUI = _healthBarList[i];
                 HealthViewData currentViewData = healthViewDataList[i];
-                float currentHealth = currentViewData.HealthGauge.CurrentValue;
+                Gauge healthGauge = currentViewData.HealthGauge;
+                float currentHealth = healthGauge.CurrentValue;
 
                 // 체력이 남은 바만 켠다 (항목마다 따로 판정)
                 bool isShow = currentHealth > 0f;
                 currentHpBarUI.SetActive(isShow);
                 if (isShow)
                 {
-                    currentHpBarUI.SetBar(currentViewData.HealthColor, currentHealth, currentViewData.HealthGauge);
+                    currentHpBarUI.SetBar(currentViewData.HealthColor,
+                        currentHealth,
+                        healthGauge,
+                        currentViewData.HasMaxHealth
+                        );
                     sumCurrentHealth += currentHealth;
                 }
 
-                if (currentViewData.HasMaxHealth)
-                    sumRangeMaxHealth += currentViewData.HealthGauge.MaxValue;
+                sumRangeMaxHealth += healthGauge.MaxValue;
             }
 
             for (int i = showCount; i < _healthBarList.Count; i++)
             {
                 _healthBarList[i].SetActive(false);
             }
-
-            // 레이아웃 그룹이 flexibleWidth 비율대로 폭을 나누므로 HP 값을 그대로 쓴다
-            // 기준 길이는 상한 있는 체력의 최대치 합이고, 현재 합이 넘치면 바 전체가 압축된다
-            float barLength = Mathf.Max(sumRangeMaxHealth, sumCurrentHealth);
-            spaceElement.flexibleWidth = barLength - sumCurrentHealth;
+            
+            spaceElement.flexibleWidth = sumRangeMaxHealth - sumCurrentHealth;
         }
     }
 }

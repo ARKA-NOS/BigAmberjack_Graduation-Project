@@ -14,18 +14,22 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
     {
         [Header("Prefabs")]
         [SerializeField] private HPBarUI healthImagePrefab;
+        [SerializeField] private HPTextUI healthTextPrefab;
 
         [Header("UI")] 
-        [SerializeField] private LayoutElement spaceElement;
+        [SerializeField] private Transform barContainer;
+        [SerializeField] private LayoutElement barSpaceElement;
+        [SerializeField] private Transform textContainer;
         
         private List<HPBarUI> _healthBarList;
+        private List<HPTextUI> _healthTextList;
         
         protected override void Awake()
         {
             base.Awake();
-            
-            _healthBarList = GetComponentsInChildren<HPBarUI>().ToList();
-            
+
+            _healthBarList = new();
+            _healthTextList = new();
         }
 
         protected override void OnDataChanged()
@@ -35,13 +39,17 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
             for (int i = _healthBarList.Count; i < CurrentValue.HealthCount; i++)
             {
                 _healthBarList.Add(CreateHealthBarUI());
+                _healthTextList.Add(CreateHealthTextUI());
             }
             
-            spaceElement.transform.SetAsLastSibling();
+            barSpaceElement.transform.SetAsLastSibling();
         }
         
         private HPBarUI CreateHealthBarUI()
-            => Instantiate(healthImagePrefab,transform);
+            => Instantiate(healthImagePrefab,barContainer);
+        
+        private HPTextUI CreateHealthTextUI()
+            => Instantiate(healthTextPrefab,textContainer);
         
         protected override void DataUpdate()
         {
@@ -57,6 +65,8 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 HPBarUI currentHpBarUI = _healthBarList[i];
                 HealthViewData currentViewData = healthViewDataList[i];
                 
+                HPTextUI currentHpTextUI = _healthTextList[i];
+                
                 IHealth health = currentViewData.Health;
                 
                 Gauge healthGauge = health is IRangeHealth rangeHealth ?
@@ -67,14 +77,12 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 // 체력이 남은 바만 켠다 (항목마다 따로 판정)
                 bool isShow = currentHealth > 0f;
                 currentHpBarUI.SetActive(isShow);
+                currentHpTextUI.SetActive(isShow);
                 if (isShow)
                 {
-                    currentHpBarUI.SetBar(health.GetHealthColor(),
-                        currentViewData.HealthSo.HealthTextColor,
-                        currentHealth,
-                        healthGauge,
-                        health is IRangeHealth
-                        );
+                    currentHpBarUI.SetBar(health.GetHealthColor(), currentHealth);
+                    currentHpTextUI.SetText(currentViewData.HealthSo.HealthTextColor,
+                        healthGauge, health is IRangeHealth);
                     sumCurrentHealth += currentHealth;
                 }
 
@@ -84,9 +92,13 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
             for (int i = showCount; i < _healthBarList.Count; i++)
             {
                 _healthBarList[i].SetActive(false);
+                _healthTextList[i].SetActive(false);
             }
             
-            spaceElement.flexibleWidth = sumRangeMaxHealth - sumCurrentHealth;
+            float spaceFlexible = sumRangeMaxHealth - sumCurrentHealth;
+            barSpaceElement.flexibleWidth = spaceFlexible;
         }
+
+        
     }
 }

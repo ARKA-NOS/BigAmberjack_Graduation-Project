@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Lrw.Script.DataStructure;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI
@@ -11,6 +12,8 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI
         private Image healthImage;
 
         private RectTransform _rectTransform;
+        
+        private Gauge healthGauge;
 
         private void Awake()
         {
@@ -19,10 +22,11 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI
             _rectTransform = transform as RectTransform;
         }
 
-        public void SetBar(Color color, float flexible)
+        public void SetBar(Color color, float flexible, Gauge gauge)
         {
             healthImage.color = color;
             healthLayout.flexibleWidth = flexible;
+            healthGauge = gauge;
         }
 
         public void SetScale(float scale)

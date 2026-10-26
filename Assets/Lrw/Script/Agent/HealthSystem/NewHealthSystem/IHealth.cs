@@ -14,7 +14,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         void SetHp(float hp);
         void HealthUpdate();
         
-        //UI 관련
         Color GetHealthColor();
+        HealthType GetHealthType();
     }
 }

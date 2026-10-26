@@ -43,14 +43,14 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
             int showHealthCount = CurrentValue.Data.Sum(x => x.HealthGauge.CurrentValue > 0 ? 1 : 0);
             List<HealthViewData> healthViewDataList = CurrentValue.Data;
             float sumMaxHealth = healthViewDataList.Sum(x => x.HealthGauge.MaxValue);
-            
+            float sumCurrentHealth = 0f;
             for (int i = 0; i < _healthBarList.Count; i++)
             {
                 HPBarUI currentHpBarUI = _healthBarList[i];
                 if (showHealthCount <= i)
                 {
                     currentHpBarUI.SetActive(false);
-                    break;
+                    continue;
                 }
                 
                 currentHpBarUI.SetActive(true); 
@@ -60,14 +60,11 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 float flex = Mathf.Approximately(sumMaxHealth,0f) ? 
                     0f : 
                     currentViewData.HealthGauge.CurrentValue / sumMaxHealth;
-                currentHpBarUI.SetBar(currentViewData.HealthColor,flex);
+                sumCurrentHealth += flex;
+                currentHpBarUI.SetBar(currentViewData.HealthColor,flex, currentViewData.HealthGauge);
             }
             
-            if (Mathf.Approximately(sumMaxHealth, healthViewDataList[0].HealthGauge.CurrentValue))
-            {
-                _healthBarList[0].SetScale(healthViewDataList[0].HealthGauge.Normalized);
-            }
-            
+            spaceElement.flexibleWidth = (1 - sumCurrentHealth) / sumMaxHealth;
         }
     }
 }

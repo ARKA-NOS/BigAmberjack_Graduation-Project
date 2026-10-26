@@ -10,7 +10,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos
         [SerializeField] private Color healthColor;
 
         public override IHealth CreateHealth(ModuleOwner owner)
-            => new DefaultHealth(Priority, owner, healthColor);
+            => new DefaultHealth(Priority, owner, HealthType, healthColor);
 
     }
 }

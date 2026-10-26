@@ -12,6 +12,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos
         [SerializeField] protected Color healthColor;
         
         public override IHealth CreateHealth(ModuleOwner owner)
-            => new RangeHealth(Priority, owner,healthColor,maxHpStatData);
+            => new RangeHealth(Priority, owner, HealthType, healthColor, maxHpStatData);
     }
 }

@@ -19,7 +19,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         public float HP { get; protected set; } = 0f;
         
         public abstract Color GetHealthColor();
-        
+        public abstract HealthType GetHealthType();
         public virtual float ApplyDamage(float damage)
         {
             float a = MathF.Min(HP, damage);

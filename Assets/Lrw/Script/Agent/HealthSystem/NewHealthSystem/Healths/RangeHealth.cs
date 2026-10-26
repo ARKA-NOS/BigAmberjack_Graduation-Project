@@ -14,7 +14,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
         
         public override Gauge HpGauge => new Gauge(HP, MaxHealthValue);
         protected Color CurrentColor;
-        public RangeHealth(int priority, ModuleOwner owner, Color color, StatData maxStatData) : base(priority,owner)
+        protected HealthType HealthType;
+        public RangeHealth(int priority, ModuleOwner owner, HealthType type, Color color, StatData maxStatData) : base(priority,owner)
         {
             FDebug.Assert(owner.TryGetModule(out IStatModule statModule),
                 "[RangeHealth] owner is not found IStatModule");
@@ -22,9 +23,12 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
             _maxHealthStat = statModule.GetStat(maxStatData);
 
             CurrentColor = color;
+            
+            HealthType = type;
         }
 
         public override Color GetHealthColor() => CurrentColor;
+        public override HealthType GetHealthType() => HealthType;
 
         public override float ApplyHeal(float heal)
         {

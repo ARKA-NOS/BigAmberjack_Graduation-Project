@@ -56,7 +56,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
         private void Start()
         {
-            healthViewModel.Bind(new HealthData(_healths.Count));
+            if(healthViewModel != null)
+                healthViewModel.Bind(new HealthData(_healths.Count));
         }
 
         private static int Compere(IHealth a, IHealth b)
@@ -95,23 +96,30 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             }
         }
         
-        public void ApplyDamage(float damage)
+        public void ApplyDamage(float damage, HealthType targets)
         {
             float currentDamage = damage;
             for (int i = _healths.Count - 1; i >= 0; i--)
             {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
                 currentDamage = _healths[i].ApplyDamage(currentDamage);
             }
         }
         
-        public void ApplyHeal(float heal)
+        public void ApplyHeal(float heal, HealthType targets)
         {
             float currentHeal = heal;
             for (int i = 0; i < _healths.Count; i++)
             {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
                 currentHeal = _healths[i].ApplyHeal(currentHeal);
             }
         }
+        
+        private static bool IsTargetHealth(HealthType type, HealthType targets)
+            => (type & targets) != HealthType.None;
         
     }
 }

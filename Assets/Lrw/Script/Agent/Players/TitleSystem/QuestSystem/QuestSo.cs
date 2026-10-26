@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Lrw.Script.Agent.Players.QuestSystem
+namespace Lrw.Script.Agent.Players.TitleSystem.QuestSystem
 {
     [CreateAssetMenu(fileName = "Quest SO", menuName = "Title/Quest SO", order = 0)]
     public class QuestSo : ScriptableObject

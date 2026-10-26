@@ -9,7 +9,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
     {
         protected readonly ModuleOwner Owner;
         public int Priority { get; private set; }
-        public virtual Gauge HpGauge => new Gauge(HP,HP);
         public AbstractHealth(int priority, ModuleOwner owner)
         {
             Priority = priority;

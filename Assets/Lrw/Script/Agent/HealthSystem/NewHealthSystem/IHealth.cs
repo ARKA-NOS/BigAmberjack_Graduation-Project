@@ -8,7 +8,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
     {
         int Priority { get; }
         float HP { get; }
-        Gauge HpGauge { get; }
         float ApplyDamage(float damage);
         float ApplyHeal(float heal);
         void SetHp(float hp);

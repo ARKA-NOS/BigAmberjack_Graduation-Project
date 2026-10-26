@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
+using Lrw.Script.DataStructure;
 using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI;
 using Lrw.Script.Utility.ReadOnlySystem.Attributes;
 using UnityEngine;
@@ -88,10 +90,13 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
             foreach (IHealth health in _healths)
             {
+                IRangeHealth rangeHealth = health as IRangeHealth;
+                bool hasMaxHealth = rangeHealth != null;
                 healthData.Add(new HealthViewData
                 (
                     health.GetHealthColor(),
-                    health.HpGauge
+                    hasMaxHealth,
+                    hasMaxHealth ? rangeHealth.HpGauge : new Gauge(health.HP,health.HP)
                 ));
             }
         }

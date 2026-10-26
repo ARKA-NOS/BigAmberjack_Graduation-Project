@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
 {
-    public class RangeHealth : AbstractHealth
+    public class RangeHealth : AbstractHealth, IRangeHealth
     {
         private readonly Stat _maxHealthStat;
         
         protected float MaxHealthValue => _maxHealthStat.Value;
         
-        public override Gauge HpGauge => new Gauge(HP, MaxHealthValue);
+        public Gauge HpGauge => new Gauge(HP, MaxHealthValue);
         protected Color CurrentColor;
         protected HealthType HealthType;
         public RangeHealth(int priority, ModuleOwner owner, HealthType type, Color color, StatData maxStatData) : base(priority,owner)

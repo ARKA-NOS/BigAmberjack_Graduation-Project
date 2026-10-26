@@ -13,8 +13,8 @@ namespace CTJ.Enemies
     {
         [Header("Knockback")]
         [SerializeField] private bool enableKnockback = true;
-        [SerializeField, Min(0f)] private float knockbackSpeed = 6.4f;
-        [SerializeField, Min(0f)] private float knockbackDuration = 0.18f;
+        [SerializeField, Min(0f)] private float knockbackSpeed = 2f;
+        [SerializeField, Min(0f)] private float knockbackDuration = 0.15f;
         [Tooltip("넉백 없이도 행동을 제한하는 피격 경직 시간. 0이면 기존 넉백 시간만 사용합니다.")]
         [SerializeField, Min(0f)] private float hitStunDuration;
 

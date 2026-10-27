@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
 {
-    ///[CreateAssetMenu(fileName = "??? Title SO", menuName = "Title/Titles/??? Title SO", order = 0)]
+    //[CreateAssetMenu(fileName = "??? Title SO", menuName = "Title/Titles/??? Title SO")]
     public abstract class AbstractTitleSo : ScriptableObject
     {
         [field:SerializeField] public string TitleName { get; private set; }

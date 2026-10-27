@@ -29,7 +29,7 @@ namespace Lrw.Script.Agent.Players.QuestSystem
             return quest;
         }
         
-        public void AddQuestAmount(QuestKey key, int amount)
+        public void AddQuestAmount(QuestKey key, float amount)
         {
             if (_questDict.TryGetValue(key, out List<Quest> questList))
             {

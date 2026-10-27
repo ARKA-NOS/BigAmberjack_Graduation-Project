@@ -48,6 +48,7 @@ namespace CTJ.Enemies
         private Rigidbody2D _body;
         private EnemySkillModule _skills;
         private EnemyAttackWarningModule _attackWarning;
+        private EnemySuperArmorModule _superArmor;
         private bool _knockingBack;
         private float _knockbackEnd;
         private float _knockbackLength;
@@ -89,6 +90,7 @@ namespace CTJ.Enemies
             _body = owner.GetComponent<Rigidbody2D>();
             _skills = owner.GetModule<EnemySkillModule>();
             _attackWarning = owner.GetModule<EnemyAttackWarningModule>();
+            _superArmor = owner.GetModule<EnemySuperArmorModule>();
             if (sprites == null || sprites.Length == 0)
                 sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
             _originalColors = new Color[sprites.Length];
@@ -112,15 +114,16 @@ namespace CTJ.Enemies
         internal void React(DamageData damage, Vector2 hitDirection)
         {
             if (!Ready) return;
-            if (hitStunDuration > 0f) _stunEnd = Time.time + hitStunDuration;
+            bool protectedFromReaction = _superArmor != null && _superArmor.IsProtected;
+            if (!protectedFromReaction && hitStunDuration > 0f) _stunEnd = Time.time + hitStunDuration;
 
-            if (cancelAttackOnHit && _skills != null &&
+            if (!protectedFromReaction && cancelAttackOnHit && _skills != null &&
                 (_skills.ActiveSkill is EnemyMeleeSkill ||
                  _skills.ActiveSkill is EnemyAttackSkill { IsPreparing: true } ||
                  _skills.ActiveSkill is IChargeSkill { IsCharging: true }))
                 _skills.StopAttack();
 
-            if (enableKnockback && knockbackDuration > 0f && knockbackSpeed > 0f && _body != null && _body.simulated)
+            if (!protectedFromReaction && enableKnockback && knockbackDuration > 0f && knockbackSpeed > 0f && _body != null && _body.simulated)
             {
                 _enemy.StopHorizontalMovement(); // 기존 발판 우회 계획도 취소합니다.
                 _knockingBack = true;

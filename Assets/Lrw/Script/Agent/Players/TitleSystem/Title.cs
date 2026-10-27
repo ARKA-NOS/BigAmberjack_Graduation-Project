@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lrw.Script.Agent.Players.QuestSystem;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
@@ -8,22 +9,12 @@ namespace Lrw.Script.Agent.Players.TitleSystem
     {
         public readonly AbstractTitleSo TitleSo;
         private readonly List<Quest> quests;
-        private readonly int _questCount;
-        private int _completedQuestCount;
-        public bool Active { get; private set; }
-        public bool InProgress { get; private set; }
-        public bool IsComplete { get; private set; }
         public event Action<Title> OnComplete;
         
         public Title(AbstractTitleSo titleSo, IQuestModule questModule)
         {
             TitleSo = titleSo;
             quests = new();
-            Active = false;
-            InProgress = false;
-            IsComplete = false;
-            _questCount = titleSo.Quests.Length;
-            _completedQuestCount = 0;
             
             foreach (QuestSo questSo in titleSo.Quests)
             {
@@ -36,14 +27,12 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         
         private void QuestValueChanged()
         {
-            InProgress = true;
+            
         }
         
         private void QuestComplete()
         {
-            _completedQuestCount++;
-
-            if (_questCount == _completedQuestCount)
+            if (quests.All(x => x.IsComplete))
             {
                 TitleComplete();
             }
@@ -51,7 +40,6 @@ namespace Lrw.Script.Agent.Players.TitleSystem
 
         private void TitleComplete()
         {
-            IsComplete = true;
             OnComplete?.Invoke(this);
             Clear();
         }

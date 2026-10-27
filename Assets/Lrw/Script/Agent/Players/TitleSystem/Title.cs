@@ -15,7 +15,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         public bool IsComplete { get; private set; }
         public event Action<Title> OnComplete;
         
-        public Title(AbstractTitleSo titleSo)
+        public Title(AbstractTitleSo titleSo, IQuestModule questModule)
         {
             TitleSo = titleSo;
             quests = new();
@@ -27,7 +27,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             
             foreach (QuestSo questSo in titleSo.Quests)
             {
-                Quest quest = new Quest(questSo);
+                Quest quest = questModule.AddQuest(questSo);
                 quest.OnChanged += QuestValueChanged;
                 quest.OnComplete += QuestComplete;
                 quests.Add(quest);

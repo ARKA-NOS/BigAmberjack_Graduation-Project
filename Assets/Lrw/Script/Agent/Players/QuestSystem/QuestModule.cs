@@ -4,17 +4,17 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.QuestSystem
 {
-    public class QuestModule : Module
+    public class QuestModule : Module, IQuestModule
     {
         private Dictionary<QuestKey, List<Quest>> _questDict;
 
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            
+            _questDict = new();
         }
 
-        public void AddQuest(QuestSo questSo)
+        public Quest AddQuest(QuestSo questSo)
         {
             QuestKey key = questSo.QuestKey;
             if (!_questDict.TryGetValue(key, out List<Quest> questList))
@@ -22,12 +22,14 @@ namespace Lrw.Script.Agent.Players.QuestSystem
                 questList = new List<Quest>();
                 _questDict.Add(questSo.QuestKey, questList);
             }
-
+            
             Quest quest = new Quest(questSo);
             questList.Add(quest);
-        }
 
-        public void AddQuestStack(QuestKey key, int amount)
+            return quest;
+        }
+        
+        public void AddQuestAmount(QuestKey key, int amount)
         {
             if (_questDict.TryGetValue(key, out List<Quest> questList))
             {
@@ -38,7 +40,5 @@ namespace Lrw.Script.Agent.Players.QuestSystem
             }
         }
         
-
-
     }
 }

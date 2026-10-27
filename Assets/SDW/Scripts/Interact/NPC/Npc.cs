@@ -4,8 +4,6 @@ using DevLib.ModuleSystem;
 using Lrw.Script.Agent.Players;
 using Lrw.Script.Agent.Players.InteractSystem;
 using SDW.Scripts.Interact.NPC.Data;
-using SDW.Scripts.Maps;
-using SDW.Scripts.Maps.Data;
 using SDW.Scripts.UI.Dialogue;
 using UnityEngine;
 
@@ -13,11 +11,16 @@ namespace SDW.Scripts.Interact.NPC
 {
     // 특수 NPC. 플레이어의 InteractModule이 이 오브젝트를 찾아 상호작용 키를 누르면 대화창을 연다.
     // InteractModule은 MapObject 레이어의 콜라이더에서 이 컴포넌트를 찾으므로, 콜라이더와 같은 오브젝트에 두어야 한다.
-    // 전투방 안에 배치된 경우, 방을 클리어하기 전까지는 숨겨져 있다가 클리어 후 나타난다.
+    // InteractionLock이 붙어 있으면 주변에 살아 있는 적이 있는 동안 콜라이더를 꺼서 상호작용을 막는다.
     // 대화창은 직접 참조하지 않고 DialogueViewModel에 대화 내용을 Bind만 한다. (화면 표시는 씬의 DialogueUIBinder 담당)
-    public class Npc : AbstractInteractObject
+    public class Npc : AbstractInteractObject, ICanInteract
     {
         [SerializeField] private NpcDataSO data;
+        [Tooltip("상호작용 UI가 따라다니는 기준점. 오브젝트 위치에서 이만큼 떨어진 곳(NPC 머리 위)에 표시된다.")]
+        [SerializeField] private Vector2 uiAnchorOffset;
+
+        // 베이스의 Position 대신 UI 기준점 오프셋을 적용한다. (ICanInteract를 다시 구현해서 인터페이스 조회에도 이 값이 쓰인다)
+        public new Vector2 Position => (Vector2)transform.position + uiAnchorOffset;
         [SerializeField] private DialogueViewModel dialogueViewModel;
         [Tooltip("취소 대사를 보여준 뒤 대화창을 닫기까지의 시간")]
         [SerializeField] private float closeDelay = 1.5f;
@@ -27,12 +30,15 @@ namespace SDW.Scripts.Interact.NPC
         private bool CanUse => data != null && (data.Reusable || !_used);
 
         private ModuleOwner _owner;
-        private RoomController _room;
         private Collider2D _col;
         private SpriteRenderer _spriteRenderer;
+        private InteractionLock _lock;
         private Coroutine _closeRoutine;
         private bool _used;
         private bool _isOpen;
+        private bool _visible = true;
+
+        private bool IsLocked => _lock != null && _lock.IsLocked;
 
         private void Awake()
         {
@@ -44,22 +50,9 @@ namespace SDW.Scripts.Interact.NPC
 
             if (data != null && data.Sprite != null && _spriteRenderer != null)
                 _spriteRenderer.sprite = data.Sprite;
-        }
 
-        private void Start()
-        {
-            _room = GetComponentInParent<RoomController>();
-
-            bool waitForClear = _room != null
-                                && _room.Data != null
-                                && _room.Data.RoomType == RoomType.Combat
-                                && !_room.IsCleared;
-
-            if (!waitForClear)
-                return;
-
-            SetVisible(false);
-            _room.Cleared += HandleRoomCleared;
+            if (TryGetComponent(out _lock))
+                _lock.LockChanged += HandleLockChanged;
         }
 
         // 방 이동 등으로 꺼질 때 열어둔 대화창이 화면에 남지 않게 닫는다.
@@ -70,25 +63,35 @@ namespace SDW.Scripts.Interact.NPC
 
         private void OnDestroy()
         {
-            if (_room != null)
-                _room.Cleared -= HandleRoomCleared;
+            if (_lock != null)
+                _lock.LockChanged -= HandleLockChanged;
         }
 
-        private void HandleRoomCleared()
+        // 잠기는 순간 열려 있던 대화창도 닫는다.
+        private void HandleLockChanged(bool locked)
         {
-            _room.Cleared -= HandleRoomCleared;
-            SetVisible(true);
+            RefreshCollider();
+
+            if (locked)
+                Close();
         }
 
         private void SetVisible(bool visible)
         {
-            _col.enabled = visible;
+            _visible = visible;
+            RefreshCollider();
 
             if (_spriteRenderer != null)
                 _spriteRenderer.enabled = visible;
 
             if (!visible)
                 Close();
+        }
+
+        // 숨겨졌거나 잠겨 있으면 InteractModule의 상호작용 대상(과 프롬프트)에서 빠지도록 콜라이더를 끈다.
+        private void RefreshCollider()
+        {
+            _col.enabled = _visible && !IsLocked;
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -101,7 +104,7 @@ namespace SDW.Scripts.Interact.NPC
 
         public override void Interact(ModuleOwner owner)
         {
-            if (!CanUse || _isOpen)
+            if (!CanUse || _isOpen || IsLocked)
                 return;
 
             _owner = owner;

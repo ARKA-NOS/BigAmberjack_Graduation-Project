@@ -17,6 +17,8 @@ namespace CTJ.Enemies.Skills
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간(초). 터렛은 이 시간 동안 발사 방향과 전개 상태를 유지합니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
         [Header("Aim")]
+        [Tooltip("준비 중 조준 방향에 맞춰 몸체도 좌우 반전합니다. 조준 고정 후에는 방향을 바꾸지 않습니다.")]
+        [SerializeField] private bool faceTargetDuringPreparation;
         [Tooltip("준비 중 조준선 표시만 켜고 끕니다. 실제 발사 방향의 추적과는 별개입니다.")]
         [SerializeField] private bool showAimLine = true;
         [Tooltip("준비 중 타깃을 따라 조준하다가 마지막 Post Blink Delay에 실제 포신 방향을 고정합니다. 끄면 준비 시작의 목표 방향으로만 조준합니다.")]
@@ -44,6 +46,7 @@ namespace CTJ.Enemies.Skills
         protected override void PrepareAttack()
         {
             _aimLocked = turret == null && !trackTargetDuringPreparation;
+            if (faceTargetDuringPreparation) Enemy.FaceTarget();
             UpdateAimTarget();
             RotateAim();
         }
@@ -97,6 +100,7 @@ namespace CTJ.Enemies.Skills
                 attackAnimator.Play(stateHash, 0, 0f);
             }
             _endTime = Time.time + Mathf.Max(0f, recoveryTime);
+            BeginRecovery();
             if (recoveryTime <= 0f) EndSkill();
         }
 
@@ -105,6 +109,7 @@ namespace CTJ.Enemies.Skills
             if (turret != null && !turret.isActiveAndEnabled) { StopSkill(); return; }
             if (IsPreparing && CanContinue && !_aimLocked)
             {
+                if (faceTargetDuringPreparation) Enemy.FaceTarget();
                 if (trackTargetDuringPreparation) UpdateAimTarget();
                 else if (turret == null) _aimLocked = true;
                 RotateAim();

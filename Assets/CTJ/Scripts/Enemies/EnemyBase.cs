@@ -34,6 +34,7 @@ namespace CTJ.Enemies
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
         private EnemyPatrolModule _patrol;
+        private EnemyKeepDistanceModule _keepDistance;
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
@@ -59,6 +60,7 @@ namespace CTJ.Enemies
             _rigidbody = GetComponent<Rigidbody2D>();
             _movement = GetModule<EnemyMovementModule>();
             _patrol = GetModule<EnemyPatrolModule>();
+            _keepDistance = GetModule<EnemyKeepDistanceModule>();
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
@@ -153,6 +155,12 @@ namespace CTJ.Enemies
                 return;
             }
 
+            if (_keepDistance != null && _keepDistance.isActiveAndEnabled)
+            {
+                _keepDistance.MoveTowardsTarget(target, moveSpeed);
+                return;
+            }
+
             float direction = _movement.MoveTowards(target, moveSpeed);
             OnMoveDirectionChanged(direction);
         }
@@ -210,6 +218,11 @@ namespace CTJ.Enemies
             Vector3 scale = facingRoot.localScale;
             scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction);
             facingRoot.localScale = scale;
+        }
+
+        internal void FaceTarget()
+        {
+            if (target != null) OnMoveDirectionChanged(target.position.x - transform.position.x);
         }
 
         public void OnAttackWarning() => _skills?.OnAttackWarning();

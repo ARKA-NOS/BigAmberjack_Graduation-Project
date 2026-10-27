@@ -3,98 +3,42 @@ using UnityEngine;
 
 namespace SDW.Scripts.Maps.Data
 {
-    // 일직선 스테이지 구성. 시작 방 → 랜덤 방 N개 → 보스 방 순서로 왼쪽에서 오른쪽으로 이어진다.
+    // 일직선 스테이지 구성. rooms에 넣은 순서 그대로 방이 이어진다.
+    // 첫 번째 방이 시작 방이고 마지막 방이 최종 보스 방이다. 미니 보스는 중간 어디에든 몇 개든 넣을 수 있다.
+    // 이전 방으로는 돌아갈 수 없다.
     [CreateAssetMenu(fileName = "Stage", menuName = "Map/Stage")]
     public class StageSO : ScriptableObject
     {
-        [Header("Fixed")]
-        [Tooltip("맨 앞에 고정되는 시작 방")]
-        [SerializeField] private RoomDataSO startRoom;
-        [Tooltip("맨 끝에 고정되는 보스 방")]
-        [SerializeField] private RoomDataSO bossRoom;
+        [Tooltip("이 순서대로 방을 생성한다. 마지막 방은 출구가 없고, 클리어하면 탐험이 끝난다.")]
+        [SerializeField] private List<RoomDataSO> rooms = new();
 
-        [Header("Random")]
-        [Tooltip("시작 방과 보스 방 사이에 넣을 방 개수")]
-        [SerializeField, Min(0)] private int randomRoomCount = 3;
-        [Tooltip("중간 방 후보. 시작/보스 방은 제외된다.")]
-        [SerializeField] private List<RoomDataSO> randomRoomPool = new();
-        [Tooltip("켜두면 한 스테이지 안에서 같은 방 데이터를 다시 뽑지 않는다. 후보가 모자라면 연속만 피해서 중복을 허용한다.")]
-        [SerializeField] private bool avoidDuplicateInStage = true;
+        [Header("Presentation")]
+        [Tooltip("적이 등장할 때 쓰는 포탈 연출. 비워두면 적이 바로 생성된다.")]
+        [SerializeField] private EnemySpawnPortal enemySpawnPortal;
 
-        // 시작 방, 랜덤 방들, 보스 방 순서로 반환한다.
+        public EnemySpawnPortal EnemySpawnPortal => enemySpawnPortal;
+
         public List<RoomDataSO> ResolveRooms()
         {
             List<RoomDataSO> result = new();
 
-            if (startRoom != null)
-                result.Add(startRoom);
-            else
-                Debug.LogWarning($"{name} : 시작 방이 지정되지 않았습니다.");
-
-            List<RoomDataSO> pool = GetValidPool();
-            if (pool.Count == 0 && randomRoomCount > 0)
-                Debug.LogWarning($"{name} : 랜덤 방 후보가 없어 중간 방을 생성하지 않습니다.");
-
-            HashSet<RoomDataSO> used = new();
-
-            for (int i = 0; i < randomRoomCount && pool.Count > 0; i++)
+            foreach (RoomDataSO room in rooms)
             {
-                RoomDataSO previous = result.Count > 0 ? result[result.Count - 1] : null;
-                RoomDataSO selected = PickRandom(pool, used, previous);
-                used.Add(selected);
-                result.Add(selected);
+                if (room == null)
+                {
+                    Debug.LogWarning($"{name} : 비어 있는 방 칸을 건너뜁니다.");
+                    continue;
+                }
+
+                result.Add(room);
             }
 
-            if (bossRoom != null)
-                result.Add(bossRoom);
-            else
-                Debug.LogWarning($"{name} : 보스 방이 지정되지 않았습니다.");
+            if (result.Count == 0)
+                Debug.LogWarning($"{name} : 방이 하나도 지정되지 않았습니다.");
+            else if (result[result.Count - 1].RoomType != RoomType.Boss)
+                Debug.LogWarning($"{name} : 마지막 방({result[result.Count - 1].name})이 보스 방이 아닙니다. 이 방을 클리어하면 탐험이 끝납니다.");
 
             return result;
-        }
-
-        // null과 시작/보스 방은 후보에서 뺀다.
-        private List<RoomDataSO> GetValidPool()
-        {
-            List<RoomDataSO> pool = new();
-
-            foreach (RoomDataSO candidate in randomRoomPool)
-            {
-                if (candidate == null)
-                    continue;
-
-                if (candidate.RoomType is RoomType.Start or RoomType.Boss)
-                {
-                    Debug.LogWarning($"{name} : {candidate.name}은(는) {candidate.RoomType} 방이라 랜덤 후보에서 제외합니다.");
-                    continue;
-                }
-
-                pool.Add(candidate);
-            }
-
-            return pool;
-        }
-
-        // 아직 안 쓴 방 중에서 고른다. 다 썼으면 바로 앞 방만 피해서 고르고, 그것도 안 되면 아무거나 고른다.
-        private RoomDataSO PickRandom(List<RoomDataSO> pool, HashSet<RoomDataSO> used, RoomDataSO previous)
-        {
-            List<RoomDataSO> candidates = pool;
-
-            if (avoidDuplicateInStage)
-            {
-                candidates = pool.FindAll(candidate => !used.Contains(candidate));
-
-                if (candidates.Count == 0)
-                {
-                    Debug.LogWarning($"{name} : 랜덤 방 후보가 모두 사용되어 중복을 허용합니다. (연속 중복만 피함)");
-                    candidates = pool.FindAll(candidate => candidate != previous);
-
-                    if (candidates.Count == 0)
-                        candidates = pool;
-                }
-            }
-
-            return candidates[Random.Range(0, candidates.Count)];
         }
     }
 }

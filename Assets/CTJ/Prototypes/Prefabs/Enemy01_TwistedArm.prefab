@@ -45,6 +45,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatModule
   baseStats: {fileID: 11400000, guid: d59eeb08b5f17b54a9ae3e178a7a3ba3, type: 2}
+--- !u!1 &954707639251136881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1697934618194062662}
+  - component: {fileID: 8821252562880361917}
+  m_Layer: 8
+  m_Name: OutlineModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1697934618194062662
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954707639251136881}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6927146698229446863}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8821252562880361917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954707639251136881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d1dbe5648ecb34389598922337e57f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyOutlineModule
+  sprites:
+  - {fileID: 5716664539610796768}
+  outlineMaterial: {fileID: 2100000, guid: 111859d1d17dee245b7ef0e9b591c410, type: 2}
+  normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
+  hitColor: {r: 1, g: 1, b: 1, a: 1}
+  width: 2
+  hitDuration: 0.25
 --- !u!1 &1020580208599900031
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,6 +174,39 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.56}
   m_EdgeRadius: 0
+--- !u!1 &1133399053616416470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8011885005329948684}
+  m_Layer: 8
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8011885005329948684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133399053616416470}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2221571346087755022}
+  - {fileID: 4495099939134720314}
+  m_Father: {fileID: 6927146698229446863}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2147026922408167002
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,17 +252,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 1
-  knockbackSpeed: 5.1
-  knockbackDuration: 0.2
-  hitStunDuration: 0
+  knockbackSpeed: 2
+  knockbackDuration: 0.15
+  hitStunDuration: 0.3
   cancelAttackOnHit: 1
   enableBlink: 1
   blinkDuration: 0.35
   blinkInterval: 0.05
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  hitColor: {r: 1, g: 1, b: 1, a: 1}
+  hitColorBlend: 0.35
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
   sprites:
   - {fileID: 5716664539610796768}
+  enableScalePulse: 1
+  scaleTargets:
+  - {fileID: 2221571346087755022}
+  scalePulseAmount: 0.2
+  scalePulseDuration: 0.2
 --- !u!1 &2803683618863263173
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +451,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 2221571346087755022}
+  - {fileID: 8011885005329948684}
   - {fileID: 761309197410533175}
   - {fileID: 2599887470727774038}
   - {fileID: 1956398136944956232}
@@ -372,6 +462,7 @@ Transform:
   - {fileID: 3186657198725686249}
   - {fileID: 880304594050342552}
   - {fileID: 6783566518251162097}
+  - {fileID: 1697934618194062662}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &4802418672219086477
@@ -466,7 +557,7 @@ MonoBehaviour:
   detectionRange: 6
   chaseReleaseRange: 9
   moveSpeed: 6
-  facingRoot: {fileID: 2221571346087755022}
+  facingRoot: {fileID: 8011885005329948684}
   deathAnimator: {fileID: 8477672427082918608}
   deathDespawnDelay: 1.1
 --- !u!1 &4273237810721295959
@@ -530,7 +621,7 @@ GameObject:
   - component: {fileID: 14020750447806712}
   - component: {fileID: 1872039925522484129}
   m_Layer: 8
-  m_Name: Visual
+  m_Name: HitVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -548,9 +639,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4495099939134720314}
-  m_Father: {fileID: 6927146698229446863}
+  m_Children: []
+  m_Father: {fileID: 8011885005329948684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5716664539610796768
 SpriteRenderer:
@@ -703,7 +793,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5412d3d4a036c5f4d983d1bdb511aa2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyPatrolModule
-  centerOverride: {fileID: 0}
   halfWidth: 6
   centerOffsetX: 0
   patrolSpeed: 2
@@ -738,7 +827,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2221571346087755022}
+  m_Father: {fileID: 8011885005329948684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &4606264060112119198
 BoxCollider2D:

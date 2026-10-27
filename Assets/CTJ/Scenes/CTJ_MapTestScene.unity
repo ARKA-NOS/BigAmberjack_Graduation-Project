@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4989424052003951630, guid: f2dd48505c173c04ea2ff6887c23357e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -339,7 +343,7 @@ GameObject:
   - component: {fileID: 1234567891}
   - component: {fileID: 1234567892}
   m_Layer: 0
-  m_Name: Global Light 2D
+  m_Name: Global Light 2Ds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -666,6 +670,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy01_TwistedArm
       objectReference: {fileID: 0}
+    - target: {fileID: 4259732770580261197, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
+      propertyPath: knockbackSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4259732770580261197, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
+      propertyPath: knockbackDuration
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 6927146698229446863, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6
@@ -705,6 +717,10 @@ PrefabInstance:
     - target: {fileID: 6927146698229446863, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821252562880361917, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
+      propertyPath: width
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

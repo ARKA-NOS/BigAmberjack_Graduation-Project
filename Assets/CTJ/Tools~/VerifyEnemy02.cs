@@ -50,8 +50,8 @@ namespace CTJ.Tools
             SerializedObject oldShot = new SerializedObject(ghost.GetComponentInChildren<EnemyProjectileSkill>());
             Check(!oldShot.FindProperty("trackTargetDuringPreparation").boolValue && oldShot.FindProperty("showAimLine").boolValue &&
                 oldShot.FindProperty("turret").objectReferenceValue == null, "MadGhost defaults changed");
-            Check(new SerializedObject(ghost.GetComponentInChildren<EnemyHitReactionModule>()).FindProperty("hitStunDuration").floatValue == 0f,
-                "Existing hit timing changed");
+            Check(Mathf.Approximately(new SerializedObject(ghost.GetComponentInChildren<EnemyHitReactionModule>()).FindProperty("hitStunDuration").floatValue, 0.3f),
+                "Updated hit stun duration");
             return new { passed = true, scope = "scripts / prefab references / stationary physics / mask isolation / original defaults" };
         }
 
@@ -347,7 +347,8 @@ namespace CTJ.Tools
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, origin, Vector2.right, Vector2.left);
                 Check(!skills.IsBusy && !Line(shot).IsVisible && enemy.IsHitReacting, "Preparation cancellation / line cleanup");
                 await Wait(0.1f); Check(enemy.IsHitReacting, "Configured stagger too short");
-                await Wait(0.15f); Check(!enemy.IsHitReacting && Vector3.Distance(enemy.transform.position, origin) < 0.001f && hp.CurrentHealth == 28f, "Stagger ends without displacement");
+                await Wait(enemy.GetModule<EnemyHitReactionModule>().RemainingReactionTime + 0.03f);
+                Check(!enemy.IsHitReacting && Vector3.Distance(enemy.transform.position, origin) < 0.001f && hp.CurrentHealth == 28f, "Stagger ends without displacement");
                 return new { scenario = "idle / emergence / tracking / line toggle / final lock / 15 damage / retract / stationary stagger and cancel", passed = true };
             }
             finally { Object.Destroy(arena); }
@@ -443,11 +444,13 @@ namespace CTJ.Tools
                 CheckMask(idle, "idle");
                 EnemyHitReactionModule reaction = enemy.GetModule<EnemyHitReactionModule>();
                 Set(reaction, "blinkDuration", 0.4f); Set(reaction, "blinkInterval", 1f);
+                Set(reaction, "enableScalePulse", false); // 이 검사는 원본과 마스크 윤곽을 비교합니다.
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, enemy.transform.position, Vector2.right, Vector2.left);
                 await Frames(4); hit = Read(rt); CheckMask(hit, "hit while buried");
                 Color32[] p0 = idle.GetPixels32(), p1 = hit.GetPixels32();
                 Check(p0.Zip(p1, (a, b) => Math.Abs(a.a - b.a) <= 2).All(v => v), "Hit flash ignores burial mask");
-                Check(p1.Where(c => c.a > 100).All(c => c.r > 100 && c.g <= 2 && c.b <= 2), "Hit flash is not solid red");
+                Check(p1.Where(c => c.a > 100).Select(c => (c.r << 16) | (c.g << 8) | c.b).Distinct().Count() >= 3,
+                    "White hit blend erased body / launcher details");
                 await Wait(0.45f);
                 EnemyDamageProbe target = Target(arena, new Vector2(4003f, 1.7f)); enemy.SetTarget(target.transform);
                 await Until(() => enemy.GetModule<EnemyTurretModule>().IsDeployed); await Wait(0.9f); await Frames(4);

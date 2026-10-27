@@ -264,7 +264,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 439210571}
-  - component: {fileID: 439210570}
+  - component: {fileID: 439210572}
+  - component: {fileID: 439210573}
   m_Layer: 0
   m_Name: PlayerSpawner
   m_TagString: Untagged
@@ -272,18 +273,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &439210570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 439210569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae6147e1832545b588560d1e32458783, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Player.PlayerSpawner
 --- !u!4 &439210571
 Transform:
   m_ObjectHideFlags: 0
@@ -299,6 +288,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &439210572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439210569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46945583ef224fcb917be48a0d0349ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.PlayerToSpawnPoint
+  spawnPoint: {fileID: 439210569}
+--- !u!114 &439210573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439210569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae6147e1832545b588560d1e32458783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.PlayerSpawner
 --- !u!1 &565536152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1811,8 +1825,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba0256a58ff407db688e7086f85274f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.EffectSystem.Test.EffectTester
-  effectModule: {fileID: 0}
-  effectSo: {fileID: 11400000, guid: cbe233e139e065348b5c7b33676ce1aa, type: 2}
 --- !u!4 &1508976587
 Transform:
   m_ObjectHideFlags: 0

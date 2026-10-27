@@ -1,4 +1,5 @@
 ﻿using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem.Titles
         {
             if (!owner.TryGetModule(out IStatModule statModule)) return;
             if(statData == null) return;
+            FDebug.Log("Title Upgrade");
             statModule.GetStat(statData).SetModify(this,statModifyData);
         }
     }

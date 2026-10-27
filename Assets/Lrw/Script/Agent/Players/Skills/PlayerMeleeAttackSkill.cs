@@ -98,7 +98,7 @@ namespace Lrw.Script.Agent.Players.Skills
             _movement.MoveLock(true);
             _prevSpeed = _animator.speed;
             SetAnimationSpeed();
-            QuestManager.AddQuestStack(Owner, meleeAttackKey, 1f);
+            QuestManager.AddAmount(Owner, meleeAttackKey, 1f);
         }
 
         private void OnTrigger()

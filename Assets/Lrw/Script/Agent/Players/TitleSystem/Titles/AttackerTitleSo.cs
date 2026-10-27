@@ -13,7 +13,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem.Titles
         public override void Upgrade(ModuleOwner owner)
         {
             if (!owner.TryGetModule(out IStatModule statModule)) return;
-            
+            if(statData == null) return;
             statModule.GetStat(statData).SetModify(this,statModifyData);
         }
     }

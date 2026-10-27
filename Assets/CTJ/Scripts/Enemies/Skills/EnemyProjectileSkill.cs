@@ -100,6 +100,7 @@ namespace CTJ.Enemies.Skills
                 attackAnimator.Play(stateHash, 0, 0f);
             }
             _endTime = Time.time + Mathf.Max(0f, recoveryTime);
+            BeginRecovery();
             if (recoveryTime <= 0f) EndSkill();
         }
 

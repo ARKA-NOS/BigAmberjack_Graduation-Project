@@ -26,10 +26,13 @@ namespace CTJ.Enemies.Skills
         private float _phaseEndTime;
         private float _blinkDuration;
         private float _holdDuration;
+        private bool _isRecovering;
         protected AttackTelegraphUI Telegraph { get; private set; }
         protected bool HasReleased { get; private set; }
         protected virtual bool ShouldShowTelegraph => true;
         public bool IsPreparing => IsUsing && !HasReleased;
+        // 타격/발사 처리가 끝나면 파생 스킬이 BeginRecovery를 호출합니다.
+        public bool IsRecovering => IsUsing && _isRecovering;
         public bool IsHoldingWarning => IsPreparing && _preparationPhase == PreparationPhase.Holding;
         public float AttackDelay => Mathf.Max(0f, _attackDelay?.Value ?? fallbackAttackDelay);
         public float PostBlinkDelay => Mathf.Max(0f, postBlinkDelay);
@@ -54,6 +57,7 @@ namespace CTJ.Enemies.Skills
             base.OnUseSkill();
             CastTarget = Enemy.Target;
             HasReleased = false;
+            _isRecovering = false;
             if (Telegraph == null && telegraphPrefab != null)
                 Telegraph = Instantiate(telegraphPrefab, Enemy.transform);
 
@@ -120,6 +124,11 @@ namespace CTJ.Enemies.Skills
         protected virtual void UpdateTelegraph() { }
         protected virtual void OnReleaseAttack() { }
 
+        protected void BeginRecovery()
+        {
+            if (IsUsing && HasReleased) _isRecovering = true;
+        }
+
         private void ReleaseAttack()
         {
             if (!IsUsing || !CanContinue || HasReleased) return;
@@ -141,6 +150,7 @@ namespace CTJ.Enemies.Skills
             Telegraph?.Hide();
             if (preparationWarning != null) preparationWarning.Hide();
             HasReleased = false;
+            _isRecovering = false;
             CastTarget = null;
         }
         protected virtual void OnDisable() => StopSkill();

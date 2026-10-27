@@ -60,14 +60,17 @@ namespace CTJ.Enemies.Skills
             if (!IsUsing || !HasReleased || !CanContinue || _hitEventConsumed) return;
             _hitEventConsumed = true; // 빗나가도 소모하여 중복 이벤트의 재타격을 막습니다.
             Telegraph?.Hide();
-            if (attackHitbox == null || !attackHitbox.enabled || !attackHitbox.gameObject.activeInHierarchy) return;
-            Physics2D.SyncTransforms();
-            attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
-            Vector2 direction = CastTarget.position - Enemy.transform.position;
-            foreach (Collider2D hit in _overlaps)
-                if (EnemyDamageUtility.IsTargetCollider(hit, CastTarget) &&
-                    EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
-                        hit.ClosestPoint(attackHitbox.bounds.center), direction)) break;
+            if (attackHitbox != null && attackHitbox.enabled && attackHitbox.gameObject.activeInHierarchy)
+            {
+                Physics2D.SyncTransforms();
+                attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
+                Vector2 direction = CastTarget.position - Enemy.transform.position;
+                foreach (Collider2D hit in _overlaps)
+                    if (EnemyDamageUtility.IsTargetCollider(hit, CastTarget) &&
+                        EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
+                            hit.ClosestPoint(attackHitbox.bounds.center), direction)) break;
+            }
+            BeginRecovery(); // 빗나간 공격도 타격 판정 이후에는 빈틈이 생깁니다.
         }
 
         public override void UpdateSkill()

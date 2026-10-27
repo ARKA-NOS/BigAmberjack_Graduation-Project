@@ -6,7 +6,9 @@ namespace Lrw.Script.Agent.Players.QuestSystem
     public class Quest
     {
         public readonly QuestSo QuestSo;
-        public float CurrentAmount = 0f;
+        public float CurrentAmount { get; private set; }= 0f;
+        public readonly float RequiredAmount;
+        public float NormalizedAmount => CurrentAmount / RequiredAmount;
         public bool IsComplete { get; private set; }
         public event Action OnComplete;
         public event Action OnChanged;
@@ -15,20 +17,20 @@ namespace Lrw.Script.Agent.Players.QuestSystem
         {
             QuestSo = questSo;
             CurrentAmount = 0f;
+            RequiredAmount = QuestSo.RequiredAmount;
             IsComplete = false;
         }
         
         public void AddAmount(float amount)
         {
             if(IsComplete) return;
-            float requiredAmount = QuestSo.RequiredAmount;
             float prevAmount = CurrentAmount;
-            CurrentAmount = Mathf.Clamp(CurrentAmount + amount,0f,requiredAmount);
+            CurrentAmount = Mathf.Clamp(CurrentAmount + amount,0f,RequiredAmount);
             
             if(Mathf.Approximately(prevAmount,CurrentAmount)) 
                 OnChanged?.Invoke();
             
-            if (Mathf.Approximately(CurrentAmount, requiredAmount))
+            if (Mathf.Approximately(CurrentAmount, RequiredAmount))
             {
                 IsComplete = true;
                 OnComplete?.Invoke();

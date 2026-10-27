@@ -12,6 +12,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         
         private Dictionary<AbstractTitleSo,Title> _titles;
         private IQuestModule _questModule;
+        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -23,10 +24,23 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         {
             foreach (AbstractTitleSo titleSo in titleGroup.TitleList)
             {
-                Title title = new Title(titleSo, _questModule);
-                _titles.Add(titleSo, title);
-                title.OnComplete += Upgrade;
+                AbstractTitleSo[] requiredTitles = titleSo.RequiredTitles;
+                if (requiredTitles == null || requiredTitles.Length == 0)
+                {
+                    InitTitle(titleSo);
+                }
+                else
+                {
+                    
+                }
             }
+        }
+
+        private void InitTitle(AbstractTitleSo titleSo)
+        {
+            Title title = new Title(titleSo, _questModule);
+            _titles.Add(titleSo, title);
+            title.OnComplete += Upgrade;
         }
 
         private void Upgrade(Title title)
@@ -34,7 +48,6 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             title.TitleSo.Upgrade(_owner);
             title.OnComplete -= Upgrade;
         }
-
         
     }
 }

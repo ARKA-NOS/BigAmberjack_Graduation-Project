@@ -1,12 +1,15 @@
 using System;
 using DevLib.ModuleSystem;
 using KHO.Scripts.ItemSystem;
+using KHO.Scripts.UI.InventoryUI;
 using UnityEngine;
 
 namespace KHO.Scripts.InventorySystem
 {
     public class InventoryModule : Module, IInventoryModule
     {
+        [SerializeField] private InventoryViewModel viewModel;
+
         [Header("Debug")]
         [SerializeField] private ItemSO debugItem;
 
@@ -19,6 +22,7 @@ namespace KHO.Scripts.InventorySystem
         {
             base.Initialize(owner);
             Inventory = new Inventory();
+            BindViewModel();
         }
 
         public bool TryAddItem(ItemSO item)
@@ -29,7 +33,7 @@ namespace KHO.Scripts.InventorySystem
             if (!Inventory.TryAdd(instance, out int slot)) return false;
 
             instance.ApplyEffects(_owner);
-            OnSlotChanged?.Invoke(slot);
+            NotifySlotChanged(slot);
             return true;
         }
 
@@ -39,7 +43,7 @@ namespace KHO.Scripts.InventorySystem
 
             ItemInstance prev = Inventory.Set(slot, null);
             prev.RemoveEffects(_owner);
-            OnSlotChanged?.Invoke(slot);
+            NotifySlotChanged(slot);
             return true;
         }
 
@@ -51,8 +55,20 @@ namespace KHO.Scripts.InventorySystem
             ItemInstance prev = Inventory.Set(slot, instance);
             prev?.RemoveEffects(_owner);
             instance.ApplyEffects(_owner);
-            OnSlotChanged?.Invoke(slot);
+            NotifySlotChanged(slot);
             return true;
+        }
+
+        private void NotifySlotChanged(int slot)
+        {
+            OnSlotChanged?.Invoke(slot);
+            BindViewModel();
+        }
+
+        private void BindViewModel()
+        {
+            if (viewModel != null)
+                viewModel.Bind(Inventory);
         }
 
         private static bool IsValidSlot(int slot) => slot >= 0 && slot < Inventory.SlotCount;

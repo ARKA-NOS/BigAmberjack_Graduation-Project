@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Lrw.Script.Agent.Players.TitleSystem.QuestSystem
+namespace Lrw.Script.Agent.Players.QuestSystem
 {
     public class Quest
     {

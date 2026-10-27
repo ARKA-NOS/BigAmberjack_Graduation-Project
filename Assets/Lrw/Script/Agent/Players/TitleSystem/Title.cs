@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lrw.Script.Agent.Players.TitleSystem.QuestSystem;
+using Lrw.Script.Agent.Players.QuestSystem;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
 {

@@ -1,5 +1,5 @@
 ﻿using DevLib.ModuleSystem;
-using Lrw.Script.Agent.Players.TitleSystem.QuestSystem;
+using Lrw.Script.Agent.Players.QuestSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.TitleSystem

@@ -56,9 +56,8 @@ namespace DevLib.ModuleSystem
         }
 
         public T[] GetModules<T>()
-        {
-            return _moduleDict.Values.OfType<T>().ToArray();
-        }
+            => _moduleDict.Values.OfType<T>().ToArray();
+        
 
     }
 }

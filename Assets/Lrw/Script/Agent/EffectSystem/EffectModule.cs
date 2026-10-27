@@ -27,9 +27,12 @@ namespace Lrw.Script.Agent.EffectSystem
         private void Start()
         {
             _effectList = new EffectList(_effects);
-            
-            if(effectViewModel != null)
+
+            if (effectViewModel != null)
+            {
                 effectViewModel.Bind(_effectList);
+                ViewModelUpdate();
+            }
         }
 
         public void TakeEffect(AbstractEffectDataSo effectDataSo)
@@ -66,7 +69,7 @@ namespace Lrw.Script.Agent.EffectSystem
                 effects.Add(data.effect);
             }
         }
-
+        
         private void EffectUpdate()
         {
             foreach (List<IEffect> effectList in _effects.Values)

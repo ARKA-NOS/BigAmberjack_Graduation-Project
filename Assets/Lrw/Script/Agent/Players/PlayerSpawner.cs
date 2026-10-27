@@ -1,5 +1,6 @@
 ﻿using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Agent.Players.CharacterSystem;
+using Lrw.Script.Agent.Players.PlayerPackSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players
@@ -8,7 +9,17 @@ namespace Lrw.Script.Agent.Players
     {
         private void Awake()
         {
-            ServiceLocator.Get<ICharacterManager>().CreateCharacter(transform.position);
+            IPlayerPack playerPack = ServiceLocator.Get<IPlayerPack>();
+
+            if (!playerPack.IsExist())
+                CreatePlayer();
+            
+            playerPack.SetPos(transform.position);
+            
+            Destroy(gameObject);
         }
+        
+        private void CreatePlayer()
+            => ServiceLocator.Get<ICharacterManager>().CreateCharacter(transform.position);
     }
 }

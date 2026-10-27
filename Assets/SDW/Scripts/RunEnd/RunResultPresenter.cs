@@ -6,6 +6,7 @@ using KHO.Scripts.ItemSystem;
 using Lrw.Script._Core._EventSystem;
 using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._ServiceLocator;
+using Lrw.Script._Core.SceneSystem;
 using Lrw.Script.Agent.Players;
 using Lrw.Script.Currency;
 using UnityEngine;
@@ -20,6 +21,8 @@ namespace SDW.Scripts.RunEnd
         [SerializeField] private RunResultViewModel viewModel;
         [Tooltip("소지금으로 표시할 재화")]
         [SerializeField] private CurrencySO gold;
+        [Tooltip("\"다음\"을 누르면 이동할 씬. 비워두면 현재 씬을 다시 시작한다.")]
+        [SerializeField] private SceneSo nextScene;
 
         private bool _isEnded;
         private bool _isLeaving;
@@ -94,7 +97,7 @@ namespace SDW.Scripts.RunEnd
             return killCountManager != null ? killCountManager.GetKillCount() : null;
         }
 
-        // "다음" 버튼. 지금은 씬 재시작으로 처리한다. (이후 로비/다음 스테이지 이동 등으로 교체)
+        // "다음" 버튼. nextScene(예: Test Home)으로 이동한다. 비어 있으면 현재 씬을 다시 시작한다.
         private void HandleNext()
         {
             if (_isLeaving)
@@ -102,17 +105,25 @@ namespace SDW.Scripts.RunEnd
 
             _isLeaving = true;
             BindResult(null);
-            RestartScene();
+            DestroyGameManager();
+
+            if (nextScene != null)
+                SceneManager.LoadScene(nextScene);
+            else
+                RestartScene();
         }
 
-        private void RestartScene()
+        // GameManager는 DontDestroyOnLoad라 다른 씬(또는 같은 씬)을 불러오면 그 씬의 GameManager와 중복된다.
+        // 기존 것을 먼저 파괴해서(파괴 시 각 매니저의 GameEnd가 호출됨) 새 씬의 GameManager만 남게 한다.
+        private static void DestroyGameManager()
         {
-            // GameManager는 DontDestroyOnLoad라 씬을 다시 불러오면 새 씬의 GameManager와 중복된다.
-            // 기존 것을 먼저 파괴해서(파괴 시 각 매니저의 GameEnd가 호출됨) 새 씬의 GameManager만 남게 한다.
             GameManager gameManager = FindAnyObjectByType<GameManager>();
             if (gameManager != null)
                 Destroy(gameManager.gameObject);
+        }
 
+        private static void RestartScene()
+        {
             Scene current = SceneManager.GetActiveScene();
 #if UNITY_EDITOR
             // 테스트 씬은 빌드 세팅에 없을 수 있으므로, 에디터에서는 경로로 다시 불러온다.

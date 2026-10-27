@@ -14,14 +14,22 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
         [SerializeField,Range(0,1f)] private float lagSpeed;
         
         private float _lagValue = 0f;
-        
+        private bool _hasValue;
+
         [Header("Health Text")]
         [SerializeField] private TextMeshProUGUI healthText;
-        
+
         protected override void OnDataChanged()
         {
             float normal = CurrentValue.Normalized;
-            _lagValue = normal;
+
+            // 처음 값이 들어오거나 회복이면 바로 맞추고, 피해일 때만 지연 바가 천천히 따라간다
+            if (!_hasValue || normal > _lagValue)
+            {
+                _lagValue = normal;
+                _hasValue = true;
+            }
+
             SetBarSize(normal, _lagValue);
         }
         

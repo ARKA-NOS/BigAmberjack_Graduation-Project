@@ -8,7 +8,7 @@ namespace CTJ.Enemies.FSM
 
         public override void Enter()
         {
-            Enemy.StopHorizontalMovement();
+            Enemy.BeginPatrol();
         }
 
         public override void StateUpdate()
@@ -19,7 +19,9 @@ namespace CTJ.Enemies.FSM
 
         public override void StateFixedUpdate()
         {
-            Enemy.StopHorizontalMovement();
+            Enemy.TickPatrol();
         }
+
+        public override void Exit() => Enemy.EndPatrol();
     }
 }

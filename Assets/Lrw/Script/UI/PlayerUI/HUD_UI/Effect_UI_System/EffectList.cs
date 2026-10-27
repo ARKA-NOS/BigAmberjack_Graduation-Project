@@ -6,7 +6,6 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
 {
     public class EffectList
     {
-        // 매 프레임 정렬하므로 비교자를 한 번만 만들어 둔다 (메서드 그룹 전달 시 매번 델리게이트 할당)
         private static readonly IComparer<KeyValuePair<AbstractEffectDataSo, List<IEffect>>> PriorityComparer =
             Comparer<KeyValuePair<AbstractEffectDataSo, List<IEffect>>>.Create(
                 (x, y) => x.Key.Priority.CompareTo(y.Key.Priority));
@@ -26,8 +25,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
         {
             ViewDataList.Clear();
             _sortedEffects.Clear();
-
-            // AddRange는 런타임에 따라 임시 배열을 할당할 수 있어서 직접 추가
+            
             foreach (KeyValuePair<AbstractEffectDataSo, List<IEffect>> pair in _effects)
                 _sortedEffects.Add(pair);
 
@@ -37,8 +35,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
             {
                 AbstractEffectDataSo effectData = pair.Key;
                 List<IEffect> list = pair.Value;
-
-                // 모든 스택이 끝난 효과는 표시하지 않는다
+                
                 if (list.Count == 0) continue;
 
                 EffectViewData viewData = new EffectViewData
@@ -53,8 +50,7 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
                 ViewDataList.Add(viewData);
             }
         }
-
-        // 가장 먼저 끝나는 스택 기준 게이지. 시간제 효과가 없으면 빈 게이지
+        
         private static Gauge GetEffectGauge(List<IEffect> list)
         {
             ITimedEffect shortest = null;

@@ -90,8 +90,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.Bosses.BossArenaModule
   centerAnchor: {fileID: 0}
   halfWidth: 11
-  floorDistance: 4.5
-  laserHeight: 4.5
+  floorDistance: 5
+  laserHeight: 1.5
   introHeight: 4
   arenaCamera: {fileID: 0}
   offscreenPadding: 1
@@ -147,6 +147,7 @@ MonoBehaviour:
   blinkBeforeAttack: 1
   telegraphOpacity: 1
   telegraphPrefab: {fileID: 4547353376975224192, guid: e771c0262deb53749ad26e55c02738e6, type: 3}
+  preparationWarning: {fileID: 0}
   projectilePrefab: {fileID: 5975990900641346649, guid: 18aea098c1967fd429e9d95ff523b1f4, type: 3}
   firePoint: {fileID: 2885612780743093848}
   damageStat: {fileID: 11400000, guid: 9ff90c5310699ce4e85c014ff641df8d, type: 2}
@@ -655,6 +656,7 @@ MonoBehaviour:
   blinkBeforeAttack: 1
   telegraphOpacity: 1
   telegraphPrefab: {fileID: 11400001, guid: 1b632104bd3a43598d7914bda070944a, type: 3}
+  preparationWarning: {fileID: 0}
   firePoint: {fileID: 2885612780743093848}
   beamVisual: {fileID: 8900915903831047696}
   damageStat: {fileID: 11400000, guid: 9ff90c5310699ce4e85c014ff641df8d, type: 2}

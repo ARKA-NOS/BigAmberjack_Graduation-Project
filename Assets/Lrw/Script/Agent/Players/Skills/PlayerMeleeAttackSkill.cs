@@ -121,7 +121,7 @@ namespace Lrw.Script.Agent.Players.Skills
             base.OnStopSkill();
             SkillEndSetting();
         }
-
+        
         private void SkillEndSetting()
         {
             _trigger.OnAttackTrigger -= OnTrigger;

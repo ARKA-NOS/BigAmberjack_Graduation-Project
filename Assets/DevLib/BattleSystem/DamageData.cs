@@ -10,5 +10,6 @@ namespace DevLib.BattleSystem
         public bool IsCritical;
         public ModuleOwner Dealer;
         public Vector2 DirectedKBForce; //방향성을 부여받은 넉백힘
+        public float LifeStealRatio;
     }
 }

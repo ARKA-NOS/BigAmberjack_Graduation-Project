@@ -48,10 +48,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Size.x
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Size.y
+      value: 2.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357354459927758721, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5549331499410612823, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8895403168023790830, guid: 0a639278929651541a865fefebec6be5, type: 3}
       propertyPath: data
       value: 
       objectReference: {fileID: 11400000, guid: 22df94d881521ae409de8d9c6f72f414, type: 2}
+    - target: {fileID: 8895403168023790830, guid: 0a639278929651541a865fefebec6be5, type: 3}
+      propertyPath: uiAnchorOffset.y
+      value: 2.1
+      objectReference: {fileID: 0}
     - target: {fileID: 9150914726007896175, guid: 0a639278929651541a865fefebec6be5, type: 3}
       propertyPath: m_Name
       value: Npc_EccentricDoctor

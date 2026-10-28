@@ -8,7 +8,7 @@ using CTJ.Enemies.Skills;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using Lrw.Script.Currency;
 using UnityEditor;
@@ -45,12 +45,12 @@ namespace CTJ.Tools
                 EnemyBase enemy = AssetDatabase.LoadAssetAtPath<EnemyBase>(path);
                 Check(enemy != null, "Missing prefab");
                 Check(enemy.GetComponents<Component>().Length == 4, "Root components: " + string.Join(", ", enemy.GetComponents<Component>().Select(c => c != null ? c.GetType().Name : "Missing")));
-                string[] names = { "Visual", "EnemyMovement", "TerrainBody", "StatModule", "HealthModule",
+                string[] names = { "Visual", "EnemyMovement", "TerrainBody", "StatModule", "NewHealthModule",
                     "SkillModule", "HitReactionModule", "CurrencyRewardModule", "DeathModule" };
                 Check(enemy.transform.Cast<Transform>().Select(t => t.name).SequenceEqual(names), "Hierarchy/order differs");
                 IModule[] modules = enemy.GetComponentsInChildren<IModule>();
                 Check(modules.Length == 7 && modules.Select(m => m.GetType()).Distinct().Count() == 7, "Missing/duplicate modules");
-                Check(Array.FindIndex(modules, m => m is StatModule) < Array.FindIndex(modules, m => m is HealthModule), "Stat must precede Health");
+                Check(Array.FindIndex(modules, m => m is StatModule) < Array.FindIndex(modules, m => m is NewHealthModule), "Stat must precede Health");
                 EnemySkillModule skills = enemy.GetComponentInChildren<EnemySkillModule>();
                 EnemyAttackSkill attack = skills.GetComponentInChildren<EnemyAttackSkill>();
                 Check(attack != null && attack.transform.parent == skills.transform && skills.Skills[0].Skill == attack, "Skill child reference");
@@ -122,7 +122,7 @@ namespace CTJ.Tools
                 foreach (string path in new[] { Cat, Ghost })
                 {
                     EnemyBase enemy = Spawn(path, instances);
-                    IHealthModule hp = enemy.GetModule<IHealthModule>();
+                    INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                     test(hp.MaxHealth == (path == Cat ? 40f : 30f), "Existing HP changed after hierarchy split");
                     int before = data.Count;
                     Damage(enemy, 2f);
@@ -135,7 +135,7 @@ namespace CTJ.Tools
                     int expected = before + (path == Cat ? 10 : 15);
                     test(enemy.IsDead && data.Count == expected, "Death/reentrant callback must grant once");
                     Damage(enemy, 999f);
-                    hp.CurrentHealth = 0f;
+                    hp.ApplyDamage(hp.CurrentHealth);
                     Grant.Invoke(reward, null);
                     enemy.OnAttackHit();
                     test(data.Count == expected && !enemy.IsAttackInProgress, "Duplicate death/late attack");
@@ -145,7 +145,7 @@ namespace CTJ.Tools
                 EnemyBase direct = Spawn(Cat, instances);
                 direct.GetModule<IStatModule>().GetStat(amountStat).SetBaseValue(23.9f);
                 int balance = data.Count;
-                direct.GetModule<IHealthModule>().CurrentHealth = 0f;
+                direct.GetModule<INewHealthModule>().ApplyDamage(direct.GetModule<INewHealthModule>().CurrentHealth);
                 test(data.Count == balance + 23, "Read runtime stat and discard fraction");
 
                 EnemyBase living = Spawn(Cat, instances);

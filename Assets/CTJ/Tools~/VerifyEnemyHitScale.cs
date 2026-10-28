@@ -36,6 +36,8 @@ namespace CTJ.Tools
                 EnemyHitReactionModule reaction = enemy.GetModule<EnemyHitReactionModule>();
                 Set(reaction, "enableKnockback", false); Set(reaction, "enableBlink", false);
                 Transform[] targets = Targets(reaction);
+                float amount = new SerializedObject(reaction).FindProperty("scalePulseAmount").floatValue;
+                float restoreWait = new SerializedObject(reaction).FindProperty("scalePulseDuration").floatValue + 0.05f;
                 // 원본 크기가 1이 아니어도 복원되는지 확인합니다.
                 foreach (Transform target in targets) target.localScale = new Vector3(1.2f, 0.8f, 1.1f);
                 Vector3[] originals = targets.Select(t => t.localScale).ToArray();
@@ -48,7 +50,7 @@ namespace CTJ.Tools
                 Vector3 rootPoint = enemy.transform.position;
                 Hit(enemy);
                 Check(!reaction.IsBlinking, "Scale must work with blink disabled");
-                CheckPulse(targets, originals);
+                CheckPulse(targets, originals, amount);
                 Physics2D.SyncTransforms();
                 for (int i = 0; i < colliders.Length; i++)
                 {
@@ -57,31 +59,39 @@ namespace CTJ.Tools
                 }
                 if (muzzle != null) Check(Vector3.Distance(muzzle.position, muzzlePoint) < 0.001f, "Muzzle moved with scale");
                 Check(enemy.transform.localScale == rootScale && enemy.transform.position == rootPoint, "Root changed with scale");
-                await Wait(0.2f); CheckRestored(targets, originals);
+                await Wait(restoreWait); CheckRestored(targets, originals);
 
                 float min = float.MaxValue, max = float.MinValue;
                 for (int i = 0; i < 24; i++)
                 {
-                    Hit(enemy); CheckPulse(targets, originals);
+                    Hit(enemy); CheckPulse(targets, originals, amount);
                     float offset = targets[0].localScale.x / originals[0].x - 1f;
                     min = Mathf.Min(min, offset); max = Mathf.Max(max, offset);
                 }
                 Check(max - min > 0.001f, "Random values did not vary");
-                await Wait(0.2f); CheckRestored(targets, originals);
+                await Wait(restoreWait); CheckRestored(targets, originals);
 
-                // 4~8%의 최대 변형에서 부드럽게 원상 복귀하는지 확인합니다.
+                // 넓힌 상한이 런타임의 옛 0.2 제한에 막히지 않는지 확인합니다.
+                Set(reaction, "scalePulseAmount", 0.8f);
+                Hit(enemy); CheckPulse(targets, originals, 0.8f);
+                await Wait(restoreWait); CheckRestored(targets, originals);
+                Set(reaction, "scalePulseAmount", 0f);
+                Hit(enemy); CheckRestored(targets, originals);
+                Set(reaction, "scalePulseAmount", amount);
+
+                // 최대 변형에서 부드럽게 원상 복귀하는지 확인합니다.
                 Hit(enemy); float peak = Mathf.Abs(targets[0].localScale.x - originals[0].x);
                 await Wait(0.07f);
                 float middle = Mathf.Abs(targets[0].localScale.x - originals[0].x);
                 Check(middle > 0f && middle < peak, "Pulse did not interpolate back");
-                await Wait(0.15f); CheckRestored(targets, originals);
+                await Wait(restoreWait); CheckRestored(targets, originals);
 
                 Transform facing = new SerializedObject(enemy).FindProperty("facingRoot").objectReferenceValue as Transform;
                 Hit(enemy);
                 if (facing != null)
                 {
                     Vector3 scale = facing.localScale; scale.x = -Mathf.Abs(scale.x); facing.localScale = scale;
-                    await Wait(0.2f);
+                    await Wait(restoreWait);
                     Check(facing.localScale.x < 0f, "Pulse reset facing"); CheckRestored(targets, originals);
                 }
 
@@ -92,7 +102,7 @@ namespace CTJ.Tools
                 reaction.enabled = true;
                 Hit(enemy); enemy.gameObject.SetActive(false); CheckRestored(targets, originals);
                 enemy.gameObject.SetActive(true);
-                Hit(enemy); CheckPulse(targets, originals);
+                Hit(enemy); CheckPulse(targets, originals, amount);
                 enemy.ApplyDamage(new DamageData { DamageAmount = 10000f }, enemy.transform.position, Vector2.right, Vector2.zero);
                 Check(enemy.IsDead, "Lethal damage"); CheckRestored(targets, originals);
                 return new { prefab = name, passed = true, tests = "random pulse / repeat / interpolation / nonunit restore / collider and muzzle isolation / facing / opt-out / disable / death" };
@@ -113,7 +123,7 @@ namespace CTJ.Tools
                 Check(Mathf.Approximately(new SerializedObject(after.GetModule<EnemyHitReactionModule>()).FindProperty("knockbackSpeed").floatValue, 6.4f), "Updated prefab speed");
                 await Wait(0.3f);
                 float a = before.transform.position.x, b = after.transform.position.x;
-                Hit(before); Hit(after); await Wait(0.3f);
+                Hit(before); Hit(after); await Wait(after.GetModule<EnemyHitReactionModule>().RemainingReactionTime + 0.04f);
                 float oldDistance = before.transform.position.x - a, newDistance = after.transform.position.x - b;
                 Check(oldDistance > 0.1f && newDistance / oldDistance > 1.2f && newDistance / oldDistance < 1.3f, "Knockback distance ratio");
                 Check(!after.IsHitReacting, "Hit stun lingered");
@@ -149,13 +159,13 @@ namespace CTJ.Tools
         private static void Hit(EnemyBase enemy) => enemy.ApplyDamage(new DamageData { DamageAmount = 0.01f },
             enemy.transform.position, Vector2.right, Vector2.zero);
 
-        private static void CheckPulse(Transform[] targets, Vector3[] originals)
+        private static void CheckPulse(Transform[] targets, Vector3[] originals, float amount)
         {
             for (int i = 0; i < targets.Length; i++)
             {
                 Vector3 scale = targets[i].localScale;
                 float dx = scale.x / originals[i].x - 1f, dy = scale.y / originals[i].y - 1f;
-                Check(Mathf.Abs(dx) >= 0.0399f && Mathf.Abs(dx) <= 0.0801f && Mathf.Abs(dx + dy) < 0.0001f &&
+                Check(Mathf.Abs(dx) >= amount * 0.5f - 0.0001f && Mathf.Abs(dx) <= amount + 0.0001f && Mathf.Abs(dx + dy) < 0.0001f &&
                     scale.z == originals[i].z, "Invalid pulse amplitude / accumulated scale");
             }
         }

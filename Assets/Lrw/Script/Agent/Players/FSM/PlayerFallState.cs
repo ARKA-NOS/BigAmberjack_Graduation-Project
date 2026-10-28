@@ -9,7 +9,6 @@ namespace Lrw.Script.Agent.Players.FSM
         private float _fallTime;
         private readonly IGroundChecker _groundChecker;
         private readonly IControlMultiJumper _controlMultiJumper;
-        private readonly IControlDasher _controlDasher;
         
         public PlayerFallState(Agent agent, int stateClipHash, int layerIndex) : base(agent, stateClipHash, layerIndex)
         {
@@ -17,8 +16,6 @@ namespace Lrw.Script.Agent.Players.FSM
             Debug.Assert(_groundChecker != null, "GroundChecker is 없다.");            
             _controlMultiJumper = Player.GetModule<IControlMultiJumper>();
             Debug.Assert(_controlMultiJumper != null, "IControlDoubleJumper is 없다.");            
-            _controlDasher = Player.GetModule<IControlDasher>();
-            Debug.Assert(_controlDasher != null, "IControlDasher is 없다.");
         }
 
         public override void Enter()
@@ -48,7 +45,6 @@ namespace Lrw.Script.Agent.Players.FSM
             if (!_groundChecker.IsGroundChecking()) return;
             Player.ChangeState(PlayerStateEnum.IDLE);
             _controlMultiJumper.ResetMultiJumpCount();
-            _controlDasher.ResetAirDashCount();
         }
         
         private void HandleJump()

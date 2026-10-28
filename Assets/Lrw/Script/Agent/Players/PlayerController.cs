@@ -15,7 +15,7 @@ namespace Lrw.Script.Agent.Players
         [field: SerializeField] public PlayerInputSo PlayerInput { get; private set; }
         [SerializeField] private StateListSo playerStates;
         private AgentStateMachine agentStateMachine;
-        private IControlDasher _dashController;
+        
         private IControlMovement _movementController;
         
         private ICanInputOnOff[] _canInputOnOffs;
@@ -28,15 +28,11 @@ namespace Lrw.Script.Agent.Players
             agentStateMachine = new AgentStateMachine(this, playerStates.states);
             agentStateMachine.ChangeState((int)PlayerStateEnum.IDLE);
             
-            PlayerInput.OnDashKeyPressed += HandleDashStateChange;
-            
-            _dashController = GetModule<IControlDasher>();
-            
             _movementController = GetModule<IControlMovement>();
 
             _canInputOnOffs = GetModules<ICanInputOnOff>();
             
-            HealthModule.OnDead += OnOnDead;
+            NewHealthModule.OnDead += OnOnDead;
             
             ServiceLocator.Register<IPlayerController>(this);
         }
@@ -44,16 +40,10 @@ namespace Lrw.Script.Agent.Players
         private void OnDestroy()
         {
             agentStateMachine.StateExit();
-            PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
-            HealthModule.OnDead -= OnOnDead;
+            NewHealthModule.OnDead -= OnOnDead;
             ServiceLocator.Register<IPlayerController>(new NullPlayerController());
         }
-
-        private void HandleDashStateChange()
-        {
-            if (_dashController.CanDash())
-                _dashController.Dash();
-        }
+        
 
         private void Update()
         {

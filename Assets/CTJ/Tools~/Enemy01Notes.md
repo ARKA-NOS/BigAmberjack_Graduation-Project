@@ -1,5 +1,7 @@
 # 09-01 팔이 뒤틀린 사람 — Catto 임시 비주얼
 
+> 2026-10-25 변경: 아래 최초 구현 기록의 룸 중심/Center Override 방식은 더 이상 사용하지 않습니다. 현재는 처음 초기화된 스폰 위치를 기준으로 배회합니다. 최신 설정은 `PatrolAndHitFeedbackNotes.md`를 참고하세요.
+
 ## 결과와 범위
 
 - 새 프리팹: `Assets/CTJ/Prototypes/Prefabs/Enemy01_TwistedArm.prefab`

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Lrw.Script.UI.BindSystem
 {
     /*
-    [CreateAssetMenu(fileName = "??? View Module", menuName = "UI/??? View Module", order = 0)]
+    [CreateAssetMenu(fileName = "??? View Module", menuName = "UI/??? View Module")]
     */
     public abstract class AbstractUIViewModel<T> : ScriptableObject
     {

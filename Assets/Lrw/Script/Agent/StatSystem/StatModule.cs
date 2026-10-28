@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DevLib.ModuleSystem;
 using JetBrains.Annotations;
+using Lrw.Script._Core._Debug;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.StatSystem
@@ -10,7 +11,7 @@ namespace Lrw.Script.Agent.StatSystem
     {
         [SerializeField] private StatGroup baseStats;
         
-        private Dictionary<StatData,Stat> _stats = new();
+        private readonly Dictionary<StatData,Stat> _stats = new();
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -30,7 +31,7 @@ namespace Lrw.Script.Agent.StatSystem
             if (statData == null) throw new Exception("StatData is null");
             if (_stats.TryGetValue(statData, out Stat stat)) return stat;
             stat = new Stat(statData,baseValue);
-            _stats.Add(statData,stat);
+            _stats[statData] = stat;
             return stat;
         }
         
@@ -38,8 +39,16 @@ namespace Lrw.Script.Agent.StatSystem
         public Stat GetStat(StatData statData)
         {
             if (statData == null) throw new Exception("StatData is null");
-            return _stats.TryGetValue(statData, out Stat stat) ? stat : AddStat(statData, statData.DefaultValue);
+            if (_stats.TryGetValue(statData, out Stat stat))
+            {
+                return stat;
+            }
+            FDebug.LogError($"[Stat Module : {gameObject.name}] No stat found for {statData}", this);
+            return AddStat(statData, statData.DefaultValue);
         }
-        
+
+        public IReadOnlyDictionary<StatData, Stat> GetStats()
+            => _stats;
+
     }
 }

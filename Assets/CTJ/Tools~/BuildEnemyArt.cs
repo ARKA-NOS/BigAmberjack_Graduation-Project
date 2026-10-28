@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using CTJ.Enemies;
 using CTJ.Testing;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -232,9 +232,17 @@ namespace CTJ.Tools
             StatData maxHealth = AssetDatabase.LoadAssetAtPath<StatData>("Assets/Lrw/GameModule/Stats/MaxHealth.asset");
             if (maxHealth == null) throw new InvalidOperationException("Missing existing MaxHealth StatData.");
             if (root.GetComponent<StatModule>() == null) root.AddComponent<StatModule>();
-            HealthModule health = root.GetComponent<HealthModule>();
-            if (health == null) health = root.AddComponent<HealthModule>();
-            Set(health, "maxHpStatData", maxHealth);
+            NewHealthModule health = root.GetComponentInChildren<NewHealthModule>(true);
+            if (health == null)
+            {
+                GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Lrw/GameModule/Module/NewHealthModule.prefab");
+                health = ((GameObject)PrefabUtility.InstantiatePrefab(source, root.transform)).GetComponent<NewHealthModule>();
+            }
+            SerializedObject healthSettings = new SerializedObject(health);
+            healthSettings.FindProperty("otherHealths").arraySize = 0;
+            healthSettings.FindProperty("healthViewModel").objectReferenceValue = null;
+            healthSettings.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.RecordPrefabInstancePropertyModifications(health);
         }
 
         public static string ConnectRequiredModules()
@@ -365,9 +373,9 @@ namespace CTJ.Tools
                         throw new InvalidOperationException("Missing sprite/material on " + renderer.name);
                 if (name != "MadGhostProjectile")
                 {
-                    HealthModule health = prefab.GetComponent<HealthModule>();
-                    if (health == null || prefab.GetComponent<StatModule>() == null ||
-                        new SerializedObject(health).FindProperty("maxHpStatData").objectReferenceValue == null)
+                    NewHealthModule health = prefab.GetComponentInChildren<NewHealthModule>(true);
+                    if (health == null || prefab.GetComponentInChildren<StatModule>(true) == null ||
+                        new SerializedObject(health).FindProperty("coreHealth").objectReferenceValue == null)
                         throw new InvalidOperationException("Missing Agent module dependency on " + name);
                 }
             }

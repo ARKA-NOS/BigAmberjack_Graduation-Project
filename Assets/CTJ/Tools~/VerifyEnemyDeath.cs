@@ -27,9 +27,9 @@ namespace CTJ.Tools
             {
                 MethodInfo menu = enemy.GetType().GetMethod("TestTakeDamage", BindingFlags.Instance | BindingFlags.NonPublic);
                 Require(menu != null && menu.GetCustomAttribute<ContextMenu>() != null, "Inherited context menu is missing.");
-                float before = enemy.HealthModule.CurrentHealth;
+                float before = enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth;
                 menu.Invoke(enemy, null);
-                Require(enemy.HealthModule.CurrentHealth == before - 2f, "Editor menu did not deliver 2 damage.");
+                Require(enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == before - 2f, "Editor menu did not deliver 2 damage.");
             }
             return "Both enemy types inherit the context menu and receive exactly 2 damage.";
         }
@@ -59,16 +59,16 @@ namespace CTJ.Tools
                 MethodInfo cast = typeof(PlayerMeleeSkillModule).GetMethod("HandleDmgCast", BindingFlags.Instance | BindingFlags.NonPublic);
                 float damage = new SerializedObject(attack).FindProperty("attackDmg").floatValue;
                 Require(damage == 2f, "Expected current player prefab damage 2; update the test if it changes.");
-                Require(cat.HealthModule.CurrentHealth == 6f && ghost.HealthModule.CurrentHealth == 8f, "Incorrect starting HP.");
+                Require(cat.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 6f && ghost.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 8f, "Incorrect starting HP.");
 
                 foreach (float invalid in new[] { 0f, -2f, float.NaN, float.PositiveInfinity })
                     ((IDamageable)cat).ApplyDamage(new DamageData { DamageAmount = invalid }, Vector2.zero, Vector2.right, Vector2.left);
-                Require(cat.HealthModule.CurrentHealth == 6f, "Invalid damage changed HP.");
+                Require(cat.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 6f, "Invalid damage changed HP.");
 
                 CastAt(attack, caster, cast, cat);
-                Require(cat.HealthModule.CurrentHealth == 4f && !cat.IsDead, "First player attack should cause exactly 2 damage.");
+                Require(cat.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 4f && !cat.IsDead, "First player attack should cause exactly 2 damage.");
                 CastAt(attack, caster, cast, cat);
-                Require(cat.HealthModule.CurrentHealth == 2f && !cat.IsDead, "Second player attack should leave 2 HP.");
+                Require(cat.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 2f && !cat.IsDead, "Second player attack should leave 2 HP.");
                 await WaitUntil(() => !cat.IsAttackInProgress);
                 await WaitUntil(() => cat.IsAttackInProgress);
                 EnemyDamageProbe catTarget = cat.Target.GetComponent<EnemyDamageProbe>();
@@ -86,7 +86,7 @@ namespace CTJ.Tools
                 for (int i = 1; i <= 4; i++)
                 {
                     CastAt(attack, caster, cast, ghost);
-                    Require(ghost.HealthModule.CurrentHealth == 8f - i * 2f, "Mad Ghost damage was missing or duplicated.");
+                    Require(ghost.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 8f - i * 2f, "Mad Ghost damage was missing or duplicated.");
                 }
                 CheckDead(ghost);
                 int[] existingProjectiles = Object.FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None)
@@ -100,7 +100,8 @@ namespace CTJ.Tools
                 observerEnemy = Object.Instantiate(catPrefab, new Vector3(-20f, 0f, 0f), Quaternion.identity);
                 EnemyBase observer = observerEnemy.GetComponent<EnemyBase>();
                 // HealthModule을 직접 변경하는 다른 시스템도 동일한 사망 처리를 거칩니다.
-                observer.HealthModule.CurrentHealth = 0f;
+                var observerHealth = observer.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>();
+                observerHealth.ApplyDamage(observerHealth.CurrentHealth);
                 CheckDead(observer);
                 await WaitUntil(() => observer == null);
 
@@ -132,7 +133,7 @@ namespace CTJ.Tools
 
         private static void CheckDead(EnemyBase enemy)
         {
-            Require(enemy.IsDead && !enemy.enabled && enemy.HealthModule.CurrentHealth == 0f, "Death/health flag is incorrect.");
+            Require(enemy.IsDead && !enemy.enabled && enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == 0f, "Death/health flag is incorrect.");
             Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
             Require(!body.simulated && body.linearVelocity == Vector2.zero, "Dead enemy still moves.");
             Require(enemy.GetComponentsInChildren<Collider2D>(true).All(c => !c.enabled), "Dead enemy collider is still enabled.");

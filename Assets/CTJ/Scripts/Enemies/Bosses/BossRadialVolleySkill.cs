@@ -51,6 +51,7 @@ namespace CTJ.Enemies.Bosses
             }
             DidFire = true;
             _endsAt = Time.time + Mathf.Max(0f, recoveryTime);
+            BeginRecovery();
         }
 
         public override void UpdateSkill()

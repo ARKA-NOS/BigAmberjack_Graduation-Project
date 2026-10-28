@@ -181,10 +181,10 @@ namespace CTJ.Tools
                 OverlapDamageCaster caster = Object.Instantiate(source, enemy.GetComponent<Collider2D>().bounds.center, Quaternion.identity, arena.transform);
                 caster.InitCaster(null);
                 Physics2D.SyncTransforms();
-                float before = enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth;
+                float before = enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth;
                 float damage = PlayerDamage();
                 Check(caster.CastDamage(damage, Vector2.right, 0f), "Player caster failed to query trigger");
-                Check(Mathf.Approximately(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth, before - damage), "Trigger body missed or duplicated player damage");
+                Check(Mathf.Approximately(enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth, before - damage), "Trigger body missed or duplicated player damage");
                 return new { scenario = "existing-player-caster-single-damage-to-trigger", prefab = path, passed = true, damage };
             }
             finally { Object.Destroy(arena); }
@@ -445,12 +445,12 @@ namespace CTJ.Tools
             {
                 EnemyBase enemy = Spawn(path, arena, x);
                 float damage = PlayerDamage();
-                float initial = enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth;
-                Check(initial == enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().MaxHealth && initial == expectedHits * damage, "HP initialization");
+                float initial = enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth;
+                Check(initial == enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().MaxHealth && initial == expectedHits * damage, "HP initialization");
                 for (int i = 1; i <= expectedHits; i++)
                 {
                     ((IDamageable)(Agent)enemy).ApplyDamage(new DamageData { DamageAmount = damage }, Vector2.zero, Vector2.zero, Vector2.zero);
-                    Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth == initial - damage * i && enemy.IsDead == (i == expectedHits), "HP/death threshold");
+                    Check(enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>().CurrentHealth == initial - damage * i && enemy.IsDead == (i == expectedHits), "HP/death threshold");
                 }
                 Check(!enemy.GetComponent<Rigidbody2D>().simulated && enemy.GetComponentsInChildren<Collider2D>().All(c => !c.enabled), "Death collision cleanup");
                 await Wait(1.2f);

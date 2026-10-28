@@ -6,7 +6,7 @@ using CTJ.Enemies;
 using CTJ.Enemies.Skills;
 using CTJ.Testing;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using SDW.Scripts.Maps;
 using UnityEditor;
@@ -37,7 +37,8 @@ namespace CTJ.Tools
             SerializedObject a = new SerializedObject(attack);
             Check(a.FindProperty("attackAnimator").objectReferenceValue != null && a.FindProperty("attackHitbox").objectReferenceValue != null,
                 "Animation / hitbox references");
-            Check(a.FindProperty("preparationWarning").objectReferenceValue == prefab.GetComponentInChildren<EnemyAttackWarningModule>(), "Warning reference");
+            Check(a.FindProperty("preparationWarning").objectReferenceValue == null &&
+                !prefab.GetComponentInChildren<EnemyAttackWarningModule>().enabled, "Preparation flash removed");
             Check(Mathf.Approximately(a.FindProperty("damage").floatValue, 8f), "Damage 8");
             Check(Mathf.Approximately(new SerializedObject(prefab).FindProperty("moveSpeed").floatValue, 6f), "Chase speed 6");
             Check(Mathf.Approximately(new SerializedObject(prefab.GetComponentInChildren<EnemyMovementModule>()).FindProperty("jumpHeight").floatValue, 0f), "No jump");
@@ -45,32 +46,9 @@ namespace CTJ.Tools
             Check(stats.Stats[0].BaseValue == 50f && Mathf.Approximately(stats.Stats[1].BaseValue + attack.PostBlinkDelay, 0.8f), "HP / preparation");
             Check(prefab.GetComponentInChildren<EnemyCurrencyRewardModule>() != null && prefab.GetComponentInChildren<EnemyDeathModule>() != null, "Reward/death wiring");
 
-            Scene preview = EditorSceneManager.NewPreviewScene();
-            try
-            {
-                GameObject room = new GameObject("Room");
-                SceneManager.MoveGameObjectToScene(room, preview);
-                room.transform.position = new Vector3(30f, 0f);
-                RoomDefinition definition = room.AddComponent<RoomDefinition>();
-                GameObject enemy = Object.Instantiate(prefab.gameObject, new Vector3(34f, 0f), Quaternion.identity, room.transform);
-                EnemyPatrolModule patrol = enemy.GetComponentInChildren<EnemyPatrolModule>();
-                MethodInfo resolver = typeof(EnemyPatrolModule).GetMethod("ResolveCenter", BindingFlags.NonPublic | BindingFlags.Instance);
-                Func<Vector2> center = () => (Vector2)resolver.Invoke(patrol, new object[] { enemy.transform, (Vector2)enemy.transform.position });
-                Check(center().x == 30f, "Room root fallback, not spawn position");
-                Transform left = Child(room, "Left", new Vector2(24f, 0f));
-                Transform right = Child(room, "Right", new Vector2(40f, 0f));
-                Set(definition, "leftPortalPoint", left); Set(definition, "rightPortalPoint", right);
-                Check(center().x == 32f, "Portal midpoint, not root pivot");
-                Set(patrol, "centerOverride", left);
-                Check(center().x == 24f, "Manual center override");
-                Set(patrol, "centerOverride", enemy.transform);
-                Check(center().x == 32f, "Moving owner cannot be its own center");
-                enemy.transform.SetParent(null);
-                Check(center().x == 34f, "Standalone fallback");
-                Object.DestroyImmediate(enemy);
-            }
-            finally { EditorSceneManager.ClosePreviewScene(preview); }
-            return new { passed = true, scope = "prefab / references / stats / room midpoint / manual and standalone center" };
+            Check(new SerializedObject(prefab.GetComponentInChildren<EnemyPatrolModule>()).FindProperty("centerOverride") == null,
+                "Obsolete room/override center field remains");
+            return new { passed = true, scope = "prefab / references / stats / spawn-only patrol configuration" };
         }
 
         public static string BeginPlay()
@@ -97,17 +75,18 @@ namespace CTJ.Tools
             try
             {
                 RoomDefinition room = arena.AddComponent<RoomDefinition>();
-                Set(room, "leftPortalPoint", Child(arena, "Left", new Vector2(990f, 0f)));
-                Set(room, "rightPortalPoint", Child(arena, "Right", new Vector2(1010f, 0f)));
                 EnemyBase enemy = Spawn(arena, 1001f);
                 EnemyPatrolModule patrol = enemy.GetModule<EnemyPatrolModule>();
-                Check(Mathf.Approximately(patrol.Center.x, 1000f), "Runtime room center");
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Must use spawn, not room/portal center");
+                Set(patrol, "centerOffsetX", 0.5f);
+                Check(Mathf.Approximately(patrol.Center.x, 1001.5f), "Spawn-relative center offset");
+                Set(patrol, "centerOffsetX", 0f);
                 float min = enemy.transform.position.x, max = min;
                 float end = Time.time + 3f;
                 while (Time.time < end)
                 {
                     min = Mathf.Min(min, enemy.transform.position.x); max = Mathf.Max(max, enemy.transform.position.x);
-                    Check(enemy.transform.position.x >= 996.95f && enemy.transform.position.x <= 1003.05f, "Patrol escaped range");
+                    Check(enemy.transform.position.x >= patrol.MinX - 0.05f && enemy.transform.position.x <= patrol.MaxX + 0.05f, "Patrol escaped range");
                     await Task.Yield();
                 }
                 Check(max - min > 0.5f, "Patrol did not walk");
@@ -121,13 +100,17 @@ namespace CTJ.Tools
                 Check(!enemy.IsAttackInProgress && Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) <= 2.01f, "Patrol did not resume after chase release");
                 Set(patrol, "halfWidth", 1f);
                 await Wait(3f);
-                Check(enemy.transform.position.x >= 998.95f && enemy.transform.position.x <= 1001.05f, "Live range change");
+                Check(enemy.transform.position.x >= patrol.MinX - 0.05f && enemy.transform.position.x <= patrol.MaxX + 0.05f, "Live range change");
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Chase/release changed spawn center");
                 patrol.enabled = false;
                 await Wait(0.1f);
                 Check(Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.01f, "Disabled patrol did not stop");
                 patrol.enabled = true;
                 await Until(() => Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) > 0.1f);
-                return new { scenario = "room centered patrol / bounds / chase / release / adjustable width", passed = true };
+                enemy.gameObject.SetActive(false); enemy.gameObject.SetActive(true);
+                enemy.transform.SetParent(null, true); enemy.transform.SetParent(arena.transform, true);
+                Check(Mathf.Approximately(patrol.Center.x, 1001f), "Reactivation/reparent changed spawn center");
+                return new { scenario = "spawn centered patrol / bounds / chase / release / width / offset / reactivation", passed = true };
             }
             finally { Object.Destroy(arena); }
         }
@@ -174,17 +157,17 @@ namespace CTJ.Tools
                 SpriteRenderer sprite = enemy.GetComponentInChildren<SpriteRenderer>();
                 Material original = sprite.sharedMaterial;
                 Color color = sprite.color;
-                IHealthModule hp = enemy.GetModule<IHealthModule>();
+                INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 await Wait(0.2f);
                 Check(hp.CurrentHealth == 50f && skills.TryUseAttack(), "Initial HP / attack start");
                 float start = Time.time;
-                await Until(() => warning.IsShowing);
-                float redAt = Time.time;
-                Check(redAt - start >= 0.55f && sprite.color.r == 1f && sprite.color.g == 0f && sprite.color.b == 0f,
-                    "Final preparation is solid red");
+                await Until(() => attack.IsHoldingWarning);
+                float heldAt = Time.time;
+                Check(heldAt - start >= 0.55f && !warning.IsShowing && sprite.color == color,
+                    "Final preparation keeps sprite color");
                 Check(target.ReceivedHitCount == 0, "Damage before warning hold finished");
                 await Until(() => target.ReceivedHitCount == 1);
-                Check(Time.time - redAt >= 0.19f && Time.time - start >= 0.79f && target.TotalDamage == 8f, "Warning duration / release / 8 damage");
+                Check(Time.time - heldAt >= 0.19f && Time.time - start >= 0.79f && target.TotalDamage == 8f, "Preparation duration / release / 8 damage");
                 Check(!warning.IsShowing && sprite.sharedMaterial == original && sprite.color == color, "Warning restored on release");
                 enemy.OnAttackHit(); enemy.OnAttackHit();
                 Check(target.ReceivedHitCount == 1, "Duplicate hit event");
@@ -192,18 +175,18 @@ namespace CTJ.Tools
                 Check(!skills.TryUseAttack() && attack.RemainingCoolTime > 0f, "Cooldown prevents repeat");
                 await Until(() => attack.RemainingCoolTime <= 0f);
                 Check(skills.TryUseAttack(), "Second attack");
-                await Until(() => warning.IsShowing);
+                await Until(() => attack.IsHoldingWarning);
                 enemy.ApplyDamage(new DamageData { DamageAmount = 12f }, enemy.transform.position, Vector2.right, Vector2.zero);
                 Check(hp.CurrentHealth == 38f && !skills.IsBusy && !warning.IsShowing && enemy.IsHitReacting, "Hit cancels preparation and subtracts HP");
                 await Wait(0.45f);
                 Check(sprite.color == color && sprite.sharedMaterial == original && target.ReceivedHitCount == 1, "No lingering red / no cancelled damage");
 
-                // 피격 취소를 끈 경우에도 피격 원본으로 경고색이 저장되지 않아야 합니다.
+                // 준비 색을 제거한 뒤에도 피격 색/머티리얼은 정상 복원되어야 합니다.
                 Set(enemy.GetModule<EnemyHitReactionModule>(), "cancelAttackOnHit", false);
                 target.transform.position = enemy.transform.position + new Vector3(0.8f, 0f, 0f);
                 await Until(() => attack.RemainingCoolTime <= 0f);
                 Check(skills.TryUseAttack(), "Non-cancelling attack");
-                await Until(() => warning.IsShowing);
+                await Until(() => attack.IsHoldingWarning);
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, enemy.transform.position, Vector2.right, Vector2.zero);
                 await Wait(0.5f);
                 Check(sprite.color == color && sprite.sharedMaterial == original, "Overlapping hit and warning restore");
@@ -211,7 +194,7 @@ namespace CTJ.Tools
                 enemy.GetModule<EnemyDeathModule>().enabled = false;
                 enemy.ApplyDamage(new DamageData { DamageAmount = 100f }, enemy.transform.position, Vector2.zero, Vector2.zero);
                 Check(enemy.IsDead && !warning.IsShowing && !skills.IsBusy, "Death cleanup");
-                return new { scenario = "HP / timed red warning / damage / cooldown / cancellation / overlapping flash / death", passed = true };
+                return new { scenario = "HP / preparation without color flash / damage / cooldown / cancellation / hit flash / death", passed = true };
             }
             finally { Object.Destroy(arena); }
         }

@@ -13,9 +13,14 @@ namespace SDW.Scripts.Interact.NPC
     // InteractModule은 MapObject 레이어의 콜라이더에서 이 컴포넌트를 찾으므로, 콜라이더와 같은 오브젝트에 두어야 한다.
     // InteractionLock이 붙어 있으면 주변에 살아 있는 적이 있는 동안 콜라이더를 꺼서 상호작용을 막는다.
     // 대화창은 직접 참조하지 않고 DialogueViewModel에 대화 내용을 Bind만 한다. (화면 표시는 씬의 DialogueUIBinder 담당)
-    public class Npc : AbstractInteractObject
+    public class Npc : AbstractInteractObject, ICanInteract
     {
         [SerializeField] private NpcDataSO data;
+        [Tooltip("상호작용 UI가 따라다니는 기준점. 오브젝트 위치에서 이만큼 떨어진 곳(NPC 머리 위)에 표시된다.")]
+        [SerializeField] private Vector2 uiAnchorOffset;
+
+        // 베이스의 Position 대신 UI 기준점 오프셋을 적용한다. (ICanInteract를 다시 구현해서 인터페이스 조회에도 이 값이 쓰인다)
+        public new Vector2 Position => (Vector2)transform.position + uiAnchorOffset;
         [SerializeField] private DialogueViewModel dialogueViewModel;
         [Tooltip("취소 대사를 보여준 뒤 대화창을 닫기까지의 시간")]
         [SerializeField] private float closeDelay = 1.5f;

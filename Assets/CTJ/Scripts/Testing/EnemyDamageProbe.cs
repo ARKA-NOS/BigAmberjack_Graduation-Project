@@ -20,5 +20,10 @@ namespace CTJ.Testing
             Debug.Log($"[CTJ 피격 테스트] {name}: {damageData.DamageAmount} 피해, " +
                       $"누적 {receivedHitCount}회 / {totalDamage} 피해", this);
         }
+
+        public void SetInvincibility(object obj, bool value)
+        {
+            
+        }
     }
 }

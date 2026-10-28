@@ -49,6 +49,56 @@ MonoBehaviour:
   spawnInterval: 0.035
   ghostLifeTime: 0.18
   ghostColor: {r: 0.4, g: 0.8, b: 1, a: 0.5}
+--- !u!1 &1523163325108464347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 588589714276906373}
+  - component: {fileID: 2123906051102860730}
+  m_Layer: 0
+  m_Name: Dash Skill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &588589714276906373
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523163325108464347}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1138549759888491603}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2123906051102860730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523163325108464347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf004dfd84a94402998f5ad493549fb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.Skills.PlayerDashSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: 60c94d8ca0a51d24c8565b2b2ec6ef22, type: 2}
+  <BaseCoolTime>k__BackingField: 1
+  dashTime: 0.15
+  dashCountStat: {fileID: 11400000, guid: a27d989aeba32e044833d661dbf23947, type: 2}
+  dashCoolTimeStat: {fileID: 11400000, guid: 84f8db238b1620f40a33711eee5a07fd, type: 2}
+  dashRangeStat: {fileID: 11400000, guid: adec61426d70758478f627cdfc4a5ab9, type: 2}
 --- !u!1 &2069202202630892910
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,7 +286,6 @@ Transform:
   - {fileID: 232101394029205989}
   - {fileID: 4645478419772412309}
   - {fileID: 442558853212788372}
-  - {fileID: 6683644158569019831}
   - {fileID: 7357368077190701133}
   - {fileID: 5009264341762385814}
   - {fileID: 4489833200120199302}
@@ -310,7 +359,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3728814495393267975
 MonoBehaviour:
@@ -474,55 +523,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.InventorySystem.InventoryModule
   debugItem: {fileID: 0}
---- !u!1 &4370668175364100918
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6683644158569019831}
-  - component: {fileID: 7306058451775413706}
-  m_Layer: 0
-  m_Name: PlayerDasher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6683644158569019831
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4370668175364100918}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1389134581402385000}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7306058451775413706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4370668175364100918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfaf9e91a511434eb76f9abf4116ba37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.PlayerDasher
-  dashTime: 0.15
-  dashRange: 5
-  dashCoolTime: 0.3
-  maxAirDashCount: 1
-  assetNameSo: {fileID: 11400000, guid: 5ef278c748e885e4cbfa9645874d5f09, type: 2}
 --- !u!1 &6119771302154156506
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,6 +750,10 @@ PrefabInstance:
       value: SkillModule
       objectReference: {fileID: 0}
     - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
+      propertyPath: dashSkill
+      value: 
+      objectReference: {fileID: 11400000, guid: 60c94d8ca0a51d24c8565b2b2ec6ef22, type: 2}
+    - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
       propertyPath: skill1ViewModel
       value: 
       objectReference: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
@@ -759,7 +763,10 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 466493454027865216, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 588589714276906373}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
 --- !u!4 &1138549759888491603 stripped

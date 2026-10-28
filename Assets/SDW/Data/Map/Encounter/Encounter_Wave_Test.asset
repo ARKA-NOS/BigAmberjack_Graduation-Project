@@ -15,12 +15,12 @@ MonoBehaviour:
   waves:
   - startDelay: 0
     enemies:
-    - enemyPrefab: {fileID: 6002371313276815539, guid: b0941f89b32ef3740b47c30833d9b4ef, type: 3}
+    - enemyPrefab: {fileID: 2186090617265589924, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
       count: 2
   - startDelay: 1
     enemies:
-    - enemyPrefab: {fileID: 2107554339894670820, guid: 8a31561d5b0b5f64e94511d1095cf5ad, type: 3}
+    - enemyPrefab: {fileID: 7144665045533791974, guid: 3ed9f9e01b490cc46acac8b97fdd6611, type: 3}
       count: 1
-    - enemyPrefab: {fileID: 6002371313276815539, guid: b0941f89b32ef3740b47c30833d9b4ef, type: 3}
+    - enemyPrefab: {fileID: 2186090617265589924, guid: af1014665633db84cbea7b4e7ab07bf6, type: 3}
       count: 1
   sameSpawnPointSpacing: 1.5

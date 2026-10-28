@@ -73,6 +73,11 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
         private void Start()
         {
+            InitViewModel();
+        }
+
+        private void InitViewModel()
+        {
             if(healthViewModel != null)
                 healthViewModel.Bind(new HealthData(_healths.Count));
         }
@@ -101,6 +106,12 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             
             HealthData healthData = healthViewModel.BindData;
 
+            if (healthData == null)
+            {
+                InitViewModel();
+                healthData = healthViewModel.BindData;
+            }
+            
             healthData.Clear();
 
             foreach (IHealth health in _healths)

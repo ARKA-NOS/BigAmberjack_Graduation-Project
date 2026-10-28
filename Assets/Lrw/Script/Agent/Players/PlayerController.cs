@@ -1,4 +1,5 @@
-﻿using DevLib.BattleSystem;
+﻿using System.Collections;
+using DevLib.BattleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Agent.FSM;
@@ -14,6 +15,8 @@ namespace Lrw.Script.Agent.Players
     {
         [field: SerializeField] public PlayerInputSo PlayerInput { get; private set; }
         [SerializeField] private StateListSo playerStates;
+
+        [SerializeField] private float InvincibilityTime = 1f;
         private AgentStateMachine agentStateMachine;
         
         private IControlMovement _movementController;
@@ -56,12 +59,19 @@ namespace Lrw.Script.Agent.Players
         public override void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
         {
             if(_isDead) return;
+            if(IsInvincibility) return;
+            
+            ChangeState(PlayerStateEnum.HIT);
+            _movementController.AddForce(damageData.DirectedKBForce);
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
-            if (!_isDead)
-            {
-                ChangeState(PlayerStateEnum.HIT);
-                _movementController.AddForce(damageData.DirectedKBForce);
-            }
+            StartCoroutine(HitInvincibilityTime());
+        }
+
+        private IEnumerator HitInvincibilityTime()
+        {
+            SetInvincibility(this, true);
+            yield return new WaitForSeconds(InvincibilityTime);
+            SetInvincibility(this, false);
         }
 
         public void SetInputActive(bool active)
@@ -78,7 +88,7 @@ namespace Lrw.Script.Agent.Players
             ChangeState(PlayerStateEnum.Dead);
             _isDead = true;
             SetInputActive(false);
-            FDebug.Log("Dead");
+            FDebug.Log("Player Dead");
         }
         
     }

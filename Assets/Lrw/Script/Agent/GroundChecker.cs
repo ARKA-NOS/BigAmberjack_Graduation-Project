@@ -23,10 +23,19 @@ namespace Lrw.Script.Agent
         [Header("Circle")]
         [SerializeField] private float circleRadius = 1f;
 
+        private Rigidbody2D _rigid;
+        
+        public override void Initialize(ModuleOwner owner)
+        {
+            base.Initialize(owner);
+            _rigid = GetComponent<Rigidbody2D>();
+        }
+        
         public bool IsGroundChecking()
         {
+            if (!Mathf.Approximately(_rigid.linearVelocityY, 0f)) return false;
             Vector2 checkPosition = (Vector2)transform.position + chackOffset;
-
+            
             return checkerShape switch
             {
                 CheckerShape.Square =>

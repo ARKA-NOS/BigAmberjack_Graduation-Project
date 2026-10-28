@@ -147,7 +147,7 @@ namespace Lrw.Script.Agent.Players.Skills
             base.OnStopSkill();
             HandleDashEnd();
         }
-
+        
         private void HandleDashEnd()
         {
             _damageable.SetInvincibility(this, false);

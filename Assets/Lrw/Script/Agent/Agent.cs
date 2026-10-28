@@ -22,8 +22,6 @@ namespace Lrw.Script.Agent
         protected override void Awake()
         {
             base.Awake();
-            HealthModule = GetModule<IHealthModule>(); // 애러 방지 코드
-            Debug.Assert(HealthModule != null, $"[{name}] IHealthModule is not found");
             
             NewHealthModule = GetModule<INewHealthModule>();
             Debug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");

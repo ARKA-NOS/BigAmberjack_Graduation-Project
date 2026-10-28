@@ -192,8 +192,8 @@ Transform:
   m_GameObject: {fileID: 2624449807773332465}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.117948726, y: 0.57500005, z: 0}
+  m_LocalScale: {x: 2.948718, y: 2.948718, z: 2.948718}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2625502530416614633}
@@ -247,8 +247,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1305674357, guid: d094b43bd412c79449f77b3443b228fb, type: 3}
-  m_Color: {r: 0.65, g: 0.85, b: 1, a: 1}
+  m_Sprite: {fileID: -7665798452422916851, guid: d37e51d59c730b24e8bc74cc943fa347, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -267,7 +267,7 @@ Animator:
   m_GameObject: {fileID: 2624449807773332465}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 295ae59d7ecc48b48ae1f89fdeeb2904, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3791869318cc09f4695b72f132ec16dd, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -466,6 +466,7 @@ MonoBehaviour:
   normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
   hitColor: {r: 1, g: 1, b: 1, a: 1}
   width: 2
+  outerSilhouetteOnly: 0
   hitDuration: 0.25
 --- !u!1 &5723737943451303878
 GameObject:
@@ -492,7 +493,7 @@ Transform:
   m_GameObject: {fileID: 5723737943451303878}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0.95, z: 0}
+  m_LocalPosition: {x: 0.7, y: 0.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -829,8 +830,10 @@ MonoBehaviour:
   projectileSpeed: 15
   projectileLifetime: 0.8
   damage: 14
-  attackAnimator: {fileID: 0}
+  attackAnimator: {fileID: 8583322283324208840}
   attackStateName: Base Layer.Attack
+  preparationStateName: Base Layer.AttackPreparation
+  idleStateName: Base Layer.Idle
   recoveryTime: 0.6
   faceTargetDuringPreparation: 1
   showAimLine: 1

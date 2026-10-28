@@ -2,6 +2,8 @@
 
 2026-10-26. 수정 범위는 Assets/CTJ입니다.
 
+2026-10-28 추가: Enemy02에는 내부 파츠 경계를 숨기는 `Outer Silhouette Only`를 적용했습니다. 변경된 설정과 검증 결과는 [EnemyArtRefreshNotes.md](EnemyArtRefreshNotes.md)를 참고하세요. 아래 내용은 기본 안쪽 테두리 모드 설명입니다.
+
 ## 적용 결과
 
 - Catto, MadGhost, 01, 02, 04, RobotEyeBoss 프리팹에 루트 자식 `OutlineModule`을 추가했습니다.

@@ -685,6 +685,7 @@ MonoBehaviour:
   normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
   hitColor: {r: 1, g: 1, b: 1, a: 1}
   width: 2
+  outerSilhouetteOnly: 1
   hitDuration: 0.25
 --- !u!1 &3088554199585994269
 GameObject:
@@ -888,7 +889,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_MaskInteraction: 1
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: d458cb5e3a4c2bf46bcfea7f0950736b, type: 3}
   m_Color: {r: 0.09, g: 0.12, b: 0.16, a: 1}
   m_FlipX: 0
@@ -1374,6 +1375,8 @@ MonoBehaviour:
   damage: 15
   attackAnimator: {fileID: 0}
   attackStateName: Base Layer.Attack
+  preparationStateName:
+  idleStateName:
   recoveryTime: 0.8
   faceTargetDuringPreparation: 0
   showAimLine: 1

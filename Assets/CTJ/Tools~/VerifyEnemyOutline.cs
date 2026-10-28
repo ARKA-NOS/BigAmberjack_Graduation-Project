@@ -37,6 +37,7 @@ namespace CTJ.Tools
                 var outline = enemy.GetComponentInChildren<EnemyOutlineModule>();
                 var reaction = enemy.GetComponentInChildren<EnemyHitReactionModule>();
                 var warning = enemy.GetComponentInChildren<EnemyAttackWarningModule>();
+                warning.enabled = true; // 경고 모듈 자체의 조합 검증에만 켭니다. 01 프리팹에서는 비활성입니다.
                 Set(reaction, "enableBlink", true); Set(reaction, "enableScalePulse", true);
                 SpriteRenderer source = Sources(outline)[0]; Material original = source.sharedMaterial; Color color = source.color;
                 Vector3 scale = source.transform.localScale;
@@ -94,7 +95,8 @@ namespace CTJ.Tools
                 await Frames(2);
                 SpriteRenderer overlay = sources[0].transform.Find("TemporaryOutline").GetComponent<SpriteRenderer>();
                 Check(overlay.sprite == sources[0].sprite && overlay.flipX == sources[0].flipX && overlay.flipY == sources[0].flipY &&
-                    overlay.sortingOrder == sources[0].sortingOrder + 1 && overlay.maskInteraction == sources[0].maskInteraction &&
+                    overlay.sortingOrder == (new SerializedObject(module).FindProperty("outerSilhouetteOnly").boolValue
+                        ? sources.Min(s => s.sortingOrder) - 1 : sources[0].sortingOrder + 1) && overlay.maskInteraction == sources[0].maskInteraction &&
                     overlay.transform.localScale == Vector3.one, "Animation / flip / sorting / mask / scale sync");
                 sources[0].enabled = false; await Frames(2); Check(!overlay.enabled, "Disabled source overlay remained");
                 sources[0].enabled = true;

@@ -8,7 +8,7 @@ namespace Lrw.Script.Agent.SkillSystem.NormalSkill
         [field:SerializeField] protected float BaseCoolTime { get; private set; }= 1f;
 
         // 시작하자마자 쓸 수 있도록 아주 먼 과거로 둔다
-        public float CoolTimeStartTime { get; private set; } = float.NegativeInfinity;
+        public float CoolTimeStartTime { get; protected set; } = float.NegativeInfinity;
         public virtual float CoolTime => BaseCoolTime;
         public float RemainingCoolTime => Mathf.Max(0f, CoolTimeStartTime + CoolTime - Time.time);
 

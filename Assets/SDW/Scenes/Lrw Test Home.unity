@@ -300,7 +300,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46945583ef224fcb917be48a0d0349ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.PlayerToSpawnPoint
-  spawnPoint: {fileID: 439210569}
 --- !u!114 &439210573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1125,6 +1124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d946c976c2740449c5f9f04fc371a01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Home.Upgrade.UpgradeBuilding
+  interactUIOffset: {x: 0, y: 0}
   testUI: {fileID: 1890496752}
   treeData: {fileID: 11400000, guid: a2a8281ba51caef4f8b7e74e26f5d45d, type: 2}
 --- !u!1 &905850442
@@ -1757,7 +1757,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1508976587}
-  - component: {fileID: 1508976586}
   - component: {fileID: 1508976585}
   - component: {fileID: 1508976584}
   - component: {fileID: 1508976583}
@@ -1813,18 +1812,6 @@ MonoBehaviour:
   statData: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
   statModule: {fileID: 0}
   changeValue: 4
---- !u!114 &1508976586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508976581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba0256a58ff407db688e7086f85274f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.EffectSystem.Test.EffectTester
 --- !u!4 &1508976587
 Transform:
   m_ObjectHideFlags: 0
@@ -1871,6 +1858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13d0c0421f95d124ab5cd8c68070ed92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Map.MoveSceneObject
+  interactUIOffset: {x: 0, y: 0}
   targetScene: {fileID: 11400000, guid: 0a8f22cf80a03c64d82ee1e0b4279741, type: 2}
 --- !u!61 &1743605183
 BoxCollider2D:

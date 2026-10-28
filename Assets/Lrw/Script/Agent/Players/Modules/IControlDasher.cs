@@ -1,5 +1,8 @@
-﻿namespace Lrw.Script.Agent.Players.Modules
+﻿using System;
+
+namespace Lrw.Script.Agent.Players.Modules
 {
+    [Obsolete]
     public interface IControlDasher
     {
         bool CanDash();

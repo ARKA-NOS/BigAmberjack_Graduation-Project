@@ -14,6 +14,12 @@ TextureImporter:
   - first:
       213: -1451722023568659415
     second: hud-separated-spritesheet-64_3
+  - first:
+      213: -1080909444813448959
+    second: hud-separated-spritesheet-64_4
+  - first:
+      213: 2531961654928570870
+    second: hud-separated-spritesheet-64_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -112,12 +118,12 @@ TextureImporter:
       name: hud-separated-spritesheet-64_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 65
-        width: 62
-        height: 62
+        x: 2
+        y: 67
+        width: 60
+        height: 59
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -134,12 +140,12 @@ TextureImporter:
       name: hud-separated-spritesheet-64_1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 63
-        width: 64
-        height: 65
+        x: 65
+        y: 65
+        width: 62
+        height: 62
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -156,12 +162,12 @@ TextureImporter:
       name: hud-separated-spritesheet-64_2
       rect:
         serializedVersion: 2
-        x: 127
-        y: 65
-        width: 65
-        height: 61
+        x: 129
+        y: 66
+        width: 63
+        height: 58
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -178,12 +184,12 @@ TextureImporter:
       name: hud-separated-spritesheet-64_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 1
-        width: 192
-        height: 61
+        x: 1
+        y: 3
+        width: 62
+        height: 57
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -196,11 +202,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: hud-separated-spritesheet-64_4
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 25
+        width: 62
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 109978b3696dff0f0800000000000000
+      internalID: -1080909444813448959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud-separated-spritesheet-64_5
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 25
+        width: 62
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f97de2d5b5532320800000000000000
+      internalID: 2531961654928570870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 84e14f8c7618e9647b7ea1d8de74d29e
     internalID: 0
     vertices: []
     indices: 
@@ -214,6 +264,8 @@ TextureImporter:
       hud-separated-spritesheet-64_1: -7866335419363357639
       hud-separated-spritesheet-64_2: 8404036921871623557
       hud-separated-spritesheet-64_3: -1451722023568659415
+      hud-separated-spritesheet-64_4: -1080909444813448959
+      hud-separated-spritesheet-64_5: 2531961654928570870
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

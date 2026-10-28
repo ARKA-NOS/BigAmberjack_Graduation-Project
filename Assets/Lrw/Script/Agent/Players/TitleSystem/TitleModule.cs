@@ -58,14 +58,14 @@ namespace Lrw.Script.Agent.Players.TitleSystem
                 waitingList.Add(titleSo);
             }
         }
-
+        
         private void InitTitle(AbstractTitleSo titleSo)
         {
             Title title = new Title(titleSo, _questModule);
             _titles.Add(titleSo, title);
             title.OnComplete += OnTitleComplete;
         }
-
+        
         private void OnTitleComplete(Title title)
         {
             title.OnComplete -= OnTitleComplete;
@@ -73,12 +73,12 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             _completedTitles.Add(title.TitleSo);
             UnlockWaitingTitles(title.TitleSo);
         }
-
+        
         private void Upgrade(Title title)
         {
             title.TitleSo.Upgrade(_owner);
         }
-
+        
         private void UnlockWaitingTitles(AbstractTitleSo completedTitle)
         {
             if (!_waitingTitles.Remove(completedTitle, out List<AbstractTitleSo> waitingList)) return;

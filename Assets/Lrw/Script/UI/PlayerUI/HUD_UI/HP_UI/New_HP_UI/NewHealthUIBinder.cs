@@ -68,9 +68,9 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 HPTextUI currentHpTextUI = _healthTextList[i];
                 
                 IHealth health = currentViewData.Health;
-                
-                Gauge healthGauge = health is IRangeHealth rangeHealth ?
-                    rangeHealth.HpGauge : new Gauge(health.HP, health.HP);
+                IRangeHealth rangeHealth = health as IRangeHealth;
+                bool showMaxHealth = rangeHealth != null && rangeHealth.ShowMaxHealth;
+                Gauge healthGauge = rangeHealth?.HpGauge ?? new Gauge(health.HP, health.HP);
                 
                 float currentHealth = healthGauge.CurrentValue;
 
@@ -82,11 +82,11 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
                 {
                     currentHpBarUI.SetBar(health.GetHealthColor(), currentHealth);
                     currentHpTextUI.SetText(currentViewData.HealthSo.HealthTextColor,
-                        healthGauge, health is IRangeHealth);
+                        healthGauge, showMaxHealth);
                     sumCurrentHealth += currentHealth;
                 }
 
-                sumRangeMaxHealth += healthGauge.MaxValue;
+                sumRangeMaxHealth += showMaxHealth ? healthGauge.MaxValue : healthGauge.CurrentValue;
             }
 
             for (int i = showCount; i < _healthBarList.Count; i++)

@@ -8,7 +8,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
     {
         private const float RedHealthLine = 0.3f;
         private const float OrangeHealthLine = 0.6f;
-        
+        public override bool ShowMaxHealth => true;
+
         public CoreHealth(int priority, ModuleOwner owner, HealthType type, Color color, StatData maxStatData) : base(priority, owner, type, color, maxStatData)
         {
             HP = MaxHealthValue;

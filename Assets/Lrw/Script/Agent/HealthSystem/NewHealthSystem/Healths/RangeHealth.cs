@@ -13,9 +13,10 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths
         protected float MaxHealthValue => _maxHealthStat.Value;
         
         public Gauge HpGauge => new Gauge(HP, MaxHealthValue);
+        public virtual bool ShowMaxHealth => false;
         protected Color CurrentColor;
         protected HealthType HealthType;
-        public RangeHealth(int priority, ModuleOwner owner, HealthType type, Color color, StatData maxStatData) : base(priority,owner)
+        public  RangeHealth(int priority, ModuleOwner owner, HealthType type, Color color, StatData maxStatData) : base(priority,owner)
         {
             FDebug.Assert(owner.TryGetModule(out IStatModule statModule),
                 "[RangeHealth] owner is not found IStatModule");

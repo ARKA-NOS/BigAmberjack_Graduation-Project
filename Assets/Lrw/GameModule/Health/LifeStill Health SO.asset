@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dd6c34377004902b44c43f3a65c57b2, type: 3}
+  m_Script: {fileID: 11500000, guid: b8c0ce68550e49278087ec18771ff011, type: 3}
   m_Name: LifeStill Health SO
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos.DefaultHealthSo
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos.RangeHealthSo
   <Priority>k__BackingField: 2
   <HealthType>k__BackingField: 4
-  <HealthTextColor>k__BackingField: {r: 1, g: 0, b: 1, a: 1}
-  healthColor: {r: 1, g: 0, b: 0.6666667, a: 1}
+  <HealthTextColor>k__BackingField: {r: 0.7058824, g: 0, b: 0.7058824, a: 1}
+  maxHpStatData: {fileID: 11400000, guid: 03cb7a715b275034e9b4947af317f75a, type: 2}
+  healthColor: {r: 1, g: 0, b: 1, a: 1}

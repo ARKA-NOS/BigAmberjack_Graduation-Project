@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.DataStructure;
 using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI;
-using Lrw.Script.Utility.ReadOnlySystem.Attributes;
 using UnityEngine;
+
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    public class NewHealthModule : Module,IAfterInitModule
+    public class NewHealthModule : Module,IAfterInitModule, INewHealthModule
     {
         [Header("Default Health Setting")]
         [SerializeField] private AbstractHealthSo coreHealth;
-        [SerializeField, InspectorReadOnly] private float currentHealth;
 
         [Header("Other Setting")] 
         [SerializeField] private AbstractHealthSo[] otherHealths;
@@ -28,6 +27,17 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         private Dictionary<AbstractHealthSo, IHealth> _healthDict;
         private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
         private List<IHealth> _healths;
+
+        public float CurrentHealth => _healths.Sum(x => x.HP);
+        public float MaxHealth =>
+            _baseHealth is IRangeHealth rangeHealth 
+                ? rangeHealth.HpGauge.MaxValue 
+                : _baseHealth.HP;
+        
+        public event Action OnDead;
+        public bool IsDead { get; private set; }
+        
+        public event HealthChanged OnHealthChanged;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -105,8 +115,10 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             }
         }
         
-        public void ApplyDamage(float damage, HealthType targets)
+        public void ApplyDamage(float damage, HealthType targets = HealthType.All)
         {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
             float currentDamage = damage;
             for (int i = _healths.Count - 1; i >= 0; i--)
             {
@@ -114,16 +126,33 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
                 if (!IsTargetHealth(type,targets)) continue;
                 currentDamage = _healths[i].ApplyDamage(currentDamage);
             }
+
+            HealthDeltaEvent(CurrentHealth - prevHealth);
         }
         
-        public void ApplyHeal(float heal, HealthType targets)
+        public void ApplyHeal(float heal, HealthType targets = HealthType.Core)
         {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
             float currentHeal = heal;
             for (int i = 0; i < _healths.Count; i++)
             {
                 HealthType type = _healths[i].GetHealthType();
                 if (!IsTargetHealth(type,targets)) continue;
                 currentHeal = _healths[i].ApplyHeal(currentHeal);
+            }
+            HealthDeltaEvent(CurrentHealth - prevHealth);
+        }
+
+        private void HealthDeltaEvent(float delta)
+        {
+            float newCurrentHp = CurrentHealth;
+            OnHealthChanged?.Invoke(newCurrentHp, delta, MaxHealth);
+
+            if (newCurrentHp <= 0f)
+            {
+                OnDead?.Invoke();
+                IsDead = true;
             }
         }
         

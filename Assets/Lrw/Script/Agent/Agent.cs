@@ -1,6 +1,7 @@
 ﻿using System;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.HealthSystem;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace Lrw.Script.Agent
             HealthModule = GetModule<IHealthModule>(); // 애러 방지 코드
             
             NewHealthModule = GetModule<INewHealthModule>();
-            Debug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");
+            FDebug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");
         }
         
         public virtual void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)

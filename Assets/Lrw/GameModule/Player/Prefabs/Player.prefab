@@ -96,7 +96,6 @@ MonoBehaviour:
   <SkillSo>k__BackingField: {fileID: 11400000, guid: 60c94d8ca0a51d24c8565b2b2ec6ef22, type: 2}
   <BaseCoolTime>k__BackingField: 1
   dashTime: 0.15
-  assetNameSo: {fileID: 11400000, guid: 5ef278c748e885e4cbfa9645874d5f09, type: 2}
   dashCountStat: {fileID: 11400000, guid: a27d989aeba32e044833d661dbf23947, type: 2}
   dashCoolTimeStat: {fileID: 11400000, guid: 84f8db238b1620f40a33711eee5a07fd, type: 2}
   dashRangeStat: {fileID: 11400000, guid: adec61426d70758478f627cdfc4a5ab9, type: 2}
@@ -360,7 +359,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3728814495393267975
 MonoBehaviour:

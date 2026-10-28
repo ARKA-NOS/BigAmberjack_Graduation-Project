@@ -8,7 +8,7 @@ using CTJ.Enemies.Bosses;
 using DevLib.BattleSystem;
 using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -92,7 +92,7 @@ namespace CTJ.Tools
                     Damage(enemy, 99999f);
                     Check(enemy.IsDead && manager.GetKillCount() == before + 1, "Cat/Ghost/Boss death must count once");
                     Damage(enemy, 99999f);
-                    enemy.GetModule<IHealthModule>().CurrentHealth = 0f;
+                    enemy.GetModule<INewHealthModule>().ApplyDamage(enemy.GetModule<INewHealthModule>().CurrentHealth);
                     Report.Invoke(death, null);
                     Check(manager.GetKillCount() == before + 1, "Duplicate damage, health callback and report");
                 }
@@ -103,7 +103,7 @@ namespace CTJ.Tools
                 Check(manager.GetKillCount() == 3 && ServiceLocator.Get<EnemyKillCountManager>() == manager, "Re-enable preserves count and registration");
 
                 EnemyBase dead = Spawn(Prefabs[0], spawned);
-                dead.GetModule<IHealthModule>().CurrentHealth = 0f;
+                dead.GetModule<INewHealthModule>().ApplyDamage(dead.GetModule<INewHealthModule>().CurrentHealth);
                 Check(manager.GetKillCount() == 4, "Direct lethal health change");
                 manager.ResetKillCount();
                 Report.Invoke(dead.GetModule<EnemyDeathModule>(), null);

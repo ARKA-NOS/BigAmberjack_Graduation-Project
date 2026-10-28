@@ -1,5 +1,5 @@
 using CTJ.Enemies;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +17,7 @@ namespace CTJ.UI
         [SerializeField, Min(0.001f)] private float worldUnitsPerPixel = 0.01f;
 
         private EnemyBase _enemy;
-        private IHealthModule _health;
+        private INewHealthModule _health;
         private EnemyHitReactionModule _reaction;
         private Canvas _canvas;
         private RectTransform _rect;
@@ -49,7 +49,7 @@ namespace CTJ.UI
         {
             Unbind();
             if (_enemy == null) return;
-            _health = _enemy.GetModule<IHealthModule>();
+            _health = _enemy.GetModule<INewHealthModule>();
             _reaction = _enemy.GetModule<EnemyHitReactionModule>();
             if (_health != null)
             {

@@ -8,7 +8,7 @@ using CTJ.Enemies.Bosses;
 using CTJ.Enemies.Skills;
 using CTJ.Testing;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -167,7 +167,7 @@ namespace CTJ.Tools
             public EnemySkillModule Skills => Enemy.GetModule<EnemySkillModule>();
             public EnemySuperArmorModule Armor => Enemy.GetModule<EnemySuperArmorModule>();
             public EnemyHitReactionModule Reaction => Enemy.GetModule<EnemyHitReactionModule>();
-            public IHealthModule Health => Enemy.GetModule<IHealthModule>();
+            public INewHealthModule Health => Enemy.GetModule<INewHealthModule>();
 
             public Fixture(string prefab, bool armor = true)
             {

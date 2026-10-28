@@ -112,7 +112,8 @@ namespace CTJ.Tools
                         damagedBeforeLanding = true;
                     if (scenario == "death" && body.linearVelocityY > 1f && enemy.transform.position.y > 0.2f && !enemy.IsDead)
                     {
-                        enemy.GetModule<Lrw.Script.Agent.HealthSystem.IHealthModule>().CurrentHealth = 0f;
+                        var health = enemy.GetModule<Lrw.Script.Agent.HealthSystem.NewHealthSystem.INewHealthModule>();
+                        health.ApplyDamage(health.CurrentHealth);
                         deadStable = enemy.IsDead && !body.simulated && body.linearVelocity.sqrMagnitude < 0.0001f;
                     }
                 });

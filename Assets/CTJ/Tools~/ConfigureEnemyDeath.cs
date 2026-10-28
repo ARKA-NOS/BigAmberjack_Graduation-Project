@@ -4,7 +4,7 @@ using System.Linq;
 using Agents.Players;
 using CTJ.Enemies;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEditor;
 using UnityEditor.Animations;
@@ -22,7 +22,7 @@ namespace CTJ.Tools
             PlayerMeleeSkillModule attack = player.GetComponentInChildren<PlayerMeleeSkillModule>(true);
             return new
             {
-                healthModules = player.GetComponentsInChildren<HealthModule>(true).Length,
+                healthModules = player.GetComponentsInChildren<NewHealthModule>(true).Length,
                 statModules = player.GetComponentsInChildren<StatModule>(true).Length,
                 attackDamage = new SerializedObject(attack).FindProperty("attackDmg").floatValue,
                 caster = attack.GetComponentInChildren<OverlapDamageCaster>(true).GetType().FullName

@@ -7,7 +7,7 @@ using CTJ.Enemies.Bosses;
 using CTJ.Testing;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -28,7 +28,7 @@ namespace CTJ.Tools
         {
             name = b.name, state = b.CurrentState.ToString(), position = b.transform.position.ToString(),
             target = b.Target != null ? b.Target.position.ToString() : "null", reachable = b.HasCombatTarget,
-            health = b.GetModule<IHealthModule>()?.CurrentHealth, flight = b.GetModule<BossFlightModule>()?.IsMoving,
+            health = b.GetModule<INewHealthModule>()?.CurrentHealth, flight = b.GetModule<BossFlightModule>()?.IsMoving,
             arrived = b.GetModule<BossFlightModule>()?.HasArrived, time = Time.time
         }).ToArray();
 
@@ -177,7 +177,7 @@ namespace CTJ.Tools
             public EnemyDamageProbe Target;
             public BossRadialVolleySkill Radial => Boss.GetComponentInChildren<BossRadialVolleySkill>();
             public BossLaserSkill Beam => Boss.GetComponentInChildren<BossLaserSkill>();
-            public IHealthModule Health => Boss.GetModule<IHealthModule>();
+            public INewHealthModule Health => Boss.GetModule<INewHealthModule>();
             public EnemySkillModule Skills => Boss.GetModule<EnemySkillModule>();
             public Fixture(float x, float firstDelay = 100f)
             {

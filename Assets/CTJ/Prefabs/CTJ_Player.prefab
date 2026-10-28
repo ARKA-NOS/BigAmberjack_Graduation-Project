@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 3117802194598380923}
   - component: {fileID: 1044614349892798922}
   m_Layer: 0
-  m_Name: HealthModule
+  m_Name: NewHealthModule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1020,11 +1020,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 9211589605741041914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1c2a7de7bdb4bad899b57a041df3e4c, type: 3}
+  m_Script: {fileID: 11500000, guid: fa754aad030844f69e3fa6b7f9036c88, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.HealthModule
-  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
-  currentHealth: 0
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.NewHealthModule
+  coreHealth: {fileID: 11400000, guid: 0653475e29e580044b74a5eb1251affe, type: 2}
+  otherHealths: []
+  healthViewModel: {fileID: 0}
 --- !u!1001 &154815683260511742
 PrefabInstance:
   m_ObjectHideFlags: 0

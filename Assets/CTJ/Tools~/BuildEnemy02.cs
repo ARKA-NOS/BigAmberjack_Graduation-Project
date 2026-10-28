@@ -3,7 +3,7 @@ using System.Linq;
 using CTJ.Enemies;
 using CTJ.Enemies.Skills;
 using CTJ.UI;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.SkillSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEditor;
@@ -35,7 +35,8 @@ namespace CTJ.Tools
                 StatModule statModule = root.GetComponentInChildren<StatModule>();
                 StatGroup stats = Object.Instantiate((StatGroup)new SerializedObject(statModule).FindProperty("baseStats").objectReferenceValue);
                 stats.name = "Enemy02_ProjectileRobot_Stats";
-                Object hpStat = new SerializedObject(root.GetComponentInChildren<HealthModule>()).FindProperty("maxHpStatData").objectReferenceValue;
+                Object coreHealth = new SerializedObject(root.GetComponentInChildren<NewHealthModule>()).FindProperty("coreHealth").objectReferenceValue;
+                Object hpStat = new SerializedObject(coreHealth).FindProperty("maxHpStatData").objectReferenceValue;
                 Object delayStat = new SerializedObject(attack).FindProperty("attackDelayStat").objectReferenceValue;
                 SerializedObject statSO = new SerializedObject(stats);
                 SerializedProperty entries = statSO.FindProperty("<Stats>k__BackingField");

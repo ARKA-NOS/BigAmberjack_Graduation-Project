@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -24,7 +24,7 @@ namespace CTJ.Enemies
         }
 
         private EnemyBase _enemy;
-        private IHealthModule _health;
+        private INewHealthModule _health;
         private View[] _views;
         private bool _initialized;
         private bool _subscribed;
@@ -41,7 +41,7 @@ namespace CTJ.Enemies
         {
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
-            _health = owner.GetModule<IHealthModule>();
+            _health = owner.GetModule<INewHealthModule>();
             if (sprites == null || sprites.Length == 0) sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
         }
 

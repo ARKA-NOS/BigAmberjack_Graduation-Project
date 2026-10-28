@@ -78,7 +78,7 @@ namespace CTJ.Enemies.Bosses
 
         private bool TryBeginLaserPhase()
         {
-            if (IsDead || HasUsedLaserPhase || HealthModule == null || HealthModule.CurrentHealth > laserHealthThreshold ||
+            if (IsDead || HasUsedLaserPhase || NewHealthModule == null || NewHealthModule.CurrentHealth > laserHealthThreshold ||
                 !Skills.IsSkillEnabled(laser))
                 return false;
             HasUsedLaserPhase = true; // 취소/재진입/추가 피격보다 먼저 1회 사용을 확정합니다.

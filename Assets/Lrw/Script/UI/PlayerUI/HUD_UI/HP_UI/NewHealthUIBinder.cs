@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.DataStructure;
 using Lrw.Script.UI.BindSystem;
-using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI;
+using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.HealthBarUI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public class NewHealthUIBinder : AbstractUIBinder<HealthData>
     {

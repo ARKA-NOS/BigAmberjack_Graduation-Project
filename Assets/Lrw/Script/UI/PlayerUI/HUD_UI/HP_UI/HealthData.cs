@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public class HealthData
     {

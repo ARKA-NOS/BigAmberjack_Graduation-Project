@@ -36,7 +36,7 @@ namespace Lrw.Script.Agent.Players
 
             _canInputOnOffs = GetModules<ICanInputOnOff>();
             
-            HealthModule.OnDead += OnOnDead;
+            NewHealthModule.OnDead += OnOnDead;
             
             ServiceLocator.Register<IPlayerController>(this);
         }
@@ -45,7 +45,7 @@ namespace Lrw.Script.Agent.Players
         {
             agentStateMachine.StateExit();
             PlayerInput.OnDashKeyPressed -= HandleDashStateChange;
-            HealthModule.OnDead -= OnOnDead;
+            NewHealthModule.OnDead -= OnOnDead;
             ServiceLocator.Register<IPlayerController>(new NullPlayerController());
         }
 

@@ -1,9 +1,8 @@
-﻿using Lrw.Script.DataStructure;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.HealthBarUI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.HealthBarUI
 {
     [RequireComponent(typeof(LayoutElement), typeof(Image))]
     public class HPBarUI : MonoBehaviour

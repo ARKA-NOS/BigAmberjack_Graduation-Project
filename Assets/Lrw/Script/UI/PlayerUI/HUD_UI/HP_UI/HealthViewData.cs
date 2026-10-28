@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
-using Lrw.Script.DataStructure;
-using UnityEngine;
+﻿using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 
-namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI
+namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public struct HealthViewData
     {

@@ -5,7 +5,7 @@ using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI;
+using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem

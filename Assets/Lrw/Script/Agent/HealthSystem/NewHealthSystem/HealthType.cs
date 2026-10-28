@@ -9,6 +9,6 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         Core = 1 << 0,
         Shield = 1 << 1,
         LifeStill = 1 << 2,
-        All = Core | Shield | LifeStill
+        All = Core | Shield | LifeStill,
     }
 }

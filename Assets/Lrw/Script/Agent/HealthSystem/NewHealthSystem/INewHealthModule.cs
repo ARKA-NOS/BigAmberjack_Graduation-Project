@@ -3,6 +3,7 @@
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
     public delegate void HealthChanged(float newValue, float delta, float max);
+    
     public interface INewHealthModule
     {
         float CurrentHealth { get; }

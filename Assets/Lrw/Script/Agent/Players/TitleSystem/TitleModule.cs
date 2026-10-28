@@ -2,6 +2,8 @@
 using System.Linq;
 using DevLib.ModuleSystem;
 using Lrw.Script.Agent.Players.QuestSystem;
+using Lrw.Script.DataStructure;
+using Lrw.Script.UI.PlayerUI.Title_UI;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
@@ -9,6 +11,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
     public class TitleModule : Module, IAfterInitModule
     {
         [SerializeField] private TitleGroupSo titleGroup;
+        [SerializeField] private TitleListViewModel titleListViewModel;
         
         private Dictionary<AbstractTitleSo,Title> _titles;
         private HashSet<AbstractTitleSo> _completedTitles;
@@ -22,6 +25,9 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             _titles = new();
             _completedTitles = new();
             _waitingTitles = new();
+            
+            if(titleListViewModel != null)
+                titleListViewModel.Bind(new TitleListViewData(new()));
         }
         
         public void AfterInit()
@@ -49,7 +55,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
                     Debug.LogWarning($"[TitleModule] {titleSo.name}의 선행 칭호가 TitleList에 없거나 자기 자신이라 해금되지 않습니다.", titleSo);
                     continue;
                 }
-
+                
                 if (!_waitingTitles.TryGetValue(requiredTitle, out List<AbstractTitleSo> waitingList))
                 {
                     waitingList = new List<AbstractTitleSo>();
@@ -64,6 +70,21 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             Title title = new Title(titleSo, _questModule);
             _titles.Add(titleSo, title);
             title.OnComplete += OnTitleComplete;
+
+            if (titleListViewModel != null)
+            {
+                TitleViewData viewData = new TitleViewData(
+                    title.TitleSo.TitleName,title.TitleSo.TitleDescription,title.TitleSo.UpgradeDescription,
+                    title.GetQuests()
+                        .Select(x => 
+                            new QuestViewData(x.QuestSo.QuestName, x.QuestSo.QuestDescription,
+                        new Gauge(x.CurrentAmount,x.RequiredAmount),x.IsComplete)
+                        )
+                        .ToList()
+                    );
+                
+                titleListViewModel.BindData.TitleViewList.Add(viewData);
+            }
         }
         
         private void OnTitleComplete(Title title)

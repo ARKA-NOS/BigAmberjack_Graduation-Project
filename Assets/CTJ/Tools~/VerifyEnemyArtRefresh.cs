@@ -84,6 +84,12 @@ namespace CTJ.Tools
                 floor.transform.position = new Vector3(x, -0.5f); floor.AddComponent<BoxCollider2D>().size = new Vector2(40f, 1f);
                 EnemyBase enemy = Spawn(root, zombie ? "Enemy01_TwistedArm" : "Enemy04_MechanicArcher", new Vector3(x, 0f));
                 EnemyDamageProbe target = Target(root, new Vector3(x + (zombie ? 1f : 8f), 0f)); enemy.SetTarget(target.transform);
+                if (!zombie)
+                {
+                    // 04는 이제 수평 발사하므로 활 높이를 포함하는 서 있는 타깃으로 검증합니다.
+                    BoxCollider2D targetBody = target.GetComponent<BoxCollider2D>();
+                    targetBody.size = new Vector2(0.5f, 2f); targetBody.offset = new Vector2(0f, 1f);
+                }
                 EnemyAttackSkill skill = enemy.GetComponentInChildren<EnemyAttackSkill>();
                 Animator animator = enemy.GetComponentInChildren<Animator>(); SpriteRenderer sprite = animator.GetComponent<SpriteRenderer>();
                 Check(animator.runtimeAnimatorController.name == (zombie ? "Enemy01_Zombie" : "Enemy04_ArcherHero"), "Dedicated controller");

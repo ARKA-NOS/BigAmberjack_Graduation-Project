@@ -1,5 +1,7 @@
 # 09-02 투사체 로봇 — 반매립 고정 포탑
 
+> 2026-10-28 정리: 아래에 언급된 일회성 생성 도구·과거 검증 파일·캡처 일부는 삭제되었습니다. 설명과 검증 결과는 당시 작업 기록입니다. 현재 남긴 도구는 [README.md](README.md)를 확인하세요.
+
 ## 결과와 작업 범위
 
 - 프리팹: `Assets/CTJ/Prototypes/Prefabs/Enemy02_ProjectileRobot.prefab`

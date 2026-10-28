@@ -21,6 +21,8 @@ namespace CTJ.Enemies.Skills
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간(초). 터렛은 이 시간 동안 발사 방향과 전개 상태를 유지합니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
         [Header("Aim")]
+        [Tooltip("타깃의 높이는 무시하고 적의 중심을 기준으로 좌우 수평 조준합니다. 끄면 기존 타깃 위치 조준을 사용합니다.")]
+        [SerializeField] private bool horizontalAimOnly;
         [Tooltip("준비 중 조준 방향에 맞춰 몸체도 좌우 반전합니다. 조준 고정 후에는 방향을 바꾸지 않습니다.")]
         [SerializeField] private bool faceTargetDuringPreparation;
         [Tooltip("준비 중 조준선 표시만 켜고 끕니다. 실제 발사 방향의 추적과는 별개입니다.")]
@@ -59,6 +61,14 @@ namespace CTJ.Enemies.Skills
         private void UpdateAimTarget()
         {
             if (CastTarget == null || firePoint == null) return;
+            if (horizontalAimOnly)
+            {
+                // 발사 위치가 몸체보다 앞에 있어도 타깃의 좌우 판단은 몸체 방향과 일치시킵니다.
+                float offsetX = CastTarget.position.x - Enemy.transform.position.x;
+                float side = Mathf.Approximately(offsetX, 0f) ? Enemy.FacingDirection : Mathf.Sign(offsetX);
+                _desiredAimDirection = Vector2.right * side;
+                return;
+            }
             Vector2 targetPoint = CastTarget.position;
             if (aimAtTargetCenter)
             {

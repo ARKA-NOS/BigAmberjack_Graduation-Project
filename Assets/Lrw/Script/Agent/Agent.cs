@@ -14,16 +14,11 @@ namespace Lrw.Script.Agent
     {
         [SerializeField] protected UnityEvent OnHit;
         
-        [Obsolete("Use NewHealthModule")]
-        //이거 이제 사용 안함
-        protected IHealthModule HealthModule { get; private set; }
-        
         protected INewHealthModule NewHealthModule { get; private set; }
         
         protected override void Awake()
         {
             base.Awake();
-            HealthModule = GetModule<IHealthModule>(); // 애러 방지 코드
             
             NewHealthModule = GetModule<INewHealthModule>();
             FDebug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");

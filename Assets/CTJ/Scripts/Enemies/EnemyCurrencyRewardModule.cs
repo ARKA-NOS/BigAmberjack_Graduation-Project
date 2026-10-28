@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CTJ.Enemies
 {
-    // 잔액/저장은 공용 CurrencyManager가 담당하고, 이 모듈은 사망 보상만 전달합니다.
+    // 보상 총액/분배는 이 모듈, 낙하/소멸/개별 지급은 EnemyRewardCoin이 담당합니다.
     [DisallowMultipleComponent]
     public sealed class EnemyCurrencyRewardModule : Module, IAfterInitModule
     {
@@ -13,6 +13,14 @@ namespace CTJ.Enemies
         [SerializeField] private CurrencySO rewardCurrency;
         [Tooltip("소유 적의 StatModule에서 읽을 보상 수량 스탯. 소수 부분은 버립니다.")]
         [SerializeField] private StatData rewardAmountStat;
+
+        [Header("Coin Drop")]
+        [SerializeField] private EnemyRewardCoin coinPrefab;
+        [Tooltip("코인 하나가 나타내는 기준 금액. 5이면 1~5골드: 1개, 6~10골드: 2개입니다.")]
+        [SerializeField, Min(1)] private int currencyPerCoin = 5;
+        [SerializeField, Min(1)] private int maxCoinCount = 12;
+        [Tooltip("적 루트의 월드 위치에 더할 생성 오프셋입니다. 적의 방향/크기와 무관합니다.")]
+        [SerializeField] private Vector2 spawnOffset = new Vector2(0f, 0.35f);
 
         private EnemyBase _enemy;
         private Stat _rewardAmount;
@@ -36,7 +44,7 @@ namespace CTJ.Enemies
             if (_rewardHandled || !isActiveAndEnabled || _enemy == null || !_enemy.IsDead)
                 return;
 
-            // Add가 변경 이벤트를 호출하므로, 외부 콜백에 재진입하기 전에 중복 지급을 차단합니다.
+            // 사망 이벤트가 여러 번 호출되어도 코인은 한 묶음만 생성합니다.
             _rewardHandled = true;
             if (rewardCurrency == null || _rewardAmount == null)
             {
@@ -53,6 +61,12 @@ namespace CTJ.Enemies
             if (value < 1f) return;
             int amount = Mathf.FloorToInt(value);
 
+            if (coinPrefab == null)
+            {
+                Debug.LogWarning($"{_enemy.name}: 사망 보상의 Coin Prefab을 연결하세요.", this);
+                return;
+            }
+
             // 생성 시점이 아닌 사망 시점에 조회해 매니저 초기화 순서에 대한 의존을 줄입니다.
             CurrencyData currency = CurrencySystem.GetCurrencyData(rewardCurrency);
             if (currency == null)
@@ -66,7 +80,19 @@ namespace CTJ.Enemies
                 return;
             }
 
-            currency.Add(amount);
+            int count = Mathf.Min(1 + (amount - 1) / Mathf.Max(1, currencyPerCoin), Mathf.Max(1, maxCoinCount));
+            int baseAmount = amount / count;
+            int remainder = amount % count;
+            Vector3 position = _enemy.transform.position + (Vector3)spawnOffset;
+            for (int i = 0; i < count; i++)
+            {
+                // 부모를 지정하지 않아 적의 사망 연출/제거와 코인의 수명이 독립적입니다.
+                EnemyRewardCoin coin = Instantiate(coinPrefab, position, Quaternion.identity);
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(coin.gameObject, _enemy.gameObject.scene);
+                // 구간을 나누어 같은 방향에 모두 겹쳐 날아가는 것을 줄입니다.
+                float spread = (i + Random.Range(0.1f, 0.9f)) / count;
+                coin.Launch(currency, baseAmount + (i < remainder ? 1 : 0), spread);
+            }
         }
     }
 }

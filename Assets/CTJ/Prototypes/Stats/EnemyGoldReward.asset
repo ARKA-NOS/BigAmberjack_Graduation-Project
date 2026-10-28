@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyGoldReward
   m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatData
   <StatName>k__BackingField: Enemy Gold Reward
-  <StatDescription>k__BackingField: "사망 시 즉시 지급할 Gold 수량. 적별 StatGroup에서 설정하며 소수 부분은 버립니다."
+  <StatDescription>k__BackingField: "사망 시 코인으로 분배할 Gold 총액. 코인이 사라질 때 지급하며, 적별 StatGroup에서 설정하고 소수 부분은 버립니다."
   <StatIcon>k__BackingField: {fileID: 0}
   <DefaultValue>k__BackingField: 0
   <UseValueRange>k__BackingField: 1

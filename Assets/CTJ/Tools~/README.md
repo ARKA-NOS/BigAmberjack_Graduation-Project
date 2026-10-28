@@ -23,6 +23,7 @@
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
 | VerifyEnemyNewHealth.cs | 현재 NewHealthModule 기반 체력·UI·보상 통합 검사 |
+| VerifyEnemyCoinReward.cs | 사망 코인 분배·지형·페이드·지연 지급·씬 정리 정산 검사 |
 | VerifyEnemyOutline.cs | 현재 아웃라인의 피격·활성화·제거 검사 |
 | VerifyEnemyOuterContour.cs | 위치·회전·수납에 따른 외곽선 누락 재발 방지 |
 | VerifyEnemySuperArmor.cs | 현재 슈퍼아머의 준비/공격/후딜 조건 검사 |
@@ -37,4 +38,6 @@
 
 이번 정리는 게임 동작이나 C# 문법을 추가하지 않았습니다. 경로와 참조를 검사한 뒤 지정된 파일만 삭제했습니다.
 
-정리 후 남긴 C# 검증 파일 9개를 실행 없이 컴파일했으며 모두 오류 없이 통과했습니다. 남은 파일은 C# 9개, 설명서/안내 Markdown 21개, 실행기 1개입니다. CTJ_MapTestScene의 파일 해시도 정리 전후 동일했습니다.
+정리 시점에 남긴 C# 검증 파일 9개를 실행 없이 컴파일했으며 모두 오류 없이 통과했습니다. CTJ_MapTestScene의 파일 해시도 정리 전후 동일했습니다.
+
+이후 코인 보상 작업으로 VerifyEnemyCoinReward.cs와 EnemyCoinRewardNotes.md를 추가했습니다. Backups/EnemyCurrencyRewardModule.Immediate.cs.txt는 사용자 요청으로 보관한 이전 즉시 지급 코드이며, 삭제 대상이 아닙니다.

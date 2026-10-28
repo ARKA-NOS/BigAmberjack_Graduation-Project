@@ -56,12 +56,12 @@ namespace Lrw.Script.Agent.Players
         public override void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
         {
             if(_isDead) return;
+            if(IsInvincibility) return;
+            
+            ChangeState(PlayerStateEnum.HIT);
+            _movementController.AddForce(damageData.DirectedKBForce);
+            
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
-            if (!_isDead)
-            {
-                ChangeState(PlayerStateEnum.HIT);
-                _movementController.AddForce(damageData.DirectedKBForce);
-            }
         }
 
         public void SetInputActive(bool active)
@@ -78,7 +78,7 @@ namespace Lrw.Script.Agent.Players
             ChangeState(PlayerStateEnum.Dead);
             _isDead = true;
             SetInputActive(false);
-            FDebug.Log("Dead");
+            FDebug.Log("Player Dead");
         }
         
     }

@@ -45,6 +45,7 @@ namespace CTJ.Tools
             EnemySkillModule skills = enemy.GetComponentInChildren<EnemySkillModule>();
             Check(skills.Skills.Count == 1 && skills.Skills[0].Skill == shot && shot.SkillSo != null, "Skill registration");
             Check(shot.CoolTime == 2.8f && Float(shot, "damage") == 14f && Float(shot, "recoveryTime") == 0.6f, "Attack stats");
+            Check(new SerializedObject(shot).FindProperty("horizontalAimOnly").boolValue, "Archer horizontal aim");
             foreach (string field in new[] { "projectilePrefab", "firePoint", "attackDelayStat", "telegraphPrefab" })
                 Check(new SerializedObject(shot).FindProperty(field).objectReferenceValue != null, "Missing " + field);
             StatGroup stats = (StatGroup)new SerializedObject(enemy.GetComponentInChildren<StatModule>()).FindProperty("baseStats").objectReferenceValue;
@@ -61,9 +62,14 @@ namespace CTJ.Tools
             Check(enemy.GetComponent<BoxCollider2D>().isTrigger && enemy.GetComponentInChildren<EnemyDeathModule>() != null &&
                 enemy.GetComponentInChildren<EnemyCurrencyRewardModule>() != null, "Nonblocking hurtbox / rewards");
             foreach (string old in new[] { "MadGhost_Ranged", "Enemy02_ProjectileRobot" })
+            {
                 Check(!new SerializedObject(AssetDatabase.LoadAssetAtPath<EnemyBase>("Assets/CTJ/Prototypes/Prefabs/" + old + ".prefab")
                     .GetComponentInChildren<EnemyProjectileSkill>()).FindProperty("faceTargetDuringPreparation").boolValue,
                     "Old enemy opt-in default changed");
+                Check(!new SerializedObject(AssetDatabase.LoadAssetAtPath<EnemyBase>("Assets/CTJ/Prototypes/Prefabs/" + old + ".prefab")
+                    .GetComponentInChildren<EnemyProjectileSkill>()).FindProperty("horizontalAimOnly").boolValue,
+                    "Other ranged enemies must retain free aim");
+            }
             return new { passed = true, scope = "references / skill registration / stats / physics / original opt-in defaults" };
         }
 
@@ -73,6 +79,12 @@ namespace CTJ.Tools
             object[] result = await Task.WhenAll(Movement(), AimAndHit(), Obstacle(false), Obstacle(true), ProjectileRules());
             object death = await DeathReward();
             return new { result, death };
+        }
+
+        public static async Task<object> RunFacingAndAim()
+        {
+            RequirePlay();
+            return await Task.WhenAll(Movement(), AimAndHit(), Obstacle(false), Obstacle(true), HeightMiss(false), HeightMiss(true));
         }
 
         public static async Task<object> RenderPreview()
@@ -135,6 +147,7 @@ namespace CTJ.Tools
                 await Wait(0.2f); Check(Mathf.Abs(body.linearVelocityX) < 0.01f, "13m must not initially detect");
                 target.transform.position = new Vector3(6011.7f, 0f);
                 await Until(() => body.linearVelocityX > 3.1f, "3.2 m/s approach");
+                Check(enemy.transform.Find("Visual").localScale.x > 0f, "Approach faces movement");
                 await Until(() => enemy.IsAttackInProgress, "Stop at 11m and prepare");
                 Check(Vector2.Distance(enemy.transform.position, target.transform.position) <= 11f && Mathf.Abs(body.linearVelocityX) < 0.01f,
                     "Attack should stop movement");
@@ -145,13 +158,21 @@ namespace CTJ.Tools
                 await Wait(0.2f); Check(Mathf.Abs(body.position.x - stoppedX) < 0.01f, "No return to spawn / release hysteresis");
                 target.transform.position = enemy.transform.position + Vector3.right * 3f;
                 await Until(() => body.linearVelocityX < -3.1f, "Retreat right-side player");
-                Check(enemy.transform.Find("Visual").localScale.x > 0f, "Backpedal must face player");
+                await Wait(0.05f);
+                Check(enemy.transform.Find("Visual").localScale.x < 0f &&
+                    enemy.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Move"), "Retreat runs forward to the left");
                 await Until(() => Vector2.Distance(enemy.transform.position, target.transform.position) >= 5f, "Reach minimum range");
                 await Wait(0.06f); Check(Mathf.Abs(body.linearVelocityX) < 0.01f, "Stop after spacing regained");
+                Check(enemy.transform.Find("Visual").localScale.x > 0f, "Face player again in range, even during cooldown");
                 enemy.SetTarget(null); enemy.SetTarget(target.transform);
                 target.transform.position = enemy.transform.position + Vector3.left * 3f;
                 await Until(() => body.linearVelocityX > 3.1f, "Retreat left-side player");
-                Check(enemy.transform.Find("Visual").localScale.x < 0f, "Left-facing backpedal");
+                await Wait(0.05f);
+                Check(enemy.transform.Find("Visual").localScale.x > 0f &&
+                    enemy.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Move"), "Retreat runs forward to the right");
+                await Until(() => Vector2.Distance(enemy.transform.position, target.transform.position) >= 5f, "Regain range on left");
+                await Wait(0.06f);
+                Check(Mathf.Abs(body.linearVelocityX) < 0.01f && enemy.transform.Find("Visual").localScale.x < 0f, "Stop and face left-side player again");
                 enemy.SetTarget(null); await Wait(0.1f); Check(Mathf.Abs(body.linearVelocityX) < 0.01f, "Null target cleanup");
                 return new { passed = true, scenario = "delayed target / 12-14 hysteresis / approach / retreat both ways / facing / stop" };
             }
@@ -168,8 +189,8 @@ namespace CTJ.Tools
                 await Until(() => shot.IsPreparing, "Start aiming"); float started = shot.CoolTimeStartTime;
                 await Wait(0.1f); target.transform.position = new Vector3(6092f, 2f);
                 await Wait(0.08f);
-                Check(shot.CastDirection.x < 0f && shot.CastDirection.y > 0f && enemy.transform.Find("Visual").localScale.x < 0f,
-                    "Preparation tracks and turns body");
+                Check(shot.CastDirection == Vector2.left && enemy.transform.Find("Visual").localScale.x < 0f,
+                    "Preparation tracks left/right only, ignoring raised target");
                 Set(shot, "showAimLine", false); await Wait(0.05f); Check(!Line(shot).IsVisible, "Hide optional aim line");
                 Set(shot, "showAimLine", true);
                 await Until(() => shot.IsHoldingWarning, "Final lock");
@@ -184,7 +205,7 @@ namespace CTJ.Tools
                 Check(released - started >= 0.78f && released - lockedAt >= 0.13f, "0.8 total / 0.15 locked warning");
                 EnemyProjectile bullet = FindArrow(6100f);
                 Check(bullet != null && Vector2.Angle(bullet.transform.right, locked) < 0.1f && !Line(shot).IsVisible, "Launch matches warning");
-                target.transform.position = aimPoint;
+                target.transform.position = new Vector3(aimPoint.x, 0f); // 수평 궤도와 겹치는 높이로 착지한 타깃.
                 await Wait(0.3f); Check(shot.IsUsing, "Recovery must last 0.6 seconds");
                 await Until(() => target.ReceivedHitCount == 1, "Arrow hits target");
                 Check(target.TotalDamage == 14f, "14 damage exactly once");
@@ -216,6 +237,37 @@ namespace CTJ.Tools
                     Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.01f && !enemy.IsAttackInProgress,
                     "Retreat must stop at " + (cliff ? "cliff" : "wall"));
                 return new { passed = true, scenario = cliff ? "retreat cliff protection" : "retreat wall protection" };
+            }
+            finally { Cleanup(arena, x); }
+        }
+
+        private static async Task<object> HeightMiss(bool below)
+        {
+            float x = below ? 6700f : 6600f;
+            GameObject arena = Arena(x, 40f);
+            try
+            {
+                if (below) Box(arena, new Vector2(x, 1.5f), new Vector2(3f, 3f));
+                EnemyBase enemy = Spawn(arena, x);
+                if (below) enemy.transform.position += Vector3.up * 3f;
+                EnemyDamageProbe target = Target(arena, new Vector2(x + 8f, below ? 0f : 3f));
+                enemy.SetTarget(target.transform);
+                EnemyProjectileSkill shot = enemy.GetComponentInChildren<EnemyProjectileSkill>();
+                await Until(() => shot.IsPreparing, "Height-different aim");
+                await Wait(0.1f);
+                Check(shot.CastDirection == Vector2.right, "Height must not tilt aim");
+                RectTransform lane = Line(shot).GetComponent<RectTransform>();
+                Check(Mathf.Abs(lane.right.y) < 0.001f, "Aim line must be horizontal");
+                await Until(() => FindArrow(x) != null, "Horizontal arrow");
+                EnemyProjectile arrow = FindArrow(x); float initialY = arrow.transform.position.y;
+                while (arrow != null)
+                {
+                    Check(Mathf.Abs(arrow.transform.position.y - initialY) < 0.001f && Mathf.Abs(arrow.transform.right.y) < 0.001f,
+                        "Arrow must keep its launch height");
+                    await Task.Yield();
+                }
+                Check(target.ReceivedHitCount == 0, "Target outside horizontal lane should evade");
+                return new { passed = true, scenario = below ? "lower target: horizontal aim / straight flight / miss" : "upper target: horizontal aim / straight flight / miss" };
             }
             finally { Cleanup(arena, x); }
         }
@@ -290,7 +342,7 @@ namespace CTJ.Tools
         {
             GameObject obj = new GameObject("Target"); obj.transform.SetParent(parent.transform); obj.transform.position = position;
             BoxCollider2D collider = obj.AddComponent<BoxCollider2D>(); collider.isTrigger = true;
-            collider.size = new Vector2(0.5f, 0.8f); collider.offset = new Vector2(0f, 0.4f);
+            collider.size = new Vector2(0.5f, 2f); collider.offset = new Vector2(0f, 1f);
             return obj.AddComponent<EnemyDamageProbe>();
         }
         private static EnemyProjectile FindArrow(float x) => Object.FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None)

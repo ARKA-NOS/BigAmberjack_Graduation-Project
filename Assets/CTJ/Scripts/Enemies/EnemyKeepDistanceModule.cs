@@ -25,18 +25,29 @@ namespace CTJ.Enemies
             _movement = owner.GetModule<EnemyMovementModule>();
         }
 
-        internal void MoveTowardsTarget(Transform target, float speed)
+        internal float MoveTowardsTarget(Transform target, float speed)
         {
             if (!isActiveAndEnabled || _enemy == null || _movement == null || target == null)
             {
                 _movement?.Stop();
-                return;
+                return 0f;
             }
 
             Vector2 offset = target.position - _enemy.transform.position;
             if (Mathf.Abs(offset.x) > 0.01f) _lastTargetSide = Mathf.Sign(offset.x);
+            float distanceSquared = offset.sqrMagnitude;
+            float minimum = MinimumDistance;
+            float maximum = _enemy.AttackRange;
+            if (distanceSquared >= minimum * minimum && distanceSquared <= maximum * maximum)
+            {
+                // 사거리와 실제 공격 가능 여부(발판에 가린 시야 등)는 별개입니다.
+                // 적정 거리에서도 다시 접근하면 최소 거리 경계에서 접근/후퇴를 반복합니다.
+                _movement.Stop();
+                _enemy.FaceTarget();
+                return 0f;
+            }
             float destinationX = target.position.x;
-            if (offset.sqrMagnitude < MinimumDistance * MinimumDistance)
+            if (distanceSquared < minimum * minimum)
             {
                 // 거리 판정은 스킬과 같은 2D 거리. 높이가 달라도 필요한 수평 거리만 확보합니다.
                 float radius = MinimumDistance + Mathf.Max(0.07f, retreatPadding);
@@ -45,8 +56,8 @@ namespace CTJ.Enemies
             }
 
             // 후퇴/접근 모두 기존 벽·낭떠러지 검사 사용. 막혔다고 플레이어 쪽으로 돌진하지 않습니다.
-            _movement.MoveOnGroundTowards(destinationX, speed, out _);
-            _enemy.FaceTarget();
+            // 바라볼 방향은 EnemyBase가 실제 이동 방향으로 맞춥니다. 공격 진입 시에는 타깃을 봅니다.
+            return _movement.MoveOnGroundTowards(destinationX, speed, out _);
         }
 
         private void OnDrawGizmosSelected()

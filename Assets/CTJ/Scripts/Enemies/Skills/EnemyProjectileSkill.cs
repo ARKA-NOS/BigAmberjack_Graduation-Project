@@ -14,6 +14,10 @@ namespace CTJ.Enemies.Skills
         [Tooltip("선택 사항. 발사 순간 재생하며, 발사 자체는 이벤트를 기다리지 않습니다.")]
         [SerializeField] private Animator attackAnimator;
         [SerializeField] private string attackStateName = "Base Layer.Attack";
+        [Tooltip("선택 사항. 준비 시작 시 재생하고 마지막 자세를 유지하는 상태입니다.")]
+        [SerializeField] private string preparationStateName = "";
+        [Tooltip("선택 사항. 공격 종료/취소 때 돌아갈 상태입니다. 비우면 기존 Animator 전환을 사용합니다.")]
+        [SerializeField] private string idleStateName = "";
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간(초). 터렛은 이 시간 동안 발사 방향과 전개 상태를 유지합니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
         [Header("Aim")]
@@ -49,6 +53,7 @@ namespace CTJ.Enemies.Skills
             if (faceTargetDuringPreparation) Enemy.FaceTarget();
             UpdateAimTarget();
             RotateAim();
+            PlayAnimation(preparationStateName);
         }
 
         private void UpdateAimTarget()
@@ -92,13 +97,7 @@ namespace CTJ.Enemies.Skills
             projectile.Speed = ProjectileSpeed;
             projectile.Lifetime = ProjectileLifetime;
             projectile.Launch(Enemy, CastTarget, damage, _castDirection);
-            int stateHash = Animator.StringToHash(attackStateName);
-            if (attackAnimator != null && attackAnimator.isActiveAndEnabled &&
-                attackAnimator.runtimeAnimatorController != null && attackAnimator.HasState(0, stateHash))
-            {
-                attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                attackAnimator.Play(stateHash, 0, 0f);
-            }
+            PlayAnimation(attackStateName);
             _endTime = Time.time + Mathf.Max(0f, recoveryTime);
             BeginRecovery();
             if (recoveryTime <= 0f) EndSkill();
@@ -121,6 +120,28 @@ namespace CTJ.Enemies.Skills
                 if (turret != null) turret.HoldAim();
             }
             if (IsUsing && HasReleased && Time.time >= _endTime) EndSkill();
+        }
+
+        private void PlayAnimation(string stateName)
+        {
+            if (Enemy == null || Enemy.IsDead || string.IsNullOrEmpty(stateName) || attackAnimator == null ||
+                !attackAnimator.isActiveAndEnabled || attackAnimator.runtimeAnimatorController == null) return;
+            int stateHash = Animator.StringToHash(stateName);
+            if (!attackAnimator.HasState(0, stateHash)) return;
+            attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            attackAnimator.Play(stateHash, 0, 0f);
+        }
+
+        protected override void OnEndSkill()
+        {
+            base.OnEndSkill();
+            PlayAnimation(idleStateName);
+        }
+
+        protected override void OnStopSkill()
+        {
+            base.OnStopSkill();
+            PlayAnimation(idleStateName);
         }
     }
 }

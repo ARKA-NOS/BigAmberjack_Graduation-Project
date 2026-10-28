@@ -1,5 +1,7 @@
 # 총 처치 수와 보스 가감속 — 2026-10-21
 
+> 2026-10-28 정리: 아래에 언급된 일회성 생성 도구·과거 검증 파일·캡처 일부는 삭제되었습니다. 설명과 검증 결과는 당시 작업 기록입니다. 현재 남긴 도구는 [README.md](README.md)를 확인하세요.
+
 ## 구조와 적용 위치
 
 `EnemyBase.Die()` → 해당 적의 `EnemyDeathModule.ReportDeath()` → `EnemyKillCountManager`의 총합 +1.

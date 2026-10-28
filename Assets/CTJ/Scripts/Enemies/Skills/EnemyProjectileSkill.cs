@@ -14,9 +14,15 @@ namespace CTJ.Enemies.Skills
         [Tooltip("선택 사항. 발사 순간 재생하며, 발사 자체는 이벤트를 기다리지 않습니다.")]
         [SerializeField] private Animator attackAnimator;
         [SerializeField] private string attackStateName = "Base Layer.Attack";
+        [Tooltip("선택 사항. 준비 시작 시 재생하고 마지막 자세를 유지하는 상태입니다.")]
+        [SerializeField] private string preparationStateName = "";
+        [Tooltip("선택 사항. 공격 종료/취소 때 돌아갈 상태입니다. 비우면 기존 Animator 전환을 사용합니다.")]
+        [SerializeField] private string idleStateName = "";
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간(초). 터렛은 이 시간 동안 발사 방향과 전개 상태를 유지합니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
         [Header("Aim")]
+        [Tooltip("타깃의 높이는 무시하고 적의 중심을 기준으로 좌우 수평 조준합니다. 끄면 기존 타깃 위치 조준을 사용합니다.")]
+        [SerializeField] private bool horizontalAimOnly;
         [Tooltip("준비 중 조준 방향에 맞춰 몸체도 좌우 반전합니다. 조준 고정 후에는 방향을 바꾸지 않습니다.")]
         [SerializeField] private bool faceTargetDuringPreparation;
         [Tooltip("준비 중 조준선 표시만 켜고 끕니다. 실제 발사 방향의 추적과는 별개입니다.")]
@@ -49,11 +55,20 @@ namespace CTJ.Enemies.Skills
             if (faceTargetDuringPreparation) Enemy.FaceTarget();
             UpdateAimTarget();
             RotateAim();
+            PlayAnimation(preparationStateName);
         }
 
         private void UpdateAimTarget()
         {
             if (CastTarget == null || firePoint == null) return;
+            if (horizontalAimOnly)
+            {
+                // 발사 위치가 몸체보다 앞에 있어도 타깃의 좌우 판단은 몸체 방향과 일치시킵니다.
+                float offsetX = CastTarget.position.x - Enemy.transform.position.x;
+                float side = Mathf.Approximately(offsetX, 0f) ? Enemy.FacingDirection : Mathf.Sign(offsetX);
+                _desiredAimDirection = Vector2.right * side;
+                return;
+            }
             Vector2 targetPoint = CastTarget.position;
             if (aimAtTargetCenter)
             {
@@ -92,13 +107,7 @@ namespace CTJ.Enemies.Skills
             projectile.Speed = ProjectileSpeed;
             projectile.Lifetime = ProjectileLifetime;
             projectile.Launch(Enemy, CastTarget, damage, _castDirection);
-            int stateHash = Animator.StringToHash(attackStateName);
-            if (attackAnimator != null && attackAnimator.isActiveAndEnabled &&
-                attackAnimator.runtimeAnimatorController != null && attackAnimator.HasState(0, stateHash))
-            {
-                attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                attackAnimator.Play(stateHash, 0, 0f);
-            }
+            PlayAnimation(attackStateName);
             _endTime = Time.time + Mathf.Max(0f, recoveryTime);
             BeginRecovery();
             if (recoveryTime <= 0f) EndSkill();
@@ -121,6 +130,28 @@ namespace CTJ.Enemies.Skills
                 if (turret != null) turret.HoldAim();
             }
             if (IsUsing && HasReleased && Time.time >= _endTime) EndSkill();
+        }
+
+        private void PlayAnimation(string stateName)
+        {
+            if (Enemy == null || Enemy.IsDead || string.IsNullOrEmpty(stateName) || attackAnimator == null ||
+                !attackAnimator.isActiveAndEnabled || attackAnimator.runtimeAnimatorController == null) return;
+            int stateHash = Animator.StringToHash(stateName);
+            if (!attackAnimator.HasState(0, stateHash)) return;
+            attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            attackAnimator.Play(stateHash, 0, 0f);
+        }
+
+        protected override void OnEndSkill()
+        {
+            base.OnEndSkill();
+            PlayAnimation(idleStateName);
+        }
+
+        protected override void OnStopSkill()
+        {
+            base.OnStopSkill();
+            PlayAnimation(idleStateName);
         }
     }
 }

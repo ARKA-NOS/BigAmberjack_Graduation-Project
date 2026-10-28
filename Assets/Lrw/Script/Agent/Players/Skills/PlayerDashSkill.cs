@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using DG.Tweening;
 using Lrw.Script._Core._Debug;
@@ -36,18 +37,22 @@ namespace Lrw.Script.Agent.Players.Skills
         private IAfterImageEmitter _afterImageEmitter;
         private IAnimationTrigger _animationTrigger;
         
-        
         private Tween _dashTween;
         private float _lastDashTime = float.NegativeInfinity;
         private int _currentAirDashCount;
 
         private bool _canDash = true;
         private bool _isGround = false;
+
+        private IDamageable _damageable;
         
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
-
+            
+            _damageable = owner as IDamageable;
+            FDebug.Assert(_damageable != null, "owner is Not IDamageable");
+            
             _haveFsm = owner as IHaveFsm<PlayerStateEnum>;
             FDebug.Assert(_haveFsm != null,"owner is Not IHaveFsm<PlayerStateEnum>");
 
@@ -87,6 +92,7 @@ namespace Lrw.Script.Agent.Players.Skills
 
         protected override void OnUseSkill()
         {
+            _damageable.SetInvincibility(this, true);
             Dash();
         }
 
@@ -144,8 +150,9 @@ namespace Lrw.Script.Agent.Players.Skills
 
         private void HandleDashEnd()
         {
-            _haveFsm.ChangeState(PlayerStateEnum.IDLE);
+            _damageable.SetInvincibility(this, false);
             CoolTimeStartTime = Time.time;
+            _haveFsm.ChangeState(PlayerStateEnum.IDLE);
         }
 
         private void ResetAirDashCount()

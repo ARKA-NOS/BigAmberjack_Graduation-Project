@@ -28,7 +28,7 @@ namespace Lrw.Script.Agent
             FDebug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");
         }
 
-        public virtual void SetInvincibility(object obj, bool value)
+        public void SetInvincibility(object obj, bool value)
         {
             invincibilityDict[obj] = value;
         }

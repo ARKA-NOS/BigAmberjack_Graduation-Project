@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.HealthSystem
 {
+    [Obsolete("Use NewHealthModule")]
     public class HealthModule : Module, IHealthModule
     {
         [SerializeField] private StatData maxHpStatData;

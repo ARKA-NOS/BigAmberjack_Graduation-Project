@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DevLib.ModuleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 
 namespace CTJ.Enemies
@@ -12,8 +12,10 @@ namespace CTJ.Enemies
         [SerializeField] private Material outlineMaterial;
         [SerializeField, ColorUsage(false)] private Color normalColor = new Color(0.55f, 0.08f, 0.08f, 1f);
         [SerializeField, ColorUsage(false)] private Color hitColor = Color.white;
-        [Tooltip("화면 픽셀 기준으로 실루엣 안쪽 테두리를 표시합니다. 0이면 숨깁니다.")]
+        [Tooltip("화면 픽셀 기준 테두리 두께입니다. Outer Silhouette Only를 켜면 바깥쪽, 끄면 안쪽에 표시합니다. 0이면 숨깁니다.")]
         [SerializeField, Range(0f, 6f)] private float width = 2f;
+        [Tooltip("불투명 파츠들의 바깥 테두리를 모든 파츠 뒤에 그려 내부 경계를 숨깁니다. 같은 SortingGroup/Layer의 Simple·Full Rect 스프라이트용입니다.")]
+        [SerializeField] private bool outerSilhouetteOnly;
         [Tooltip("HP가 감소한 뒤 피격 색을 유지할 시간. 연타 시 마지막 피격부터 다시 계산합니다.")]
         [SerializeField, Min(0f)] private float hitDuration = 0.25f;
 
@@ -24,7 +26,7 @@ namespace CTJ.Enemies
         }
 
         private EnemyBase _enemy;
-        private IHealthModule _health;
+        private INewHealthModule _health;
         private View[] _views;
         private bool _initialized;
         private bool _subscribed;
@@ -33,6 +35,8 @@ namespace CTJ.Enemies
         private readonly Dictionary<Sprite, Vector4> _uvBounds = new Dictionary<Sprite, Vector4>();
         private static readonly int WidthId = Shader.PropertyToID("_OutlineWidth");
         private static readonly int RectId = Shader.PropertyToID("_SpriteUVRect");
+        private static readonly int LocalRectId = Shader.PropertyToID("_SpriteLocalRect");
+        private static readonly int OuterId = Shader.PropertyToID("_OuterOutline");
 
         public bool IsShowingHit => isActiveAndEnabled && Time.time < _hitUntil;
         public Color CurrentColor => IsShowingHit ? hitColor : normalColor;
@@ -41,7 +45,7 @@ namespace CTJ.Enemies
         {
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
-            _health = owner.GetModule<IHealthModule>();
+            _health = owner.GetModule<INewHealthModule>();
             if (sprites == null || sprites.Length == 0) sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
         }
 
@@ -93,6 +97,10 @@ namespace CTJ.Enemies
             bool visible = _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&
                            outlineMaterial != null && width > 0f;
             Color color = CurrentColor;
+            int lowestOrder = int.MaxValue;
+            if (outerSilhouetteOnly)
+                foreach (View view in _views)
+                    if (view?.Source != null) lowestOrder = Mathf.Min(lowestOrder, view.Source.sortingOrder);
             foreach (View view in _views)
             {
                 if (view == null || view.Outline == null) continue;
@@ -108,7 +116,7 @@ namespace CTJ.Enemies
                 outline.tileMode = source.tileMode;
                 outline.maskInteraction = source.maskInteraction;
                 outline.sortingLayerID = source.sortingLayerID;
-                outline.sortingOrder = source.sortingOrder + 1;
+                outline.sortingOrder = outerSilhouetteOnly ? Mathf.Max(-32768, lowestOrder - 1) : source.sortingOrder + 1;
                 outline.spriteSortPoint = source.spriteSortPoint;
                 outline.sharedMaterial = outlineMaterial;
                 Color tint = color;
@@ -117,6 +125,9 @@ namespace CTJ.Enemies
                 _properties.Clear();
                 _properties.SetFloat(WidthId, Mathf.Clamp(width, 0f, 6f));
                 _properties.SetVector(RectId, GetUVBounds(source.sprite));
+                Bounds bounds = source.sprite.bounds;
+                _properties.SetVector(LocalRectId, new Vector4(bounds.center.x, bounds.center.y, bounds.size.x, bounds.size.y));
+                _properties.SetFloat(OuterId, outerSilhouetteOnly ? 1f : 0f);
                 outline.SetPropertyBlock(_properties);
             }
         }

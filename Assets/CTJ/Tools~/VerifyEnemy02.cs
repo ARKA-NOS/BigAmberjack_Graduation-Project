@@ -8,7 +8,7 @@ using CTJ.Enemies.Skills;
 using CTJ.Testing;
 using CTJ.UI;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -296,7 +296,7 @@ namespace CTJ.Tools
                 EnemyTurretModule turret = enemy.GetModule<EnemyTurretModule>();
                 EnemyProjectileSkill shot = enemy.GetComponentInChildren<EnemyProjectileSkill>();
                 EnemySkillModule skills = enemy.GetModule<EnemySkillModule>();
-                IHealthModule hp = enemy.GetModule<IHealthModule>();
+                INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 await Wait(0.2f);
                 Check(turret.Deployment == 0f && hp.CurrentHealth == 30f && !skills.IsBusy, "Buried idle / HP / delayed target");
                 float depth = new SerializedObject(turret).FindProperty("buriedDepth").floatValue;

@@ -48,6 +48,7 @@ namespace CTJ.Enemies
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
+        internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
         protected virtual bool UsesGroundMovement => true;
 
         protected override void Awake()
@@ -66,10 +67,10 @@ namespace CTJ.Enemies
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
             _death = GetModule<EnemyDeathModule>();
             InitializeAI();
-            if (HealthModule != null)
+            if (NewHealthModule != null)
             {
-                HealthModule.OnHealthChanged += HandleHealthChanged;
-                if (HealthModule.CurrentHealth <= 0f)
+                NewHealthModule.OnHealthChanged += HandleHealthChanged;
+                if (NewHealthModule.CurrentHealth <= 0f)
                     Die();
             }
         }
@@ -155,13 +156,9 @@ namespace CTJ.Enemies
                 return;
             }
 
-            if (_keepDistance != null && _keepDistance.isActiveAndEnabled)
-            {
-                _keepDistance.MoveTowardsTarget(target, moveSpeed);
-                return;
-            }
-
-            float direction = _movement.MoveTowards(target, moveSpeed);
+            float direction = _keepDistance != null && _keepDistance.isActiveAndEnabled
+                ? _keepDistance.MoveTowardsTarget(target, moveSpeed)
+                : _movement.MoveTowards(target, moveSpeed);
             OnMoveDirectionChanged(direction);
         }
 
@@ -237,11 +234,11 @@ namespace CTJ.Enemies
             Vector2 hitNormal)
         {
             float amount = damageData.DamageAmount;
-            if (IsDead || !isActiveAndEnabled || HealthModule == null ||
+            if (IsDead || !isActiveAndEnabled || NewHealthModule == null ||
                 amount <= 0f || float.IsNaN(amount) || float.IsInfinity(amount))
                 return;
 
-            HealthModule.CurrentHealth -= amount;
+            NewHealthModule.ApplyDamage(amount);
             // HP 0이 되는 피해는 사망 연출을 우선합니다. 깜빡임은 무적 시간을 만들지 않습니다.
             if (!IsDead && _hitReaction != null) _hitReaction.React(damageData, hitDirection);
             OnHit?.Invoke();
@@ -286,8 +283,8 @@ namespace CTJ.Enemies
 
         private void OnDestroy()
         {
-            if (HealthModule != null)
-                HealthModule.OnHealthChanged -= HandleHealthChanged;
+            if (NewHealthModule != null)
+                NewHealthModule.OnHealthChanged -= HandleHealthChanged;
         }
 
         protected virtual void OnDisable()

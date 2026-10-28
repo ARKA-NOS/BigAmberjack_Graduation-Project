@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DevLib.ModuleSystem;
 using DG.Tweening;
 using Lrw.Script._Core._Debug;
@@ -9,9 +10,10 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
+    [Obsolete]
     public class PlayerDasher : Module, IControlDasher
     {
-        [SerializeField] private float dashTime = 0.1f;
+        [SerializeField] private float dashTime = 0.15f;
         public float DashTime => dashTime;
 
         [SerializeField] private float dashRange = 2f;
@@ -73,7 +75,7 @@ namespace Lrw.Script.Agent.Players.Modules
             if (direction.sqrMagnitude <= 0f)
                 return;
             
-            _haveFsm.ChangeState(PlayerStateEnum.DASH);
+            _haveFsm.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             
             direction.Normalize();
             

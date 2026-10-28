@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace HeathenEngineering.UX.Samples
+namespace Lrw.Asset._Heathen_Engineering.Samples.UX_Examples.Flat_Icons__Free_
 {
     public class ToggleSetAnimatorBoolean : MonoBehaviour
     {

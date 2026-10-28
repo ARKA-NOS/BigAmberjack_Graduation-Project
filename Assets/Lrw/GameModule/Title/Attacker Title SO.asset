@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38bf7f1256bb4a38bda00bb9abeaee15, type: 3}
+  m_Name: Attacker Title SO
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.TitleSystem.Titles.AttackerTitleSo
+  <TitleName>k__BackingField: "\uAE30\uBCF8 \uC219\uB828"
+  <TitleDescription>k__BackingField: "\uAE30\uBCF8\uACF5\uACA9\uC774 \uAC15\uD654
+    \uB429\uB2C8\uB2E4."
+  <TitleIcon>k__BackingField: {fileID: -8247450876486058206, guid: da37bbbe361658f469213046b00b070a, type: 3}
+  <RequiredTitles>k__BackingField: []
+  <Quests>k__BackingField:
+  - {fileID: 11400000, guid: fab1488bd462f204f8b8b9f4813fff10, type: 2}
+  statData: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
+  statModifyData:
+    <Priority>k__BackingField: 0
+    <Value>k__BackingField: 1
+    <ModifyType>k__BackingField: 1

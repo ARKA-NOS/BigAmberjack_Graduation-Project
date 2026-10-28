@@ -9,18 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff42ea1717c342a9a7c56b2fba1da9ea, type: 3}
+  m_Script: {fileID: 11500000, guid: 6fafda1a442e482aa32d5469f611622e, type: 3}
   m_Name: Core Health SO
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths.HealthSO.DefaultHealthSo
-  <HealthName>k__BackingField: "\uAE30\uBCF8 \uCCB4\uB825"
-  <HealthColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
-  <Icon>k__BackingField: {fileID: 0}
-  <Tags>k__BackingField: 1
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.HealthSystem.NewHealthSystem.HealthSos.CoreHealthSo
   <Priority>k__BackingField: 0
-  <MaxStat>k__BackingField: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
-  <FixedMax>k__BackingField: 100
-  <HealOnMaxIncrease>k__BackingField: 1
-  <StartRatio>k__BackingField: 1
-  <HealSources>k__BackingField: -1
-  <RemoveWhenEmpty>k__BackingField: 0
-  <Duration>k__BackingField: 0
+  <HealthType>k__BackingField: 1
+  <HealthTextColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+  maxHpStatData: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
+  healthColor: {r: 1, g: 0, b: 0, a: 1}

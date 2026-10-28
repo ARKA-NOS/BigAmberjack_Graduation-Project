@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CTJ.Enemies;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -37,6 +37,7 @@ namespace CTJ.Tools
                 var outline = enemy.GetComponentInChildren<EnemyOutlineModule>();
                 var reaction = enemy.GetComponentInChildren<EnemyHitReactionModule>();
                 var warning = enemy.GetComponentInChildren<EnemyAttackWarningModule>();
+                warning.enabled = true; // 경고 모듈 자체의 조합 검증에만 켭니다. 01 프리팹에서는 비활성입니다.
                 Set(reaction, "enableBlink", true); Set(reaction, "enableScalePulse", true);
                 SpriteRenderer source = Sources(outline)[0]; Material original = source.sharedMaterial; Color color = source.color;
                 Vector3 scale = source.transform.localScale;
@@ -77,12 +78,12 @@ namespace CTJ.Tools
                 await Frames(3);
                 Check(Outlines(enemy).Length == sources.Length, "One overlay per source: " + path);
                 Check(!module.IsShowingHit && module.CurrentColor.r > module.CurrentColor.g * 2f, "Default red");
-                IHealthModule hp = enemy.GetModule<IHealthModule>();
+                INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 Hit(enemy); await Frames(2);
                 Check(module.IsShowingHit && module.CurrentColor == Color.white, "Hit white with blink/knockback disabled");
                 Check(Outlines(enemy).All(s => s.color == Color.white), "White overlay color");
                 await Wait(0.15f); Hit(enemy); await Wait(0.15f);
-                Check(module.IsShowingHit, "Repeated hit refresh"); hp.CurrentHealth += 1f;
+                Check(module.IsShowingHit, "Repeated hit refresh"); hp.ApplyHeal(1f);
                 await Wait(0.13f); Check(!module.IsShowingHit, "Heal must not refresh flash");
 
                 sources[0].flipX = !sources[0].flipX; sources[0].flipY = !sources[0].flipY;
@@ -94,7 +95,8 @@ namespace CTJ.Tools
                 await Frames(2);
                 SpriteRenderer overlay = sources[0].transform.Find("TemporaryOutline").GetComponent<SpriteRenderer>();
                 Check(overlay.sprite == sources[0].sprite && overlay.flipX == sources[0].flipX && overlay.flipY == sources[0].flipY &&
-                    overlay.sortingOrder == sources[0].sortingOrder + 1 && overlay.maskInteraction == sources[0].maskInteraction &&
+                    overlay.sortingOrder == (new SerializedObject(module).FindProperty("outerSilhouetteOnly").boolValue
+                        ? sources.Min(s => s.sortingOrder) - 1 : sources[0].sortingOrder + 1) && overlay.maskInteraction == sources[0].maskInteraction &&
                     overlay.transform.localScale == Vector3.one, "Animation / flip / sorting / mask / scale sync");
                 sources[0].enabled = false; await Frames(2); Check(!overlay.enabled, "Disabled source overlay remained");
                 sources[0].enabled = true;
@@ -171,7 +173,8 @@ namespace CTJ.Tools
                 await Frames(3); restored = Read(rt);
                 Check(a.Zip(restored.GetPixels32(), (left, right) => Close(left, right)).All(v => v), "Disable did not restore original rendering");
                 // 사망 시 남은 흰색 타이머가 있어도 렌더링을 종료해야 합니다.
-                modules[0].enabled = true; enemies[0].GetModule<IHealthModule>().CurrentHealth = 0f;
+                modules[0].enabled = true;
+                var health = enemies[0].GetModule<INewHealthModule>(); health.ApplyDamage(health.CurrentHealth);
                 await Frames(2); Check(Outlines(enemies[0]).All(s => !s.enabled), "Dead enemy outline remained");
                 return new { passed = true, redPixels, whitePixels, interior, outside, scope = "actual URP / red-white / atlas frames / turret mask / silhouette / disable / death" };
             }

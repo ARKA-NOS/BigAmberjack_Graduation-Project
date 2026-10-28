@@ -8,7 +8,8 @@ namespace Lrw.Script.Agent.Players.TitleSystem
     public abstract class AbstractTitleSo : ScriptableObject
     {
         [field:SerializeField] public string TitleName { get; private set; }
-        [field:SerializeField] public string TitleDescription { get; private set; }
+        [field:SerializeField, TextArea] public string TitleDescription { get; private set; }
+        [field:SerializeField, TextArea] public string UpgradeDescription { get; private set; }
         [field:SerializeField] public Sprite TitleIcon { get; private set; }
         
         [field:SerializeField] public AbstractTitleSo[] RequiredTitles { get; private set; }

@@ -19,7 +19,8 @@ namespace Lrw.Script.Agent
         protected INewHealthModule NewHealthModule { get; private set; }
 
         private Dictionary<object, bool> invincibilityDict;
-        
+        protected bool IsInvincibility => invincibilityDict.Any(x => x.Value);
+         
         protected override void Awake()
         {
             base.Awake();
@@ -35,7 +36,7 @@ namespace Lrw.Script.Agent
         
         public virtual void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal)
         {
-            if(invincibilityDict.Any(x => x.Value)) return;
+            if(IsInvincibility) return;
             NewHealthModule.ApplyDamage(damageData.DamageAmount);
             OnHit?.Invoke();
         }

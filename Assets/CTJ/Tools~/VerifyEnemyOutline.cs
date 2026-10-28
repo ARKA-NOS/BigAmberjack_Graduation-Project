@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CTJ.Enemies;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -77,12 +77,12 @@ namespace CTJ.Tools
                 await Frames(3);
                 Check(Outlines(enemy).Length == sources.Length, "One overlay per source: " + path);
                 Check(!module.IsShowingHit && module.CurrentColor.r > module.CurrentColor.g * 2f, "Default red");
-                IHealthModule hp = enemy.GetModule<IHealthModule>();
+                INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 Hit(enemy); await Frames(2);
                 Check(module.IsShowingHit && module.CurrentColor == Color.white, "Hit white with blink/knockback disabled");
                 Check(Outlines(enemy).All(s => s.color == Color.white), "White overlay color");
                 await Wait(0.15f); Hit(enemy); await Wait(0.15f);
-                Check(module.IsShowingHit, "Repeated hit refresh"); hp.CurrentHealth += 1f;
+                Check(module.IsShowingHit, "Repeated hit refresh"); hp.ApplyHeal(1f);
                 await Wait(0.13f); Check(!module.IsShowingHit, "Heal must not refresh flash");
 
                 sources[0].flipX = !sources[0].flipX; sources[0].flipY = !sources[0].flipY;
@@ -171,7 +171,8 @@ namespace CTJ.Tools
                 await Frames(3); restored = Read(rt);
                 Check(a.Zip(restored.GetPixels32(), (left, right) => Close(left, right)).All(v => v), "Disable did not restore original rendering");
                 // 사망 시 남은 흰색 타이머가 있어도 렌더링을 종료해야 합니다.
-                modules[0].enabled = true; enemies[0].GetModule<IHealthModule>().CurrentHealth = 0f;
+                modules[0].enabled = true;
+                var health = enemies[0].GetModule<INewHealthModule>(); health.ApplyDamage(health.CurrentHealth);
                 await Frames(2); Check(Outlines(enemies[0]).All(s => !s.enabled), "Dead enemy outline remained");
                 return new { passed = true, redPixels, whitePixels, interior, outside, scope = "actual URP / red-white / atlas frames / turret mask / silhouette / disable / death" };
             }

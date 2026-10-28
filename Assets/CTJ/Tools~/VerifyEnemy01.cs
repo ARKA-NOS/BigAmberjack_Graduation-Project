@@ -6,7 +6,7 @@ using CTJ.Enemies;
 using CTJ.Enemies.Skills;
 using CTJ.Testing;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using SDW.Scripts.Maps;
 using UnityEditor;
@@ -156,7 +156,7 @@ namespace CTJ.Tools
                 SpriteRenderer sprite = enemy.GetComponentInChildren<SpriteRenderer>();
                 Material original = sprite.sharedMaterial;
                 Color color = sprite.color;
-                IHealthModule hp = enemy.GetModule<IHealthModule>();
+                INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 await Wait(0.2f);
                 Check(hp.CurrentHealth == 50f && skills.TryUseAttack(), "Initial HP / attack start");
                 float start = Time.time;

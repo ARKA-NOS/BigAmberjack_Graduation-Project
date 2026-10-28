@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DevLib.BattleSystem;
 using Lrw.Script.Agent;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 
 namespace CTJ.Enemies.Bosses
@@ -22,7 +22,7 @@ namespace CTJ.Enemies.Bosses
             {
                 if (Target == null || !Target.gameObject.activeInHierarchy) return false;
                 Agent agent = Target.GetComponentInParent<Agent>();
-                return agent == null || agent.GetModule<IHealthModule>()?.IsDead != true;
+                return agent == null || agent.GetModule<INewHealthModule>()?.IsDead != true;
             }
         }
 

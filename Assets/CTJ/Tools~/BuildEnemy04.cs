@@ -3,7 +3,7 @@ using System.Linq;
 using CTJ.Enemies;
 using CTJ.Enemies.Skills;
 using CTJ.UI;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.SkillSystem;
 using Lrw.Script.Agent.StatSystem;
 using UnityEditor;
@@ -65,7 +65,8 @@ namespace CTJ.Tools
                 StatModule statModule = root.GetComponentInChildren<StatModule>();
                 StatGroup stats = Object.Instantiate((StatGroup)new SerializedObject(statModule).FindProperty("baseStats").objectReferenceValue);
                 stats.name = "Enemy04_MechanicArcher_Stats";
-                Object hp = new SerializedObject(root.GetComponentInChildren<HealthModule>()).FindProperty("maxHpStatData").objectReferenceValue;
+                Object coreHealth = new SerializedObject(root.GetComponentInChildren<NewHealthModule>()).FindProperty("coreHealth").objectReferenceValue;
+                Object hp = new SerializedObject(coreHealth).FindProperty("maxHpStatData").objectReferenceValue;
                 Object delay = new SerializedObject(attack).FindProperty("attackDelayStat").objectReferenceValue;
                 Object gold = new SerializedObject(root.GetComponentInChildren<EnemyCurrencyRewardModule>()).FindProperty("rewardAmountStat").objectReferenceValue;
                 SerializedObject statSO = new SerializedObject(stats);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CTJ.Enemies;
 using CTJ.UI;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -61,7 +61,7 @@ namespace CTJ.Tools
             try
             {
                 EnemyBase enemy = Spawn(arena, path, x);
-                var hp = enemy.GetModule<IHealthModule>(); var reaction = enemy.GetModule<EnemyHitReactionModule>();
+                var hp = enemy.GetModule<INewHealthModule>(); var reaction = enemy.GetModule<EnemyHitReactionModule>();
                 var ui = enemy.GetComponentInChildren<EnemyTemporaryStatusUI>();
                 Image health = Fill(ui, "healthFill"), stagger = Fill(ui, "reactionFill");
                 Canvas canvas = ui.GetComponent<Canvas>();
@@ -93,8 +93,8 @@ namespace CTJ.Tools
                     Check(!enemy.IsHitReacting && reaction.RemainingReactionTime == 0f && stagger.fillAmount == 0f,
                         "Gauge and AI lock must end together");
                 }
-                hp.CurrentHealth = max * 0.9f;
-                Check(Mathf.Abs(health.fillAmount - 0.9f) < 0.001f, "HealthModule healing event");
+                hp.ApplyHeal(max * 0.9f - hp.CurrentHealth);
+                Check(Mathf.Abs(health.fillAmount - 0.9f) < 0.001f, "NewHealthModule healing event");
                 Vector2 offset = new SerializedObject(ui).FindProperty("worldOffset").vector2Value;
                 enemy.transform.position += new Vector3(1f, 0.2f, 0f);
                 Transform visual = enemy.transform.Find("Visual");
@@ -130,7 +130,7 @@ namespace CTJ.Tools
             try
             {
                 EnemyBase enemy = Spawn(arena, Paths[0], 500f);
-                var hp = enemy.GetModule<IHealthModule>(); await Frames(2);
+                var hp = enemy.GetModule<INewHealthModule>(); await Frames(2);
                 Object.Destroy(enemy.GetComponentInChildren<EnemyTemporaryStatusUI>().gameObject); await Frames(2);
                 float before = hp.CurrentHealth; Hit(enemy, 1f);
                 Check(hp.CurrentHealth == before - 1f && enemy.IsHitReacting, "UI removal changed damage or stun");
@@ -162,7 +162,7 @@ namespace CTJ.Tools
                 camera.cullingMask = 1 << 31; camera.allowHDR = false; camera.allowMSAA = false; camera.targetTexture = target;
                 cameraObject.AddComponent<UniversalAdditionalCameraData>().renderPostProcessing = false;
                 await Frames(3);
-                var hp = enemy.GetModule<IHealthModule>(); hp.CurrentHealth = hp.MaxHealth * 0.75f;
+                var hp = enemy.GetModule<INewHealthModule>(); hp.ApplyDamage(hp.CurrentHealth - hp.MaxHealth * 0.75f);
                 Hit(enemy, hp.MaxHealth * 0.1f); await Wait(0.15f);
                 Time.timeScale = 0f; await Frames(3);
                 var ui = enemy.GetComponentInChildren<EnemyTemporaryStatusUI>();

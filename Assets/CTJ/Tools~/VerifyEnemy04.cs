@@ -8,7 +8,7 @@ using CTJ.Enemies.Skills;
 using CTJ.Testing;
 using CTJ.UI;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using Lrw.Script.Agent.StatSystem;
 using Lrw.Script.Currency;
 using Lrw.Script._Core._ServiceLocator;
@@ -130,7 +130,7 @@ namespace CTJ.Tools
             {
                 EnemyBase enemy = Spawn(arena, 6000f); Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
                 await Wait(0.25f);
-                Check(enemy.GetModule<IHealthModule>().CurrentHealth == 55f && Mathf.Abs(body.linearVelocityX) < 0.01f, "Delayed target / idle HP");
+                Check(enemy.GetModule<INewHealthModule>().CurrentHealth == 55f && Mathf.Abs(body.linearVelocityX) < 0.01f, "Delayed target / idle HP");
                 EnemyDamageProbe target = Target(arena, new Vector2(6013f, 0f)); enemy.SetTarget(target.transform);
                 await Wait(0.2f); Check(Mathf.Abs(body.linearVelocityX) < 0.01f, "13m must not initially detect");
                 target.transform.position = new Vector3(6011.7f, 0f);
@@ -193,7 +193,7 @@ namespace CTJ.Tools
                 await Until(() => shot.IsPreparing, "Next cooldown");
                 Check(shot.CoolTimeStartTime - started >= 2.78f, "2.8 cooldown from preparation start");
                 enemy.ApplyDamage(new DamageData { DamageAmount = 1f }, enemy.transform.position, Vector2.right, Vector2.left);
-                Check(!shot.IsUsing && !Line(shot).IsVisible && enemy.IsHitReacting && enemy.GetModule<IHealthModule>().CurrentHealth == 54f,
+                Check(!shot.IsUsing && !Line(shot).IsVisible && enemy.IsHitReacting && enemy.GetModule<INewHealthModule>().CurrentHealth == 54f,
                     "Hit cancels preparation, clears line, reduces HP");
                 float hitAt = Time.time; await Wait(0.2f); Check(enemy.IsHitReacting, "0.22 stagger persists");
                 await Until(() => !enemy.IsHitReacting, "Stagger ends");

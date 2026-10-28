@@ -1,4 +1,5 @@
 ﻿using System;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 
 namespace Lrw.Script.Agent.HealthSystem
 {

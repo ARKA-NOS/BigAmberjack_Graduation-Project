@@ -1,49 +1,174 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem.Healths;
 using Lrw.Script.Agent.StatSystem;
+using Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI;
 using UnityEngine;
+
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    public class NewHealthModule : Module
+    public class NewHealthModule : Module,IAfterInitModule, INewHealthModule
     {
-        [SerializeField] private StatData maxHpStatData;
-        
-        [SerializeField] private float currentHealth;
-        
-        public float MaxHealth => _maxHpStat?.Value ?? 0f;
-        
+        [Header("Default Health Setting")]
+        [SerializeField] private AbstractHealthSo coreHealth;
 
-        private IStatModule _statModule;
+        [Header("Other Setting")] 
+        [SerializeField] private AbstractHealthSo[] otherHealths;
+
+        [Header("UI Setting")] 
+        [SerializeField] private NewHealthViewModel healthViewModel;
+        
         private Stat _maxHpStat;
+        
+        private IHealth _baseHealth;
+        private Dictionary<AbstractHealthSo, IHealth> _healthDict;
+        private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
+        private List<IHealth> _healths;
+
+        public float CurrentHealth => _healths.Sum(x => x.HP);
+        public float MaxHealth =>
+            _baseHealth is IRangeHealth rangeHealth 
+                ? rangeHealth.HpGauge.MaxValue 
+                : _baseHealth.HP;
+        
+        public event Action OnDead;
+        public bool IsDead { get; private set; }
+        
+        public event HealthChanged OnHealthChanged;
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            _statModule = owner.GetModule<IStatModule>();
-            
-            FDebug.Assert(_statModule != null,"StatModule is null");
-            
-            _maxHpStat = _statModule.GetStat(maxHpStatData);
-            
-            FDebug.Assert(_maxHpStat != null,"MaxHpStat is null");
 
-            _maxHpStat.OnValueChanged += MaxHpChanged;
+            _healthDict = new();
+            _healthSoDict = new();
+            _healths = new();
             
-            currentHealth = MaxHealth;
+            FDebug.Assert(coreHealth != null, "[NewHealthModule] coreHealth is null");
         }
-
-
-        private void OnDestroy()
+        
+        public void AfterInit()
         {
-            _maxHpStat.OnValueChanged -= MaxHpChanged;
+            _baseHealth = coreHealth.CreateHealth(_owner);
+            _healthDict.Add(coreHealth, _baseHealth);
+            _healthSoDict.Add(_baseHealth, coreHealth);
+                
+            foreach (AbstractHealthSo abstractHealthSo in otherHealths)
+            {
+                IHealth health = abstractHealthSo.CreateHealth(_owner);
+                _healthDict.Add(abstractHealthSo,health);
+                _healthSoDict.Add(health, abstractHealthSo);
+            }
+
+            foreach(IHealth health in _healthDict.Values)
+            {
+                _healths.Add(health);
+            }
+            
+            _healths.Sort(Compere);
         }
 
-        private void MaxHpChanged(float newValue, float delta)
+        private void Start()
         {
-            if(Mathf.Approximately(delta,0f)) return;
-            currentHealth += Mathf.Max(delta,0f);
-            currentHealth = Mathf.Min(currentHealth, MaxHealth);
+            InitViewModel();
         }
+
+        private void InitViewModel()
+        {
+            if(healthViewModel != null)
+                healthViewModel.Bind(new HealthData(_healths.Count));
+        }
+
+        private static int Compere(IHealth a, IHealth b)
+            => a.Priority.CompareTo(b.Priority);
+        
+        
+        private void Update()
+        {
+            UpdateHealths();
+            UpdateViewModule();
+        }
+        
+        private void UpdateHealths()
+        {
+            foreach (var valuePair in _healths)
+            {
+                valuePair.HealthUpdate();
+            }
+        }
+        
+        private void UpdateViewModule()
+        {
+            if(healthViewModel == null) return;
+            
+            HealthData healthData = healthViewModel.BindData;
+
+            if (healthData == null)
+            {
+                InitViewModel();
+                healthData = healthViewModel.BindData;
+            }
+            
+            healthData.Clear();
+
+            foreach (IHealth health in _healths)
+            {
+                AbstractHealthSo healthSo = _healthSoDict[health];
+                
+                healthData.Add(new HealthViewData
+                (
+                    healthSo,
+                    health
+                ));
+            }
+        }
+        
+        public void ApplyDamage(float damage, HealthType targets = HealthType.All)
+        {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
+            float currentDamage = damage;
+            for (int i = _healths.Count - 1; i >= 0; i--)
+            {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
+                currentDamage = _healths[i].ApplyDamage(currentDamage);
+            }
+
+            HealthDeltaEvent(CurrentHealth - prevHealth);
+        }
+        
+        public void ApplyHeal(float heal, HealthType targets = HealthType.Core)
+        {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
+            float currentHeal = heal;
+            for (int i = 0; i < _healths.Count; i++)
+            {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
+                currentHeal = _healths[i].ApplyHeal(currentHeal);
+            }
+            HealthDeltaEvent(CurrentHealth - prevHealth);
+        }
+
+        private void HealthDeltaEvent(float delta)
+        {
+            float newCurrentHp = CurrentHealth;
+            OnHealthChanged?.Invoke(newCurrentHp, delta, MaxHealth);
+
+            if (newCurrentHp <= 0f)
+            {
+                OnDead?.Invoke();
+                IsDead = true;
+            }
+        }
+        
+        private static bool IsTargetHealth(HealthType type, HealthType targets)
+            => (type & targets) != HealthType.None;
         
     }
 }

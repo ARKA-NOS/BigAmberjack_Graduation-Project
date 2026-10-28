@@ -1,12 +1,21 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.InteractSystem
 {
     public abstract class AbstractInteractObject : MonoBehaviour, ICanInteract
     {
-        public Vector2 Position => transform.position;
+        [SerializeField] private Vector2 interactUIOffset;
+        public Vector2 Position => transform.position + (Vector3)interactUIOffset;
         public abstract void Interact(ModuleOwner owner);
+
+        protected void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(Position,0.5f);   
+        }
+        
         
     }
 }

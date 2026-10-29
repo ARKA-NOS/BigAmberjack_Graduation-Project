@@ -96,7 +96,7 @@ namespace Lrw.Script.Agent.Players.Modules
                 .SetUpdate(UpdateType.Fixed)
                 .OnComplete(DashCoolTimeCoroutineStart);
 
-            if (!_groundChecker.IsGroundChecking()) _currentAirDashCount++;
+            if (!_groundChecker.FixedIsGround) _currentAirDashCount++;
         }
 
         public void ResetAirDashCount()

@@ -2,6 +2,7 @@
 {
     public interface IGroundChecker
     {
+        bool FixedIsGround { get; }
         bool IsGroundChecking();
     }
 }

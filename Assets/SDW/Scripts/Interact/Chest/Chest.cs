@@ -14,6 +14,8 @@ namespace SDW.Scripts.Interact.Chest
         [SerializeField] private ChestDataSO data;
         [Tooltip("상호작용 UI가 따라다니는 기준점. 오브젝트 위치에서 이만큼 떨어진 곳(상자 윗면)에 표시된다.")]
         [SerializeField] private Vector2 uiAnchorOffset;
+        [Tooltip("상자가 열릴 때 한 번 재생할 파티클. 자식 파티클도 함께 재생된다.")]
+        [SerializeField] private ParticleSystem openEffect;
 
         // 베이스의 Position 대신 UI 기준점 오프셋을 적용한다. (ICanInteract를 다시 구현해서 인터페이스 조회에도 이 값이 쓰인다)
         public new Vector2 Position => (Vector2)transform.position + uiAnchorOffset;
@@ -89,6 +91,9 @@ namespace SDW.Scripts.Interact.Chest
                 _animator.SetTrigger(OpenHash);
             else if (data.OpenedSprite != null && _spriteRenderer != null)
                 _spriteRenderer.sprite = data.OpenedSprite;
+
+            if (openEffect != null)
+                openEffect.Play();
 
             // 열린 상자는 더 이상 상호작용 대상으로 잡히지 않게 한다.
             RefreshCollider();

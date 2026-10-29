@@ -28,7 +28,7 @@ namespace Lrw.Script.Agent
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            _rigid = GetComponent<Rigidbody2D>();
+            _rigid = _owner.GetComponent<Rigidbody2D>();
         }
         
         public bool IsGroundChecking()

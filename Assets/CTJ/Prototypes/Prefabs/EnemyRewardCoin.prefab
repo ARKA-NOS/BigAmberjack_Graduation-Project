@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.24, y: 0.24, z: 0.24}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 15
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7971702787720239845, guid: da37bbbe361658f469213046b00b070a, type: 3}
+  m_Sprite: {fileID: 403084015249902486, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,11 +106,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyRewardCoin
   horizontalSpeed: 1.8
   upwardSpeedRange: {x: 2.8, y: 4.2}
-  gravityScale: 1.5
+  gravityScale: 3
   terrainLayers:
     serializedVersion: 2
     m_Bits: 64
-  collisionRadius: 0.1
+  collisionRadius: 0.115
   maxAirTime: 3
-  riseHeight: 0.65
-  fadeDuration: 0.7
+  maxBounces: 2
+  bounceSpeed: 2.6
+  bounceDamping: 0.55
+  horizontalRetention: 0.65
+  spinFrames:
+  - {fileID: 403084015249902486, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: 3553354474230348599, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: -5923752542961773687, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: -7116992528137270120, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: 6682794560332102117, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: 1759497548212466372, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  - {fileID: -4747262616744601066, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
+  spinFramesPerSecond: 12
+  collectFrames:
+  - {fileID: 3469585148712946304, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  - {fileID: -1274981328697782635, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  - {fileID: -4459968919189867608, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  - {fileID: -1080843717795993319, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  - {fileID: 1957098215, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  - {fileID: -1260811954, guid: 30b7eec8a74f83a4eac1ec888d425039, type: 3}
+  collectFramesPerSecond: 12

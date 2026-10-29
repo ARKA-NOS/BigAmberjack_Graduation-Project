@@ -8,6 +8,7 @@ using Lrw.Script.Agent.StatSystem;
 using Lrw.Script.Currency;
 using Lrw.Script._Core._ServiceLocator;
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -18,45 +19,60 @@ namespace CTJ.Tools
     {
         private const string CoinPath = "Assets/CTJ/Prototypes/Prefabs/EnemyRewardCoin.prefab";
         private const string GoldPath = "Assets/Lrw/GameModule/Currency/Gold.asset";
+        private const string SpriteFolder = "Assets/CTJ/Assets/Animated Gold Coin - Free/Gold/";
         private static readonly string[] Enemies = { "Prefabs/Catto_Melee", "Prefabs/MadGhost_Ranged",
             "Prefabs/Enemy01_TwistedArm", "Prefabs/Enemy02_ProjectileRobot", "Prefabs/Enemy04_MechanicArcher", "Bosses/RobotEyeBoss" };
 
         public static object ConfigurePrefabs()
         {
             Check(!EditorApplication.isPlayingOrWillChangePlaymode, "Edit only");
-            EnemyRewardCoin coin = AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath);
-            if (coin == null)
+            Sprite[] spin = SliceSheet("gold_spin", 7);
+            Sprite[] collect = SliceSheet("gold_collect", 6);
+            GameObject root = PrefabUtility.LoadPrefabContents(CoinPath);
+            try
             {
-                var root = new GameObject("EnemyRewardCoin");
-                try
-                {
-                    SpriteRenderer renderer = root.AddComponent<SpriteRenderer>();
-                    renderer.sprite = AssetDatabase.LoadAssetAtPath<CurrencySO>(GoldPath).CurrencyIcon;
-                    Check(renderer.sprite != null, "Existing Gold icon required");
-                    root.transform.localScale = Vector3.one * (0.24f / renderer.sprite.bounds.size.y);
-                    renderer.sortingOrder = 15;
-                    renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/CTJ/Prototypes/Sprites/PrototypeSpriteUnlit.mat");
-                    root.AddComponent<EnemyRewardCoin>();
-                    coin = PrefabUtility.SaveAsPrefabAsset(root, CoinPath).GetComponent<EnemyRewardCoin>();
-                }
-                finally { Object.DestroyImmediate(root); }
+                var renderer = root.GetComponent<SpriteRenderer>();
+                renderer.sprite = spin[0];
+                root.transform.localScale = Vector3.one * 1.2f; // Opaque coin diameter is about 0.22 world units.
+                var settings = new SerializedObject(root.GetComponent<EnemyRewardCoin>());
+                SetSprites(settings.FindProperty("spinFrames"), spin);
+                SetSprites(settings.FindProperty("collectFrames"), collect);
+                settings.FindProperty("collisionRadius").floatValue = 0.115f;
+                settings.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root, CoinPath);
             }
-            foreach (string relative in Enemies)
-            {
-                string path = "Assets/CTJ/Prototypes/" + relative + ".prefab";
-                GameObject root = PrefabUtility.LoadPrefabContents(path);
-                try
-                {
-                    var reward = new SerializedObject(root.GetComponentInChildren<EnemyCurrencyRewardModule>(true));
-                    reward.FindProperty("coinPrefab").objectReferenceValue = coin;
-                    reward.FindProperty("currencyPerCoin").intValue = 5;
-                    reward.FindProperty("maxCoinCount").intValue = 12;
-                    reward.ApplyModifiedPropertiesWithoutUndo();
-                    PrefabUtility.SaveAsPrefabAsset(root, path);
-                }
-                finally { PrefabUtility.UnloadPrefabContents(root); }
-            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
             return RunEdit();
+        }
+
+        private static Sprite[] SliceSheet(string name, int count)
+        {
+            string path = SpriteFolder + name + ".png";
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            var factory = new SpriteDataProviderFactories(); factory.Init();
+            var provider = factory.GetSpriteEditorDataProviderFromObject(importer); provider.InitSpriteEditorDataProvider();
+            var existing = provider.GetSpriteRects().ToDictionary(r => r.name);
+            var rects = new SpriteRect[count];
+            for (int i = 0; i < count; i++)
+            {
+                string frameName = name + "_" + i;
+                rects[i] = new SpriteRect { name = frameName, rect = new Rect(i * 25, 0, 25, 25),
+                    alignment = SpriteAlignment.Center, pivot = Vector2.one * 0.5f,
+                    spriteID = existing.TryGetValue(frameName, out SpriteRect old) ? old.spriteID : GUID.Generate() };
+            }
+            provider.SetSpriteRects(rects);
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(rects.Select(r => new SpriteNameFileIdPair(r.name, r.spriteID)));
+            provider.Apply();
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.SaveAndReimport();
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().OrderBy(s => s.name).ToArray();
+        }
+
+        private static void SetSprites(SerializedProperty property, Sprite[] sprites)
+        {
+            property.arraySize = sprites.Length;
+            for (int i = 0; i < sprites.Length; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
         }
 
         public static object RunEdit()
@@ -64,13 +80,22 @@ namespace CTJ.Tools
             var coin = AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath);
             Check(coin != null && coin.GetComponent<SpriteRenderer>().sprite != null, "Coin visual missing");
             Check(coin.GetComponent<Collider2D>() == null && coin.GetComponent<Rigidbody2D>() == null, "Coins must not push characters");
+            var coinSettings = new SerializedObject(coin);
+            Check(coinSettings.FindProperty("spinFrames").arraySize == 7 && coinSettings.FindProperty("collectFrames").arraySize == 6,
+                "Full spin and collect sheets required");
+            foreach (string sheet in new[] { "gold_spin", "gold_collect" })
+                foreach (Sprite sprite in AssetDatabase.LoadAllAssetsAtPath(SpriteFolder + sheet + ".png").OfType<Sprite>())
+                    Check(sprite.rect.size == new Vector2(25f, 25f) && sprite.pivot == new Vector2(12.5f, 12.5f), "Uniform frames and pivot");
             foreach (string relative in Enemies)
             {
-                var prefab = AssetDatabase.LoadAssetAtPath<EnemyBase>("Assets/CTJ/Prototypes/" + relative + ".prefab");
+                string path = "Assets/CTJ/Prototypes/" + relative + ".prefab";
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                var prefab = AssetDatabase.LoadAssetAtPath<EnemyBase>(path);
                 foreach (Transform child in prefab.GetComponentsInChildren<Transform>(true))
                     Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(child.gameObject) == 0, "Missing script: " + relative);
                 var reward = new SerializedObject(prefab.GetComponentInChildren<EnemyCurrencyRewardModule>(true));
                 Check(reward.FindProperty("coinPrefab").objectReferenceValue == coin, "Coin link: " + relative);
+                Check(reward.FindProperty("currencyPerCoin").intValue == 3, "Three-gold coin threshold: " + relative);
                 Check(reward.FindProperty("rewardCurrency").objectReferenceValue != null &&
                     reward.FindProperty("rewardAmountStat").objectReferenceValue != null, "Reward data: " + relative);
             }
@@ -97,7 +122,7 @@ namespace CTJ.Tools
                     results.Add(await Case(arena, relative, gold, null, true));
                 results.Add(await Case(arena, Enemies[5], gold, 61, true));
                 // Thresholds, remainder distribution, cap, no-floor fallback, and enemy removal.
-                foreach (int reward in new[] { 0, 1, 5, 6, 11, 60, 61, 1000000 })
+                foreach (int reward in new[] { 0, 1, 3, 4, 6, 7, 10, 11, 36, 37, 1000000 })
                     results.Add(await Case(arena, Enemies[0], gold, reward, reward != 11));
                 results.Add(await LandingCases(arena, gold));
                 results.Add(await SceneCleanup(gold));
@@ -134,7 +159,7 @@ namespace CTJ.Tools
             health.ApplyDamage(health.CurrentHealth + 1f);
             EnemyRewardCoin[] coins = Coins();
             Check(enemy.IsDead && gold.Count == before, "Death must not award immediately");
-            int expectedCount = amount == 0 ? 0 : Math.Min((amount + 4) / 5, 12);
+            int expectedCount = amount == 0 ? 0 : Math.Min((amount + 2) / 3, 12);
             Check(coins.Length == expectedCount && coins.Sum(c => c.Amount) == amount, "Count / total: " + amount);
             if (coins.Length > 0) Check(coins.Max(c => c.Amount) - coins.Min(c => c.Amount) <= 1, "Even distribution");
             health.ApplyDamage(99999f);
@@ -143,7 +168,10 @@ namespace CTJ.Tools
             Object.Destroy(enemy.gameObject);
             float maxSpread = 0f, maxHeight = 0f;
             var landed = new Dictionary<EnemyRewardCoin, Vector3>();
-            bool fadeSeen = false;
+            var bounceHeights = new Dictionary<EnemyRewardCoin, float>();
+            var descended = new HashSet<EnemyRewardCoin>();
+            var collectSprites = new HashSet<Sprite>();
+            var spinSprites = new HashSet<Sprite>();
             float end = Time.time + 5f;
             while (coins.Any(c => c != null) && Time.time < end)
             {
@@ -151,14 +179,23 @@ namespace CTJ.Tools
                 {
                     maxSpread = Mathf.Max(maxSpread, Mathf.Abs(coin.transform.position.x - deathPosition.x));
                     maxHeight = Mathf.Max(maxHeight, coin.transform.position.y);
-                    if (!coin.IsRising) continue;
-                    if (!landed.ContainsKey(coin))
+                    SpriteRenderer visual = coin.GetComponent<SpriteRenderer>();
+                    Check(Mathf.Approximately(visual.color.a, 1f), "Do not alpha-fade the sprite");
+                    if (!coin.IsCollecting) spinSprites.Add(visual.sprite);
+                    else collectSprites.Add(visual.sprite);
+                    if (coin.BounceCount > 0 && !landed.ContainsKey(coin))
                     {
                         landed[coin] = coin.transform.position;
                         if (floor) Check(coin.transform.position.y >= 0.09f && coin.transform.position.y < 0.25f, "Landed above floor");
+                        bounceHeights[coin] = coin.transform.position.y;
                     }
-                    float alpha = coin.GetComponent<SpriteRenderer>().color.a;
-                    if (alpha > 0.1f && alpha < 0.8f && coin.transform.position.y > landed[coin].y) fadeSeen = true;
+                    if (coin.BounceCount > 0)
+                    {
+                        if (coin.transform.position.y < bounceHeights[coin] - 0.03f) descended.Add(coin);
+                        bounceHeights[coin] = Mathf.Max(bounceHeights[coin], coin.transform.position.y);
+                    }
+                    if (floor && coin.IsCollecting)
+                        Check(coin.BounceCount == 2 && coin.transform.position.y < 0.25f, "Collect after two bounces, on the floor");
                 }
                 int finishedAmount = coins.Where(c => c != null && c.GetComponent<SpriteRenderer>().enabled).Sum(c => c.Amount);
                 Check(gold.Count - before == amount - finishedAmount, "Only vanished coins may award");
@@ -167,13 +204,17 @@ namespace CTJ.Tools
             Check(Coins().Length == 0 && gold.Count == before + amount, "Final exact payout: " + amount);
             if (amount > 0)
             {
-                Check(fadeSeen && landed.Count == expectedCount && maxHeight > 0.4f, "Arc / rise / fade");
+                Check(spinSprites.Count > 1 && collectSprites.Count == 6 && maxHeight > 0.4f, "Spin and full six-frame collect animation");
+                if (floor) Check(landed.Count == expectedCount && descended.Count == expectedCount &&
+                    bounceHeights.All(pair => pair.Value - landed[pair.Key].y > 0.08f && pair.Value - landed[pair.Key].y < 0.4f),
+                    "Every coin physically rises and falls after contact, with a small bounce");
                 if (floor) Check(maxSpread < 4f && maxHeight < deathPosition.y + 1.5f,
                     "Modest scatter: " + relative + " spread=" + maxSpread + " height=" + maxHeight + " origin=" + deathPosition);
             }
             stage.SetActive(false); Object.Destroy(stage);
             await Task.Yield();
-            return new { enemy = relative, amount, coins = expectedCount, floor, maxSpread, maxHeight, fadeSeen };
+            return new { enemy = relative, amount, coins = expectedCount, floor, maxSpread, maxHeight, bounced = descended.Count,
+                collectFramesSeen = collectSprites.Count };
         }
 
         private static async Task<object> LandingCases(GameObject arena, CurrencyData gold)
@@ -206,7 +247,7 @@ namespace CTJ.Tools
             while (coins.Any(c => c != null) && Time.time < end)
             {
                 for (int i = 0; i < coins.Count; i++)
-                    if (coins[i] != null && coins[i].IsRising && heights[i] == -100f) heights[i] = coins[i].transform.position.y;
+                    if (coins[i] != null && coins[i].BounceCount > 0 && heights[i] == -100f) heights[i] = coins[i].transform.position.y;
                 await Task.Yield();
             }
             Check(heights[0] >= 0.09f && heights[0] < 0.2f, "Ignore terrain trigger");
@@ -274,10 +315,10 @@ namespace CTJ.Tools
                 {
                     var coin = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath), new Vector3(0f, 0.35f), Quaternion.identity);
                     typeof(EnemyRewardCoin).GetMethod("Launch", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                        .Invoke(coin, new object[] { currency, 5, (i + 0.5f) / 12f });
+                        .Invoke(coin, new object[] { currency, 3, (i + 0.5f) / 12f });
                     coins.Add(coin);
                 }
-                foreach (var shot in new[] { new { time = 0.25f, name = "Scatter" }, new { time = 0.45f, name = "Rise" }, new { time = 0.3f, name = "Fade" } })
+                foreach (var shot in new[] { new { time = 0.25f, name = "Scatter" }, new { time = 0.5f, name = "Bounce" }, new { time = 0.55f, name = "Collect" } })
                 {
                     float until = Time.time + shot.time;
                     while (Time.time < until) await Task.Yield();

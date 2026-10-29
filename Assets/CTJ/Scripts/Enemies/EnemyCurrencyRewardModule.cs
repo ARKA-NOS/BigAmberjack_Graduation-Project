@@ -16,10 +16,10 @@ namespace CTJ.Enemies
 
         [Header("Coin Drop")]
         [SerializeField] private EnemyRewardCoin coinPrefab;
-        [Tooltip("코인 하나가 나타내는 기준 금액. 5이면 1~5골드: 1개, 6~10골드: 2개입니다.")]
-        [SerializeField, Min(1)] private int currencyPerCoin = 5;
+        [Tooltip("코인 하나가 나타내는 기준 금액. 3이면 1~3골드: 1개, 4~6골드: 2개입니다.")]
+        [SerializeField, Min(1)] private int currencyPerCoin = 3;
         [SerializeField, Min(1)] private int maxCoinCount = 12;
-        [Tooltip("적 루트의 월드 위치에 더할 생성 오프셋입니다. 적의 방향/크기와 무관합니다.")]
+        [Tooltip("적 루트의 월드 위치에 더할 생성 오프셋입니다. 상하 반전 모듈이 켜지면 Y 방향도 반전합니다.")]
         [SerializeField] private Vector2 spawnOffset = new Vector2(0f, 0.35f);
 
         private EnemyBase _enemy;
@@ -83,7 +83,10 @@ namespace CTJ.Enemies
             int count = Mathf.Min(1 + (amount - 1) / Mathf.Max(1, currencyPerCoin), Mathf.Max(1, maxCoinCount));
             int baseAmount = amount / count;
             int remainder = amount % count;
-            Vector3 position = _enemy.transform.position + (Vector3)spawnOffset;
+            Vector2 offset = spawnOffset;
+            EnemyVerticalFlipModule verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
+            if (verticalFlip != null && verticalFlip.IsFlipped) offset.y = -offset.y;
+            Vector3 position = _enemy.transform.position + (Vector3)offset;
             for (int i = 0; i < count; i++)
             {
                 // 부모를 지정하지 않아 적의 사망 연출/제거와 코인의 수명이 독립적입니다.

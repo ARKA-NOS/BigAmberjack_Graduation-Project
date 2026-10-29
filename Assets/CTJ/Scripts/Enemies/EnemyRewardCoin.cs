@@ -15,29 +15,37 @@ namespace CTJ.Enemies
         [Tooltip("바닥/벽 레이어만 선택하세요. 기본값은 Ground입니다. 트리거는 무시합니다.")]
         [SerializeField] private LayerMask terrainLayers = 1 << 6;
         [SerializeField, Min(0.01f)] private float collisionRadius = 0.1f;
-        [Tooltip("낭떠러지 등에서 바닥을 못 찾으면 이 시간 뒤 떠오르기/지급으로 넘어갑니다.")]
+        [Tooltip("낭떠러지 등에서 바닥을 못 찾으면 이 시간 뒤 소멸/지급으로 넘어갑니다. 바운스 시 다시 셉니다.")]
         [SerializeField, Min(0.1f)] private float maxAirTime = 3f;
 
-        [Header("Rise And Fade")]
-        [SerializeField, Min(0f)] private float riseHeight = 0.65f;
-        [SerializeField, Min(0.05f)] private float fadeDuration = 0.7f;
+        [Header("Ground Bounce")]
+        [SerializeField, Min(0)] private int maxBounces = 2;
+        [Tooltip("첫 바운스의 초기 속도입니다. 이후에는 Bounce Damping만큼 약해집니다.")]
+        [SerializeField, Min(0f)] private float bounceSpeed = 2.6f;
+        [SerializeField, Range(0f, 1f)] private float bounceDamping = 0.55f;
+        [SerializeField, Range(0f, 1f)] private float horizontalRetention = 0.65f;
+
+        [Header("Sprite Animation")]
+        [SerializeField] private Sprite[] spinFrames;
+        [SerializeField, Min(1f)] private float spinFramesPerSecond = 12f;
+        [SerializeField] private Sprite[] collectFrames;
+        [SerializeField, Min(1f)] private float collectFramesPerSecond = 12f;
 
         private const float Skin = 0.005f;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
         private SpriteRenderer _visual;
-        private Color _originalColor;
         private ContactFilter2D _terrainFilter;
         private CurrencyData _currency;
         private Vector2 _velocity;
-        private Vector3 _landPosition;
         private float _airTime;
-        private float _fadeTime;
+        private float _animationTime;
         private bool _launched;
         private bool _completed;
         private bool _quitting;
 
         public int Amount { get; private set; }
-        public bool IsRising { get; private set; }
+        public int BounceCount { get; private set; }
+        public bool IsCollecting { get; private set; }
 
         internal void Launch(CurrencyData currency, int amount, float spread)
         {
@@ -46,17 +54,22 @@ namespace CTJ.Enemies
             _currency = currency;
             Amount = amount;
             _visual = GetComponent<SpriteRenderer>();
-            _originalColor = _visual.color;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
             float low = Mathf.Max(0f, Mathf.Min(upwardSpeedRange.x, upwardSpeedRange.y));
             float high = Mathf.Max(low, Mathf.Max(upwardSpeedRange.x, upwardSpeedRange.y));
             _velocity = new Vector2(Mathf.Lerp(-horizontalSpeed, horizontalSpeed, spread), Random.Range(low, high));
+            if (spinFrames != null && spinFrames.Length > 0)
+            {
+                // 같은 순간에 생성된 코인도 회전 자세가 조금씩 다르게 시작합니다.
+                _animationTime = Random.Range(0, spinFrames.Length) / Mathf.Max(1f, spinFramesPerSecond);
+                UpdateSpinSprite();
+            }
         }
 
         private void FixedUpdate()
         {
-            if (!_launched || _completed || IsRising) return;
+            if (!_launched || _completed || IsCollecting) return;
             float dt = Time.fixedDeltaTime;
             _airTime += dt;
             _velocity += Physics2D.gravity * gravityScale * dt;
@@ -70,7 +83,7 @@ namespace CTJ.Enemies
                 transform.position = new Vector3(contactPosition.x, contactPosition.y, transform.position.z);
                 if (_velocity.y <= 0f && hit.normal.y >= 0.5f)
                 {
-                    BeginRise();
+                    HandleGroundContact(hit.normal);
                     return;
                 }
 
@@ -83,7 +96,7 @@ namespace CTJ.Enemies
                 transform.position += (Vector3)delta;
             }
 
-            if (_airTime >= maxAirTime) BeginRise();
+            if (_airTime >= maxAirTime) BeginCollect();
         }
 
         private bool FindTerrain(Vector2 direction, float distance, out RaycastHit2D nearest)
@@ -105,23 +118,56 @@ namespace CTJ.Enemies
             return nearest.collider != null;
         }
 
-        private void BeginRise()
+        private void HandleGroundContact(Vector2 normal)
         {
-            IsRising = true;
-            _landPosition = transform.position;
+            if (BounceCount >= maxBounces || bounceSpeed <= 0f)
+            {
+                BeginCollect();
+                return;
+            }
+
+            float speed = bounceSpeed * Mathf.Pow(bounceDamping, BounceCount);
+            Vector2 tangentVelocity = _velocity - normal * Vector2.Dot(_velocity, normal);
+            _velocity = tangentVelocity * horizontalRetention + normal * speed;
+            BounceCount++;
+            _airTime = 0f;
+            // FixedUpdate의 중력이 계속 작용하므로 다시 내려와 바닥에 닿습니다.
+        }
+
+        private void BeginCollect()
+        {
+            IsCollecting = true;
             _velocity = Vector2.zero;
+            _animationTime = 0f;
+            if (collectFrames == null || collectFrames.Length == 0)
+            {
+                Debug.LogWarning("코인의 Collect Frames가 비어 있어 소멸 연출 없이 정산합니다.", this);
+                CompleteReward();
+                return;
+            }
+            _visual.sprite = collectFrames[0];
         }
 
         private void Update()
         {
-            if (!_launched || _completed || !IsRising) return;
-            _fadeTime += Time.deltaTime;
-            float t = Mathf.Clamp01(_fadeTime / Mathf.Max(0.05f, fadeDuration));
-            transform.position = _landPosition + Vector3.up * (riseHeight * Mathf.SmoothStep(0f, 1f, t));
-            Color color = _originalColor;
-            color.a *= 1f - t;
-            _visual.color = color;
-            if (t >= 1f) CompleteReward();
+            if (!_launched || _completed) return;
+            _animationTime += Time.deltaTime;
+            if (!IsCollecting)
+            {
+                UpdateSpinSprite();
+                return;
+            }
+
+            int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, collectFramesPerSecond));
+            if (frame >= collectFrames.Length) CompleteReward();
+            else _visual.sprite = collectFrames[frame];
+        }
+
+        private void UpdateSpinSprite()
+        {
+            if (spinFrames == null || spinFrames.Length == 0) return;
+            int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, spinFramesPerSecond)) % spinFrames.Length;
+            _visual.sprite = spinFrames[frame];
         }
 
         private void CompleteReward()

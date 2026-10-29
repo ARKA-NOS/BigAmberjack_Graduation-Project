@@ -259,6 +259,7 @@ Transform:
   - {fileID: 5337233685639286325}
   - {fileID: 4709670898973010996}
   - {fileID: 3760290390041458826}
+  - {fileID: 1328316507904798205}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1417259878035677417
@@ -448,7 +449,7 @@ MonoBehaviour:
   rewardCurrency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
   rewardAmountStat: {fileID: 11400000, guid: 829d06c7a4914e7c96e6d3b72587ca04, type: 2}
   coinPrefab: {fileID: 6214127798328876647, guid: f8e15232d401a7744a35e8b47236c7c3, type: 3}
-  currencyPerCoin: 5
+  currencyPerCoin: 3
   maxCoinCount: 12
   spawnOffset: {x: 0, y: 0.35}
 --- !u!1 &1823792666868896604
@@ -633,6 +634,50 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &2156108218631924536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1328316507904798205}
+  - component: {fileID: 9163225084828395164}
+  m_Layer: 0
+  m_Name: VerticalFlipModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1328316507904798205
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2156108218631924536}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1637513422245136411}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9163225084828395164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2156108218631924536}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a1ac61e04369c440818bcfd39dff260, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyVerticalFlipModule
 --- !u!1 &2937257054156238508
 GameObject:
   m_ObjectHideFlags: 0

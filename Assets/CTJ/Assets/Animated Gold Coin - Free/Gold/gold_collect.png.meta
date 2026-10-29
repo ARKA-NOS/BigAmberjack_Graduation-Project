@@ -46,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -84,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -125,12 +125,12 @@ TextureImporter:
       name: gold_collect_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 3
-        width: 20
-        height: 18
+        x: 0
+        y: 0
+        width: 25
+        height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: gold_collect_1
       rect:
         serializedVersion: 2
-        x: 30
-        y: 5
-        width: 16
-        height: 15
+        x: 25
+        y: 0
+        width: 25
+        height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: gold_collect_2
       rect:
         serializedVersion: 2
-        x: 56
-        y: 6
-        width: 14
-        height: 13
+        x: 50
+        y: 0
+        width: 25
+        height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: gold_collect_3
       rect:
         serializedVersion: 2
-        x: 81
-        y: 3
-        width: 67
-        height: 20
+        x: 75
+        y: 0
+        width: 25
+        height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -209,11 +209,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: gold_collect_4
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 0
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b4436c962039144099001b5f6c25b5d
+      internalID: 1957098215
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gold_collect_5
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 0
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a8474b0890726c47bfd3b657eaef11f
+      internalID: -1260811954
+      vertices: []
+      indices:
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ddfc7ac13a32a2a48a69ab8e9168b4db
     internalID: 0
     vertices: []
     indices: 
@@ -227,6 +271,8 @@ TextureImporter:
       gold_collect_1: -1274981328697782635
       gold_collect_2: -4459968919189867608
       gold_collect_3: -1080843717795993319
+      gold_collect_4: 1957098215
+      gold_collect_5: -1260811954
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

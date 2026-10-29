@@ -19,11 +19,12 @@
 | InvokeUnity.ps1 | Unity 상태·컴파일·Console 조회와 필요한 검증 실행 |
 | VerifyEnemy01.cs | 독립 검증 씬 시작/종료/원래 씬 복구와 01 확인 |
 | VerifyEnemy02.cs | 터렛 전개·수납·조준·발사 검증 |
+| VerifyEnemyVerticalFlip.cs | 선택적 상하 반전·천장 터렛 전개/조준/UI/보상 검증 |
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
 | VerifyEnemyNewHealth.cs | 현재 NewHealthModule 기반 체력·UI·보상 통합 검사 |
-| VerifyEnemyCoinReward.cs | 사망 코인 분배·지형·페이드·지연 지급·씬 정리 정산 검사 |
+| VerifyEnemyCoinReward.cs | 사망 코인 분배·바운스·스프라이트 소멸·지형·지연 지급·씬 정리 정산 검사 |
 | VerifyEnemyOutline.cs | 현재 아웃라인의 피격·활성화·제거 검사 |
 | VerifyEnemyOuterContour.cs | 위치·회전·수납에 따른 외곽선 누락 재발 방지 |
 | VerifyEnemySuperArmor.cs | 현재 슈퍼아머의 준비/공격/후딜 조건 검사 |
@@ -41,3 +42,7 @@
 정리 시점에 남긴 C# 검증 파일 9개를 실행 없이 컴파일했으며 모두 오류 없이 통과했습니다. CTJ_MapTestScene의 파일 해시도 정리 전후 동일했습니다.
 
 이후 코인 보상 작업으로 VerifyEnemyCoinReward.cs와 EnemyCoinRewardNotes.md를 추가했습니다. Backups/EnemyCurrencyRewardModule.Immediate.cs.txt는 사용자 요청으로 보관한 이전 즉시 지급 코드이며, 삭제 대상이 아닙니다.
+
+2026-10-29 코인 수정의 현재 설정·테스트·문법 설명은 EnemyCoinBounceNotes.md에 있습니다. EnemyCoinRewardNotes.md는 최초 페이드 방식의 기록입니다.
+
+2026-10-29 천장 터렛의 설정·코드 사용법·테스트·문법 설명은 EnemyVerticalFlipNotes.md에 있습니다.

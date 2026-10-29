@@ -1,5 +1,7 @@
 # 사망 보상을 코인 연출로 지급하기
 
+> 2026-10-29 변경: 현재는 3골드 기준, 중력 바운스, 스프라이트 소멸 애니메이션을 사용합니다. 아래는 최초 구현 기록입니다. 최신 설정·테스트·문법 설명은 [EnemyCoinBounceNotes.md](EnemyCoinBounceNotes.md)를 보세요.
+
 2026-10-28. 수정 범위는 Assets/CTJ만입니다. 공용 CurrencyManager, GameManager, 씬 파일은 수정하지 않았습니다.
 
 ## 동작과 책임

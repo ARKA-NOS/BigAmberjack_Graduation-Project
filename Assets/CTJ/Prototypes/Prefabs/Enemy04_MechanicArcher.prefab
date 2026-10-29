@@ -102,6 +102,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyCurrencyRewardModule
   rewardCurrency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
   rewardAmountStat: {fileID: 11400000, guid: 829d06c7a4914e7c96e6d3b72587ca04, type: 2}
+  coinPrefab: {fileID: 6214127798328876647, guid: f8e15232d401a7744a35e8b47236c7c3, type: 3}
+  currencyPerCoin: 3
+  maxCoinCount: 12
+  spawnOffset: {x: 0, y: 0.35}
 --- !u!1 &1905959694754196451
 GameObject:
   m_ObjectHideFlags: 0

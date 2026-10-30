@@ -27,6 +27,8 @@ namespace SDW.Scripts.Interact.Chest
         private SpriteRenderer _spriteRenderer;
         private InteractionLock _lock;
         private Animator _animator;
+        private ModuleOwner _opener;
+        private bool _rewardGiven;
 
         private static readonly int OpenHash = Animator.StringToHash("Open");
 
@@ -79,6 +81,35 @@ namespace SDW.Scripts.Interact.Chest
 
             Debug.Log($"[Chest] {data.ChestName} 열림");
             IsOpened = true;
+            _opener = owner;
+
+            // 열린 상자는 더 이상 상호작용 대상으로 잡히지 않게 한다.
+            RefreshCollider();
+
+            // Animator가 있으면 열림 애니메이션을 재생하고, 끝 프레임의 애니메이션 이벤트(OnOpenAnimationEnd)에서
+            // 보상과 파티클을 낸다. Animator가 없으면 열린 스프라이트로 바꾸고 바로 낸다.
+            if (_animator != null && _animator.runtimeAnimatorController != null)
+            {
+                _animator.SetTrigger(OpenHash);
+                return;
+            }
+
+            if (data.OpenedSprite != null && _spriteRenderer != null)
+                _spriteRenderer.sprite = data.OpenedSprite;
+
+            OnOpenAnimationEnd();
+        }
+
+        // 열림 애니메이션 마지막에 애니메이션 이벤트로 호출된다. 파티클 재생과 보상 적용을 한 번만 한다.
+        public void OnOpenAnimationEnd()
+        {
+            if (!IsOpened || _rewardGiven)
+                return;
+
+            _rewardGiven = true;
+
+            if (openEffect != null)
+                openEffect.Play();
 
             // 코인 드랍처럼 위치가 필요한 효과는 오픈 파티클 위치(없으면 상자 윗면)에서 시작한다.
             Vector3 origin = openEffect != null
@@ -87,26 +118,14 @@ namespace SDW.Scripts.Interact.Chest
 
             foreach (ChoiceEffectSO reward in data.Rewards)
             {
-                if (reward == null || !reward.CanApply(owner))
+                if (reward == null || !reward.CanApply(_opener))
                     continue;
 
                 if (reward is IOriginEffect originEffect)
-                    originEffect.Apply(owner, origin);
+                    originEffect.Apply(_opener, origin);
                 else
-                    reward.Apply(owner);
+                    reward.Apply(_opener);
             }
-
-            // Animator가 있으면 열림 애니메이션을 재생하고, 없으면 열린 스프라이트로 바꾼다.
-            if (_animator != null && _animator.runtimeAnimatorController != null)
-                _animator.SetTrigger(OpenHash);
-            else if (data.OpenedSprite != null && _spriteRenderer != null)
-                _spriteRenderer.sprite = data.OpenedSprite;
-
-            if (openEffect != null)
-                openEffect.Play();
-
-            // 열린 상자는 더 이상 상호작용 대상으로 잡히지 않게 한다.
-            RefreshCollider();
         }
 
         private bool HasApplicableReward(ModuleOwner owner)

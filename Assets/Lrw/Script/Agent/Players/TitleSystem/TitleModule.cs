@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DevLib.ModuleSystem;
 using Lrw.Script.Agent.Players.QuestSystem;
@@ -70,21 +71,6 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             Title title = new Title(titleSo, _questModule);
             _titles.Add(titleSo, title);
             title.OnComplete += OnTitleComplete;
-
-            if (titleListViewModel != null)
-            {
-                TitleViewData viewData = new TitleViewData(
-                    title.TitleSo.TitleName,title.TitleSo.TitleDescription,title.TitleSo.UpgradeDescription,
-                    title.GetQuests()
-                        .Select(x => 
-                            new QuestViewData(x.QuestSo.QuestName, x.QuestSo.QuestDescription,
-                        new Gauge(x.CurrentAmount,x.RequiredAmount),x.IsComplete)
-                        )
-                        .ToList()
-                    );
-                
-                titleListViewModel.BindData.TitleViewList.Add(viewData);
-            }
         }
         
         private void OnTitleComplete(Title title)
@@ -114,6 +100,38 @@ namespace Lrw.Script.Agent.Players.TitleSystem
                 }
             }
         }
-        
+
+        private void Update()
+        {
+            UpdateViewModel();
+        }
+
+        private void UpdateViewModel()
+        {
+            if(titleListViewModel == null || titleListViewModel.BindData == null) return;
+            
+            List<TitleViewData> titleViewDataList = titleListViewModel.BindData.TitleViewList;
+            
+            if (titleViewDataList == null) return;
+            
+            titleViewDataList.Clear();
+            
+            foreach (Title title in _titles.Values)
+            {
+                TitleViewData viewData = new TitleViewData(
+                    title.TitleSo.TitleName,title.TitleSo.TitleDescription,title.TitleSo.UpgradeDescription,
+                    title.GetQuests()
+                        .Select(x => 
+                            new QuestViewData(x.QuestSo.QuestName, x.QuestSo.QuestDescription,
+                                new Gauge(x.CurrentAmount,x.RequiredAmount), 
+                                x.IsComplete)
+                        )
+                        .ToList(),
+                    title.IsComplete
+                );
+                titleViewDataList.Add(viewData);
+            }
+            
+        }
     }
 }

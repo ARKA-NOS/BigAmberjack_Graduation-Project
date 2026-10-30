@@ -21,8 +21,9 @@ namespace Lrw.Script.Agent.Players
         public event Action OnJumpKeyReleased;
         
         public event Action OnInteractKeyPressed;
-        public event Action OnInventoryKeyReleased;
-
+        public event Action OnInventoryKeyPressed;
+        public event Action OnTitleKeyPressed;
+        
         private Controls _controls;
         
         public Vector2 MovementKey { get; private set; }
@@ -91,14 +92,20 @@ namespace Lrw.Script.Agent.Players
         public void OnInventory(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnInventoryKeyReleased?.Invoke();
+                OnInventoryKeyPressed?.Invoke();
         }
 
         public void OnMouse(InputAction.CallbackContext context)
         {
             MousePos = context.ReadValue<Vector2>();
         }
-        
+
+        public void OnTestTitle(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnTitleKeyPressed?.Invoke();
+        }
+
         public Vector2 GetMouseWorldPosition()
             => Camera.main.ScreenToWorldPoint(MousePos);
 

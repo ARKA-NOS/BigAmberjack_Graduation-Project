@@ -15,7 +15,7 @@ namespace Lrw.Script.UI
     {
         public IWindow Window;
         public object Data;
-        public UIOpenCloseEvent Init(IWindow window,object data)
+        internal UIOpenCloseEvent Init(IWindow window,object data = null)
         {
             Window = window;
             Data = data;

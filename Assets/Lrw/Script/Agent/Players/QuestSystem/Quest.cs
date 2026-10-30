@@ -27,7 +27,7 @@ namespace Lrw.Script.Agent.Players.QuestSystem
             float prevAmount = CurrentAmount;
             CurrentAmount = Mathf.Clamp(CurrentAmount + amount,0f,RequiredAmount);
             
-            if(Mathf.Approximately(prevAmount,CurrentAmount)) 
+            if(!Mathf.Approximately(prevAmount,CurrentAmount)) 
                 OnChanged?.Invoke();
             
             if (Mathf.Approximately(CurrentAmount, RequiredAmount))

@@ -80,9 +80,19 @@ namespace SDW.Scripts.Interact.Chest
             Debug.Log($"[Chest] {data.ChestName} 열림");
             IsOpened = true;
 
+            // 코인 드랍처럼 위치가 필요한 효과는 오픈 파티클 위치(없으면 상자 윗면)에서 시작한다.
+            Vector3 origin = openEffect != null
+                ? openEffect.transform.position
+                : transform.position + (Vector3)uiAnchorOffset;
+
             foreach (ChoiceEffectSO reward in data.Rewards)
             {
-                if (reward != null && reward.CanApply(owner))
+                if (reward == null || !reward.CanApply(owner))
+                    continue;
+
+                if (reward is IOriginEffect originEffect)
+                    originEffect.Apply(owner, origin);
+                else
                     reward.Apply(owner);
             }
 

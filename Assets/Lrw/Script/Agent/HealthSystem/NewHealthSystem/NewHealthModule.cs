@@ -71,8 +71,9 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         {
             FDebug.Assert(defenseStatData != null && damageReductionStatData != null,$"[NewHealthModule : {gameObject.name}] StatDAta Setting Error");
             
-            _defenseStat = _statModule.GetStat(defenseStatData);
-            _damageReductionStat = _statModule.GetStat(damageReductionStatData);
+            // 방어 스탯은 없어도 된다. 스탯 그룹에 없으면(지금의 적들) 0으로 계산한다.
+            _statModule.TryGetStat(defenseStatData, out _defenseStat);
+            _statModule.TryGetStat(damageReductionStatData, out _damageReductionStat);
         }
 
         private void HealthSetting()
@@ -161,7 +162,9 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         {
             if(IsDead) return;
             float prevHealth = CurrentHealth;
-            float currentDamage = Mathf.Max(0f, GetApplyDamageValue(damage, _defenseStat.Value, _damageReductionStat.Value));
+            float defense = _defenseStat?.Value ?? 0f;
+            float damageReduction = _damageReductionStat?.Value ?? 0f;
+            float currentDamage = Mathf.Max(0f, GetApplyDamageValue(damage, defense, damageReduction));
             for (int i = _healths.Count - 1; i >= 0; i--)
             {
                 HealthType type = _healths[i].GetHealthType();

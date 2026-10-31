@@ -44,6 +44,12 @@ namespace Lrw.Script.Agent.StatSystem
             return AddStat(statData, statData.DefaultValue);
         }
 
+        public bool TryGetStat(StatData statData, out Stat stat)
+        {
+            stat = null;
+            return statData != null && _stats.TryGetValue(statData, out stat);
+        }
+
         public IReadOnlyDictionary<StatData, Stat> GetStats()
             => _stats;
 

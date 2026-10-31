@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a55654074d14210bee57ef1ebf0c637, type: 3}
+  m_Name: Bad Game Title SO
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.TitleSystem.Titles.StatTitleSo
+  <TitleName>k__BackingField: "\ub9dd\uac9c"
+  <TitleDescription>k__BackingField: 
+  <UpgradeDescription>k__BackingField: "\ucd5c\ub300 \uccb4\ub825\u00b7\ubc29\uc5b4\ub825\u00b7\ubb3c\ub9ac \uacf5\uaca9\ub825 +10"
+  <TitleIcon>k__BackingField: {fileID: 0}
+  <RequiredTitles>k__BackingField: []
+  <Quests>k__BackingField:
+  - {fileID: 11400000, guid: 5003fa9dc3b5463fb151b08a703a4054, type: 2}
+  modifies:
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
+    <ModifyData>k__BackingField:
+      <Priority>k__BackingField: 0
+      <Value>k__BackingField: 10
+      <ModifyType>k__BackingField: 0
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 8aa7055844afb384b87942c0fb77f6d4, type: 2}
+    <ModifyData>k__BackingField:
+      <Priority>k__BackingField: 0
+      <Value>k__BackingField: 10
+      <ModifyType>k__BackingField: 0
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+    <ModifyData>k__BackingField:
+      <Priority>k__BackingField: 0
+      <Value>k__BackingField: 10
+      <ModifyType>k__BackingField: 0

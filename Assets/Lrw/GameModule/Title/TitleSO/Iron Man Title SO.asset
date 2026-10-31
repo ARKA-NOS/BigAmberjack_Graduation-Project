@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a55654074d14210bee57ef1ebf0c637, type: 3}
+  m_Name: Iron Man Title SO
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.TitleSystem.Titles.StatTitleSo
+  <TitleName>k__BackingField: "\uac15\ucca0\uc778\uac04"
+  <TitleDescription>k__BackingField: "\uc624\ud788\ub824 \uc88b\uc544"
+  <UpgradeDescription>k__BackingField: "\ubc29\uc5b4\ub825 +20%"
+  <TitleIcon>k__BackingField: {fileID: 0}
+  <RequiredTitles>k__BackingField: []
+  <Quests>k__BackingField:
+  - {fileID: 11400000, guid: 26e648fadca2489093ef659576776e9b, type: 2}
+  modifies:
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 8aa7055844afb384b87942c0fb77f6d4, type: 2}
+    <ModifyData>k__BackingField:
+      <Priority>k__BackingField: 0
+      <Value>k__BackingField: 0.2
+      <ModifyType>k__BackingField: 1

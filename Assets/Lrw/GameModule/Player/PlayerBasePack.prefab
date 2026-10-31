@@ -11,6 +11,14 @@ GameObject:
   - component: {fileID: 833250260016359805}
   - component: {fileID: 1423511232572547923}
   - component: {fileID: 8132218004629083661}
+  - component: {fileID: 5048885413981600440}
+  - component: {fileID: 4556454503483448863}
+  - component: {fileID: 5364584952938968984}
+  - component: {fileID: 2030702298250298881}
+  - component: {fileID: 7825125488003435964}
+  - component: {fileID: 4254044727351194004}
+  - component: {fileID: 3828023935675646522}
+  - component: {fileID: 7771130544403837169}
   m_Layer: 7
   m_Name: QuestModule
   m_TagString: Untagged
@@ -58,6 +66,116 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.MeleeAttackQuestUpdateModule
   questKey: {fileID: 11400000, guid: 984af338c3ec57b44b0eec79ab8d3806, type: 2}
+--- !u!114 &5048885413981600440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a36ab4ad7d48f5ac54e1cc5aa91465, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.AirTimeQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 5d94c17606a14966b1527241639aa839, type: 2}
+  minAirTime: 1.5
+--- !u!114 &4556454503483448863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db86671a0434c06a7b617cf0689d5a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.IdleQuestUpdateModule
+  questKey: {fileID: 11400000, guid: e39da99bc112483585d89443393ec5d7, type: 2}
+  playerInput: {fileID: 11400000, guid: e1b94466858999e4c8089203ed69deef, type: 2}
+--- !u!114 &5364584952938968984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b98f32cdb46943d588fd77044fbcf921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.HitCountInWindowQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 48a70b64cc7f482b88504c2be4edf046, type: 2}
+  window: 5
+--- !u!114 &2030702298250298881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab3217af61540f09d95aed72b423b81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.HealthLossInWindowQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 83c58479cb9c4a6782295037e68af848, type: 2}
+  window: 3
+--- !u!114 &7825125488003435964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aef084a9e1f449979dbb316cc0c31f06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.LowHealthQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 80c1148f9cec4fe88e6f96610ef27e43, type: 2}
+  healthThreshold: 1
+--- !u!114 &4254044727351194004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a969672491f4394aecd6cba38d8a7e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.MeleeAttackHitQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 75703641a396421193450d422099d938, type: 2}
+--- !u!114 &3828023935675646522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c40795ed3d04f3fb9284c2501cb827c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.SameDealerHitQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 4350686e6fe843628c7354d78095a436, type: 2}
+--- !u!114 &7771130544403837169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab8f78dec5294de69b39ccbce6ebb28b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.StatThresholdQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 3a0666188420443891d1eb3b74a34b3c, type: 2}
+  statData: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
 --- !u!1 &6378392252357860800
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +268,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.TitleSystem.TitleModule
   titleGroups:
   - {fileID: 11400000, guid: 80538edc547eca84aac3c12588aae96e, type: 2}
+  - {fileID: 11400000, guid: c7dcf4c374d24e338a95d02491aaad63, type: 2}
+  - {fileID: 11400000, guid: a6ba0ee609a541a9acc757ee7128ce18, type: 2}
+  - {fileID: 11400000, guid: e7388ef512b7457c95715e7deefd5f6c, type: 2}
+  - {fileID: 11400000, guid: d2e17fd0943c4f5590d49215a76fa6af, type: 2}
   titleListViewModel: {fileID: 11400000, guid: d7a8d20727f714a46ac897b572279e61, type: 2}
 --- !u!1001 &7567971854841653236
 PrefabInstance:

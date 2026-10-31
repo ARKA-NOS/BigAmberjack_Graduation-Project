@@ -36,6 +36,7 @@ namespace Lrw.Script.Agent
             if(IsInvincibility) return;
             NewHealthModule.ApplyDamage(damageData.DamageAmount);
             OnHit?.Invoke();
+            AgentEvents.RaiseDamaged(this, damageData);
         }
         
         public virtual void ApplyHeal(HealData healData)

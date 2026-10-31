@@ -13,6 +13,7 @@ namespace Lrw.Script.Agent.Players.QuestSystem.QuestBinder
         protected ModuleOwner Owner { get; private set; }
         private IQuestModule  _questModule;
         private bool _isInitialized;
+        protected bool IsInitialized => _isInitialized;
 
         public void Init(ModuleOwner owner)
         {

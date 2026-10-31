@@ -99,7 +99,8 @@ namespace Lrw.Script.Agent.Players.Skills
 
         private void OnTrigger()
         {
-            damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce);
+            if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
+                PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
         }
 
         private Vector2 GetMouseDirection()

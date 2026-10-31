@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 833250260016359805}
   - component: {fileID: 1423511232572547923}
+  - component: {fileID: 8132218004629083661}
   m_Layer: 7
   m_Name: QuestModule
   m_TagString: Untagged
@@ -44,6 +45,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4057ec330e4d493286d0bffa6bea49ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestModule
+--- !u!114 &8132218004629083661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 459099866274118755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3baee76e88a84bccb4f4a7ebaa61b2b4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.QuestSystem.QuestBinder.MeleeAttackQuestUpdateModule
+  questKey: {fileID: 11400000, guid: 984af338c3ec57b44b0eec79ab8d3806, type: 2}
 --- !u!1 &6378392252357860800
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0eb7d6cd3554ab6962a13924d368846, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.TitleSystem.TitleModule
-  titleGroup: {fileID: 11400000, guid: 80538edc547eca84aac3c12588aae96e, type: 2}
+  titleGroups:
+  - {fileID: 11400000, guid: 80538edc547eca84aac3c12588aae96e, type: 2}
   titleListViewModel: {fileID: 11400000, guid: d7a8d20727f714a46ac897b572279e61, type: 2}
 --- !u!1001 &7567971854841653236
 PrefabInstance:

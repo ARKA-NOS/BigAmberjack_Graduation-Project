@@ -12,6 +12,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         public event Action<Title> OnComplete;
 
         public bool IsComplete { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
         public Title(AbstractTitleSo titleSo, IQuestModule questModule)
         {
@@ -28,6 +29,15 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             }
         }
         
+        public void SetActive(bool value)
+        {
+            IsActive = value;
+            foreach (Quest quest in quests)
+            {
+                quest.SetActive(value);
+            }
+        }
+
         private void QuestValueChanged()
         {
             

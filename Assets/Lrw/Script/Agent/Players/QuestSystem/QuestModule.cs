@@ -52,6 +52,17 @@ namespace Lrw.Script.Agent.Players.QuestSystem
             }
         }
 
+        public void SetQuestAmount(QuestKey key, float amount)
+        {
+            if (_questDict.TryGetValue(key, out List<Quest> questList))
+            {
+                foreach (Quest quest in questList)
+                {
+                    quest.SetAmount(amount);
+                }
+            }
+        }
+
         
     }
 }

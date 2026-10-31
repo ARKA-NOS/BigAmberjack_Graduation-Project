@@ -10,22 +10,29 @@ namespace Lrw.Script.Agent.Players.QuestSystem
         public readonly float RequiredAmount;
         public float NormalizedAmount => CurrentAmount / RequiredAmount;
         public bool IsComplete { get; private set; }
+        // 비활성 퀘스트는 진행도가 바뀌지 않는다(다른 스테이지의 칭호 퀘스트 등).
+        public bool IsActive { get; private set; }
         public event Action OnComplete;
         public event Action OnChanged;
-        
+
         public Quest(QuestSo questSo)
         {
             QuestSo = questSo;
             CurrentAmount = 0f;
             RequiredAmount = QuestSo.RequiredAmount;
             IsComplete = false;
+            IsActive = true;
         }
-        
-        public void AddAmount(float amount)
+
+        public void SetActive(bool value) => IsActive = value;
+
+        public void AddAmount(float amount) => SetAmount(CurrentAmount + amount);
+
+        public void SetAmount(float amount)
         {
-            if(IsComplete) return;
+            if(IsComplete || !IsActive) return;
             float prevAmount = CurrentAmount;
-            CurrentAmount = Mathf.Clamp(CurrentAmount + amount,0f,RequiredAmount);
+            CurrentAmount = Mathf.Clamp(amount,0f,RequiredAmount);
             
             if(!Mathf.Approximately(prevAmount,CurrentAmount)) 
                 OnChanged?.Invoke();

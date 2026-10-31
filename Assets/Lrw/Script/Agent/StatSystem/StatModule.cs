@@ -39,10 +39,7 @@ namespace Lrw.Script.Agent.StatSystem
         public Stat GetStat(StatData statData)
         {
             if (statData == null) throw new Exception("StatData is null");
-            if (_stats.TryGetValue(statData, out Stat stat))
-            {
-                return stat;
-            }
+            if (_stats.TryGetValue(statData, out Stat stat)) return stat;
             FDebug.LogError($"[Stat Module : {gameObject.name}] No stat found for {statData}", this);
             return AddStat(statData, statData.DefaultValue);
         }

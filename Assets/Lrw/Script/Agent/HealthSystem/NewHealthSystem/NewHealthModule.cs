@@ -15,13 +15,15 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         [Header("Default Health Setting")]
         [SerializeField] private AbstractHealthSo coreHealth;
 
-        [Header("Other Setting")] 
+        [Header("Other Health Setting")] 
         [SerializeField] private AbstractHealthSo[] otherHealths;
 
+        [Header("Stat Setting")] 
+        [SerializeField] private StatData defenseStatData;
+        [SerializeField] private StatData damageReductionStatData;
+        
         [Header("UI Setting")] 
         [SerializeField] private NewHealthViewModel healthViewModel;
-        
-        private Stat _maxHpStat;
         
         private IHealth _baseHealth;
         private Dictionary<AbstractHealthSo, IHealth> _healthDict;
@@ -38,6 +40,10 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         public bool IsDead { get; private set; }
         
         public event HealthChanged OnHealthChanged;
+
+        private IStatModule _statModule;
+        private Stat _damageReductionStat;
+        private Stat _defenseStat;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -48,9 +54,28 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             _healths = new();
             
             FDebug.Assert(coreHealth != null, "[NewHealthModule] coreHealth is null");
+            
+            FDebug.Assert(_owner.TryGetModule(out _statModule),"[NewHealthModule] IStatModule is not found");
+            
         }
         
         public void AfterInit()
+        {
+            StatSetting();
+            HealthSetting();
+        }
+
+        #region Setting
+
+        private void StatSetting()
+        {
+            FDebug.Assert(defenseStatData == null || damageReductionStatData == null,$"[NewHealthModule : {gameObject.name}] StatDAta Setting Error");
+            
+            _defenseStat = _statModule.GetStat(defenseStatData);
+            _damageReductionStat = _statModule.GetStat(damageReductionStatData);
+        }
+
+        private void HealthSetting()
         {
             _baseHealth = coreHealth.CreateHealth(_owner);
             _healthDict.Add(coreHealth, _baseHealth);
@@ -71,6 +96,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             _healths.Sort(Compere);
         }
 
+        #endregion
+
         private void Start()
         {
             InitViewModel();
@@ -81,17 +108,15 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             if(healthViewModel != null)
                 healthViewModel.Bind(new HealthData(_healths.Count));
         }
-
-        private static int Compere(IHealth a, IHealth b)
-            => a.Priority.CompareTo(b.Priority);
-        
         
         private void Update()
         {
             UpdateHealths();
             UpdateViewModule();
         }
-        
+
+        #region Update
+
         private void UpdateHealths()
         {
             foreach (var valuePair in _healths)
@@ -125,12 +150,18 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
                 ));
             }
         }
-        
+
+        #endregion
+
+        #region HealthChange
+
+        #region Damage
+
         public void ApplyDamage(float damage, HealthType targets = HealthType.All)
         {
             if(IsDead) return;
             float prevHealth = CurrentHealth;
-            float currentDamage = damage;
+            float currentDamage = Mathf.Max(0f, GetApplyDamageValue(damage, _defenseStat.Value, _damageReductionStat.Value));
             for (int i = _healths.Count - 1; i >= 0; i--)
             {
                 HealthType type = _healths[i].GetHealthType();
@@ -140,7 +171,14 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
             HealthDeltaEvent(CurrentHealth - prevHealth);
         }
-        
+
+        private static float GetApplyDamageValue(float damage, float defense, float damageReduction)
+            => damage * (100f / (100f +  defense)) * (1f - damageReduction);
+
+        #endregion
+
+        #region Heal
+
         public void ApplyHeal(float heal, HealthType targets = HealthType.Core)
         {
             if(IsDead) return;
@@ -155,6 +193,8 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
             HealthDeltaEvent(CurrentHealth - prevHealth);
         }
 
+        #endregion
+        
         private void HealthDeltaEvent(float delta)
         {
             float newCurrentHp = CurrentHealth;
@@ -169,6 +209,14 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         
         private static bool IsTargetHealth(HealthType type, HealthType targets)
             => (type & targets) != HealthType.None;
-        
+
+        #endregion
+
+        #region Healper
+
+        private static int Compere(IHealth a, IHealth b)
+            => a.Priority.CompareTo(b.Priority);
+
+        #endregion
     }
 }

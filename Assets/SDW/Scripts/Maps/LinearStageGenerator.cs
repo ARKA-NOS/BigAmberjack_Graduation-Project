@@ -7,6 +7,7 @@ using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script.Agent.Players.CharacterSystem;
 using Lrw.Script.Agent.Players.PlayerPackSystem;
 using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using SDW.Scripts.RunEnd;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -34,7 +35,7 @@ namespace SDW.Scripts.Maps
         private readonly List<RoomController> _rooms = new();
 
         private PlayerController _player;
-        private IHealthModule _playerHealth;
+        private INewHealthModule _playerHealth;
         private RoomController _lastRoom;
 
         public IReadOnlyList<RoomController> Rooms => _rooms;

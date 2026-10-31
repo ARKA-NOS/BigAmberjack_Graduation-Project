@@ -1,5 +1,6 @@
 using DevLib.ModuleSystem;
 using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 
 namespace SDW.Scripts.Interact.Costs
@@ -13,17 +14,17 @@ namespace SDW.Scripts.Interact.Costs
 
         public override bool CanPay(ModuleOwner owner)
         {
-            return owner.TryGetModule(out IHealthModule health)
+            return owner.TryGetModule(out INewHealthModule health)
                    && !health.IsDead
                    && health.CurrentHealth > amount;
         }
 
         public override void Pay(ModuleOwner owner)
         {
-            if (!owner.TryGetModule(out IHealthModule health))
+            if (!owner.TryGetModule(out INewHealthModule health))
                 return;
 
-            health.CurrentHealth -= amount;
+            health.ApplyDamage(amount);
             Debug.Log($"[Cost] HP 소모: -{amount}");
         }
     }

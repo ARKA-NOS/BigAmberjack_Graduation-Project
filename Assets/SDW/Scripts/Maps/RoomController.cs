@@ -66,6 +66,8 @@ namespace SDW.Scripts.Maps
                 return;
             }
 
+            MapEvents.RaiseMapEntered(Data);
+
             SpawnInteractables();
             Data.OnFirstEnter(this);
 

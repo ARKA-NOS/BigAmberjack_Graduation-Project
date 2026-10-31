@@ -95,10 +95,21 @@ namespace CTJ.UI
 
         private void SetWorldRect(Vector3 center, Vector2 size, Quaternion rotation)
         {
-            _rect.SetPositionAndRotation(center, rotation);
-            // 적 프리팹의 1배/2배 스케일이 월드 크기에 다시 곱해지지 않도록 보정합니다.
-            Vector3 parentScale = transform.parent != null ? transform.parent.lossyScale : Vector3.one;
-            _rect.localScale = new Vector3(InverseScale(parentScale.x), InverseScale(parentScale.y), InverseScale(parentScale.z));
+            _rect.position = center;
+            Transform parent = _rect.parent;
+            // 반전 부모 아래에서는 world rotation만 지정하면 실제 UI 축은 반대로 기울어집니다.
+            // 원하는 월드 축을 부모 공간으로 옮겨 회전과 부호 있는 크기를 함께 구합니다.
+            Vector3 right = rotation * Vector3.right;
+            Vector3 up = rotation * Vector3.up;
+            if (parent != null)
+            {
+                right = parent.InverseTransformVector(right);
+                up = parent.InverseTransformVector(up);
+            }
+            _rect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg);
+            float heightScale = Vector3.Dot(Vector3.Cross(Vector3.forward, right.normalized), up);
+            _rect.localScale = new Vector3(right.magnitude, heightScale,
+                parent != null ? InverseScale(parent.lossyScale.z) : 1f);
             _rect.sizeDelta = size;
         }
 

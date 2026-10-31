@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09d1dbe5648ecb34389598922337e57f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyOutlineModule
   sprites:
   - {fileID: 5716664539610796768}
@@ -95,6 +95,7 @@ MonoBehaviour:
   normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
   hitColor: {r: 1, g: 1, b: 1, a: 1}
   width: 2
+  outerSilhouetteOnly: 0
   hitDuration: 0.25
 --- !u!1 &1020580208599900031
 GameObject:
@@ -315,6 +316,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyCurrencyRewardModule
   rewardCurrency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
   rewardAmountStat: {fileID: 11400000, guid: 829d06c7a4914e7c96e6d3b72587ca04, type: 2}
+  coinPrefab: {fileID: 6214127798328876647, guid: f8e15232d401a7744a35e8b47236c7c3, type: 3}
+  currencyPerCoin: 3
+  maxCoinCount: 12
+  spawnOffset: {x: 0, y: 0.35}
 --- !u!1 &3444938938399714924
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,7 +415,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3616340252118527375}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a5f0f6fd1655fa4796e7a03a7d52bfc, type: 3}
   m_Name: 
@@ -448,7 +453,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8011885005329948684}
@@ -589,8 +594,8 @@ Transform:
   m_GameObject: {fileID: 4283845816227369014}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.28, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8011885005329948684}
@@ -644,7 +649,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -221706171, guid: 80bd1f89e2f656a448642cd34989d0d9, type: 3}
+  m_Sprite: {fileID: 6019453725058403666, guid: 9e4bd9d5e05c8584ca214435b9c8d76f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -664,7 +669,7 @@ Animator:
   m_GameObject: {fileID: 4283845816227369014}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 79a1519907de60b4188579ce70ec974c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 730d802245826834493687f7fec3d97c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -935,7 +940,7 @@ MonoBehaviour:
   blinkBeforeAttack: 0
   telegraphOpacity: 1
   telegraphPrefab: {fileID: 0}
-  preparationWarning: {fileID: 8856628680045813467}
+  preparationWarning: {fileID: 0}
   attackAnimator: {fileID: 8477672427082918608}
   preparationStateName: Base Layer.AttackPreparation
   attackStateName: Base Layer.Attack

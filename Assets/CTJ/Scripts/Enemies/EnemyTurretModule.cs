@@ -11,16 +11,16 @@ namespace CTJ.Enemies
         [SerializeField] private Transform launcherPivot;
         [SerializeField] private GameObject launcherVisual;
         [SerializeField] private BoxCollider2D hurtbox;
-        [Tooltip("완전히 올라온 상태의 RiseRoot 로컬 위치.")]
+        [Tooltip("완전히 전개된 상태의 RiseRoot 로컬 위치.")]
         [SerializeField] private Vector3 deployedLocalPosition;
-        [Tooltip("대기할 때 내려가는 로컬 거리. 기본 몸통 높이 1.2의 절반은 0.6입니다.")]
+        [Tooltip("대기할 때 표면 안으로 수납하는 로컬 거리. 기본 몸통 높이 1.2의 절반은 0.6입니다.")]
         [SerializeField, Min(0f)] private float buriedDepth = 0.6f;
         [Tooltip("대기 자세에서 전개 완료까지의 시간(초). 클수록 천천히 나옵니다.")]
         [SerializeField, Min(0f)] private float emergeDuration = 0.5f;
         [Tooltip("완전히 전개된 자세에서 대기 자세로 복귀하는 시간(초). 클수록 천천히 들어갑니다.")]
         [SerializeField, Min(0f)] private float retractDuration = 0.6f;
         [Header("Launcher Rotation")]
-        [Tooltip("런처의 최대 회전 속도(도/초). 조준과 아래로 접는 동작에 모두 적용합니다.")]
+        [Tooltip("런처의 최대 회전 속도(도/초). 조준과 표면 안으로 접는 동작에 모두 적용합니다.")]
         [SerializeField, Min(1f)] private float maxRotationSpeed = 180f;
         [Tooltip("회전이 목표 방향에 부드럽게 수렴하는 시간. 클수록 반응이 완만합니다.")]
         [SerializeField, Min(0.01f)] private float rotationSmoothTime = 0.15f;
@@ -36,8 +36,9 @@ namespace CTJ.Enemies
             !_enemy.IsDead && riseRoot != null && launcherPivot != null && _deployment >= 1f;
         public float Deployment => _deployment;
         public Vector2 AimOrigin => launcherPivot != null ? (Vector2)launcherPivot.position : (Vector2)transform.position;
-        public Vector2 AimDirection => launcherPivot != null ? (Vector2)launcherPivot.right : Vector2.down;
-        private bool IsStowed => launcherPivot == null || Mathf.Abs(Mathf.DeltaAngle(launcherPivot.eulerAngles.z, StowedAngle)) <= 0.1f;
+        public Vector2 AimDirection => launcherPivot != null
+            ? ((Vector2)launcherPivot.TransformVector(Vector3.right)).normalized : Vector2.down;
+        private bool IsStowed => launcherPivot == null || Mathf.Abs(Mathf.DeltaAngle(launcherPivot.localEulerAngles.z, StowedAngle)) <= 0.1f;
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -73,7 +74,7 @@ namespace CTJ.Enemies
             }
             else
             {
-                // 포신이 아래로 접힐 때까지 몸통 높이를 유지한 다음 함께 내려갑니다.
+                // 포신이 표면 안쪽으로 접힐 때까지 전개 상태를 유지한 다음 함께 수납합니다.
                 RotateTowards(StowedAngle);
                 if (IsStowed) MoveDeployment(0f, retractDuration);
             }
@@ -89,7 +90,12 @@ namespace CTJ.Enemies
         public void SetAimDirection(Vector2 direction)
         {
             if (IsDeployed && !_enemy.IsHitReacting && direction.sqrMagnitude > 0.0001f)
-                RotateTowards(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+            {
+                // 월드 목표 방향을 부모 공간으로 옮겨 상하 반전된 포신도 실제 목표를 향하게 합니다.
+                Vector2 localDirection = launcherPivot.parent != null
+                    ? (Vector2)launcherPivot.parent.InverseTransformVector(direction) : direction;
+                RotateTowards(Mathf.Atan2(localDirection.y, localDirection.x) * Mathf.Rad2Deg);
+            }
         }
 
         public void HoldAim() => _angularVelocity = 0f;
@@ -99,7 +105,7 @@ namespace CTJ.Enemies
             // 대기 Update와 스킬 시작이 같은 프레임에 겹쳐도 최대 속도가 두 번 적용되지 않게 합니다.
             if (launcherPivot == null || Time.deltaTime <= 0f || _lastRotationFrame == Time.frameCount) return;
             _lastRotationFrame = Time.frameCount;
-            float current = launcherPivot.eulerAngles.z;
+            float current = launcherPivot.localEulerAngles.z;
             float speed = Mathf.Max(1f, maxRotationSpeed);
             float next = Mathf.SmoothDampAngle(current, targetAngle, ref _angularVelocity,
                 Mathf.Max(0.01f, rotationSmoothTime), speed, Time.deltaTime);
@@ -112,14 +118,14 @@ namespace CTJ.Enemies
                 step = remaining;
                 HoldAim();
             }
-            launcherPivot.rotation = Quaternion.Euler(0f, 0f, current + step);
+            launcherPivot.localRotation = Quaternion.Euler(0f, 0f, current + step);
         }
 
         private void ResetLauncher()
         {
             HoldAim();
             _lastRotationFrame = -1;
-            if (launcherPivot != null) launcherPivot.rotation = Quaternion.Euler(0f, 0f, StowedAngle);
+            if (launcherPivot != null) launcherPivot.localRotation = Quaternion.Euler(0f, 0f, StowedAngle);
         }
 
         private void ApplyPose()

@@ -48,6 +48,7 @@ namespace CTJ.Enemies
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
+        internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
         protected virtual bool UsesGroundMovement => true;
 
         protected override void Awake()
@@ -155,13 +156,9 @@ namespace CTJ.Enemies
                 return;
             }
 
-            if (_keepDistance != null && _keepDistance.isActiveAndEnabled)
-            {
-                _keepDistance.MoveTowardsTarget(target, moveSpeed);
-                return;
-            }
-
-            float direction = _movement.MoveTowards(target, moveSpeed);
+            float direction = _keepDistance != null && _keepDistance.isActiveAndEnabled
+                ? _keepDistance.MoveTowardsTarget(target, moveSpeed)
+                : _movement.MoveTowards(target, moveSpeed);
             OnMoveDirectionChanged(direction);
         }
 

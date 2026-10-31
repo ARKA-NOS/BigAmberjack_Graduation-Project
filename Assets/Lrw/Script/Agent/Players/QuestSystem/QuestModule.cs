@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DevLib.ModuleSystem;
+using Lrw.Script._Core._EventSystem;
 using Lrw.Script.Agent.Players.QuestSystem.QuestBinder;
 
 namespace Lrw.Script.Agent.Players.QuestSystem
@@ -12,6 +13,7 @@ namespace Lrw.Script.Agent.Players.QuestSystem
         {
             base.Initialize(owner);
             _questDict = new();
+            
         }
         
         public void AfterInit()

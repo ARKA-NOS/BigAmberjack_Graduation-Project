@@ -69,7 +69,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 
         private void StatSetting()
         {
-            FDebug.Assert(defenseStatData == null || damageReductionStatData == null,$"[NewHealthModule : {gameObject.name}] StatDAta Setting Error");
+            FDebug.Assert(defenseStatData != null && damageReductionStatData != null,$"[NewHealthModule : {gameObject.name}] StatDAta Setting Error");
             
             _defenseStat = _statModule.GetStat(defenseStatData);
             _damageReductionStat = _statModule.GetStat(damageReductionStatData);

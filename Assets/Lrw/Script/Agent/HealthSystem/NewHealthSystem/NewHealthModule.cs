@@ -29,7 +29,7 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         private Dictionary<AbstractHealthSo, IHealth> _healthDict;
         private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
         private List<IHealth> _healths;
-
+        
         public float CurrentHealth => _healths.Sum(x => x.HP);
         public float MaxHealth =>
             _baseHealth is IRangeHealth rangeHealth 
@@ -209,14 +209,14 @@ namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
         
         private static bool IsTargetHealth(HealthType type, HealthType targets)
             => (type & targets) != HealthType.None;
-
+        
         #endregion
-
+        
         #region Healper
-
+        
         private static int Compere(IHealth a, IHealth b)
             => a.Priority.CompareTo(b.Priority);
-
+        
         #endregion
     }
 }

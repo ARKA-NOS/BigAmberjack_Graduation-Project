@@ -18,6 +18,11 @@ namespace Lrw.Script.UI.PlayerUI.Title_UI
             Close();
         }
 
+        private void OnDestroy()
+        {
+            inputSo.OnTitleKeyPressed -= TitleOpenClose;
+        }
+
         public void TitleOpenClose()
         {
             UIManagerEvents.OpenCloseWindow(this);
@@ -27,14 +32,12 @@ namespace Lrw.Script.UI.PlayerUI.Title_UI
         {
             _canvasGroup.alpha = 1;
             _canvasGroup.interactable = true;
-            inputSo.SetPlayerInputActive(false);
         }
 
         public override void Close()
         {
            _canvasGroup.alpha = 0;
            _canvasGroup.interactable = false;
-           inputSo.SetPlayerInputActive(true);
         }
         
     }

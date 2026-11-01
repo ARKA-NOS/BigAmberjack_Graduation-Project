@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Lrw.Script.Agent.Players
 {
     [CreateAssetMenu(fileName = "PlayerInput", menuName = "SO/Player input", order = 0)]
-    public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions
+    public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions, Controls.IPlayerUIActions
     {
         public event Action OnDashKeyPressed;
 
@@ -35,14 +35,30 @@ namespace Lrw.Script.Agent.Players
             {
                 _controls = new Controls();
                 _controls.Player.SetCallbacks(this);
+                _controls.PlayerUI.SetCallbacks(this);
             }
-            _controls.Player.Enable();
+            _controls.PlayerUI.Enable();
+            SetPlayerInputActive(true);
         }
 
         private void OnDisable()
         {
-            if(_controls != null)
+            _controls.PlayerUI.Disable();
+            SetPlayerInputActive(false);
+        }
+
+        public void SetPlayerInputActive(bool active)
+        {
+            if(_controls == null) return;
+            
+            if (active)
+            {
+                _controls.Player.Enable();
+            }
+            else
+            {
                 _controls.Player.Disable();
+            }
         }
         
         

@@ -5,7 +5,6 @@ using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
 using Lrw.Script.Agent.Players.Enum;
 using Lrw.Script.Agent.Players.Modules;
-using Lrw.Script.Agent.Players.QuestSystem;
 using Lrw.Script.Agent.SkillSystem.NormalSkill;
 using Lrw.Script.Agent.StatSystem;
 using UnityEngine;
@@ -28,9 +27,6 @@ namespace Lrw.Script.Agent.Players.Skills
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
 
-        [Header("Quest Setting")] 
-        [SerializeField] private QuestKey meleeAttackKey;
-        
         private IRenderer _renderer;
         private IAnimationTrigger _trigger;
         private Animator _animator;
@@ -98,12 +94,13 @@ namespace Lrw.Script.Agent.Players.Skills
             _movement.MoveLock(true);
             _prevSpeed = _animator.speed;
             SetAnimationSpeed();
-            QuestManager.AddAmount(Owner, meleeAttackKey, 1f);
+            PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
         }
 
         private void OnTrigger()
         {
-            damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce);
+            if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
+                PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
         }
 
         private Vector2 GetMouseDirection()

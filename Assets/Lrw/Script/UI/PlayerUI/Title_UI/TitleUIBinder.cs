@@ -76,7 +76,7 @@ namespace Lrw.Script.UI.PlayerUI.Title_UI
         #region Helper
 
         private static int CompareViewData(TitleViewData x, TitleViewData y)
-            => x.Progress.CompareTo(y.Progress);
+            => y.Progress.CompareTo(x.Progress);
 
         #endregion
         

@@ -38,7 +38,7 @@ namespace Lrw.Script.UI.UpgradeUI
             ServiceLocator.Get<IPlayerController>().SetInputActive(false);
             
             tree = ServiceLocator.Get<IUpgradeManager>().GetUpgradeTree(treeSo.TreeName);
-
+            
             foreach (TestUpgradeNodeButton button in buttons)
             {
                 button.SetTree(tree);

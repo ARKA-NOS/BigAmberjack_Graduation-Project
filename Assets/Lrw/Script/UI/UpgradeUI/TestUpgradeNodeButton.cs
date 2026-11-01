@@ -25,7 +25,7 @@ namespace Lrw.Script.UI.UpgradeUI
             
             _button.onClick.AddListener(ButtonClick);
         }
-
+        
         private void OnDestroy()
         {
             _button.onClick.RemoveListener(ButtonClick);
@@ -35,8 +35,7 @@ namespace Lrw.Script.UI.UpgradeUI
         {
             treeData = tree;
         }
-
-
+        
         private void ButtonClick()
         {
             if (upgradeNode == null) return;

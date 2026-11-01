@@ -44,7 +44,7 @@ namespace Lrw.Script.UI.UpgradeUI
                 button.SetTree(tree);
             }
         }
-
+        
         public override void Close()
         {
             base.Close();

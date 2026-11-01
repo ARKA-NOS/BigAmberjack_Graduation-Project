@@ -41,9 +41,11 @@ namespace Lrw.Script.Agent
             FixedIsGround = IsGroundChecking();
         }
 
+        private const float FallSpeed = 0.1f;
+
         public bool IsGroundChecking()
         {
-            if (!Mathf.Approximately(_rigid.linearVelocityY, 0f)) return false;
+            if (Mathf.Abs(_rigid.linearVelocityY) >= FallSpeed) return false;
             Vector2 checkPosition = (Vector2)transform.position + chackOffset;
             
             return checkerShape switch

@@ -5,6 +5,7 @@ using DevLib.ModuleSystem;
 using Lrw.Script._Core.SceneSystem;
 using Lrw.Script.Agent.Players.QuestSystem;
 using Lrw.Script.DataStructure;
+using Lrw.Script.UI.AlarmUI;
 using Lrw.Script.UI.PlayerUI.Title_UI;
 using UnityEngine;
 
@@ -157,7 +158,16 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             Upgrade(title);
             _completedTitles.Add(title.TitleSo);
             UnlockWaitingTitles(title.TitleSo);
+
+            SendAlarm(title);
         }
+        
+        private void SendAlarm(Title title)
+            => AlarmEvents.SendAlarm(
+                $"퀘스트 완료! : {title.TitleSo.TitleName}",
+                title.TitleSo.TitleDescription,
+                title.TitleSo.TitleIcon
+            );
 
         private void Upgrade(Title title)
         {

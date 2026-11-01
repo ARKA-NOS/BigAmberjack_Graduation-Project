@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DevLib.BattleSystem;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
-using Lrw.Script.Agent.HealthSystem;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Lumin;
 
 namespace Lrw.Script.Agent
 {
@@ -39,6 +36,7 @@ namespace Lrw.Script.Agent
             if(IsInvincibility) return;
             NewHealthModule.ApplyDamage(damageData.DamageAmount);
             OnHit?.Invoke();
+            AgentEvents.RaiseDamaged(this, damageData);
         }
         
         public virtual void ApplyHeal(HealData healData)

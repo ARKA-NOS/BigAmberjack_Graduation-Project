@@ -109,6 +109,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4645478419772412309}
   - component: {fileID: 2924310488116517572}
+  - component: {fileID: 4826809841457725246}
   m_Layer: 0
   m_Name: PlayerMovement
   m_TagString: Untagged
@@ -144,6 +145,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agents.Players.PlayerMovement
   moveSpeed: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
+--- !u!114 &4826809841457725246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069202202630892910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5589b2f7ba9749558117582d7c325a37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.Modules.PlayerFallModule
+  fallSpeed: {fileID: 11400000, guid: 8fdf2ec9b3314feaa04c953f68c1c5db, type: 2}
 --- !u!1 &2684286984275401868
 GameObject:
   m_ObjectHideFlags: 0

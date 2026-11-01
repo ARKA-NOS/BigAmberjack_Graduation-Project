@@ -42,7 +42,7 @@ namespace Lrw.Script.Agent.Players.FSM
 
         private void HandleIdleStateChange()
         {
-            if (!_groundChecker.IsGroundChecking()) return;
+            if (!_groundChecker.FixedIsGround) return;
             Player.ChangeState(PlayerStateEnum.IDLE);
             _controlMultiJumper.ResetMultiJumpCount();
         }

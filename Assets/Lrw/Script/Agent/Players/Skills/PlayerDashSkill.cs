@@ -77,7 +77,7 @@ namespace Lrw.Script.Agent.Players.Skills
 
         private void FixedUpdate()
         {
-            _isGround = _groundChecker.IsGroundChecking();
+            _isGround = _groundChecker.FixedIsGround;
 
             if (_isGround)
             {
@@ -133,7 +133,7 @@ namespace Lrw.Script.Agent.Players.Skills
                 .SetUpdate(UpdateType.Fixed)
                 .OnComplete(EndSkill);
             
-            if (!_groundChecker.IsGroundChecking()) _currentAirDashCount++;
+            if (!_groundChecker.FixedIsGround) _currentAirDashCount++;
         }
 
         protected override void OnEndSkill()

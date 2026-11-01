@@ -10,11 +10,15 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         public readonly AbstractTitleSo TitleSo;
         private readonly List<Quest> quests;
         public event Action<Title> OnComplete;
-        
+
+        public bool IsComplete { get; private set; }
+        public bool IsActive { get; private set; } = true;
+
         public Title(AbstractTitleSo titleSo, IQuestModule questModule)
         {
             TitleSo = titleSo;
             quests = new();
+            IsComplete = false;
             
             foreach (QuestSo questSo in titleSo.Quests)
             {
@@ -25,6 +29,15 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             }
         }
         
+        public void SetActive(bool value)
+        {
+            IsActive = value;
+            foreach (Quest quest in quests)
+            {
+                quest.SetActive(value);
+            }
+        }
+
         private void QuestValueChanged()
         {
             
@@ -40,6 +53,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
 
         private void TitleComplete()
         {
+            IsComplete = true;
             OnComplete?.Invoke(this);
             Clear();
         }

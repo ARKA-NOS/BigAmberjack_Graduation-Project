@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98aa2f212a410e6458dd79a41461b16a, type: 3}
   m_Name: Stage_01
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Data.StageSO
-  rooms:
-  - {fileID: 11400000, guid: 8f853e38cde97ac43a1604959db34482, type: 2}
-  - {fileID: 11400000, guid: 49982db6d156bbb4e8d8401961a7eba5, type: 2}
-  - {fileID: 11400000, guid: 7a6c2a6da4920604d9f7acc5fb1af58b, type: 2}
-  - {fileID: 11400000, guid: a0b59a7b6b208984fafde5eca180c896, type: 2}
-  - {fileID: 11400000, guid: 16baa05eb4beb8246ad567216ed030e4, type: 2}
-  - {fileID: 11400000, guid: 171bc2de424c7c24e954d873dc63c195, type: 2}
+  segments:
+  - roomPool:
+    - {fileID: 11400000, guid: 7a6c2a6da4920604d9f7acc5fb1af58b, type: 2}
+    - {fileID: 11400000, guid: a0b59a7b6b208984fafde5eca180c896, type: 2}
+    - {fileID: 11400000, guid: 16baa05eb4beb8246ad567216ed030e4, type: 2}
+    - {fileID: 11400000, guid: 49982db6d156bbb4e8d8401961a7eba5, type: 2}
+    - {fileID: 11400000, guid: 8f853e38cde97ac43a1604959db34482, type: 2}
+    minCount: 5
+    maxCount: 5
+  - roomPool:
+    - {fileID: 11400000, guid: 171bc2de424c7c24e954d873dc63c195, type: 2}
+    minCount: 1
+    maxCount: 1
   enemySpawnPortal: {fileID: 3972586683747541071, guid: fcb65c6f1007549469418c546f9d2ec1, type: 3}

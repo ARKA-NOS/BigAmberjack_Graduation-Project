@@ -49,8 +49,6 @@ namespace Lrw.Script.Agent.HealthSystem
             
             _maxHpStat = _statModule.GetStat(maxHpStatData);
             
-            FDebug.Assert(_maxHpStat != null,"MaxHpStat is null");
-
             _maxHpStat.OnValueChanged += MaxHpChanged;
             
             CurrentHealth = MaxHealth;

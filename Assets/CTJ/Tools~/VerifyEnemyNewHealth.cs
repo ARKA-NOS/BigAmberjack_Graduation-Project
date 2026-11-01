@@ -82,14 +82,18 @@ namespace CTJ.Tools
                     if (i % 2 == 0) Hit(enemy, health.CurrentHealth + 1f);
                     else health.ApplyDamage(health.CurrentHealth + 1f);
                     Check(enemy.IsDead && health.IsDead && health.CurrentHealth == 0f && deadEvents == 1, "Death event / state");
-                    Check(gold.Count == beforeGold + reward && counter.GetKillCount() == beforeKills + 1, "One reward / kill");
+                    Check(gold.Count == beforeGold && counter.GetKillCount() == beforeKills + 1, "Kill now, coin reward later");
                     Hit(enemy, 99f); health.ApplyDamage(99f); health.ApplyHeal(99f);
-                    Check(health.CurrentHealth == 0f && deadEvents == 1 && gold.Count == beforeGold + reward &&
+                    Check(health.CurrentHealth == 0f && deadEvents == 1 && gold.Count == beforeGold &&
                         counter.GetKillCount() == beforeKills + 1, "No revival / duplicate reward");
                     Check(!enemy.GetComponent<Rigidbody2D>().simulated && !enemy.IsAttackInProgress &&
                         enemy.GetComponentsInChildren<Collider2D>(true).All(c => !c.enabled), "Death cleanup");
                     await Frames(2);
                     Check(!ui.GetComponent<Canvas>().enabled, "Dead health bar hidden");
+                    float rewardDeadline = Time.time + 4.5f;
+                    while (Object.FindObjectsByType<EnemyRewardCoin>(FindObjectsSortMode.None).Length > 0 && Time.time < rewardDeadline)
+                        await Task.Yield();
+                    Check(gold.Count == beforeGold + reward, "Exactly one reward after coins vanish (no-floor fallback)");
                     result.Add(new { enemy = Paths[i], maxHp = MaxHp[i], reward, passed = true });
                 }
 

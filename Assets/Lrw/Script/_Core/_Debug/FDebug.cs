@@ -25,7 +25,7 @@ namespace Lrw.Script._Core._Debug
         public static void LogError(object text, Object obj = null)
             => FLog(text, obj, LogType.Error);
     
-        public static void Assert([DoesNotReturnIf(false)] bool value,object text)
+        public static void Assert([DoesNotReturnIf(false)] bool value, object text)
         {
             if(value) return;
             if(text == null) throw new Exception("test is null");

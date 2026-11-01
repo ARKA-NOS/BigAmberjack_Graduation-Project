@@ -1,4 +1,6 @@
-﻿using DevLib.ModuleSystem;
+﻿using System;
+using DevLib.ModuleSystem;
+using Lrw.Script._Core._Debug;
 using UnityEngine;
 
 namespace Lrw.Script.Agent
@@ -23,10 +25,27 @@ namespace Lrw.Script.Agent
         [Header("Circle")]
         [SerializeField] private float circleRadius = 1f;
 
+        private Rigidbody2D _rigid;
+        
+        public override void Initialize(ModuleOwner owner)
+        {
+            base.Initialize(owner);
+            _rigid = _owner.GetComponent<Rigidbody2D>();
+            FDebug.Assert(_rigid != null,"[GroundChecker] Rigidbody2D is not found");
+        }
+
+        public bool FixedIsGround { get; private set; }
+
+        private void FixedUpdate()
+        {
+            FixedIsGround = IsGroundChecking();
+        }
+
         public bool IsGroundChecking()
         {
+            if (!Mathf.Approximately(_rigid.linearVelocityY, 0f)) return false;
             Vector2 checkPosition = (Vector2)transform.position + chackOffset;
-
+            
             return checkerShape switch
             {
                 CheckerShape.Square =>

@@ -1,41 +1,76 @@
+using System.Collections;
 using System.Collections.Generic;
 using KHO.Scripts.ItemSystem;
 
 namespace KHO.Scripts.InventorySystem
 {
+    // 장착 칸(효과 적용, 최대 9칸까지 늘어남)과 보관 칸(효과 없음, 20칸)을 가진다.
     public class Inventory
     {
-        public const int SlotCount = 9;
+        public const int EquipmentMaxCapacity = 9;
+        public const int StorageCapacity = 20;
 
-        private readonly ItemInstance[] _slots = new ItemInstance[SlotCount];
+        // 통합 칸 번호 기준의 최대 칸 수(장착 최대 + 보관).
+        public const int SlotCount = EquipmentMaxCapacity + StorageCapacity;
 
-        public IReadOnlyList<ItemInstance> Slots => _slots;
-        public bool IsFull => FindEmptySlot() < 0;
+        public ItemContainer Equipment { get; }
+        public ItemContainer Storage { get; }
 
-        public int FindEmptySlot()
+        // 장착 칸(현재 Capacity만큼) 뒤에 보관 칸이 이어지는 통합 목록. 통합 칸 번호는 이 목록의 인덱스다.
+        public IReadOnlyList<ItemInstance> Slots { get; }
+
+        public bool IsFull => Equipment.IsFull && Storage.IsFull;
+
+        public Inventory(int equipmentCapacity)
         {
-            for (int i = 0; i < SlotCount; i++)
+            Equipment = new ItemContainer(equipmentCapacity, EquipmentMaxCapacity);
+            Storage = new ItemContainer(StorageCapacity, StorageCapacity);
+            Slots = new CombinedSlots(this);
+        }
+
+        public ItemContainer Get(InventorySlotType type)
+            => type == InventorySlotType.Equipment ? Equipment : Storage;
+
+        // 통합 칸 번호를 (장착/보관, 칸 번호)로 바꾼다.
+        public bool TryResolve(int index, out InventorySlotType type, out int slot)
+        {
+            if (index >= 0 && index < Equipment.Capacity)
             {
-                if (_slots[i] == null) return i;
+                type = InventorySlotType.Equipment;
+                slot = index;
+                return true;
             }
 
-            return -1;
+            type = InventorySlotType.Storage;
+            slot = index - Equipment.Capacity;
+            return Storage.IsValidSlot(slot);
         }
 
-        public bool TryAdd(ItemInstance item, out int slot)
+        private class CombinedSlots : IReadOnlyList<ItemInstance>
         {
-            slot = FindEmptySlot();
-            if (slot < 0) return false;
+            private readonly Inventory _inventory;
 
-            _slots[slot] = item;
-            return true;
-        }
+            public CombinedSlots(Inventory inventory) => _inventory = inventory;
 
-        public ItemInstance Set(int slot, ItemInstance item)
-        {
-            ItemInstance prev = _slots[slot];
-            _slots[slot] = item;
-            return prev;
+            public int Count => _inventory.Equipment.Capacity + _inventory.Storage.Capacity;
+
+            public ItemInstance this[int index]
+            {
+                get
+                {
+                    if (!_inventory.TryResolve(index, out InventorySlotType type, out int slot))
+                        throw new System.ArgumentOutOfRangeException(nameof(index));
+                    return _inventory.Get(type)[slot];
+                }
+            }
+
+            public IEnumerator<ItemInstance> GetEnumerator()
+            {
+                for (int i = 0; i < Count; i++)
+                    yield return this[i];
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
 }

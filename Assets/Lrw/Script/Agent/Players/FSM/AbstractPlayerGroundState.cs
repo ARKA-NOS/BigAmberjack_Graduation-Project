@@ -1,4 +1,5 @@
-﻿using Lrw.Script.Agent.Players.Enum;
+﻿using Lrw.Script._Core._Debug;
+using Lrw.Script.Agent.Players.Enum;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.FSM
@@ -15,9 +16,9 @@ namespace Lrw.Script.Agent.Players.FSM
         
         protected bool TryChangeToFall()
         {
-            if (_groundChecker.IsGroundChecking())
+            if (_groundChecker.FixedIsGround)
                 return false;
-
+            
             Player.ChangeState(PlayerStateEnum.FALL);
             return true;
         }

@@ -20,6 +20,8 @@
 | VerifyEnemy01.cs | 독립 검증 씬 시작/종료/원래 씬 복구와 01 확인 |
 | VerifyEnemy02.cs | 터렛 전개·수납·조준·발사 검증 |
 | VerifyEnemyVerticalFlip.cs | 선택적 상하 반전·천장 터렛 전개/조준/UI/보상 검증 |
+| VerifyRobotEyeVisual.cs | 보스 눈 스프라이트·시선 여백·레이저 시선 고정·복귀 중 알파 전환 검증 |
+| VerifyRobotEyeAttack.cs | 탄환별 막대 경고·화염 비행/폭발 프레임·충돌 및 중복 피해 방지 검증 |
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
@@ -46,3 +48,7 @@
 2026-10-29 코인 수정의 현재 설정·테스트·문법 설명은 EnemyCoinBounceNotes.md에 있습니다. EnemyCoinRewardNotes.md는 최초 페이드 방식의 기록입니다.
 
 2026-10-29 천장 터렛의 설정·코드 사용법·테스트·문법 설명은 EnemyVerticalFlipNotes.md에 있습니다.
+
+2026-11-01 눈깔 보스 외형·시선 추적 설정과 문법 설명은 RobotEyeVisualNotes.md에 있습니다.
+
+같은 날 추가한 레이저 시선 고정·붉은 눈 전환·일반 공격 막대 경고·화염 탄환 피드백은 RobotEyeAttackFeedbackNotes.md에 있습니다.

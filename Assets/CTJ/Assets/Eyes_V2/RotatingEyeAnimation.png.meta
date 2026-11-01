@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: a889389ad5c8b614c897eb6d4e5d79ed
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1360497699415463571
+    second: RotatingEyeAnimation_0
+  - first:
+      213: -8530551501084080017
+    second: RotatingEyeAnimation_1
+  - first:
+      213: -6528693871276186402
+    second: RotatingEyeAnimation_2
+  - first:
+      213: 611967208303637545
+    second: RotatingEyeAnimation_3
+  - first:
+      213: 3593304037128669474
+    second: RotatingEyeAnimation_4
+  - first:
+      213: 6570481625700709790
+    second: RotatingEyeAnimation_5
+  - first:
+      213: 7039492891397570926
+    second: RotatingEyeAnimation_6
+  - first:
+      213: 5241159512323654758
+    second: RotatingEyeAnimation_7
+  - first:
+      213: 2933049910872603942
+    second: RotatingEyeAnimation_8
+  - first:
+      213: 3573915812767181243
+    second: RotatingEyeAnimation_9
+  - first:
+      213: 8277740907232211643
+    second: RotatingEyeAnimation_10
+  - first:
+      213: -4021106529712997159
+    second: RotatingEyeAnimation_11
+  - first:
+      213: 7004510586858362274
+    second: RotatingEyeAnimation_12
+  - first:
+      213: -5760508648782076566
+    second: RotatingEyeAnimation_13
+  - first:
+      213: 5209475649549142677
+    second: RotatingEyeAnimation_14
+  - first:
+      213: 6485149337262215473
+    second: RotatingEyeAnimation_15
+  - first:
+      213: 449216589857233988
+    second: RotatingEyeAnimation_16
+  - first:
+      213: 7438826420008210492
+    second: RotatingEyeAnimation_17
+  - first:
+      213: -1758499617517400599
+    second: RotatingEyeAnimation_18
+  - first:
+      213: -759652113433864497
+    second: RotatingEyeAnimation_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_0
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 396156b037571e210800000000000000
+      internalID: 1360497699415463571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_1
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6845b74b946d9980800000000000000
+      internalID: -8530551501084080017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_2
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed4205bb38b6565a0800000000000000
+      internalID: -6528693871276186402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_3
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92430210fe42e7800800000000000000
+      internalID: 611967208303637545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_4
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 229080fcbfafdd130800000000000000
+      internalID: 3593304037128669474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_5
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e953f170a3a0f2b50800000000000000
+      internalID: 6570481625700709790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_6
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61c3a6ec7d41b160800000000000000
+      internalID: 7039492891397570926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_7
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 664063fbec65cb840800000000000000
+      internalID: 5241159512323654758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_8
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62d7d0e9a5944b820800000000000000
+      internalID: 2933049910872603942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_9
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb9a32d0f79199130800000000000000
+      internalID: 3573915812767181243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_10
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb2bb4e6f7170e270800000000000000
+      internalID: 8277740907232211643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_11
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dcf37c7ae82238c0800000000000000
+      internalID: -4021106529712997159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_12
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a5d72b6445053160800000000000000
+      internalID: 7004510586858362274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_13
+      rect:
+        serializedVersion: 2
+        x: 841
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6567c787ef8e00b0800000000000000
+      internalID: -5760508648782076566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_14
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59a8c659086cb4840800000000000000
+      internalID: 5209475649549142677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_15
+      rect:
+        serializedVersion: 2
+        x: 969
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 131dfd266f0eff950800000000000000
+      internalID: 6485149337262215473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_16
+      rect:
+        serializedVersion: 2
+        x: 1033
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44c17a1cb10fb3600800000000000000
+      internalID: 449216589857233988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_17
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c30516667350c3760800000000000000
+      internalID: 7438826420008210492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_18
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ed07303aed8897e0800000000000000
+      internalID: -1758499617517400599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RotatingEyeAnimation_19
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 11
+        width: 43
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc656e97d6c2575f0800000000000000
+      internalID: -759652113433864497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RotatingEyeAnimation_0: 1360497699415463571
+      RotatingEyeAnimation_1: -8530551501084080017
+      RotatingEyeAnimation_10: 8277740907232211643
+      RotatingEyeAnimation_11: -4021106529712997159
+      RotatingEyeAnimation_12: 7004510586858362274
+      RotatingEyeAnimation_13: -5760508648782076566
+      RotatingEyeAnimation_14: 5209475649549142677
+      RotatingEyeAnimation_15: 6485149337262215473
+      RotatingEyeAnimation_16: 449216589857233988
+      RotatingEyeAnimation_17: 7438826420008210492
+      RotatingEyeAnimation_18: -1758499617517400599
+      RotatingEyeAnimation_19: -759652113433864497
+      RotatingEyeAnimation_2: -6528693871276186402
+      RotatingEyeAnimation_3: 611967208303637545
+      RotatingEyeAnimation_4: 3593304037128669474
+      RotatingEyeAnimation_5: 6570481625700709790
+      RotatingEyeAnimation_6: 7039492891397570926
+      RotatingEyeAnimation_7: 5241159512323654758
+      RotatingEyeAnimation_8: 2933049910872603942
+      RotatingEyeAnimation_9: 3573915812767181243
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

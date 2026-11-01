@@ -8,18 +8,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 22300000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
-      propertyPath: m_SortingOrder
-      value: -5
-      objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
       propertyPath: m_Name
       value: RadialWarningCanvas
       objectReference: {fileID: 0}
-    - target: {fileID: 11400002, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+      propertyPath: areaImage
+      value:
+      objectReference: {fileID: 1256366619309397760}
+    - target: {fileID: 22300000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+      propertyPath: m_SortingOrder
+      value: -5
+      objectReference: {fileID: 0}
     - target: {fileID: 22400000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -100,8 +100,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11400002, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1256366619309397760}
   m_SourcePrefab: {fileID: 100100000, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+--- !u!1 &4547353376969164896 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+  m_PrefabInstance: {fileID: 4547353376969068225}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1256366619309397760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4547353376969164896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48a883b7d7547a344990961796d8b512, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.UI.RadialLanesGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []

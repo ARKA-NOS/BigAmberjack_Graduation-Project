@@ -15,6 +15,7 @@ namespace CTJ.Enemies
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private Rigidbody2D _body;
         private CircleCollider2D _collider;
+        private EnemyProjectileVisual _visual;
         private EnemyBase _dealer;
         private Transform _target;
         private Vector2 _direction;
@@ -49,6 +50,7 @@ namespace CTJ.Enemies
         {
             _body = GetComponent<Rigidbody2D>();
             _collider = GetComponent<CircleCollider2D>();
+            _visual = GetComponent<EnemyProjectileVisual>();
             _body.bodyType = RigidbodyType2D.Kinematic;
             _body.gravityScale = 0f;
             _collider.isTrigger = true;
@@ -84,7 +86,7 @@ namespace CTJ.Enemies
             {
                 if (IsBlockingCollider(overlap))
                 {
-                    Consume();
+                    Consume(true, overlap.ClosestPoint(_body.position));
                     return;
                 }
             }
@@ -144,15 +146,18 @@ namespace CTJ.Enemies
                 return;
 
             // 피해 처리에서 다른 로직이 실행되기 전에 중복 판정을 차단합니다.
-            Consume();
+            Consume(true, point);
             EnemyDamageUtility.TryApply(other, _target, _dealer, _damage, point, _direction);
         }
 
-        private void Consume()
+        private void Consume(bool impact = false, Vector2 point = default)
         {
             _consumed = true;
             _collider.enabled = false;
-            Destroy(gameObject);
+            _body.simulated = false;
+            // 충돌 연출 중에는 이동과 중복 피해를 막고, 마지막 프레임까지 표시한 뒤 제거합니다.
+            float delay = impact && _visual != null && _visual.isActiveAndEnabled ? _visual.PlayImpact(point) : 0f;
+            Destroy(gameObject, delay);
         }
     }
 }

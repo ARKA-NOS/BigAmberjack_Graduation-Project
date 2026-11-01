@@ -42,6 +42,7 @@ namespace CTJ.Enemies.Bosses
         private float BodyRadius => bodyVisual != null ? Mathf.Max(bodyVisual.bounds.extents.x, bodyVisual.bounds.extents.y) : 1f;
         public RobotEyeBossState CurrentState { get; private set; }
         public bool HasUsedLaserPhase { get; private set; }
+        public bool HasFinishedLaserPhase { get; private set; }
         public int CompletedTraversals { get; private set; }
         public Vector2 ArenaCenter => _arena.Center;
         public Vector2 LockedMoveDestination => _moveDestination;
@@ -218,7 +219,12 @@ namespace CTJ.Enemies.Bosses
                     if (Flight.HasArrived) Change(RobotEyeBossState.ReturnCenter);
                     break;
                 case RobotEyeBossState.ReturnCenter:
-                    if (Flight.HasArrived) { IsInvulnerable = false; Rest(); }
+                    if (Flight.HasArrived)
+                    {
+                        HasFinishedLaserPhase = true;
+                        IsInvulnerable = false;
+                        Rest();
+                    }
                     break;
             }
         }

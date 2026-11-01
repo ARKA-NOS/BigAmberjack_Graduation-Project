@@ -93,6 +93,12 @@ namespace CTJ.UI
                 Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg));
         }
 
+        public void SetRadialLanes(Vector2 origin, int count, float distance, float width)
+        {
+            SetWorldRect(origin, Vector2.one * (Mathf.Max(0f, distance) * 2f + Mathf.Max(0.01f, width)), Quaternion.identity);
+            if (areaImage is RadialLanesGraphic lanes) lanes.SetLanes(count, distance, width);
+        }
+
         private void SetWorldRect(Vector3 center, Vector2 size, Quaternion rotation)
         {
             _rect.position = center;

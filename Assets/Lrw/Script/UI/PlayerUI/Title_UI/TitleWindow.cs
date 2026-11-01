@@ -18,6 +18,11 @@ namespace Lrw.Script.UI.PlayerUI.Title_UI
             Close();
         }
 
+        private void OnDestroy()
+        {
+            inputSo.OnTitleKeyPressed -= TitleOpenClose;
+        }
+
         public void TitleOpenClose()
         {
             UIManagerEvents.OpenCloseWindow(this);

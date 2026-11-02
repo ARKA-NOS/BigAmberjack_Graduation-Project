@@ -1,6 +1,6 @@
 ﻿namespace Lrw.Script._Core._EventSystem
 {
-    public abstract class Event<T,V> : IEvent where T : Event<T,V>
+    public abstract class TemplateEvent<T,V> : IEvent where T : TemplateEvent<T,V>
     {
         public V Value { get; private set; }
 

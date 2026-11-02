@@ -46,7 +46,7 @@ namespace Lrw.Script.Agent.Players.Skills
         {
             base.OnUseSkill();
             
-            Vector2 direction = _playerController.PlayerInput.GetMouseWorldPosition() - (Vector2)transform.position;
+            Vector2 direction = (_playerController.PlayerInput.GetMouseWorldPosition() - (Vector2)transform.position).normalized;
             
             GameObject go = Instantiate(prefab);
             go.transform.position = transform.position;

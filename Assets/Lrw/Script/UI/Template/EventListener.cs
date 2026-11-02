@@ -1,28 +1,22 @@
-﻿using UnityEngine;
+﻿using Lrw.Script._Core._EventSystem;
+using UnityEngine;
 
 namespace Lrw.Script.UI.Template
 {
-    public abstract class EventListener<T> : MonoBehaviour
+    public abstract class EventListener<T> : MonoBehaviour where T : IEvent
     {
         
-        protected void Awake()
+        protected virtual void Awake()
         {
-            
-            
-            
-        }
-
-        protected void OnDestroy()
-        {
-            
-            
-        }
-
-        public void HandleEvent(T eventData)
-        {
-            
+            EventBus<T>.Subscribe(HandleEvent);
         }
         
+        protected virtual void OnDestroy()
+        {
+            EventBus<T>.UnSubscribe(HandleEvent);
+        }
+        
+        protected abstract void HandleEvent(T eventData);
         
     }
 }

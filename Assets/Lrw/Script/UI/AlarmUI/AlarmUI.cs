@@ -1,17 +1,20 @@
-﻿using System;
-using UnityEngine;
+﻿using Lrw.Script.UI.Template;
 
 namespace Lrw.Script.UI.AlarmUI
 {
-    public class AlarmUI : MonoBehaviour
+    public class AlarmUI : EventListener<AlarmSendEvent>
     {
-        private void Awake()
+        
+        protected override void Awake()
         {
+            base.Awake();
             
         }
-        
-        private void OnDestroy()
+
+        protected override void HandleEvent(AlarmSendEvent evt)
         {
+            
+            
             
         }
         

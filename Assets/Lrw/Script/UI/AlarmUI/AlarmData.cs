@@ -7,7 +7,7 @@ namespace Lrw.Script.UI.AlarmUI
         public string Title;
         public string Message;
         public Sprite Image;
-
+        
         public AlarmData(string title, string message, Sprite image)
         {
             Title = title;

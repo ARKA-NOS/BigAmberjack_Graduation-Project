@@ -23,6 +23,7 @@
 | VerifyRobotEyeVisual.cs | 보스 눈 스프라이트·시선 여백·레이저 시선 고정·복귀 중 알파 전환 검증 |
 | VerifyRobotEyeAttack.cs | 탄환별 막대 경고·화염 비행/폭발 프레임·충돌 및 중복 피해 방지 검증 |
 | VerifyBossHealthBar.cs | 보스 화면 체력 바·무적 표시·해상도별 배치·생성/제거 수명 검증 |
+| VerifyBossLaserAsset.cs | laser_beam 원본 비율·중심부 판정/장식 제외·빠른 페이드·벽 안전 공간·3회 횡단·흔들림 감쇠/종료 검증 |
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
@@ -55,3 +56,5 @@
 같은 날 추가한 레이저 시선 고정·붉은 눈 전환·일반 공격 막대 경고·화염 탄환 피드백은 RobotEyeAttackFeedbackNotes.md에 있습니다.
 
 2026-11-02 보스 화면 체력 바의 설정·테스트·문법 설명은 BossHealthBarNotes.md에 있습니다.
+
+같은 날 적용한 laser_beam의 원본 비율·높이 2.5배·벽 안전 공간과, 이후 수정한 중심부 판정/바닥 장식 제외·빠른 페이드·속도 27·흔들림 감쇠 설정은 BossLaserAssetNotes.md에 있습니다. 현재 형태 비교용 캡처는 BossLaserShape_Close.png입니다.

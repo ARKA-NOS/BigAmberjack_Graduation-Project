@@ -20,6 +20,8 @@ namespace Lrw.Script.Agent.Players
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
         
+        public event Action OnPlatformKeyPressed;
+        
         public event Action OnInteractKeyPressed;
         public event Action OnInventoryKeyPressed;
         public event Action OnTitleKeyPressed;
@@ -114,6 +116,12 @@ namespace Lrw.Script.Agent.Players
         public void OnMouse(InputAction.CallbackContext context)
         {
             MousePos = context.ReadValue<Vector2>();
+        }
+
+        public void OnPlatform(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnPlatformKeyPressed?.Invoke();
         }
 
         public void OnTestTitle(InputAction.CallbackContext context)

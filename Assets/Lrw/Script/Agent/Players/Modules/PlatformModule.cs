@@ -62,6 +62,10 @@ namespace Lrw.Script.Agent.Players.Modules
                 _collider.excludeLayers &= ~whatIsPlatform;
             }
         }
-        
+
+        private void OnValidate()
+        {
+            _wait = new WaitForSeconds(passTime);
+        }
     }
 }

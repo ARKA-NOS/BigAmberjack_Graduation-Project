@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3835296013316084141}
   - component: {fileID: 5955823645051959017}
   - component: {fileID: 4349265050833465242}
+  - component: {fileID: 6017722052369614597}
   m_Layer: 9
   m_Name: DummyItem
   m_TagString: Untagged
@@ -83,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 9ea72647c24be493ba6f15a9cd2a24ae, type: 3}
+  m_Sprite: {fileID: -4863653671290880504, guid: 2d6d6f891a6729b4da27e49247118617, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -131,7 +132,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.15, y: 0.15}
+    oldSize: {x: 0.14, y: 0.14}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -151,5 +152,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0855d3abe63ab74c9f2b0c3beb45241, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.ItemSystem.ItemPickup
+  interactUIOffset: {x: 0, y: 0}
   item: {fileID: 11400000, guid: 0becc8eb1dfe5784c81e480f8afaa17b, type: 2}
   iconRenderer: {fileID: 3835296013316084141}
+  tooltipViewModel: {fileID: 11400000, guid: 975cdaf925de7c34dba96df30d000011, type: 2}
+  tooltipOffset: {x: 0, y: 0.5}
+  holdKey:
+    m_Name: Item Hold
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 80e0a2ff-9952-4d6f-b61e-874d3e96b883
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: b5d9804c-1b65-4f56-8304-a38d4eec3fa1
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Item Hold
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  pickupMaxPressTime: 0.25
+  destroyHoldTime: 1
+  destroyReward: {fileID: 11400000, guid: c45be004801dfae43a5c938d93313343, type: 2}
+--- !u!50 &6017722052369614597
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5651910674525045196}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

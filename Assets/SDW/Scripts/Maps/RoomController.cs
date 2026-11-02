@@ -47,6 +47,11 @@ namespace SDW.Scripts.Maps
             EnemySpawnPortalPrefab = enemySpawnPortalPrefab;
             Definition = GetComponent<RoomDefinition>();
             _encounterZones = GetComponentsInChildren<EncounterZone>(true);
+
+            // 방 프리팹에 미리 배치된 적(최종 보스 등)도 출구 조건과 상호작용 잠금이 보도록 등록한다.
+            // 이후 EncounterZone/포탈로 생성되는 적은 생성 시점에 따로 등록되므로 겹치지 않는다.
+            foreach (EnemyBase enemy in GetComponentsInChildren<EnemyBase>(true))
+                RegisterEnemy(enemy);
         }
 
         // LinearStageGenerator(첫 방)와 Portal(그 외 방)이 방을 활성화한 직후 호출한다.

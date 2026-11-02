@@ -33,7 +33,7 @@ namespace Lrw.Script.UI.PlayerUI.InteractUI_system
         {
             if(interactUI == null) return;
             interactUI.gameObject.SetActive(evt.Active);
-            interactUI.localPosition = evt.WorldPos + (Vector3)uiOffset;
+            interactUI.position = evt.WorldPos + (Vector3)uiOffset;
         }
         
     }

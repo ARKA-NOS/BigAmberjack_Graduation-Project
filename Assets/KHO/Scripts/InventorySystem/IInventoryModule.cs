@@ -21,6 +21,9 @@ namespace KHO.Scripts.InventorySystem
         bool TryRemoveItem(InventorySlotType type, int slot);
         bool TryReplaceItem(InventorySlotType type, int slot, ItemSO item);
 
+        // 두 칸의 아이템을 맞바꾼다(대상 칸이 비어 있으면 옮긴다). 장착 칸을 드나드는 아이템은 효과를 빼거나 넣는다.
+        bool TryMoveItem(InventorySlotType fromType, int fromSlot, InventorySlotType toType, int toSlot);
+
         // 통합 칸 번호(Inventory.Slots 인덱스) 기준. 기존 호출부 호환용.
         bool TryRemoveItem(int index);
         bool TryReplaceItem(int index, ItemSO item);

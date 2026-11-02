@@ -12,6 +12,10 @@ namespace CTJ.Enemies.Bosses
         [Tooltip("중심에서 한쪽 벽까지의 거리입니다. 전체 가로 폭은 이 값의 두 배입니다.")]
         [SerializeField, Min(1f)] private float halfWidth = 8f;
         [SerializeField, Min(0.1f)] private float floorDistance = 4f;
+        [Tooltip("초기 아레나 중심 아래의 실제 Ground 충돌면을 바닥으로 사용합니다. 찾지 못하면 Floor Distance를 사용합니다.")]
+        [SerializeField] private bool detectFloor;
+        [SerializeField] private LayerMask floorLayers = 1 << 6;
+        [SerializeField, Min(0.1f)] private float floorProbeDistance = 30f;
         [Tooltip("아레나 중심 기준 레이저 높이입니다(음수 가능). 눈깔 보스는 원본 레이저 크기에 맞춰 실행 시 갱신합니다.")]
         [SerializeField] private float laserHeight = 2.5f;
         [SerializeField, Min(0f)] private float introHeight = 4f;
@@ -19,15 +23,43 @@ namespace CTJ.Enemies.Bosses
         [SerializeField] private Camera arenaCamera;
         [Tooltip("화면/아레나 경계 바깥의 여유 거리. 보스 크기는 별도로 더합니다.")]
         [SerializeField, Min(0.1f)] private float offscreenPadding = 1f;
+        private readonly RaycastHit2D[] _floorHits = new RaycastHit2D[8];
+        private bool _hasDetectedFloor;
+        private float _detectedFloorY;
 
         public Vector2 Center { get; private set; }
-        public float FloorY => Center.y - Mathf.Max(0.1f, floorDistance);
+        public float FloorY => _hasDetectedFloor ? _detectedFloorY : Center.y - Mathf.Max(0.1f, floorDistance);
         public Vector2 IntroPosition => Center + Vector2.up * Mathf.Max(0f, introHeight);
-        private float LaserOffsetY => Mathf.Max(-Mathf.Max(0.1f, floorDistance) + 0.1f, laserHeight);
+        private float LaserOffsetY => Mathf.Max(FloorY - Center.y + 0.1f, laserHeight);
         public Vector2 LaserLeft => Center + new Vector2(-Mathf.Max(1f, halfWidth), LaserOffsetY);
         public Vector2 LaserRight => Center + new Vector2(Mathf.Max(1f, halfWidth), LaserOffsetY);
 
-        public void SetLaserHeightFromFloor(float height) => laserHeight = Mathf.Max(0.1f, height) - Mathf.Max(0.1f, floorDistance);
+        public void SetLaserHeightFromFloor(float height) => laserHeight = FloorY - Center.y + Mathf.Max(0.1f, height);
+
+        public void RefreshFloor()
+        {
+            // 움직이는 보스가 아닌 고정된 초기 중심에서 검사합니다.
+            Physics2D.SyncTransforms();
+            _hasDetectedFloor = TryFindFloor(Center, out _detectedFloorY);
+        }
+
+        private bool TryFindFloor(Vector2 center, out float floorY)
+        {
+            floorY = 0f;
+            if (!detectFloor) return false;
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = floorLayers, useTriggers = false };
+            int count = Physics2D.Raycast(center, Vector2.down, filter, _floorHits, Mathf.Max(0.1f, floorProbeDistance));
+            for (int i = 0; i < count; i++)
+            {
+                RaycastHit2D hit = _floorHits[i];
+                // 천장/벽의 측면이나 시작점이 콜라이더 내부인 결과는 바닥으로 사용하지 않습니다.
+                if (hit.distance <= 0f || hit.normal.y < 0.5f ||
+                    (_owner != null && hit.collider.transform.IsChildOf(_owner.transform))) continue;
+                floorY = hit.point.y;
+                return true;
+            }
+            return false;
+        }
 
         public Bounds LaserBounds => new Bounds(new Vector3(Center.x, (FloorY + LaserLeft.y) * 0.5f, 0f),
             new Vector3(LaserRight.x - LaserLeft.x, LaserLeft.y - FloorY, 0f));
@@ -68,6 +100,7 @@ namespace CTJ.Enemies.Bosses
         {
             base.Initialize(owner);
             Center = centerAnchor != null ? (Vector2)centerAnchor.position : (Vector2)owner.transform.position;
+            RefreshFloor();
         }
 
         public Vector2 ClampFlightDestination(Vector2 position)
@@ -91,8 +124,10 @@ namespace CTJ.Enemies.Bosses
         private Bounds GetGizmoBounds()
         {
             Vector2 center = GetGizmoCenter();
-            float bottom = center.y - Mathf.Max(0.1f, floorDistance);
-            float top = center.y + LaserOffsetY;
+            bool running = Application.isPlaying && _owner != null;
+            float bottom = running ? FloorY : TryFindFloor(center, out float detected) ? detected : center.y - Mathf.Max(0.1f, floorDistance);
+            // 편집 중에도 바닥 변경분만큼 위쪽 경계를 함께 옮겨 원본 레이저 길이를 유지합니다.
+            float top = running ? Center.y + LaserOffsetY : bottom + Mathf.Max(0.1f, floorDistance + laserHeight);
             return new Bounds(new Vector3(center.x, (bottom + top) * 0.5f, 0f),
                 new Vector3(Mathf.Max(1f, halfWidth) * 2f, top - bottom, 0f));
         }

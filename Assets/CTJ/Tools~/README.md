@@ -22,8 +22,9 @@
 | VerifyEnemyVerticalFlip.cs | 선택적 상하 반전·천장 터렛 전개/조준/UI/보상 검증 |
 | VerifyRobotEyeVisual.cs | 보스 눈 스프라이트·시선 여백·레이저 시선 고정·복귀 중 알파 전환 검증 |
 | VerifyRobotEyeAttack.cs | 탄환별 막대 경고·화염 비행/폭발 프레임·충돌 및 중복 피해 방지 검증 |
-| VerifyBossHealthBar.cs | 보스 화면 체력 바·무적 표시·해상도별 배치·생성/제거 수명 검증 |
+| VerifyBossHealthBar.cs | 보스 화면 체력 바·무적 표시·배치·사망/탐험 종료 이벤트의 즉시 제거와 구독 수명 검증 |
 | VerifyBossLaserAsset.cs | laser_beam 원본 비율·중심부 판정/장식 제외·빠른 페이드·벽 안전 공간·3회 횡단·흔들림 감쇠/종료 검증 |
+| VerifyBossMapFloor.cs | TestBossMap의 실제 바닥·경고 Canvas 메시·레이저 접지·맵 이동/지연 생성·수동 대체 검증 |
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |

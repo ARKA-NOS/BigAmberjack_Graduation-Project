@@ -879,6 +879,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1389134581402385000}
     m_Modifications:
+    - target: {fileID: 255189346621360293, guid: 6f189d69dc568484faec603d34eaa522, type: 3}
+      propertyPath: ChannelMask
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 413086227819694379, guid: 6f189d69dc568484faec603d34eaa522, type: 3}
       propertyPath: Target.TrackingTarget
       value: 

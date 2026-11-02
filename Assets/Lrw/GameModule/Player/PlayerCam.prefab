@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8933020273946911613}
   - component: {fileID: 413086227819694379}
   - component: {fileID: 6694600118868756677}
-  - component: {fileID: 1234629631768827576}
+  - component: {fileID: 255189346621360293}
   m_Layer: 0
   m_Name: PlayerCam
   m_TagString: Untagged
@@ -108,7 +108,7 @@ MonoBehaviour:
     Time: 0
     Smoothing: 0
     IgnoreY: 0
---- !u!114 &1234629631768827576
+--- !u!114 &255189346621360293
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,13 +117,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 6987301662753556343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c11265b855408d42af33d62691f5194, type: 3}
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineExternalImpulseListener
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseListener
+  ApplyAfter: 2
   ChannelMask: 1
   Gain: 1
-  Use2DDistance: 0
-  UseLocalSpace: 1
+  Use2DDistance: 1
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
   ReactionSettings:
     m_SecondaryNoise: {fileID: 0}
     AmplitudeGain: 1

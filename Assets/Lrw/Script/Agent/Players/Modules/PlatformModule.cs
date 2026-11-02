@@ -16,14 +16,16 @@ namespace Lrw.Script.Agent.Players.Modules
         private WaitForSeconds _wait;
         private Collider2D _collider;
         private Coroutine _coroutine;
-
-        public bool pass;
+        
+        private IGroundChecker _groundChecker;
         
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
             _collider = owner.GetComponent<Collider2D>();
             FDebug.Assert(_collider != null, "Owner is not have Collider2D");
+            
+            FDebug.Assert(owner.TryGetModule(out _groundChecker), "Owner is not found IGroundChecker");
             
             _wait = new WaitForSeconds(passTime);
             
@@ -37,6 +39,7 @@ namespace Lrw.Script.Agent.Players.Modules
 
         private void OnPlatformKeyPressed()
         {
+            if(!_groundChecker.FixedIsGround) return;
             if(_coroutine != null)StopCoroutine(_coroutine);
             _coroutine = StartCoroutine(PlatformPassTime());
         }
@@ -50,7 +53,6 @@ namespace Lrw.Script.Agent.Players.Modules
 
         private void SetPassPlatform(bool isPass)
         {
-            pass = isPass;
             if (isPass)
             {
                 _collider.excludeLayers |= whatIsPlatform;
@@ -60,6 +62,10 @@ namespace Lrw.Script.Agent.Players.Modules
                 _collider.excludeLayers &= ~whatIsPlatform;
             }
         }
-        
+
+        private void OnValidate()
+        {
+            _wait = new WaitForSeconds(passTime);
+        }
     }
 }

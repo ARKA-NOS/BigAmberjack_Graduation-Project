@@ -14,9 +14,9 @@ namespace Lrw.Script.Agent
             Animator = GetComponent<Animator>();
         }
 
-        public void PlayClip(int clipHash, int layerIndex = 0)
+        public void PlayClip(int clipHash, int layerIndex = 0, float normalizedTime = 0f)
         {
-            Animator.Play(clipHash, layerIndex);
+            Animator.Play(clipHash, layerIndex, normalizedTime);
         }
 
         public void SetAnimatorFloat(int idHash, float value)

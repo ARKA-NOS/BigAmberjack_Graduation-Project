@@ -266,9 +266,9 @@ Transform:
   m_GameObject: {fileID: 1123911611}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.44, y: 1.63, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -603,6 +603,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RobotEyeBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 3826693451304991770, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
+      propertyPath: beamWidth
+      value: 0.65
+      objectReference: {fileID: 0}
     - target: {fileID: 6244073572630414717, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
       propertyPath: target
       value: 
@@ -702,7 +706,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &9300100001
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -840,7 +844,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &9300100011
 BoxCollider2D:
   m_ObjectHideFlags: 0

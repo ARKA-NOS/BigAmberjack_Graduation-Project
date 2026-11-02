@@ -7,11 +7,17 @@ namespace CTJ.Enemies.Bosses
     [DisallowMultipleComponent]
     public sealed class BossLaserShake : MonoBehaviour
     {
-        [SerializeField, Min(0f)] private float amplitude = 0.35f;
+        [SerializeField, Min(0f)] private float amplitude = 0.8f;
         [SerializeField, Min(1f)] private float frequency = 32f;
+        [Tooltip("횡단 끝에 남길 흔들림 비율입니다. 시작은 Amplitude 전체 강도를 사용합니다.")]
+        [SerializeField, Range(0f, 1f)] private float endStrength = 0.15f;
+        [SerializeField, Min(0f)] private float fadeOutDuration = 0.18f;
         private CinemachineImpulseManager.ImpulseEvent _impulse;
         private LaserSignal _signal;
+        private bool _fadingOut;
+        private float _fadeStartedAt, _fadeFromStrength;
         public bool IsShaking => _impulse != null;
+        public float Strength => _signal != null ? _signal.Strength : 0f;
         public const int ImpulseChannel = 64;
 
         public void StartShake(Bounds area)
@@ -32,6 +38,29 @@ namespace CTJ.Enemies.Bosses
             manager.AddImpulseEvent(_impulse);
         }
 
+        public void SetTraversalProgress(float progress)
+        {
+            if (_signal == null || _fadingOut) return;
+            _signal.Strength = Mathf.Lerp(1f, Mathf.Clamp01(endStrength), Mathf.SmoothStep(0f, 1f, progress));
+        }
+
+        public void FadeOut()
+        {
+            if (_signal == null || _fadingOut) return;
+            if (fadeOutDuration <= 0f) { StopShake(); return; }
+            _fadingOut = true;
+            _fadeStartedAt = Time.time;
+            _fadeFromStrength = Strength;
+        }
+
+        private void Update()
+        {
+            if (!_fadingOut || _signal == null) return;
+            float t = Mathf.Clamp01((Time.time - _fadeStartedAt) / fadeOutDuration);
+            _signal.Strength = _fadeFromStrength * (1f - Mathf.SmoothStep(0f, 1f, t));
+            if (t >= 1f) StopShake();
+        }
+
         public void StopShake()
         {
             // 다른 효과의 이벤트나 이미 재사용된 이벤트를 취소하지 않습니다.
@@ -45,6 +74,7 @@ namespace CTJ.Enemies.Bosses
             }
             _impulse = null;
             _signal = null;
+            _fadingOut = false;
         }
 
         private void OnDisable() => StopShake();
@@ -52,12 +82,13 @@ namespace CTJ.Enemies.Bosses
         private sealed class LaserSignal : ISignalSource6D
         {
             private readonly float _amplitude, _frequency;
+            public float Strength = 1f;
             public float SignalDuration => 0f;
             public LaserSignal(float amplitude, float frequency) { _amplitude = amplitude; _frequency = frequency; }
             public void GetSignal(float timeSinceSignalStart, out Vector3 pos, out Quaternion rot)
             {
                 float t = timeSinceSignalStart * _frequency;
-                pos = new Vector3(Mathf.PerlinNoise(t, 11.7f) * 2f - 1f, Mathf.PerlinNoise(37.2f, t) * 2f - 1f, 0f) * _amplitude;
+                pos = new Vector3(Mathf.PerlinNoise(t, 11.7f) * 2f - 1f, Mathf.PerlinNoise(37.2f, t) * 2f - 1f, 0f) * (_amplitude * Strength);
                 rot = Quaternion.identity;
             }
         }

@@ -12,7 +12,8 @@ namespace CTJ.Enemies.Bosses
         [Tooltip("중심에서 한쪽 벽까지의 거리입니다. 전체 가로 폭은 이 값의 두 배입니다.")]
         [SerializeField, Min(1f)] private float halfWidth = 8f;
         [SerializeField, Min(0.1f)] private float floorDistance = 4f;
-        [SerializeField, Min(0f)] private float laserHeight = 2.5f;
+        [Tooltip("아레나 중심 기준 레이저 높이입니다(음수 가능). 눈깔 보스는 원본 레이저 크기에 맞춰 실행 시 갱신합니다.")]
+        [SerializeField] private float laserHeight = 2.5f;
         [SerializeField, Min(0f)] private float introHeight = 4f;
         [Tooltip("화면 밖 경유점 계산용. 비워두면 Main Camera를 사용합니다.")]
         [SerializeField] private Camera arenaCamera;
@@ -22,8 +23,11 @@ namespace CTJ.Enemies.Bosses
         public Vector2 Center { get; private set; }
         public float FloorY => Center.y - Mathf.Max(0.1f, floorDistance);
         public Vector2 IntroPosition => Center + Vector2.up * Mathf.Max(0f, introHeight);
-        public Vector2 LaserLeft => Center + new Vector2(-Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
-        public Vector2 LaserRight => Center + new Vector2(Mathf.Max(1f, halfWidth), Mathf.Max(0f, laserHeight));
+        private float LaserOffsetY => Mathf.Max(-Mathf.Max(0.1f, floorDistance) + 0.1f, laserHeight);
+        public Vector2 LaserLeft => Center + new Vector2(-Mathf.Max(1f, halfWidth), LaserOffsetY);
+        public Vector2 LaserRight => Center + new Vector2(Mathf.Max(1f, halfWidth), LaserOffsetY);
+
+        public void SetLaserHeightFromFloor(float height) => laserHeight = Mathf.Max(0.1f, height) - Mathf.Max(0.1f, floorDistance);
 
         public Bounds LaserBounds => new Bounds(new Vector3(Center.x, (FloorY + LaserLeft.y) * 0.5f, 0f),
             new Vector3(LaserRight.x - LaserLeft.x, LaserLeft.y - FloorY, 0f));
@@ -88,7 +92,7 @@ namespace CTJ.Enemies.Bosses
         {
             Vector2 center = GetGizmoCenter();
             float bottom = center.y - Mathf.Max(0.1f, floorDistance);
-            float top = center.y + Mathf.Max(0f, laserHeight);
+            float top = center.y + LaserOffsetY;
             return new Bounds(new Vector3(center.x, (bottom + top) * 0.5f, 0f),
                 new Vector3(Mathf.Max(1f, halfWidth) * 2f, top - bottom, 0f));
         }

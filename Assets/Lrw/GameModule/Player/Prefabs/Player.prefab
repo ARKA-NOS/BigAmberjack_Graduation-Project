@@ -49,6 +49,56 @@ MonoBehaviour:
   spawnInterval: 0.035
   ghostLifeTime: 0.18
   ghostColor: {r: 0.4, g: 0.8, b: 1, a: 0.5}
+--- !u!1 &374022512554196890
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8221827932566919483}
+  - component: {fileID: 6295911603933147679}
+  m_Layer: 7
+  m_Name: PlatformModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8221827932566919483
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374022512554196890}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1389134581402385000}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6295911603933147679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374022512554196890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3df01a3bade45e5b9312b4ad91da741, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Agent.Players.Modules.PlatformModule
+  playerInput: {fileID: 11400000, guid: e1b94466858999e4c8089203ed69deef, type: 2}
+  whatIsPlatform:
+    serializedVersion: 2
+    m_Bits: 1024
+  passTime: 1
+  pass: 0
 --- !u!1 &1523163325108464347
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,6 +244,7 @@ Transform:
   - {fileID: 4645478419772412309}
   - {fileID: 442558853212788372}
   - {fileID: 7357368077190701133}
+  - {fileID: 8221827932566919483}
   - {fileID: 5009264341762385814}
   - {fileID: 4489833200120199302}
   - {fileID: 887719848508735198}
@@ -378,14 +429,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d81e69a77b854ccf869008f3a8ab4021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Agents.GroundChecker
-  checkerShape: 0
-  gizmosEnabled: 1
-  chackOffset: {x: 0, y: -0.5}
+  checkSO: {fileID: 11400000, guid: 4460eeb90c281a946ae42a7bcfd8f4de, type: 2}
   whatIsGround:
     serializedVersion: 2
-    m_Bits: 576
-  squareSize: {x: 0.4, y: 0.2}
-  circleRadius: 1
+    m_Bits: 1600
+  gizmosEnabled: 1
 --- !u!1 &3796144230375075484
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,6 +478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb2f5f75dba64bad9c05ecf8023ae928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.InventorySystem.InventoryModule
+  viewModel: {fileID: 0}
+  startEquipmentCapacity: 9
   debugItem: {fileID: 0}
 --- !u!1 &6119771302154156506
 GameObject:

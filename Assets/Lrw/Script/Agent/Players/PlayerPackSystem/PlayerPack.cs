@@ -18,8 +18,14 @@ namespace Lrw.Script.Agent.Players.PlayerPackSystem
 
         public bool IsExist() 
             => true;
-        public void SetPos(Vector3 pos) 
-            => transform.position = pos;
+        
+        public void SetPos(Vector3 pos)
+        {
+            PlayerController player = GetComponentInChildren<PlayerController>();
+            Vector3 anchor = player != null ? player.transform.position : transform.position;
+
+            transform.position += pos - anchor;
+        }
         public void Destroy() 
             => Destroy(gameObject);
         

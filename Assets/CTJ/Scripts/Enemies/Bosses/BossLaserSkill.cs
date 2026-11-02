@@ -65,6 +65,8 @@ namespace CTJ.Enemies.Bosses
         public void MatchArenaHeight(BossArenaModule arena)
         {
             if (spriteBeam == null || !spriteBeam.Configure(true)) return;
+            // 맵의 Tilemap/CompositeCollider가 준비된 뒤에도 발사 단계 진입 시 다시 맞춥니다.
+            arena.RefreshFloor();
             float offsetY = Enemy != null ? Origin.y - Enemy.transform.position.y : 0f;
             // 그림을 늘리지 않고, 그림의 발사구가 눈 아래에 오면서 바닥에 닿도록 보스 경로 높이를 정합니다.
             arena.SetLaserHeightFromFloor(spriteBeam.HeightFromFloor - offsetY);

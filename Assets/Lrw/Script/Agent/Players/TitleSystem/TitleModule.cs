@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DevLib.ModuleSystem;
-using Lrw.Script._Core.SceneSystem;
+using Lrw.Script._Core._EventSystem;
 using Lrw.Script.Agent.Players.QuestSystem;
 using Lrw.Script.DataStructure;
 using Lrw.Script.UI.AlarmUI;
 using Lrw.Script.UI.PlayerUI.Title_UI;
+using SDW.Scripts.Maps;
+using SDW.Scripts.Maps.Data;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
@@ -17,8 +19,8 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         [SerializeField] private TitleListViewModel titleListViewModel;
 
         [Header("Stage Setting")]
-        [Tooltip("스테이지 변경 이벤트가 생기기 전까지 쓰는 시작 스테이지. 비워 두면 Stage가 없는 그룹만 진행한다.")]
-        [SerializeField] private SceneSo startStage;
+        [Tooltip("첫 MapEnteredEvent가 오기 전까지 쓰는 시작 맵. 비워 두면 Stage가 없는 그룹만 진행한다.")]
+        [SerializeField] private RoomDataSO startStage;
 
         private Dictionary<AbstractTitleSo,Title> _titles;
         private HashSet<AbstractTitleSo> _completedTitles;
@@ -27,7 +29,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         private HashSet<AbstractTitleSo> _stageTitles;
         private IQuestModule _questModule;
 
-        public SceneSo CurrentStage { get; private set; }
+        public RoomDataSO CurrentStage { get; private set; }
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -38,11 +40,13 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             _waitingTitles = new();
             _allTitles = new();
             _stageTitles = new();
+            
+            EventBus<MapEnteredEvent>.Subscribe(SceneMoveEvent);
 
             if(titleListViewModel != null)
                 titleListViewModel.Bind(new TitleListViewData(new()));
         }
-
+        
         public void AfterInit()
         {
             CollectAllTitles();
@@ -64,6 +68,11 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             }
         }
 
+        private void OnDestroy()
+        {
+            EventBus<MapEnteredEvent>.UnSubscribe(SceneMoveEvent);
+        }
+
         private void CollectAllTitles()
         {
             if (titleGroups == null) return;
@@ -81,8 +90,13 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         }
 
         #region Stage
+        
+        private void SceneMoveEvent(MapEnteredEvent value)
+        {
+            ChangeStage(value.Room);
+        }
 
-        public void ChangeStage(SceneSo stage)
+        public void ChangeStage(RoomDataSO stage)
         {
             CurrentStage = stage;
             RefreshStageTitles();
@@ -102,7 +116,7 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             foreach (TitleGroupSo group in titleGroups)
             {
                 if (group == null || group.TitleList == null) continue;
-                if (group.Stage != null && !IsSameStage(group.Stage, CurrentStage)) continue;
+                if (group.Stage != null && group.Stage != CurrentStage) continue;
 
                 foreach (AbstractTitleSo titleSo in group.TitleList)
                 {
@@ -110,14 +124,6 @@ namespace Lrw.Script.Agent.Players.TitleSystem
                         _stageTitles.Add(titleSo);
                 }
             }
-        }
-
-        // 같은 씬을 가리키는 SceneSo 에셋이 여러 개일 수 있어서 씬 이름으로도 비교한다.
-        private static bool IsSameStage(SceneSo a, SceneSo b)
-        {
-            if (a == b) return true;
-            if (a == null || b == null) return false;
-            return !string.IsNullOrEmpty(a.SceneName) && a.SceneName == b.SceneName;
         }
 
         [ContextMenu("Change Stage To Start Stage")]

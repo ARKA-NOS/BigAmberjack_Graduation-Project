@@ -23,7 +23,7 @@ namespace Lrw.Script.Agent
             base.Awake();
             invincibilityDict = new();
             NewHealthModule = GetModule<INewHealthModule>();
-            FDebug.Assert(NewHealthModule != null, $"[{name}] INewHealthModule is not found");
+            FDebug.Assert(NewHealthModule != null, $"[{gameObject.name}] INewHealthModule is not found");
         }
 
         public void SetInvincibility(object obj, bool value)

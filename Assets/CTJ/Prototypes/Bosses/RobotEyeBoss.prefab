@@ -91,6 +91,11 @@ MonoBehaviour:
   centerAnchor: {fileID: 0}
   halfWidth: 11
   floorDistance: 5
+  detectFloor: 1
+  floorLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  floorProbeDistance: 30
   laserHeight: 3.988725
   introHeight: 4
   arenaCamera: {fileID: 0}

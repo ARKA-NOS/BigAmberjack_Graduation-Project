@@ -8,7 +8,9 @@ using CTJ.Enemies.Bosses;
 using CTJ.Testing;
 using CTJ.UI;
 using DevLib.BattleSystem;
+using Lrw.Script._Core._EventSystem;
 using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+using SDW.Scripts.RunEnd;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -187,7 +189,9 @@ namespace CTJ.Tools
                 Check(!boss.IsInvulnerable && border.color != Color.white && !label.gameObject.activeSelf, "Normal border restored without HP change");
                 boss.gameObject.SetActive(false); await Frames(2); Check(AllUI().Length == 0, "Inactive boss leaves no HUD");
                 boss.gameObject.SetActive(true); await Frames(2); ui = OnlyUI();
-                Hit(boss, 99999f); await Frames(1); Check(boss.IsDead && !ui.GetComponent<Canvas>().enabled, "Death hides bar immediately");
+                Hit(boss, 99999f);
+                Check(boss.IsDead && !ui.gameObject.activeSelf, "Death event disables HUD synchronously");
+                await Frames(1); Check(ui == null || !ui.gameObject.activeInHierarchy, "Death removes HUD");
                 await Until(() => boss == null); await Frames(2); Check(AllUI().Length == 0, "Destroyed boss leaves no HUD");
                 await CheckSceneUnload();
                 Check(errors.Count == 0, string.Join(" | ", errors));
@@ -195,6 +199,97 @@ namespace CTJ.Tools
                     verified = "50% layout / Korean text / HP and heal / real invulnerability / reenable / death / scene unload" };
             }
             finally { stage.SetActive(false); Object.Destroy(stage); Application.logMessageReceived -= capture; }
+        }
+
+        public static async Task<object> RunDeathEvents()
+        {
+            RequirePlay();
+            var errors = new List<string>();
+            var order = new List<string>();
+            Application.LogCallback capture = (m, s, t) => { if (t == LogType.Error || t == LogType.Assert || t == LogType.Exception) errors.Add(m); };
+            Application.logMessageReceived += capture;
+            var stage = new GameObject("HUD death event verification");
+            int subscribersBefore = RunEndSubscriberCount();
+            bool healthDeadInsideEvent = true;
+            try
+            {
+                var boss = SpawnLifetimeBoss(stage);
+                await Frames(2);
+                var module = boss.GetModule<BossHealthBarModule>();
+                var ui = OnlyUI();
+                Check(ui.GetComponent<Canvas>().enabled, "Living boss HUD visible");
+                Check(RunEndSubscriberCount() == subscribersBefore + 1, "One run-end subscription");
+                module.enabled = false; await Frames(2);
+                Check(AllUI().Length == 0 && RunEndSubscriberCount() == subscribersBefore, "Disable removes view and subscription");
+                module.enabled = true; await Frames(2); ui = OnlyUI();
+                Check(RunEndSubscriberCount() == subscribersBefore + 1, "Reenable subscribes once");
+                var health = boss.GetModule<INewHealthModule>();
+                HealthChanged onHealth = (current, delta, max) => { if (current <= 0f) order.Add("OnHealthChanged(0)"); };
+                Action onDead = () =>
+                {
+                    order.Add("OnDead");
+                    healthDeadInsideEvent = health.IsDead;
+                    Check(!ui.gameObject.activeSelf && !ui.GetComponent<Canvas>().enabled, "HUD disabled inside death event, before next frame");
+                };
+                health.OnHealthChanged += onHealth; health.OnDead += onDead;
+                try { Hit(boss, 99999f); }
+                finally { health.OnHealthChanged -= onHealth; health.OnDead -= onDead; }
+                Check(order.SequenceEqual(new[] { "OnHealthChanged(0)", "OnDead" }) && !healthDeadInsideEvent && health.IsDead,
+                    "Shared module raises OnDead before setting IsDead");
+                await Frames(2);
+                Check(boss != null && boss.IsDead && AllUI().Length == 0, "HUD removed before delayed boss despawn");
+                module.enabled = false; module.enabled = true; await Frames(2);
+                Check(AllUI().Length == 0, "Dead boss cannot recreate HUD");
+                Object.Destroy(boss.gameObject); await Frames(2);
+                Check(RunEndSubscriberCount() == subscribersBefore, "Destroyed boss releases static event");
+
+                foreach (RunEndReason reason in new[] { RunEndReason.PlayerDead, RunEndReason.BossCleared })
+                {
+                    boss = SpawnLifetimeBoss(stage); await Frames(2); module = boss.GetModule<BossHealthBarModule>(); ui = OnlyUI();
+                    Check(ui.GetComponent<Canvas>().enabled, "New owner starts with fresh HUD");
+                    RunEndEvents.RaiseRunEnded(reason);
+                    Check(!boss.IsDead && !ui.gameObject.activeSelf && !ui.GetComponent<Canvas>().enabled, "Run end immediately hides living boss HUD: " + reason);
+                    RunEndEvents.RaiseRunEnded(reason);
+                    await Frames(2); Check(AllUI().Length == 0, "Result screen has no HUD after event: " + reason);
+                    module.enabled = false; module.enabled = true;
+                    boss.gameObject.SetActive(false); boss.gameObject.SetActive(true);
+                    await Frames(2); Check(AllUI().Length == 0, "Run-ended HUD does not reappear");
+                    Object.Destroy(boss.gameObject); await Frames(2);
+                    Check(RunEndSubscriberCount() == subscribersBefore, "No static listener leak: " + reason);
+                }
+
+                boss = SpawnLifetimeBoss(stage);
+                RunEndEvents.RaiseRunEnded(RunEndReason.PlayerDead);
+                await Frames(2); Check(AllUI().Length == 0, "Run end before Start prevents late HUD creation");
+                Object.Destroy(boss.gameObject); await Frames(2);
+                await CheckSceneUnload();
+                Check(RunEndSubscriberCount() == subscribersBefore, "Scene unload releases subscriptions");
+                Check(errors.Count == 0, string.Join(" | ", errors));
+                return new { passed = true, order, healthDeadInsideEvent, errors,
+                    verified = "same-event death hide / delayed despawn / living boss at both run endings / repeated event / reenable / next owner / event before Start / scene unload" };
+            }
+            finally { stage.SetActive(false); Object.Destroy(stage); Application.logMessageReceived -= capture; }
+        }
+
+        private static RobotEyeBoss SpawnLifetimeBoss(GameObject stage)
+        {
+            stage.SetActive(false);
+            var boss = Object.Instantiate(AssetDatabase.LoadAssetAtPath<RobotEyeBoss>(BossPath), new Vector3(7400f, 4f), Quaternion.identity, stage.transform);
+            boss.GetComponentInChildren<EnemyCurrencyRewardModule>().enabled = false;
+            boss.GetComponentInChildren<EnemyDeathModule>().enabled = false;
+            SetFloat(boss, "deathDespawnDelay", 5f);
+            stage.SetActive(true);
+            boss.SetTarget(null);
+            return boss;
+        }
+
+        private static int RunEndSubscriberCount()
+        {
+            var events = (System.Collections.IDictionary)typeof(EventBus<RunEndedEvent>).GetField("Events",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);
+            int count = 0;
+            foreach (Delegate callback in events.Values) count += callback.GetInvocationList().Length;
+            return count;
         }
 
         private static async Task CheckSceneUnload()

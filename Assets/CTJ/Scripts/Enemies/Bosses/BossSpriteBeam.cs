@@ -167,8 +167,13 @@ namespace CTJ.Enemies.Bosses
         {
             _points.Clear();
             Vector2 startCenter = CenterAt(start), endCenter = CenterAt(end);
-            foreach (Vector2 p in _corePath)
+            float floorLocalY = LocalPoint(new Vector2(0.5f, floorContactV)).y;
+            for (int i = 0; i < _corePath.Length; i++)
             {
+                Vector2 p = _corePath[i];
+                // 경고 하단은 실제 접지선까지 표시합니다. _corePath 자체를 바꾸지 않아
+                // 바닥 끝을 제외한 피격 여유는 그대로 유지합니다.
+                if (i == 1 || i == 2) p.y = Mathf.Min(p.y, floorLocalY);
                 Vector2 offset = new Vector2(p.x * _sign, p.y) * Scale;
                 _points.Add(startCenter + offset);
                 _points.Add(endCenter + offset);

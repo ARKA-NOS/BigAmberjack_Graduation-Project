@@ -10,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 733390120999439456}
   - component: {fileID: 5873348430127437374}
+  - component: {fileID: 4517157734592855313}
+  - component: {fileID: 7570413340251576937}
+  - component: {fileID: 271692511476200378}
   m_Layer: 0
   m_Name: Slot_3
   m_TagString: Untagged
@@ -50,6 +53,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1483008088023983002}
+--- !u!114 &4517157734592855313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051207809419262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &7570413340251576937
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051207809419262}
+  m_CullTransparentMesh: 1
+--- !u!114 &271692511476200378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051207809419262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &14889577054453654
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,6 +189,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7335203041947502380}
   - component: {fileID: 236334368645413272}
+  - component: {fileID: 7149178246531436068}
+  - component: {fileID: 1905480609981103927}
+  - component: {fileID: 3489888501849226973}
   m_Layer: 0
   m_Name: Slot_9
   m_TagString: Untagged
@@ -176,6 +232,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 4461825221620944344}
+--- !u!114 &7149178246531436068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81780170504181198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &1905480609981103927
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81780170504181198}
+  m_CullTransparentMesh: 1
+--- !u!114 &3489888501849226973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81780170504181198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &174887519386621157
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,6 +920,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5656388846103450550}
   - component: {fileID: 2510411744401830393}
+  - component: {fileID: 8471772907522591951}
+  - component: {fileID: 8535952775911940207}
+  - component: {fileID: 8688338487283419643}
   m_Layer: 0
   m_Name: Slot_12
   m_TagString: Untagged
@@ -854,6 +963,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 9214718732433669163}
+--- !u!114 &8471772907522591951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615930191315799241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &8535952775911940207
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615930191315799241}
+  m_CullTransparentMesh: 1
+--- !u!114 &8688338487283419643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615930191315799241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &644579842451401344
 GameObject:
   m_ObjectHideFlags: 0
@@ -1135,6 +1294,9 @@ GameObject:
   m_Component:
   - component: {fileID: 436702479382542535}
   - component: {fileID: 436690592587053719}
+  - component: {fileID: 5262887626276743532}
+  - component: {fileID: 1340976098514531418}
+  - component: {fileID: 2445729974071454319}
   m_Layer: 0
   m_Name: Slot_8
   m_TagString: Untagged
@@ -1175,6 +1337,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 7703335692226795616}
+--- !u!114 &5262887626276743532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790946804160494789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &1340976098514531418
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790946804160494789}
+  m_CullTransparentMesh: 1
+--- !u!114 &2445729974071454319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790946804160494789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &831262698971532088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,6 +1540,7 @@ GameObject:
   - component: {fileID: 1135898834701235157}
   - component: {fileID: 6898973889443806245}
   - component: {fileID: 760384250011587833}
+  - component: {fileID: 4648735891824786466}
   m_Layer: 0
   m_Name: InventoryWindow
   m_TagString: Untagged
@@ -1348,6 +1561,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5776598875100626958}
+  - {fileID: 4823677118788484537}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1489,6 +1703,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.StatUI.PlayerStatProvider
   viewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
+--- !u!114 &4648735891824786466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847477924754139727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2efbe580fe0506e4ea7f45df3f8cde88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventoryDragController
+  windowGroup: {fileID: 2334568540575776487}
+  ghost: {fileID: 5331870133643316176}
 --- !u!1 &850838046441861137
 GameObject:
   m_ObjectHideFlags: 0
@@ -1986,6 +2214,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3152308283502959472}
   - component: {fileID: 2110860052224706635}
+  - component: {fileID: 5079500016591610293}
+  - component: {fileID: 2664208278868321540}
+  - component: {fileID: 6035763855233044987}
   m_Layer: 0
   m_Name: Slot_0
   m_TagString: Untagged
@@ -2026,6 +2257,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 4146383178331100913}
+--- !u!114 &5079500016591610293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069290915486703642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &2664208278868321540
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069290915486703642}
+  m_CullTransparentMesh: 1
+--- !u!114 &6035763855233044987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069290915486703642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1188664778458594181
 GameObject:
   m_ObjectHideFlags: 0
@@ -2462,6 +2743,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6615279777277508703}
   - component: {fileID: 3061103165133147034}
+  - component: {fileID: 2007523389100197361}
+  - component: {fileID: 7715567261388143754}
+  - component: {fileID: 7292941514316750448}
   m_Layer: 0
   m_Name: Slot_17
   m_TagString: Untagged
@@ -2502,6 +2786,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 3853645399095717925}
+--- !u!114 &2007523389100197361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308522859293837760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &7715567261388143754
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308522859293837760}
+  m_CullTransparentMesh: 1
+--- !u!114 &7292941514316750448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308522859293837760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1359965406891827389
 GameObject:
   m_ObjectHideFlags: 0
@@ -2512,6 +2846,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1732719453964516238}
   - component: {fileID: 5966636720169470992}
+  - component: {fileID: 5076860317707108337}
+  - component: {fileID: 8242146408403672874}
+  - component: {fileID: 4049357330160033545}
   m_Layer: 0
   m_Name: EquipSlot_3
   m_TagString: Untagged
@@ -2552,6 +2889,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1213127847212245296}
+--- !u!114 &5076860317707108337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359965406891827389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &8242146408403672874
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359965406891827389}
+  m_CullTransparentMesh: 1
+--- !u!114 &4049357330160033545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359965406891827389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1389547147980058096
 GameObject:
   m_ObjectHideFlags: 0
@@ -2699,6 +3086,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4139800099105124708}
   - component: {fileID: 5961623047584464555}
+  - component: {fileID: 3726687597908117597}
+  - component: {fileID: 3196492752834246736}
+  - component: {fileID: 2207892274275437050}
   m_Layer: 0
   m_Name: Slot_16
   m_TagString: Untagged
@@ -2739,6 +3129,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 3137908474217516672}
+--- !u!114 &3726687597908117597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534997560864119979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &3196492752834246736
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534997560864119979}
+  m_CullTransparentMesh: 1
+--- !u!114 &2207892274275437050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534997560864119979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1560535113618368616
 GameObject:
   m_ObjectHideFlags: 0
@@ -2749,6 +3189,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3787560211027116653}
   - component: {fileID: 2000463000719623672}
+  - component: {fileID: 8928360977513297365}
+  - component: {fileID: 8572847013904633377}
+  - component: {fileID: 8495626115708946564}
   m_Layer: 0
   m_Name: EquipSlot_0
   m_TagString: Untagged
@@ -2789,6 +3232,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 2676142694220350825}
+--- !u!114 &8928360977513297365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560535113618368616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &8572847013904633377
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560535113618368616}
+  m_CullTransparentMesh: 1
+--- !u!114 &8495626115708946564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560535113618368616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1570721969202584483
 GameObject:
   m_ObjectHideFlags: 0
@@ -2799,6 +3292,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5131625769750102912}
   - component: {fileID: 77511319085340256}
+  - component: {fileID: 5124531289025328878}
+  - component: {fileID: 6084956816726762778}
+  - component: {fileID: 1608419797403994282}
   m_Layer: 0
   m_Name: Slot_11
   m_TagString: Untagged
@@ -2839,6 +3335,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 4618572329151090739}
+--- !u!114 &5124531289025328878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570721969202584483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &6084956816726762778
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570721969202584483}
+  m_CullTransparentMesh: 1
+--- !u!114 &1608419797403994282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570721969202584483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1661789670277175788
 GameObject:
   m_ObjectHideFlags: 0
@@ -4445,6 +4991,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1656461604556303447}
   - component: {fileID: 7478091016185949371}
+  - component: {fileID: 6476134498376615160}
+  - component: {fileID: 2377356235751639507}
+  - component: {fileID: 4008650083811133387}
   m_Layer: 0
   m_Name: Slot_5
   m_TagString: Untagged
@@ -4485,6 +5034,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 8221586880142374582}
+--- !u!114 &6476134498376615160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2516051921990650043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &2377356235751639507
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2516051921990650043}
+  m_CullTransparentMesh: 1
+--- !u!114 &4008650083811133387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2516051921990650043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2556452236759873682
 GameObject:
   m_ObjectHideFlags: 0
@@ -4575,6 +5174,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8428690554941950880}
   - component: {fileID: 2189561325125728961}
+  - component: {fileID: 7903706821408852266}
+  - component: {fileID: 6006641932160439350}
+  - component: {fileID: 5910591242682323288}
   m_Layer: 0
   m_Name: EquipSlot_4
   m_TagString: Untagged
@@ -4615,6 +5217,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 2499277351151071292}
+--- !u!114 &7903706821408852266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2564130570056901677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &6006641932160439350
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2564130570056901677}
+  m_CullTransparentMesh: 1
+--- !u!114 &5910591242682323288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2564130570056901677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2629941217972550866
 GameObject:
   m_ObjectHideFlags: 0
@@ -4914,6 +5566,9 @@ GameObject:
   m_Component:
   - component: {fileID: 349533305795712153}
   - component: {fileID: 5142334320713675478}
+  - component: {fileID: 2722045429649872656}
+  - component: {fileID: 1449572129550075362}
+  - component: {fileID: 7087258224358825346}
   m_Layer: 0
   m_Name: EquipSlot_7
   m_TagString: Untagged
@@ -4954,6 +5609,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1023687148514959351}
+--- !u!114 &2722045429649872656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2769167608114742231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &1449572129550075362
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2769167608114742231}
+  m_CullTransparentMesh: 1
+--- !u!114 &7087258224358825346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2769167608114742231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2884730236010587336
 GameObject:
   m_ObjectHideFlags: 0
@@ -5132,6 +5837,81 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &2902284717960647600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4823677118788484537}
+  - component: {fileID: 5128747119672436819}
+  - component: {fileID: 5331870133643316176}
+  m_Layer: 0
+  m_Name: DragGhost
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4823677118788484537
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2902284717960647600}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1319639560121344919}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5128747119672436819
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2902284717960647600}
+  m_CullTransparentMesh: 1
+--- !u!114 &5331870133643316176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2902284717960647600}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2917395213664174825
 GameObject:
   m_ObjectHideFlags: 0
@@ -6429,6 +7209,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6676965874850051687}
   - component: {fileID: 5140967688304354741}
+  - component: {fileID: 8350308407269488090}
+  - component: {fileID: 7877261549392595874}
+  - component: {fileID: 2876166727847275748}
   m_Layer: 0
   m_Name: EquipSlot_1
   m_TagString: Untagged
@@ -6469,6 +7252,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 6205188062798512033}
+--- !u!114 &8350308407269488090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564527209009888106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &7877261549392595874
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564527209009888106}
+  m_CullTransparentMesh: 1
+--- !u!114 &2876166727847275748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564527209009888106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3568965069665243684
 GameObject:
   m_ObjectHideFlags: 0
@@ -6531,6 +7364,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8999725218819592212}
   - component: {fileID: 6338826425582731531}
+  - component: {fileID: 3927370226107916408}
+  - component: {fileID: 6172295971943527484}
+  - component: {fileID: 5217176933736825811}
   m_Layer: 0
   m_Name: Slot_1
   m_TagString: Untagged
@@ -6571,6 +7407,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 7942529880083948088}
+--- !u!114 &3927370226107916408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3625495157451595551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &6172295971943527484
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3625495157451595551}
+  m_CullTransparentMesh: 1
+--- !u!114 &5217176933736825811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3625495157451595551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3682393025989493584
 GameObject:
   m_ObjectHideFlags: 0
@@ -6885,6 +7771,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3638579558999512171}
   - component: {fileID: 6293537449066373198}
+  - component: {fileID: 7083696303188951562}
+  - component: {fileID: 286482758416125030}
+  - component: {fileID: 1816658475851662204}
   m_Layer: 0
   m_Name: Slot_6
   m_TagString: Untagged
@@ -6925,6 +7814,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 2889109619911351090}
+--- !u!114 &7083696303188951562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799583178337687763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &286482758416125030
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799583178337687763}
+  m_CullTransparentMesh: 1
+--- !u!114 &1816658475851662204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799583178337687763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3811685114135037272
 GameObject:
   m_ObjectHideFlags: 0
@@ -7222,6 +8161,9 @@ GameObject:
   m_Component:
   - component: {fileID: 334852622802267666}
   - component: {fileID: 1341000185574898911}
+  - component: {fileID: 5125151557373655344}
+  - component: {fileID: 5139689583701725890}
+  - component: {fileID: 3613847525805918752}
   m_Layer: 0
   m_Name: Slot_4
   m_TagString: Untagged
@@ -7262,6 +8204,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 255689385941997259}
+--- !u!114 &5125151557373655344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963977246403720360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &5139689583701725890
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963977246403720360}
+  m_CullTransparentMesh: 1
+--- !u!114 &3613847525805918752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963977246403720360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3986247958746015367
 GameObject:
   m_ObjectHideFlags: 0
@@ -7458,6 +8450,9 @@ GameObject:
   m_Component:
   - component: {fileID: 34671752616822428}
   - component: {fileID: 3922150797779027330}
+  - component: {fileID: 4401018041451996869}
+  - component: {fileID: 1614076226471742017}
+  - component: {fileID: 1622999047542481875}
   m_Layer: 0
   m_Name: Slot_10
   m_TagString: Untagged
@@ -7498,6 +8493,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 971551024820536729}
+--- !u!114 &4401018041451996869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4021542219218607934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &1614076226471742017
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4021542219218607934}
+  m_CullTransparentMesh: 1
+--- !u!114 &1622999047542481875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4021542219218607934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4091294698794101782
 GameObject:
   m_ObjectHideFlags: 0
@@ -8277,6 +9322,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7532357979153121643}
   - component: {fileID: 7520191692304762692}
+  - component: {fileID: 6930643741330517759}
+  - component: {fileID: 5495889915056177890}
+  - component: {fileID: 5446917230153507847}
   m_Layer: 0
   m_Name: EquipSlot_2
   m_TagString: Untagged
@@ -8317,6 +9365,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1914401740343069196}
+--- !u!114 &6930643741330517759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631282123815539843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &5495889915056177890
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631282123815539843}
+  m_CullTransparentMesh: 1
+--- !u!114 &5446917230153507847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631282123815539843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4635053956008390978
 GameObject:
   m_ObjectHideFlags: 0
@@ -8805,6 +9903,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7385655005894245038}
   - component: {fileID: 6185240330562678117}
+  - component: {fileID: 8518359931225727077}
+  - component: {fileID: 50885477615085531}
+  - component: {fileID: 5574288994211670472}
   m_Layer: 0
   m_Name: Slot_7
   m_TagString: Untagged
@@ -8845,6 +9946,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 7705054499677329398}
+--- !u!114 &8518359931225727077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4821255297171547421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &50885477615085531
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4821255297171547421}
+  m_CullTransparentMesh: 1
+--- !u!114 &5574288994211670472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4821255297171547421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4864273871205604334
 GameObject:
   m_ObjectHideFlags: 0
@@ -8855,6 +10006,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8530674677489421764}
   - component: {fileID: 4548626340284184680}
+  - component: {fileID: 3199722807052088698}
+  - component: {fileID: 5874365511123717311}
+  - component: {fileID: 1311688884715674830}
   m_Layer: 0
   m_Name: Slot_15
   m_TagString: Untagged
@@ -8895,6 +10049,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 2941268964003757972}
+--- !u!114 &3199722807052088698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864273871205604334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &5874365511123717311
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864273871205604334}
+  m_CullTransparentMesh: 1
+--- !u!114 &1311688884715674830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864273871205604334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &4899983099929368783
 GameObject:
   m_ObjectHideFlags: 0
@@ -9335,6 +10539,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3378641910283508885}
   - component: {fileID: 8265994240391921932}
+  - component: {fileID: 2121677739665131794}
+  - component: {fileID: 5382491873731886265}
+  - component: {fileID: 8963020228941536623}
   m_Layer: 0
   m_Name: EquipSlot_6
   m_TagString: Untagged
@@ -9375,6 +10582,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 2085625540013614511}
+--- !u!114 &2121677739665131794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089698951245442962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &5382491873731886265
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089698951245442962}
+  m_CullTransparentMesh: 1
+--- !u!114 &8963020228941536623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5089698951245442962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5157903169278669869
 GameObject:
   m_ObjectHideFlags: 0
@@ -9461,6 +10718,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8313395616003444448}
   - component: {fileID: 8660449899059779385}
+  - component: {fileID: 2166646655791729874}
+  - component: {fileID: 1287258414848031908}
+  - component: {fileID: 5976181761689786549}
   m_Layer: 0
   m_Name: Slot_13
   m_TagString: Untagged
@@ -9501,6 +10761,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 7730879663181416258}
+--- !u!114 &2166646655791729874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5238017888820218872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &1287258414848031908
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5238017888820218872}
+  m_CullTransparentMesh: 1
+--- !u!114 &5976181761689786549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5238017888820218872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5283838016090080621
 GameObject:
   m_ObjectHideFlags: 0
@@ -10300,6 +11610,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6278765436205348439}
   - component: {fileID: 2596298317097948137}
+  - component: {fileID: 8889647657338005411}
+  - component: {fileID: 812726219891538315}
+  - component: {fileID: 7920591104991316804}
   m_Layer: 0
   m_Name: Slot_19
   m_TagString: Untagged
@@ -10340,6 +11653,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1980805989937587378}
+--- !u!114 &8889647657338005411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869599712195300130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &812726219891538315
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869599712195300130}
+  m_CullTransparentMesh: 1
+--- !u!114 &7920591104991316804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869599712195300130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5882832940899819097
 GameObject:
   m_ObjectHideFlags: 0
@@ -11537,6 +12900,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8793774270499339879}
   - component: {fileID: 6128517075193901361}
+  - component: {fileID: 1905417922827063401}
+  - component: {fileID: 3343113416772844370}
+  - component: {fileID: 3731880930084799910}
   m_Layer: 0
   m_Name: Slot_18
   m_TagString: Untagged
@@ -11577,6 +12943,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1537767601644385888}
+--- !u!114 &1905417922827063401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6796198023000095867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &3343113416772844370
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6796198023000095867}
+  m_CullTransparentMesh: 1
+--- !u!114 &3731880930084799910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6796198023000095867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &6821829038192242701
 GameObject:
   m_ObjectHideFlags: 0
@@ -13735,6 +15151,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7342656930916794938}
   - component: {fileID: 8847140254706912154}
+  - component: {fileID: 5873608418513058356}
+  - component: {fileID: 629331787409261055}
+  - component: {fileID: 7697395930586481892}
   m_Layer: 0
   m_Name: Slot_14
   m_TagString: Untagged
@@ -13775,6 +15194,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 5119700372004126325}
+--- !u!114 &5873608418513058356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8055231782760020221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &629331787409261055
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8055231782760020221}
+  m_CullTransparentMesh: 1
+--- !u!114 &7697395930586481892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8055231782760020221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8211713276429382053
 GameObject:
   m_ObjectHideFlags: 0
@@ -14187,6 +15656,9 @@ GameObject:
   m_Component:
   - component: {fileID: 856808326186592242}
   - component: {fileID: 4903016498931363908}
+  - component: {fileID: 7224607995477298219}
+  - component: {fileID: 6676021025302405277}
+  - component: {fileID: 3257477559784906061}
   m_Layer: 0
   m_Name: EquipSlot_5
   m_TagString: Untagged
@@ -14227,6 +15699,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 1436062750672640824}
+--- !u!114 &7224607995477298219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386926684865806354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &6676021025302405277
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386926684865806354}
+  m_CullTransparentMesh: 1
+--- !u!114 &3257477559784906061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386926684865806354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8538441438140679743
 GameObject:
   m_ObjectHideFlags: 0
@@ -14237,6 +15759,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8432123152361456238}
   - component: {fileID: 7907797380363184231}
+  - component: {fileID: 2284441160376862143}
+  - component: {fileID: 3678093114638388186}
+  - component: {fileID: 5502896947853276439}
   m_Layer: 0
   m_Name: Slot_2
   m_TagString: Untagged
@@ -14277,6 +15802,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 5474459812103881900}
+--- !u!114 &2284441160376862143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538441438140679743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &3678093114638388186
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538441438140679743}
+  m_CullTransparentMesh: 1
+--- !u!114 &5502896947853276439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8538441438140679743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8573784322362826196
 GameObject:
   m_ObjectHideFlags: 0
@@ -14764,6 +16339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3286297664444401267}
   - component: {fileID: 5369369563419542662}
+  - component: {fileID: 7307196844219233546}
+  - component: {fileID: 4511427303461025510}
+  - component: {fileID: 8827727411198884784}
   m_Layer: 0
   m_Name: EquipSlot_8
   m_TagString: Untagged
@@ -14804,6 +16382,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotUI
   iconImage: {fileID: 4677086573541121186}
+--- !u!114 &7307196844219233546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8707745839234614385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63142af1c5993a4da198b6a998ca4e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventorySlotDragHandler
+--- !u!222 &4511427303461025510
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8707745839234614385}
+  m_CullTransparentMesh: 1
+--- !u!114 &8827727411198884784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8707745839234614385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8780141830922314879
 GameObject:
   m_ObjectHideFlags: 0

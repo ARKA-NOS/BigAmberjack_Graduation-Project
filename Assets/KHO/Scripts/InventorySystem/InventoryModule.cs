@@ -76,6 +76,31 @@ namespace KHO.Scripts.InventorySystem
             return true;
         }
 
+        public bool TryMoveItem(InventorySlotType fromType, int fromSlot, InventorySlotType toType, int toSlot)
+        {
+            ItemContainer from = Inventory.Get(fromType);
+            ItemContainer to = Inventory.Get(toType);
+            if (IsLocked || !from.IsValidSlot(fromSlot) || !to.IsValidSlot(toSlot) || from[fromSlot] == null) return false;
+            if (fromType == toType && fromSlot == toSlot) return false;
+
+            ItemInstance moving = from[fromSlot];
+            ItemInstance swapped = to.Set(toSlot, moving);
+            from.Set(fromSlot, swapped);
+
+            // 같은 칸 묶음 안에서 옮기면 장착 여부가 그대로이므로 효과도 그대로 둔다.
+            if (fromType != toType)
+            {
+                ItemInstance unequipped = fromType == InventorySlotType.Equipment ? moving : swapped;
+                ItemInstance equipped = toType == InventorySlotType.Equipment ? moving : swapped;
+                unequipped?.RemoveEffects(_owner);
+                equipped?.ApplyEffects(_owner);
+            }
+
+            OnSlotChanged?.Invoke(fromType, fromSlot);
+            NotifySlotChanged(toType, toSlot);
+            return true;
+        }
+
         public bool TryRemoveItem(int index)
             => Inventory.TryResolve(index, out InventorySlotType type, out int slot) && TryRemoveItem(type, slot);
 

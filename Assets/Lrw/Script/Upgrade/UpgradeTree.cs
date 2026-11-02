@@ -32,6 +32,35 @@ namespace Lrw.Script.Upgrade
         public bool IsUpgrade(UpgradeNodeSO nodeSo)
             => Data.GetValueOrDefault(nodeSo, false);
 
+        public bool CanUpgrade(UpgradeNodeSO nodeSo)
+        {
+            if (nodeSo == null || !Data.ContainsKey(nodeSo)) return false;
+            if (Data[nodeSo]) return false;
+
+            UpgradeNodeSO[] prevNodes = nodeSo.PrevNodes;
+            if (prevNodes != null && prevNodes.Length > 0)
+            {
+                bool prevUpgraded = false;
+                foreach (UpgradeNodeSO prev in prevNodes)
+                {
+                    if (!IsUpgrade(prev)) continue;
+                    prevUpgraded = true;
+                    break;
+                }
+                if (!prevUpgraded) return false;
+            }
+
+            if (string.IsNullOrEmpty(nodeSo.ExclusiveGroup)) return true;
+
+            foreach (KeyValuePair<UpgradeNodeSO, bool> pair in Data)
+            {
+                if (!pair.Value || pair.Key == nodeSo) continue;
+                if (pair.Key.ExclusiveGroup == nodeSo.ExclusiveGroup) return false;
+            }
+
+            return true;
+        }
+
         public void UpgradeOwner(ModuleOwner owner)
         {
             if (owner == null) return;

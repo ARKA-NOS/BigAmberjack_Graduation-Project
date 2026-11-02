@@ -4,7 +4,6 @@ using DevLib.ModuleSystem;
 using KHO.Scripts.InventorySystem;
 using KHO.Scripts.ItemSystem;
 using Lrw.Script._Core._EventSystem;
-using Lrw.Script._Core._Manager;
 using Lrw.Script._Core._ServiceLocator;
 using Lrw.Script._Core.SceneSystem;
 using Lrw.Script.Agent.Players;
@@ -26,6 +25,7 @@ namespace SDW.Scripts.RunEnd
 
         private bool _isEnded;
         private bool _isLeaving;
+        private RunEndReason _endReason;
 
         private void OnEnable()
         {
@@ -44,6 +44,7 @@ namespace SDW.Scripts.RunEnd
                 return;
 
             _isEnded = true;
+            _endReason = evt.Reason;
 
             IPlayerController player = ServiceLocator.Get<IPlayerController>();
             if (player is Object playerObject && playerObject != null)
@@ -105,21 +106,12 @@ namespace SDW.Scripts.RunEnd
 
             _isLeaving = true;
             BindResult(null);
-            DestroyGameManager();
+            RunResetter.ResetRun(_endReason);
 
             if (nextScene != null)
                 SceneManager.LoadScene(nextScene);
             else
                 RestartScene();
-        }
-
-        // GameManager는 DontDestroyOnLoad라 다른 씬(또는 같은 씬)을 불러오면 그 씬의 GameManager와 중복된다.
-        // 기존 것을 먼저 파괴해서(파괴 시 각 매니저의 GameEnd가 호출됨) 새 씬의 GameManager만 남게 한다.
-        private static void DestroyGameManager()
-        {
-            GameManager gameManager = FindAnyObjectByType<GameManager>();
-            if (gameManager != null)
-                Destroy(gameManager.gameObject);
         }
 
         private static void RestartScene()

@@ -12,7 +12,7 @@ namespace DevLib.ModuleSystem
 
         protected virtual void Awake()
         {
-            _moduleDict = GetComponentsInChildren<IModule>().ToDictionary(module => module.GetType());
+            _moduleDict = GetComponentsInChildren<IModule>(true).ToDictionary(module => module.GetType());
             InitializeModules();
             AfterInitializeModules();
         }
@@ -56,9 +56,8 @@ namespace DevLib.ModuleSystem
         }
 
         public T[] GetModules<T>()
-        {
-            return _moduleDict.Values.OfType<T>().ToArray();
-        }
+            => _moduleDict.Values.OfType<T>().ToArray();
+        
 
     }
 }

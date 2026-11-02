@@ -6,10 +6,6 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
 {
     public class EffectList
     {
-        private static readonly IComparer<KeyValuePair<AbstractEffectDataSo, List<IEffect>>> PriorityComparer =
-            Comparer<KeyValuePair<AbstractEffectDataSo, List<IEffect>>>.Create(
-                (x, y) => x.Key.Priority.CompareTo(y.Key.Priority));
-
         public readonly List<EffectViewData> ViewDataList;
         private readonly Dictionary<AbstractEffectDataSo, List<IEffect>> _effects;
         private readonly List<KeyValuePair<AbstractEffectDataSo, List<IEffect>>> _sortedEffects;
@@ -71,5 +67,11 @@ namespace Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System
                 new Gauge(minRemainingTime, shortest.Duration) 
                 : new Gauge(0, 0);
         }
+        
+        private static int PriorityComparer(KeyValuePair<AbstractEffectDataSo, List<IEffect>> x,
+            KeyValuePair<AbstractEffectDataSo, List<IEffect>> y)
+            => x.Key.Priority.CompareTo(y.Key.Priority);
+        
+        
     }
 }

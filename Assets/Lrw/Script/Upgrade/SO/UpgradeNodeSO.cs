@@ -11,6 +11,7 @@ namespace Lrw.Script.Upgrade.SO
         [field:SerializeField,TextArea] public string NodeDescription {get; private set;}
         
         [field:SerializeField] public UpgradeNodeSO[] PrevNodes { get; private set; }
+        [field:SerializeField] public string ExclusiveGroup { get; private set; }
         [field:SerializeField] public Cost[] UpgradeCost { get; private set; }
         [field:SerializeField] public AbstractUpgradeData UpgradeData { get; private set; }
     }

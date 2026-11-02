@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerDashState
   m_EditorClassIdentifier: Assembly-CSharp::Agents.FSM.StateSo
   stateName: DASH
-  className: Lrw.Script.Agent.Players.FSM.PlayerDashState
-  assetIndex: 4
+  className: Lrw.Script.Agent.FSM.States.SkillState
+  assetIndex: 7
   layerIndex: 0
   stateParam: {fileID: 11400000, guid: 4b4e317766d7e2c46903a7e3810d8fec, type: 2}

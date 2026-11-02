@@ -1,5 +1,7 @@
 ﻿using DevLib.ModuleSystem;
+using Lrw.Script._Core._EventSystem;
 using Lrw.Script.Agent.Players.Modules;
+using Lrw.Script.UI.PlayerUI.InteractUI_system;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.InteractSystem
@@ -11,23 +13,15 @@ namespace Lrw.Script.Agent.Players.InteractSystem
         
         [SerializeField] private int resultSize = 10;
         
-        [Header("Interact UI Setting")]
-        [SerializeField] private Transform interactUI;
-        [SerializeField] private Vector2 uiOffset;
-        
         private ContactFilter2D contactFilter;
         
         private ICanInteract _interact;
         
         private Collider2D[] result;
         
-        private Camera _camera;
-        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
-            
-            _camera = Camera.main;
             
             result = new Collider2D[resultSize];
 
@@ -53,7 +47,7 @@ namespace Lrw.Script.Agent.Players.InteractSystem
             _interact = null;
 
             int count = Physics2D.OverlapCircle(transform.position, interactDistance, contactFilter, result);
-
+            
             float minDistance = float.MaxValue;
 
             for (int i = 0; i < count; i++)
@@ -76,18 +70,11 @@ namespace Lrw.Script.Agent.Players.InteractSystem
 
         private void SetInteractUI()
         {
-            if (interactUI == null) return;
+            InteractUISettingEvent evt = InteractUIEvent.InteractUISettingEvent;
             
-            if (_interact != null)
-            {
-                interactUI.gameObject.SetActive(true);
-                Vector2 screenPoint = _camera.WorldToScreenPoint(_interact.Position);
-                interactUI.position = screenPoint + uiOffset;
-            }
-            else
-            {
-                interactUI.gameObject.SetActive(false);
-            }
+            evt.Init(_interact != null, (_interact?.Position ?? Vector3.zero));
+            
+            EventBus<InteractUISettingEvent>.Raise(evt);
         }
 
         private void OnDrawGizmosSelected()

@@ -78,6 +78,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 네임스페이스는 폴더 경로를 따른다(`Lrw.Script.Upgrade`, `Lrw.Script.Agent.Players.FSM`, `DevLib.ModuleSystem`).
 - private 필드는 `_camelCase`. 직렬화 자동 프로퍼티는 `[field: SerializeField] public T X { get; private set; }`.
 - 커밋 메시지는 `feat : ...` 형식 접두사를 쓴다.
-- PR 대상은 `main`이며 `main`에 직접 커밋하지 않는다.
+- PR 대상은 `develop`이며 `develop`과 `main`에 커밋하지 않는다. 저장소 기본 브랜치가 `main`이므로 PR을 만들 때 base를 `develop`으로 지정한다.
 - 각 팀원 영역의 세부 구조/가이드는 해당 폴더의 문서를 참고한다.
 - 팀원별 개인 설정(작업 브랜치, 담당 폴더, 담당 영역 상세 등)은 이 파일이 아니라 git에 올라가지 않는 `CLAUDE.local.md`에 적는다.

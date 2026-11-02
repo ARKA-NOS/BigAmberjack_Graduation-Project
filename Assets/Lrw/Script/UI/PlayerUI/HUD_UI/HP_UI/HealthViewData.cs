@@ -1,11 +1,16 @@
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
-using Lrw.Script.DataStructure;
+﻿using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 
 namespace Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI
 {
     public struct HealthViewData
     {
-        public AbstractHealthSo Data; // 이름, 색, 아이콘, 태그
-        public Gauge Gauge;
+        public AbstractHealthSo HealthSo;
+        public IHealth Health;
+
+        public HealthViewData(AbstractHealthSo healthSo, IHealth health)
+        {
+            HealthSo = healthSo;
+            Health = health;
+        }
     }
 }

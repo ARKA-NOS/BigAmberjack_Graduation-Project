@@ -5,19 +5,20 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.Modules
 {
-    public class PlayerMovement : Module, IControlMovement,IAfterInitModule,ICanInputOnOff
+    public class PlayerMovement : Module, IControlMovement, IAfterInitModule, ICanInputOnOff
     {
         [SerializeField] private StatData moveSpeed;
+        
         private Rigidbody2D _playerRb;
         
         private IRenderer _renderer;
         private IStatModule _statModule;
-        private float _movementDirectionX;
-
+        public float MovementDirectionX { get; private set; }
+        
         private Stat _moveSpeedStat;
-
+        
         private bool _isMoveLock = false;
-
+        
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -35,18 +36,18 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             _moveSpeedStat = _statModule.GetStat(moveSpeed);
         }
-
+        
         public void SetMovementDirectionX(float movementXInput)
         {
-            _movementDirectionX = movementXInput;
+            MovementDirectionX = movementXInput;
         }
-
+        
         public void MoveLock(bool value)
         {
             _isMoveLock = value;
             if(value) _playerRb.linearVelocityX = 0;
         }
-
+        
         private void FixedUpdate()
         {
             MovePlayer();
@@ -56,16 +57,16 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             if (_playerRb == null) return;
             if(_isMoveLock) return;
-            _playerRb.linearVelocityX = _movementDirectionX * _moveSpeedStat.Value;
+            _playerRb.linearVelocityX = MovementDirectionX * _moveSpeedStat.Value;
         }
-
+        
         public void AddForce(Vector2 force, ForceMode2D impulse = ForceMode2D.Impulse) 
             => _playerRb.AddForce(force,impulse);
-
-
+        
         public void SetActive(bool active)
         {
             
         }
+        
     }
 }

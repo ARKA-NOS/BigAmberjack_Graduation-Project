@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2056e540f0e24a49890197edf3382b6, type: 3}
+  m_Name: Room_MiniBoss
+  m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Data.BossRoomDataSO
+  roomPrefab: {fileID: 2034662788396023387, guid: 462e948d40ca56e4f95bc2e43c6b69ed, type: 3}
+  clearCondition: {fileID: 11400000, guid: c573c51b584e5d84aae592bde3bb161d, type: 2}
+  bossPrefab: {fileID: 6244073572630414717, guid: e39d83152f02c2a4a9ec35e9dff5043b, type: 3}
+  minions: []
+  sameSpawnPointSpacing: 1.5

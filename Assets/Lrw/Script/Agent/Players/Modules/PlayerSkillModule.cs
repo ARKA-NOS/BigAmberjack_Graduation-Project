@@ -9,6 +9,8 @@ namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerSkillModule : SkillModule, IPlayerSkillModule,ICanInputOnOff
     {
+        [SerializeField] private SkillSO dashSkill;
+        
         [Header("Skill Key")]
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
@@ -32,6 +34,7 @@ namespace Lrw.Script.Agent.Players.Modules
             _input = _playerController.PlayerInput;
             FDebug.Assert(_input != null,"Input SO is null");
             
+            _input.OnDashKeyPressed += DashKeyPressed;
             _input.OnMeleeSkillKeyPressed += AttackKeyPressed;
             _input.OnSkill1KeyPressed += Skill1KeyPressed;
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
@@ -39,9 +42,10 @@ namespace Lrw.Script.Agent.Players.Modules
             inputActive = true;
             
         }
-
+        
         private void OnDestroy()
         {
+            _input.OnDashKeyPressed -= DashKeyPressed;
             _input.OnMeleeSkillKeyPressed -= AttackKeyPressed;
             _input.OnSkill1KeyPressed -= Skill1KeyPressed;
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
@@ -69,6 +73,9 @@ namespace Lrw.Script.Agent.Players.Modules
             }
         }
         
+        private void DashKeyPressed()
+            => TryUseSkill(dashSkill, true);
+        
         private void AttackKeyPressed(bool pressed)
             => TryUseSkill(meleeSkill, pressed);
         
@@ -76,7 +83,6 @@ namespace Lrw.Script.Agent.Players.Modules
             => TryUseSkill(skill1, pressed);
         private void Skill2KeyPressed(bool pressed)
             => TryUseSkill(skill2, pressed);
-        
 
         private void TryUseSkill(SkillSO skillSo,bool pressed)
         {

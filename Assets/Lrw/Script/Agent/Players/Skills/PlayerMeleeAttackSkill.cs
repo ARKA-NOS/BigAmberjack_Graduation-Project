@@ -26,7 +26,7 @@ namespace Lrw.Script.Agent.Players.Skills
         [Header("DamageCast Setting")]
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
-        
+
         private IRenderer _renderer;
         private IAnimationTrigger _trigger;
         private Animator _animator;
@@ -94,11 +94,13 @@ namespace Lrw.Script.Agent.Players.Skills
             _movement.MoveLock(true);
             _prevSpeed = _animator.speed;
             SetAnimationSpeed();
+            PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
         }
 
         private void OnTrigger()
         {
-            damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce);
+            if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
+                PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
         }
 
         private Vector2 GetMouseDirection()

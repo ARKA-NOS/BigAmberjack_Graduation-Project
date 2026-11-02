@@ -1,14 +1,19 @@
+﻿using System;
+using Lrw.Script.DataStructure;
+using UnityEngine;
+
 namespace Lrw.Script.Agent.HealthSystem.NewHealthSystem
 {
-    /// <summary>
-    /// 체력 하나의 읽기 전용 조회용 인터페이스
-    /// </summary>
     public interface IHealth
     {
-        AbstractHealthSo Data { get; }
-        float Current { get; }
-        float Max { get; }
-        float Normalized { get; }
-        bool IsEmpty { get; }
+        int Priority { get; }
+        float HP { get; }
+        float ApplyDamage(float damage);
+        float ApplyHeal(float heal);
+        void SetHp(float hp);
+        void HealthUpdate();
+        
+        Color GetHealthColor();
+        HealthType GetHealthType();
     }
 }

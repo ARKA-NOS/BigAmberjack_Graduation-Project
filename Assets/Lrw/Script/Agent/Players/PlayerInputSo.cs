@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Lrw.Script.Agent.Players
 {
     [CreateAssetMenu(fileName = "PlayerInput", menuName = "SO/Player input", order = 0)]
-    public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions
+    public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions, Controls.IPlayerUIActions
     {
         public event Action OnDashKeyPressed;
 
@@ -20,9 +20,12 @@ namespace Lrw.Script.Agent.Players
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
         
+        public event Action OnPlatformKeyPressed;
+        
         public event Action OnInteractKeyPressed;
-        public event Action OnInventoryKeyReleased;
-
+        public event Action OnInventoryKeyPressed;
+        public event Action OnTitleKeyPressed;
+        
         private Controls _controls;
         
         public Vector2 MovementKey { get; private set; }
@@ -34,14 +37,30 @@ namespace Lrw.Script.Agent.Players
             {
                 _controls = new Controls();
                 _controls.Player.SetCallbacks(this);
+                _controls.PlayerUI.SetCallbacks(this);
             }
-            _controls.Player.Enable();
+            _controls.PlayerUI.Enable();
+            SetPlayerInputActive(true);
         }
 
         private void OnDisable()
         {
-            if(_controls != null)
+            _controls.PlayerUI.Disable();
+            SetPlayerInputActive(false);
+        }
+
+        public void SetPlayerInputActive(bool active)
+        {
+            if(_controls == null) return;
+            
+            if (active)
+            {
+                _controls.Player.Enable();
+            }
+            else
+            {
                 _controls.Player.Disable();
+            }
         }
         
         
@@ -91,14 +110,26 @@ namespace Lrw.Script.Agent.Players
         public void OnInventory(InputAction.CallbackContext context)
         {
             if(context.started)
-                OnInventoryKeyReleased?.Invoke();
+                OnInventoryKeyPressed?.Invoke();
         }
 
         public void OnMouse(InputAction.CallbackContext context)
         {
             MousePos = context.ReadValue<Vector2>();
         }
-        
+
+        public void OnPlatform(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnPlatformKeyPressed?.Invoke();
+        }
+
+        public void OnTestTitle(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnTitleKeyPressed?.Invoke();
+        }
+
         public Vector2 GetMouseWorldPosition()
             => Camera.main.ScreenToWorldPoint(MousePos);
 

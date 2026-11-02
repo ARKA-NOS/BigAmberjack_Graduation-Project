@@ -1,90 +1,64 @@
-using Lrw.Script.Agent.Players;
-using SDW.Scripts.CoreSystem;
+using DevLib.ModuleSystem;
+using Lrw.Script.Agent.Players.InteractSystem;
 using SDW.Scripts.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SDW.Scripts.Maps
 {
-    // 방과 방 사이를 연결하는 포탈.
-    // 플레이어가 트리거에 닿으면 화면을 Fade로 가린 상태에서 현재 방을 비활성화하고
-    // 목표 방을 활성화한 뒤, 목표 방의 대응 포탈 위치로 플레이어를 이동시킨다.
-    public class Portal : InteractableBase
+    // 다음 방으로만 가는 단방향 출구.
+    // 플레이어의 InteractModule이 이 오브젝트를 찾아 상호작용 키를 누르면, 화면을 Fade로 가린 상태에서
+    // 현재 방을 비활성화하고 다음 방을 활성화한 뒤 다음 방의 Player Spawn Point로 플레이어를 옮긴다.
+    // InteractModule은 MapObject 레이어의 콜라이더에서 이 컴포넌트를 찾으므로, 콜라이더와 같은 오브젝트에 두어야 한다.
+    public class Portal : AbstractInteractObject
     {
-        [SerializeField] private float arrivalOffset = 1.5f;
-        [Tooltip("방에 남은 적이 있을 때 통로를 막는 시각적 문. 비워두면 포탈 비활성화")]
-        [SerializeField] private GameObject doorVisual;
-        [Tooltip("포탈 자체를 가리지 않도록, 문을 포탈에서 방 안쪽으로 얼마나 띄울지.")]
-        [SerializeField] private float doorOffsetDistance = 1f;
+        [Tooltip("출구가 잠겨 있을 때 켜지는 표시(닫힌 문 등). 비워두면 표시 없이 상호작용만 막는다.")]
+        [SerializeField, FormerlySerializedAs("doorVisual")] private GameObject lockedVisual;
 
-        public RoomDirection Direction { get; private set; }
         public RoomController OwnerRoom { get; private set; }
         public RoomController TargetRoom { get; private set; }
-
-        public override bool CanInteract => !_isTransitioning && !_locked;
+        public bool IsLocked { get; private set; }
 
         private ScreenFader _screenFader;
         private Collider2D _col;
-        private PlayerController _pendingPlayer;
-        private bool _locked;
 
         private static bool _isTransitioning;
 
-        // 방을 클리어하기 전까지 문을 잠가 통로를 막는다. RoomController가 호출한다.
-        public void SetLocked(bool locked)
-        {
-            _locked = locked;
-
-            if (doorVisual != null)
-                doorVisual.SetActive(locked);
-            else
-                gameObject.SetActive(!locked);
-        }
-
-        public void Initialize(RoomDirection direction, RoomController ownerRoom, RoomController targetRoom, ScreenFader screenFader)
-        {
-            Direction = direction;
-            OwnerRoom = ownerRoom;
-            TargetRoom = targetRoom;
-            _screenFader = screenFader;
-
-            PositionDoorVisual();
-        }
-
-        // 문을 포탈 위치가 아니라 방 안쪽으로 한 칸 띄워서 배치한다.
-        // 포탈 스프라이트 자체는 가리거나 건드리지 않고, 통로만 별도 오브젝트로 막기 위함.
-        private void PositionDoorVisual()
-        {
-            if (doorVisual == null)
-                return;
-
-            Vector2 inward = -Direction.ToVector2Int();
-            doorVisual.transform.localPosition = (Vector3)(inward * doorOffsetDistance);
-        }
+        // 전환(Fade) 도중 씬이 바뀌면 코루틴이 함께 사라져 _isTransitioning이 true로 남는다.
+        // 탐험이 끝나 씬을 떠날 때 RunResetter가 호출해서 다음 탐험의 포탈이 막히지 않게 한다.
+        public static void ResetTransitionState() => _isTransitioning = false;
 
         private void Awake()
         {
-            // Portal Prefab에 Collider2D가 미리 세팅되어 있지 않은 경우를 대비한 안전장치.
             _col = GetComponent<Collider2D>();
             Debug.Assert(_col != null, "포탈 콜라이더가 없습니다.");
         }
 
-        // TODO: 지금은 PlayerController 컴포넌트를 직접 찾아 감지하지만,
-        // 추후 이벤트 버스 기반 감지로 교체 예정.
-        private void OnTriggerEnter2D(Collider2D other)
+        public void Initialize(RoomController ownerRoom, RoomController targetRoom, ScreenFader screenFader)
         {
-            if (!CanInteract)
-                return;
-
-            PlayerController player = other.GetComponentInParent<PlayerController>();
-            if (player == null)
-                return;
-
-            _pendingPlayer = player;
-            Interaction();
+            OwnerRoom = ownerRoom;
+            TargetRoom = targetRoom;
+            _screenFader = screenFader;
         }
 
-        public override void Interaction()
+        // 방의 출구 조건(RoomDataSO.clearCondition)을 달성하기 전까지 잠근다. RoomController가 호출한다.
+        // 잠기면 콜라이더를 꺼서 InteractModule의 상호작용 대상(과 프롬프트)에서 빠진다.
+        public void SetLocked(bool locked)
         {
+            IsLocked = locked;
+
+            if (_col != null)
+                _col.enabled = !locked;
+
+            if (lockedVisual != null)
+                lockedVisual.SetActive(locked);
+        }
+
+        public override void Interact(ModuleOwner owner)
+        {
+            if (IsLocked || _isTransitioning || owner == null)
+                return;
+
             if (TargetRoom == null)
             {
                 Debug.LogWarning($"{name} : 이동할 목표 방을 찾을 수 없습니다.");
@@ -93,8 +67,8 @@ namespace SDW.Scripts.Maps
 
             RoomController ownerRoom = OwnerRoom;
             RoomController targetRoom = TargetRoom;
-            Vector3 spawnPosition = GetArrivalPosition(targetRoom);
-            PlayerController player = _pendingPlayer;
+            Transform player = owner.transform;
+            Vector3 spawnPosition = targetRoom.GetPlayerSpawnPosition();
 
             _isTransitioning = true;
 
@@ -106,27 +80,17 @@ namespace SDW.Scripts.Maps
                 targetRoom.gameObject.SetActive(true);
                 targetRoom.Enter();
 
-                player.transform.position = spawnPosition;
+                player.position = spawnPosition;
 
                 Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
                 if (playerBody != null)
+                {
                     playerBody.position = spawnPosition;
+                    playerBody.linearVelocity = Vector2.zero;
+                }
 
                 _isTransitioning = false;
             });
-        }
-
-        // 목표 방에서 이번 포탈과 대응하는(반대 방향) 포탈 위치를 찾아,
-        // 이동해온 방향으로 조금 더 들어간 지점을 도착 위치로 삼는다.
-        private Vector3 GetArrivalPosition(RoomController targetRoom)
-        {
-            RoomDefinition targetDefinition = targetRoom.Definition;
-            Transform arrivalPoint = targetDefinition != null ? targetDefinition.GetPortalPoint(Direction.Opposite()) : null;
-
-            Vector3 basePosition = arrivalPoint != null ? arrivalPoint.position : targetRoom.transform.position;
-            Vector3 inwardDirection = (Vector3)(Vector2)Direction.ToVector2Int();
-
-            return basePosition + inwardDirection * arrivalOffset;
         }
     }
 }

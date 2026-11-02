@@ -1,6 +1,6 @@
 using CTJ.Enemies.Bosses;
 using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem;
+using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -43,7 +43,7 @@ namespace CTJ.Testing
             GUILayout.Label($"Target hits: {probe?.ReceivedHitCount ?? 0} / damage: {probe?.TotalDamage ?? 0}");
             if (boss != null)
             {
-                GUILayout.Label($"Boss HP: {boss.GetModule<IHealthModule>()?.CurrentHealth} / 2500 | {boss.CurrentState}");
+                GUILayout.Label($"Boss HP: {boss.GetModule<INewHealthModule>()?.CurrentHealth} / 2500 | {boss.CurrentState}");
                 GUILayout.Label($"Invulnerable: {boss.IsInvulnerable} | Laser used: {boss.HasUsedLaserPhase} | Passes: {boss.CompletedTraversals}/3");
                 if (GUILayout.Button("Deal 250 damage")) Hit(250f);
                 if (GUILayout.Button("Deal 1500 damage (2500 -> 1000)")) Hit(1500f);

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Lrw.Script.Agent
 {
+    [RequireComponent(typeof(Animator))]
     public class AgentRenderer : Module, IRenderer,IAnimationTrigger
     {
         public Animator Animator { get; private set; }
@@ -13,27 +14,26 @@ namespace Lrw.Script.Agent
             base.Initialize(owner);
             Animator = GetComponent<Animator>();
         }
-
-        public void PlayClip(int clipHash, int layerIndex = 0)
+        
+        public void PlayClip(int clipHash, int layerIndex = 0, float normalizedTime = 0f)
         {
-            Animator.Play(clipHash, layerIndex);
+            Animator.Play(clipHash, layerIndex, normalizedTime);
         }
-
+        
         public void SetAnimatorFloat(int idHash, float value)
         {
             Animator.SetFloat(idHash, value);
         }
-
+        
         public void SetFlip(float dir)
         {
             if(Mathf.Approximately(dir,0f)) return;
             transform.rotation = Quaternion.Euler(0f, dir > 0 ? 0f : 180f, 0f);
         }
-
+        
         public Vector3 GetRight()
             => transform.right;
-
-
+        
         #region IAnimationTrigger
         public event Action OnAnimationEnd;
         public event Action OnAttackTrigger;

@@ -39,6 +39,7 @@ namespace SDW.Scripts.Maps
 
         public IReadOnlyList<Transform> EnemySpawnPoints => enemySpawnPoints;
         public IReadOnlyList<EnemyBase> SpawnedEnemies => _spawnedEnemies;
+        public IReadOnlyList<EncounterZone> EncounterZones => _encounterZones;
 
         public void Initialize(RoomDataSO data, int index, EnemySpawnPortal enemySpawnPortalPrefab)
         {

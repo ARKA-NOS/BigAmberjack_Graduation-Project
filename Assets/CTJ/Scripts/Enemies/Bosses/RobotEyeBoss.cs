@@ -59,6 +59,7 @@ namespace CTJ.Enemies.Bosses
                 enabled = false;
                 return;
             }
+            laser.MatchArenaHeight(_arena);
             Flight.Place(_arena.IntroPosition);
             Change(RobotEyeBossState.Dormant);
         }
@@ -82,6 +83,7 @@ namespace CTJ.Enemies.Bosses
             if (IsDead || HasUsedLaserPhase || NewHealthModule == null || NewHealthModule.CurrentHealth > laserHealthThreshold ||
                 !Skills.IsSkillEnabled(laser))
                 return false;
+            laser.MatchArenaHeight(_arena);
             HasUsedLaserPhase = true; // 취소/재진입/추가 피격보다 먼저 1회 사용을 확정합니다.
             _introFinished = true;
             Skills.StopAttack();
@@ -198,7 +200,7 @@ namespace CTJ.Enemies.Bosses
                     if (!_skillStarted && !Skills.IsSkillEnabled(laser)) AbortLaser();
                     else if (!_skillStarted) _skillStarted = Skills.TryUseSpecifiedSkill(laser);
                     else if (!Skills.IsBusy) AbortLaser();
-                    else if (laser.IsFiring && !_sweepMoving)
+                    else if (laser.IsTraversalReady && !_sweepMoving)
                     {
                         _sweepMoving = true;
                         Flight.MoveTo(_arena.GetOutsidePoint(_sweepDestination.x >= _arena.Center.x, BodyRadius,
@@ -232,7 +234,7 @@ namespace CTJ.Enemies.Bosses
         private void FixedTick(RobotEyeBossState state)
         {
             Flight.Tick();
-            if (state != RobotEyeBossState.LaserSweep || !laser.IsFiring) return;
+            if (state != RobotEyeBossState.LaserSweep || !laser.IsTraversalReady) return;
             laser.TickBeam();
             if (!_sweepMoving) return;
             bool crossedWall = _sweepDestination.x >= _arena.Center.x

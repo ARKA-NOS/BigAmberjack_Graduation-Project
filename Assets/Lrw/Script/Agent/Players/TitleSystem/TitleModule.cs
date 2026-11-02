@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DevLib.ModuleSystem;
+using Lrw.Script._Core._EventSystem;
 using Lrw.Script._Core.SceneSystem;
 using Lrw.Script.Agent.Players.QuestSystem;
 using Lrw.Script.DataStructure;
 using Lrw.Script.UI.AlarmUI;
 using Lrw.Script.UI.PlayerUI.Title_UI;
+using SDW.Scripts.Maps;
 using UnityEngine;
 
 namespace Lrw.Script.Agent.Players.TitleSystem
@@ -38,11 +40,13 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             _waitingTitles = new();
             _allTitles = new();
             _stageTitles = new();
+            
+            EventBus<MapEnteredEvent>.Subscribe(SceneMoveEvent);
 
             if(titleListViewModel != null)
                 titleListViewModel.Bind(new TitleListViewData(new()));
         }
-
+        
         public void AfterInit()
         {
             CollectAllTitles();
@@ -64,6 +68,11 @@ namespace Lrw.Script.Agent.Players.TitleSystem
             }
         }
 
+        private void OnDestroy()
+        {
+            EventBus<MapEnteredEvent>.UnSubscribe(SceneMoveEvent);
+        }
+
         private void CollectAllTitles()
         {
             if (titleGroups == null) return;
@@ -81,7 +90,12 @@ namespace Lrw.Script.Agent.Players.TitleSystem
         }
 
         #region Stage
-
+        
+        private void SceneMoveEvent(MapEnteredEvent value)
+        {
+            
+        }
+        
         public void ChangeStage(SceneSo stage)
         {
             CurrentStage = stage;

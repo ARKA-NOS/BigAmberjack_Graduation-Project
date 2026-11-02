@@ -1,6 +1,7 @@
 ﻿using System;
 using DevLib.ModuleSystem;
 using Lrw.Script._Core._Debug;
+using Lrw.Script._Core.PhysicsSystem;
 using UnityEngine;
 
 namespace Lrw.Script.Agent
@@ -14,17 +15,10 @@ namespace Lrw.Script.Agent
     public class GroundChecker : Module, IGroundChecker
     {
         [Header("Base")]
-        [SerializeField] private CheckerShape checkerShape;
-        [SerializeField] private bool gizmosEnabled = true;
-        [SerializeField] private Vector2 chackOffset = Vector2.zero;
+        [SerializeField] private OverlapSO checkSO;
         [SerializeField] private LayerMask whatIsGround;
-
-        [Header("Square")]
-        [SerializeField] private Vector2 squareSize = Vector2.one;
-
-        [Header("Circle")]
-        [SerializeField] private float circleRadius = 1f;
-
+        [SerializeField] private bool gizmosEnabled = true;
+        
         private Rigidbody2D _rigid;
         
         public override void Initialize(ModuleOwner owner)
@@ -32,8 +26,10 @@ namespace Lrw.Script.Agent
             base.Initialize(owner);
             _rigid = _owner.GetComponent<Rigidbody2D>();
             FDebug.Assert(_rigid != null,"[GroundChecker] Rigidbody2D is not found");
+            
+            FixedIsGround = false;
         }
-
+        
         public bool FixedIsGround { get; private set; }
 
         private void FixedUpdate()
@@ -46,45 +42,16 @@ namespace Lrw.Script.Agent
         public bool IsGroundChecking()
         {
             if (Mathf.Abs(_rigid.linearVelocityY) >= FallSpeed) return false;
-            Vector2 checkPosition = (Vector2)transform.position + chackOffset;
-            
-            return checkerShape switch
-            {
-                CheckerShape.Square =>
-                    Physics2D.OverlapBox(
-                        checkPosition,
-                        squareSize,
-                        0f,
-                        whatIsGround) != null,
-
-                CheckerShape.Circle =>
-                    Physics2D.OverlapCircle(
-                        checkPosition,
-                        circleRadius,
-                        whatIsGround) != null,
-
-                _ => false
-            };
+            return checkSO.Overlap(transform.position,whatIsGround);
         }
-
+        
         private void OnDrawGizmos()
         {
-            if (!gizmosEnabled)
+            if (!gizmosEnabled || checkSO == null)
                 return;
 
-            Vector2 checkPosition = (Vector2)transform.position + chackOffset;
-
-            Gizmos.color = Color.yellow;
-            switch (checkerShape)
-            {
-                case CheckerShape.Square:
-                    Gizmos.DrawWireCube(checkPosition, squareSize);
-                    break;
-
-                case CheckerShape.Circle:
-                    Gizmos.DrawWireSphere(checkPosition, circleRadius);
-                    break;
-            }
+            checkSO.DrawGizmos(transform.position);
         }
+        
     }
 }

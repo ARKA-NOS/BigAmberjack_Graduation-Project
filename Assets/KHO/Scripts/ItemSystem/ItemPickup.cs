@@ -42,6 +42,14 @@ namespace KHO.Scripts.ItemSystem
         public Vector2 TooltipPosition => Position + tooltipOffset;
         public float DestroyProgress => _holder == null ? 0f : Mathf.Clamp01(_holdTime / destroyHoldTime);
 
+        // 코드로 생성한 픽업(상자 보상 등)에 아이템을 지정한다. Start보다 먼저 호출해야 한다.
+        public void Init(ItemSO newItem)
+        {
+            item = newItem;
+            if (iconRenderer != null && item != null)
+                iconRenderer.sprite = item.Icon;
+        }
+
         private void Start()
         {
             if (iconRenderer != null && item != null)

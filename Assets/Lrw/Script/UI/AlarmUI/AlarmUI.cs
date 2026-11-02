@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ namespace Lrw.Script.UI.AlarmUI
         [SerializeField] private Image icon;
         private CanvasGroup canvasGroup;
 
-        private float _initTime;
+        private float _fadeStartTime;
         private float _duration;
 
         private void Awake()
@@ -21,20 +22,20 @@ namespace Lrw.Script.UI.AlarmUI
             canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        public void Init(AlarmData data, float duration)
+        public void Init(AlarmData data, float showTime, float duration)
         {
             title.text = data.Title;
             message.text = data.Message;
             icon.sprite = data.Image;
-            _initTime = Time.time;
+            _fadeStartTime = Time.time + showTime;
             _duration = duration;
         }
 
         private void Update()
         {
-            float alpha = 1 - ((Time.time - _initTime) / _duration);
+            float alpha = Mathf.Clamp01(1 - ((Time.time - _fadeStartTime) / _duration));
             canvasGroup.alpha = alpha;
-
+            
             if (alpha <= 0f)
             {
                 Destroy(gameObject);

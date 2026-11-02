@@ -14,4 +14,5 @@ namespace Lrw.Script.UI.AlarmUI
     
     public class AlarmSendEvent : TemplateEvent<AlarmSendEvent, AlarmData>
     {}
+    
 }

@@ -1924,7 +1924,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7882409123759165663, guid: ae6aa4e1c92bbae4891780db7e37a662, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 442
       objectReference: {fileID: 0}
     - target: {fileID: 7882409123759165663, guid: ae6aa4e1c92bbae4891780db7e37a662, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3122,7 +3122,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0
+  near clip plane: 0.01
   far clip plane: 50
   field of view: 60
   orthographic: 1

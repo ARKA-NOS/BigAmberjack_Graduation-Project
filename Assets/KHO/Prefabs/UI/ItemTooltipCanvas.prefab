@@ -796,12 +796,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.ItemTooltip.ItemTooltipUIBinder
   bindData: {fileID: 11400000, guid: 975cdaf925de7c34dba96df30d000011, type: 2}
-  tooltip: {fileID: 7001607647158621429}
+  view: {fileID: 5501449566510590049}
   screenOffset: {x: 0, y: 30}
-  iconImage: {fileID: 4421311968219370472}
-  nameText: {fileID: 4960727224356280830}
-  infoText: {fileID: 229476839065234717}
-  descriptionText: {fileID: 2849111040087643093}
   destroyHoldFill: {fileID: 2105784037872448184}
 --- !u!1 &3710299263230086153
 GameObject:
@@ -1911,6 +1907,7 @@ GameObject:
   - component: {fileID: 6490319707986649896}
   - component: {fileID: 9184422701584321031}
   - component: {fileID: 8778995744435119532}
+  - component: {fileID: 5501449566510590049}
   m_Layer: 5
   m_Name: Tooltip
   m_TagString: Untagged
@@ -2022,6 +2019,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &5501449566510590049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7392505579297737208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daf1d21b5f4b99d4f96cda15dd3ae588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.ItemTooltip.ItemTooltipView
+  iconImage: {fileID: 4421311968219370472}
+  nameText: {fileID: 4960727224356280830}
+  infoText: {fileID: 229476839065234717}
+  descriptionText: {fileID: 2849111040087643093}
 --- !u!1 &7788053218222131321
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,8 +70,9 @@ namespace SDW.Scripts.Maps.Encounter
         {
             if (_room == null || encounter == null || encounter.Waves.Count == 0)
             {
+                // 이 구역을 기다리는 클리어 조건이 멈추지 않도록 끝난 것으로 알린다.
                 Debug.LogWarning($"{name} : 방 또는 Encounter가 없어 전투를 시작하지 않습니다.");
-                CurrentState = State.Cleared;
+                Finish();
                 return;
             }
 

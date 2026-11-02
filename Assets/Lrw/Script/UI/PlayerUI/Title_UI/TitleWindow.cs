@@ -32,12 +32,14 @@ namespace Lrw.Script.UI.PlayerUI.Title_UI
         {
             _canvasGroup.alpha = 1;
             _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
         }
 
         public override void Close()
         {
            _canvasGroup.alpha = 0;
            _canvasGroup.interactable = false;
+           _canvasGroup.blocksRaycasts = false;
         }
         
     }

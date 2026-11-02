@@ -9,6 +9,10 @@ namespace CTJ.Enemies.Bosses
     // 체력/사망/보상은 EnemyBase를 재사용하고, 패턴과 비행만 보스 쪽으로 분리합니다.
     public abstract class BossBase : EnemyBase
     {
+        [Header("Boss")]
+        [SerializeField] private string displayName = "보스";
+        public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? "보스" : displayName;
+
         private readonly List<EnemyProjectile> _ownedProjectiles = new List<EnemyProjectile>();
         private Transform _observedTarget;
         private bool _hadTarget;

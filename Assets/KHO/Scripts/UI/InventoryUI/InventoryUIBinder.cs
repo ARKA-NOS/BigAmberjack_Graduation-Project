@@ -52,6 +52,7 @@ namespace KHO.Scripts.UI.InventoryUI
                 _slots[i].gameObject.SetActive(shown);
                 if (!shown) continue;
 
+                _slots[i].Setup(target, i);
                 bool unlocked = i < container.Capacity;
                 _slots[i].SetLocked(!unlocked);
                 if (unlocked) _slots[i].SetItem(container[i]);

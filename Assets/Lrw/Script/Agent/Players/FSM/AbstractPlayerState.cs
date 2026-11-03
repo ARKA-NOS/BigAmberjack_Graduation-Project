@@ -42,10 +42,12 @@ namespace Lrw.Script.Agent.Players.FSM
             Player.PlayerInput.OnJumpKeyPressed -= HandleJump;
             ControlJumper.IsJumpFall = false;
         }
+
+        private bool PlatformKeyPressed => Player.PlayerInput.PlatformKey;
         
         protected virtual void HandleJump()
         {
-            if (GroundChecker.FixedIsGround || ControlMultiJumper.CanDoubleJump())
+            if ((GroundChecker.FixedIsGround && !PlatformKeyPressed) || ControlMultiJumper.CanDoubleJump())
             {
                 Player.ChangeState(PlayerStateEnum.JUMP);
             }

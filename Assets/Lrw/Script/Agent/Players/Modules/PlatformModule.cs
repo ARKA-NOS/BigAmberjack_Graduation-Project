@@ -32,12 +32,12 @@ namespace Lrw.Script.Agent.Players.Modules
 
             _isPlatformPass = false;
             
-            playerInput.OnJumpKeyReleased += OnPlatformMoveKeyPressed;
+            playerInput.OnJumpKeyPressed += OnPlatformMoveKeyPressed;
         }
         
         private void OnDestroy()
         {
-            playerInput.OnJumpKeyReleased -= OnPlatformMoveKeyPressed;
+            playerInput.OnJumpKeyPressed -= OnPlatformMoveKeyPressed;
         }
         
         private void OnPlatformMoveKeyPressed()

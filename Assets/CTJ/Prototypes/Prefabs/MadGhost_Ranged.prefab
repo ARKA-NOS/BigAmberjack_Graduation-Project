@@ -172,6 +172,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyLocomotionAnimator
   enemy: {fileID: 2107554339894670820}
+--- !u!1 &1650891034688693757
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7986858678354260397}
+  - component: {fileID: 405027436703674317}
+  m_Layer: 8
+  m_Name: ParticleModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7986858678354260397
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650891034688693757}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.575, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2151710724508395455}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &405027436703674317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650891034688693757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fd331d9a8767442a2ee098061942ed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyParticleModule
+  fallbackOrigin: {fileID: 7986858678354260397}
+  useHitPoint: 1
+  maxHitPointDistance: 3
+  effectScale: 1
+  hitEffects:
+  - label: Polygon Blood Spray
+    enabled: 1
+    prefab: {fileID: 6293476830590490486, guid: b64e1080b6b8831419f2529d63607fb2, type: 3}
+    randomPrefabs: []
+    scale: 1
+    offset: {x: 0, y: 0}
+    alignToHitDirection: 1
+    angleOffset: 0
+  maxConcurrentEffects: 24
+  maxEffectLifetime: 6
 --- !u!1 &2240824542533106581
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,6 +345,7 @@ MonoBehaviour:
   normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
   hitColor: {r: 1, g: 1, b: 1, a: 1}
   width: 2
+  outerSilhouetteOnly: 0
   hitDuration: 0.25
 --- !u!1 &6205686831997271556
 GameObject:
@@ -329,6 +389,7 @@ Transform:
   - {fileID: 8810647111667330061}
   - {fileID: 9200020002}
   - {fileID: 1929952183911065176}
+  - {fileID: 7986858678354260397}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6860041732567769696
@@ -654,6 +715,7 @@ MonoBehaviour:
     useSkill: 1
     useForAutomaticSelection: 1
     minRange: 0
+    allowCloseAttackWhenRetreatBlocked: 0
     maxRange: 7
     maxHeightDifference: -1
     requireGrounded: 1
@@ -720,7 +782,10 @@ MonoBehaviour:
   damage: 5
   attackAnimator: {fileID: 4331447859663706226}
   attackStateName: Base Layer.Attack
+  preparationStateName:
+  idleStateName:
   recoveryTime: 0.3
+  horizontalAimOnly: 0
   faceTargetDuringPreparation: 0
   showAimLine: 1
   trackTargetDuringPreparation: 0
@@ -772,8 +837,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 1
-  knockbackSpeed: 2
-  knockbackDuration: 0.15
+  knockbackSpeed: 2.5
+  knockbackDuration: 0.2
   hitStunDuration: 0.3
   cancelAttackOnHit: 1
   enableBlink: 1
@@ -787,8 +852,8 @@ MonoBehaviour:
   enableScalePulse: 1
   scaleTargets:
   - {fileID: 2731410536611583012}
-  scalePulseAmount: 0.2
-  scalePulseDuration: 0.2
+  scalePulseAmount: 0.4
+  scalePulseDuration: 0.24
 --- !u!1 &8810647111667330060
 GameObject:
   m_ObjectHideFlags: 0

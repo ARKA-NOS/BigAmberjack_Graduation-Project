@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using CTJ.Enemies.FSM;
 using DevLib.BattleSystem;
@@ -28,7 +29,7 @@ namespace CTJ.Enemies
         [Header("Death")]
         [Tooltip("선택 사항. 사망 시 Base Layer.Death 상태를 재생합니다.")]
         [SerializeField] private Animator deathAnimator;
-        [Tooltip("사망 후 제거까지의 시간. 사망 클립 길이보다 길게 둡니다.")]
+        [Tooltip("마지막 피격 연출이 끝나고 사망 애니메이션을 시작한 뒤 제거까지의 시간.")]
         [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
 
         private Rigidbody2D _rigidbody;
@@ -40,6 +41,8 @@ namespace CTJ.Enemies
         private EnemyCurrencyRewardModule _currencyReward;
         private EnemyDeathModule _death;
         private StateMachine<EnemyStateType> _stateMachine;
+        private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? _pendingHit;
+        private bool _deathFinalized;
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
@@ -47,6 +50,9 @@ namespace CTJ.Enemies
         public float AttackRange => _skills != null ? _skills.MaximumRange : 0f;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
+        public bool IsPlayingDeathReaction { get; private set; }
+        // 실제 HP가 줄어든 타격만 전달합니다. 치명타격도 포함하며, 피격 위치/방향을 보존합니다.
+        public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
         internal float MoveSpeed => moveSpeed;
@@ -92,7 +98,11 @@ namespace CTJ.Enemies
 
         private void FixedUpdate()
         {
-            if (IsDead) return;
+            if (IsDead)
+            {
+                if (IsPlayingDeathReaction && _hitReaction != null) _hitReaction.TickReaction();
+                return;
+            }
             if (_hitReaction != null && _hitReaction.TickReaction()) return;
             FixedUpdateAI();
         }
@@ -239,31 +249,65 @@ namespace CTJ.Enemies
                 amount <= 0f || float.IsNaN(amount) || float.IsInfinity(amount))
                 return;
 
-            NewHealthModule.ApplyDamage(amount);
-            // HP 0이 되는 피해는 사망 연출을 우선합니다. 깜빡임은 무적 시간을 만들지 않습니다.
-            if (!IsDead && _hitReaction != null) _hitReaction.React(damageData, hitDirection);
+            var previousHit = _pendingHit;
+            _pendingHit = (damageData, hitPoint, hitDirection, hitNormal);
+            try { NewHealthModule.ApplyDamage(amount); }
+            finally { _pendingHit = previousHit; }
             OnHit?.Invoke();
         }
 
         private void HandleHealthChanged(float current, float delta, float max)
         {
+            var hit = delta < 0f ? _pendingHit : null;
+            if (hit.HasValue) _pendingHit = null;
             if (current <= 0f)
-                Die();
+                Die(hit);
+            else if (hit.HasValue)
+            {
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
+                DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
+            }
             OnHealthChanged(current, delta, max);
         }
 
         protected virtual void OnHealthChanged(float current, float delta, float max) { }
 
-        private void Die()
+        private void Die((DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? hit = null)
         {
             if (IsDead)
                 return;
 
             // 외부 콜백이나 남은 Animation Event보다 먼저 사망 상태를 확정합니다.
             IsDead = true;
-            if (_hitReaction != null) _hitReaction.ClearReaction();
+            IsPlayingDeathReaction = true;
             _skills?.StopAttack();
             StopAllCoroutines();
+            StopHorizontalMovement();
+            // 지면용 물리 콜라이더는 마지막 넉백이 끝날 때까지 유지합니다.
+            foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
+                if (collider.isTrigger) collider.enabled = false;
+            if (hit.HasValue)
+            {
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
+                DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
+            }
+            if (isActiveAndEnabled) StartCoroutine(FinishDeathAfterReaction());
+            else FinishDeath();
+        }
+
+        private IEnumerator FinishDeathAfterReaction()
+        {
+            while (_hitReaction != null && _hitReaction.RemainingFeedbackTime > 0f)
+                yield return null;
+            FinishDeath();
+        }
+
+        private void FinishDeath()
+        {
+            if (_deathFinalized) return;
+            _deathFinalized = true;
+            IsPlayingDeathReaction = false;
+            if (_hitReaction != null) _hitReaction.ClearReaction();
             _rigidbody.linearVelocity = Vector2.zero;
             _rigidbody.simulated = false;
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
@@ -290,6 +334,8 @@ namespace CTJ.Enemies
 
         protected virtual void OnDisable()
         {
+            // 연출 중 컴포넌트를 꺼도 대기 상태로 남지 않도록 정리합니다.
+            if (IsPlayingDeathReaction) FinishDeath();
             if (_hitReaction != null) _hitReaction.ClearReaction();
             _skills?.StopAttack();
             if (_rigidbody != null) StopHorizontalMovement();

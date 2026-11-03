@@ -116,6 +116,7 @@ namespace CTJ.Tools
             manager.Initialize(); // No GameEnd/save: only runtime data is changed.
             CurrencyData gold = manager.GetCurrency(AssetDatabase.LoadAssetAtPath<CurrencySO>(GoldPath));
             var results = new List<object>();
+            float previousDelta = Time.captureDeltaTime; Time.captureDeltaTime = 1f / 60f;
             try
             {
                 foreach (string relative in Enemies)
@@ -136,6 +137,7 @@ namespace CTJ.Tools
                 Object.Destroy(manager.gameObject);
                 ServiceLocator.Register<ICurrencyManager>(previous);
                 Application.logMessageReceived -= capture;
+                Time.captureDeltaTime = previousDelta;
             }
         }
 
@@ -147,7 +149,8 @@ namespace CTJ.Tools
                 new Vector3(10000f, 0f), Quaternion.identity, stage.transform);
             enemy.GetComponent<Rigidbody2D>().gravityScale = 0f;
             enemy.GetComponentInChildren<EnemyDeathModule>().enabled = false;
-            stage.SetActive(true); enemy.SetTarget(null);
+            BoxCollider2D collector = Collector(stage, new Vector2(10004f, 0f), 2f);
+            stage.SetActive(true); enemy.SetTarget(collector.transform);
             var rewardModule = enemy.GetModule<EnemyCurrencyRewardModule>();
             StatData key = (StatData)new SerializedObject(rewardModule).FindProperty("rewardAmountStat").objectReferenceValue;
             Stat stat = enemy.GetModule<IStatModule>().GetStat(key);
@@ -158,6 +161,13 @@ namespace CTJ.Tools
             INewHealthModule health = enemy.GetModule<INewHealthModule>();
             health.ApplyDamage(health.CurrentHealth + 1f);
             EnemyRewardCoin[] coins = Coins();
+            if (!floor)
+                foreach (EnemyRewardCoin coin in coins)
+                {
+                    var settings = new SerializedObject(coin);
+                    settings.FindProperty("maxAirTime").floatValue = 0.3f;
+                    settings.ApplyModifiedPropertiesWithoutUndo();
+                }
             Check(enemy.IsDead && gold.Count == before, "Death must not award immediately");
             int expectedCount = amount == 0 ? 0 : Math.Min((amount + 2) / 3, 12);
             Check(coins.Length == expectedCount && coins.Sum(c => c.Amount) == amount, "Count / total: " + amount);
@@ -169,16 +179,19 @@ namespace CTJ.Tools
             float maxSpread = 0f, maxHeight = 0f;
             var landed = new Dictionary<EnemyRewardCoin, Vector3>();
             var bounceHeights = new Dictionary<EnemyRewardCoin, float>();
-            var descended = new HashSet<EnemyRewardCoin>();
+            var homing = new HashSet<EnemyRewardCoin>();
             var collectSprites = new HashSet<Sprite>();
             var spinSprites = new HashSet<Sprite>();
-            float end = Time.time + 5f;
+            float end = Time.time + 6f;
             while (coins.Any(c => c != null) && Time.time < end)
             {
                 foreach (EnemyRewardCoin coin in coins.Where(c => c != null))
                 {
-                    maxSpread = Mathf.Max(maxSpread, Mathf.Abs(coin.transform.position.x - deathPosition.x));
-                    maxHeight = Mathf.Max(maxHeight, coin.transform.position.y);
+                    if (!coin.IsHoming && !coin.IsCollecting)
+                    {
+                        maxSpread = Mathf.Max(maxSpread, Mathf.Abs(coin.transform.position.x - deathPosition.x));
+                        maxHeight = Mathf.Max(maxHeight, coin.transform.position.y);
+                    }
                     SpriteRenderer visual = coin.GetComponent<SpriteRenderer>();
                     Check(Mathf.Approximately(visual.color.a, 1f), "Do not alpha-fade the sprite");
                     if (!coin.IsCollecting) spinSprites.Add(visual.sprite);
@@ -189,13 +202,14 @@ namespace CTJ.Tools
                         if (floor) Check(coin.transform.position.y >= 0.09f && coin.transform.position.y < 0.25f, "Landed above floor");
                         bounceHeights[coin] = coin.transform.position.y;
                     }
-                    if (coin.BounceCount > 0)
+                    if (coin.BounceCount > 0 && !homing.Contains(coin) && !coin.IsCollecting)
                     {
-                        if (coin.transform.position.y < bounceHeights[coin] - 0.03f) descended.Add(coin);
                         bounceHeights[coin] = Mathf.Max(bounceHeights[coin], coin.transform.position.y);
                     }
+                    if (coin.IsHoming) homing.Add(coin);
                     if (floor && coin.IsCollecting)
-                        Check(coin.BounceCount == 2 && coin.transform.position.y < 0.25f, "Collect after two bounces, on the floor");
+                        Check(coin.BounceCount == 1 && Vector2.Distance(coin.transform.position, collector.bounds.center) < 0.01f,
+                            "Collect at body center, after one large bounce");
                 }
                 int finishedAmount = coins.Where(c => c != null && c.GetComponent<SpriteRenderer>().enabled).Sum(c => c.Amount);
                 Check(gold.Count - before == amount - finishedAmount, "Only vanished coins may award");
@@ -205,15 +219,15 @@ namespace CTJ.Tools
             if (amount > 0)
             {
                 Check(spinSprites.Count > 1 && collectSprites.Count == 6 && maxHeight > 0.4f, "Spin and full six-frame collect animation");
-                if (floor) Check(landed.Count == expectedCount && descended.Count == expectedCount &&
-                    bounceHeights.All(pair => pair.Value - landed[pair.Key].y > 0.08f && pair.Value - landed[pair.Key].y < 0.4f),
-                    "Every coin physically rises and falls after contact, with a small bounce");
-                if (floor) Check(maxSpread < 4f && maxHeight < deathPosition.y + 1.5f,
+                if (floor) Check(landed.Count == expectedCount && homing.Count == expectedCount &&
+                    bounceHeights.All(pair => pair.Value - landed[pair.Key].y >= 1f && pair.Value - landed[pair.Key].y < 1.4f),
+                    "Bounce at least half the two-unit player height before homing");
+                if (floor) Check(maxSpread < 4f && maxHeight < deathPosition.y + 1.6f,
                     "Modest scatter: " + relative + " spread=" + maxSpread + " height=" + maxHeight + " origin=" + deathPosition);
             }
             stage.SetActive(false); Object.Destroy(stage);
             await Task.Yield();
-            return new { enemy = relative, amount, coins = expectedCount, floor, maxSpread, maxHeight, bounced = descended.Count,
+            return new { enemy = relative, amount, coins = expectedCount, floor, maxSpread, maxHeight, homed = homing.Count,
                 collectFramesSeen = collectSprites.Count };
         }
 
@@ -236,14 +250,15 @@ namespace CTJ.Tools
             {
                 var coin = Object.Instantiate(source, new Vector3(x, 0.2f), Quaternion.identity);
                 var settings = new SerializedObject(coin);
-                settings.FindProperty("upwardSpeedRange").vector2Value = new Vector2(4f, 4f);
+                settings.FindProperty("upwardSpeedRange").vector2Value = new Vector2(5.5f, 5.5f);
                 settings.ApplyModifiedPropertiesWithoutUndo(); // Must clear the one-way platform at a deterministic height.
+                SetCollector(coin, Collector(stage, new Vector2(x + 3f, 0f), 2f).transform);
                 typeof(EnemyRewardCoin).GetMethod("Launch", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                     .Invoke(coin, new object[] { gold, 1, 0.8f });
                 coins.Add(coin);
             }
             var heights = new float[] { -100f, -100f, -100f };
-            float end = Time.time + 2.5f;
+            float end = Time.time + 4f;
             while (coins.Any(c => c != null) && Time.time < end)
             {
                 for (int i = 0; i < coins.Count; i++)
@@ -271,6 +286,64 @@ namespace CTJ.Tools
                 foreach (EnemyRewardCoin coin in Coins()) Object.Destroy(coin.gameObject);
                 root.SetActive(false); Object.Destroy(root);
             }
+        }
+
+        public static async Task<object> RunMagnetPlay()
+        {
+            Check(EditorApplication.isPlaying && SessionState.GetBool("CTJ.Enemy01.Verifying", false) &&
+                SceneManager.GetActiveScene().path == "", "Use isolated verification scene");
+            float previousDelta = Time.captureDeltaTime; Time.captureDeltaTime = 1f / 60f;
+            try
+            {
+                return new { passed = true, cases = await Task.WhenAll(
+                    MagnetCase(13000f, 2f, false), MagnetCase(13100f, 4f, false), MagnetCase(13200f, 2f, true)) };
+            }
+            finally { Time.captureDeltaTime = previousDelta; }
+        }
+
+        private static async Task<object> MagnetCase(float x, float playerHeight, bool delayedTarget)
+        {
+            var stage = new GameObject("Magnet height / moving center / late target");
+            Terrain(stage, new Vector2(x, -0.2f), new Vector2(16f, 0.4f));
+            BoxCollider2D target = Collector(stage, new Vector2(x + 4f, 0f), playerHeight);
+            var gold = new CurrencyData(AssetDatabase.LoadAssetAtPath<CurrencySO>(GoldPath), 0);
+            var coin = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath), new Vector3(x, 0.3f), Quaternion.identity);
+            try
+            {
+                if (!delayedTarget) SetCollector(coin, target.transform);
+                typeof(EnemyRewardCoin).GetMethod("Launch", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    .Invoke(coin, new object[] { gold, 3, 0.5f });
+                float floorY = -100f, apex = -100f, homingAt = -1f;
+                bool moved = false, arrived = false;
+                float until = Time.time + 7f;
+                while (coin != null && Time.time < until)
+                {
+                    if (coin.BounceCount > 0 && floorY == -100f) floorY = coin.transform.position.y;
+                    if (coin.BounceCount > 0 && homingAt < 0f) apex = Mathf.Max(apex, coin.transform.position.y);
+                    if (coin.IsHoming && homingAt < 0f) homingAt = Time.time;
+                    if (delayedTarget && homingAt >= 0f && Time.time - homingAt > 0.4f && !moved)
+                        SetCollector(coin, target.transform);
+                    if (homingAt >= 0f && Time.time - homingAt > (delayedTarget ? 0.4f : 0.05f) && !moved)
+                    {
+                        target.transform.position += new Vector3(2f, 0.75f);
+                        moved = true;
+                    }
+                    if (coin.IsCollecting)
+                    {
+                        Check(Vector2.Distance(coin.transform.position, target.bounds.center) < 0.01f, "Track actual offset body center");
+                        arrived = true;
+                        target.transform.position += new Vector3(0.002f, 0f);
+                    }
+                    if (coin.GetComponent<SpriteRenderer>().enabled) Check(gold.Count == 0, "No payout before vanish");
+                    await Task.Yield();
+                }
+                float height = apex - floorY;
+                Check(height >= playerHeight * 0.5f && Mathf.Abs(height - playerHeight * 0.65f) < 0.04f,
+                    "Bounce height follows body size: " + height);
+                Check(coin == null && gold.Count == 3 && moved && arrived, "Moving / delayed target collected exactly once");
+                return new { playerHeight, measuredBounce = height, delayedTarget, followsOffsetCenter = arrived, paid = gold.Count };
+            }
+            finally { if (coin != null) Object.Destroy(coin.gameObject); Object.Destroy(stage); }
         }
 
         private static async Task<object> SceneCleanup(CurrencyData gold)
@@ -306,14 +379,24 @@ namespace CTJ.Tools
                 var floor = Terrain(root, new Vector2(0f, -0.1f), new Vector2(8f, 0.2f));
                 SpriteRenderer floorVisual = floor.gameObject.AddComponent<SpriteRenderer>();
                 var texture = Texture2D.whiteTexture;
-                floorVisual.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.one * 0.5f, texture.width);
+                floorVisual.sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), Vector2.one * 0.5f,
+                    texture.width, 0, SpriteMeshType.FullRect);
                 floorVisual.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/CTJ/Prototypes/Sprites/PrototypeSpriteUnlit.mat");
                 floorVisual.color = new Color(0.25f, 0.29f, 0.33f); floorVisual.drawMode = SpriteDrawMode.Sliced; floorVisual.size = floor.size;
                 var currency = new CurrencyData(AssetDatabase.LoadAssetAtPath<CurrencySO>(GoldPath), 0);
+                BoxCollider2D collector = Collector(root, new Vector2(2f, 0f), 2f);
+                var bodyVisual = new GameObject("Player body preview"); bodyVisual.transform.SetParent(collector.transform);
+                bodyVisual.transform.localPosition = collector.offset;
+                var bodyRenderer = bodyVisual.AddComponent<SpriteRenderer>();
+                bodyRenderer.sprite = floorVisual.sprite; bodyRenderer.sharedMaterial = floorVisual.sharedMaterial;
+                bodyRenderer.color = new Color(0.2f, 0.7f, 0.8f, 0.35f);
+                bodyRenderer.drawMode = SpriteDrawMode.Sliced; bodyRenderer.size = collector.size;
+                camera.transform.position = new Vector3(0.75f, 0.8f, -10f);
                 var snapshots = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
                     var coin = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath), new Vector3(0f, 0.35f), Quaternion.identity);
+                    SetCollector(coin, collector.transform);
                     typeof(EnemyRewardCoin).GetMethod("Launch", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                         .Invoke(coin, new object[] { currency, 3, (i + 0.5f) / 12f });
                     coins.Add(coin);
@@ -346,6 +429,17 @@ namespace CTJ.Tools
             var go = new GameObject("Terrain"); go.layer = 6; go.transform.SetParent(parent.transform); go.transform.position = position;
             var box = go.AddComponent<BoxCollider2D>(); box.size = size; return box;
         }
+        private static BoxCollider2D Collector(GameObject parent, Vector2 position, float height)
+        {
+            var go = new GameObject("Offset player body"); go.layer = 7;
+            go.transform.SetParent(parent.transform); go.transform.position = position;
+            var box = go.AddComponent<BoxCollider2D>();
+            box.size = new Vector2(0.8f, height); box.offset = new Vector2(0f, height * 0.5f);
+            return box;
+        }
+        private static void SetCollector(EnemyRewardCoin coin, Transform collector) =>
+            typeof(EnemyRewardCoin).GetMethod("SetCollector", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(coin, new object[] { collector });
         private static EnemyRewardCoin[] Coins() => Object.FindObjectsByType<EnemyRewardCoin>(FindObjectsSortMode.None);
         private static void Check(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
     }

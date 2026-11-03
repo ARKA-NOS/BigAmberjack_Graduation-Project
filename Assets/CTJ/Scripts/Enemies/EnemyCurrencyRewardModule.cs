@@ -94,6 +94,7 @@ namespace CTJ.Enemies
                 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(coin.gameObject, _enemy.gameObject.scene);
                 // 구간을 나누어 같은 방향에 모두 겹쳐 날아가는 것을 줄입니다.
                 float spread = (i + Random.Range(0.1f, 0.9f)) / count;
+                coin.SetCollector(_enemy.Target);
                 coin.Launch(currency, baseAmount + (i < remainder ? 1 : 0), spread);
             }
         }

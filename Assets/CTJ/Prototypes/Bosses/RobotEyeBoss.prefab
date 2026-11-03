@@ -475,6 +475,7 @@ Transform:
   - {fileID: 1320256228298482322}
   - {fileID: 2193398921352260108}
   - {fileID: 6744510228567976876}
+  - {fileID: 2894091538189805281}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &113815925355041630
@@ -830,6 +831,65 @@ MonoBehaviour:
   frequency: 32
   endStrength: 0.15
   fadeOutDuration: 0.18
+--- !u!1 &4724703565745061510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2894091538189805281}
+  - component: {fileID: 7835877911298656046}
+  m_Layer: 8
+  m_Name: ParticleModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2894091538189805281
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724703565745061510}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7220857079902644831}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7835877911298656046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4724703565745061510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fd331d9a8767442a2ee098061942ed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyParticleModule
+  fallbackOrigin: {fileID: 2894091538189805281}
+  useHitPoint: 1
+  maxHitPointDistance: 6
+  effectScale: 1.4
+  hitEffects:
+  - label: Polygon Blood Spray
+    enabled: 1
+    prefab: {fileID: 6293476830590490486, guid: b64e1080b6b8831419f2529d63607fb2, type: 3}
+    randomPrefabs: []
+    scale: 1
+    offset: {x: 0, y: 0}
+    alignToHitDirection: 1
+    angleOffset: 0
+  maxConcurrentEffects: 24
+  maxEffectLifetime: 6
 --- !u!1 &4830750139719117185
 GameObject:
   m_ObjectHideFlags: 0
@@ -1287,6 +1347,7 @@ MonoBehaviour:
     useSkill: 1
     useForAutomaticSelection: 0
     minRange: 0
+    allowCloseAttackWhenRetreatBlocked: 0
     maxRange: 0
     maxHeightDifference: -1
     requireGrounded: 0
@@ -1297,6 +1358,7 @@ MonoBehaviour:
     useSkill: 1
     useForAutomaticSelection: 0
     minRange: 0
+    allowCloseAttackWhenRetreatBlocked: 0
     maxRange: 0
     maxHeightDifference: -1
     requireGrounded: 0

@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using Lrw.Script._Core._ServiceLocator;
+using Lrw.Script.Agent;
+using Lrw.Script.Agent.Players;
 using Lrw.Script.Currency;
 using UnityEngine;
 
 namespace CTJ.Enemies
 {
-    // 적과 분리된 연출 객체. 플레이어 접촉/아이템 습득 시스템 없이 연출 종료 시 지급합니다.
+    // 적과 분리된 연출 객체. 분산 낙하 → 큰 바운스 → 플레이어 중심 추적 → 소멸/지급.
     [DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
     public sealed class EnemyRewardCoin : MonoBehaviour
     {
@@ -15,15 +18,24 @@ namespace CTJ.Enemies
         [Tooltip("바닥/벽 레이어만 선택하세요. 기본값은 Ground입니다. 트리거는 무시합니다.")]
         [SerializeField] private LayerMask terrainLayers = 1 << 6;
         [SerializeField, Min(0.01f)] private float collisionRadius = 0.1f;
-        [Tooltip("낭떠러지 등에서 바닥을 못 찾으면 이 시간 뒤 소멸/지급으로 넘어갑니다. 바운스 시 다시 셉니다.")]
+        [Tooltip("낭떠러지 등에서 바닥을 못 찾으면 이 시간 뒤 플레이어 추적으로 넘어갑니다.")]
         [SerializeField, Min(0.1f)] private float maxAirTime = 3f;
 
         [Header("Ground Bounce")]
-        [SerializeField, Min(0)] private int maxBounces = 2;
-        [Tooltip("첫 바운스의 초기 속도입니다. 이후에는 Bounce Damping만큼 약해집니다.")]
-        [SerializeField, Min(0f)] private float bounceSpeed = 2.6f;
-        [SerializeField, Range(0f, 1f)] private float bounceDamping = 0.55f;
+        [Tooltip("플레이어 몸체 높이에 대한 바운스 높이 비율. 최소 절반 이상 튀어 오릅니다.")]
+        [SerializeField, Min(0.5f)] private float bounceHeightRatio = 0.65f;
+        [SerializeField, Min(0.1f)] private float minimumBounceHeight = 0.8f;
+        [Tooltip("플레이어가 아직 없거나 몸체 크기를 알 수 없을 때 사용할 키(월드 유닛).")]
+        [SerializeField, Min(0.1f)] private float fallbackPlayerHeight = 2f;
         [SerializeField, Range(0f, 1f)] private float horizontalRetention = 0.65f;
+
+        [Header("Magnet")]
+        [SerializeField, Min(0.1f)] private float initialHomingSpeed = 2.5f;
+        [SerializeField, Min(0.1f)] private float maxHomingSpeed = 16f;
+        [SerializeField, Min(0.1f)] private float homingAcceleration = 35f;
+        [SerializeField, Min(0.01f)] private float collectDistance = 0.12f;
+        [Tooltip("플레이어가 없으면 재탐색하며 기다립니다. 끝까지 없을 때만 현재 위치에서 소멸/정산합니다.")]
+        [SerializeField, Min(0.1f)] private float targetWaitTimeout = 5f;
 
         [Header("Sprite Animation")]
         [SerializeField] private Sprite[] spinFrames;
@@ -42,10 +54,58 @@ namespace CTJ.Enemies
         private bool _launched;
         private bool _completed;
         private bool _quitting;
+        private enum CoinPhase { Scatter, Bounce, Homing, Collect }
+        private CoinPhase _phase;
+        private Transform _collector;
+        private Collider2D _collectorBody;
+        private SpriteRenderer _collectorSprite;
+        private float _nextTargetSearch;
+        private float _homingSpeed;
+        private float _missingTargetTime;
 
         public int Amount { get; private set; }
         public int BounceCount { get; private set; }
-        public bool IsCollecting { get; private set; }
+        public bool IsCollecting => _phase == CoinPhase.Collect;
+        public bool IsHoming => _phase == CoinPhase.Homing;
+
+        internal void SetCollector(Transform collector)
+        {
+            PlayerController player = collector != null ? collector.GetComponentInParent<PlayerController>() : null;
+            if (player != null) collector = player.transform;
+            _collector = collector;
+            _collectorBody = collector != null ? collector.GetComponent<Collider2D>() : null;
+            _collectorSprite = collector != null ? collector.GetComponentInChildren<SpriteRenderer>() : null;
+            if (_collectorBody == null && collector != null)
+                foreach (Collider2D candidate in collector.GetComponentsInChildren<Collider2D>())
+                    if (!candidate.isTrigger) { _collectorBody = candidate; break; }
+        }
+
+        private bool TryGetCollectorBounds(out Vector2 center, out float height)
+        {
+            if ((_collector == null || !_collector.gameObject.activeInHierarchy) && Time.time >= _nextTargetSearch)
+            {
+                _nextTargetSearch = Time.time + 0.2f;
+                PlayerController player = ServiceLocator.Get<IPlayerController>() as PlayerController;
+                if (player == null || !player.gameObject.activeInHierarchy) player = FindFirstObjectByType<PlayerController>();
+                SetCollector(player != null ? player.transform : null);
+            }
+            center = transform.position;
+            height = fallbackPlayerHeight;
+            if (_collector == null || !_collector.gameObject.activeInHierarchy) return false;
+            center = _collector.position;
+            if (_collectorBody != null && _collectorBody.enabled && _collectorBody.gameObject.activeInHierarchy)
+            {
+                center = _collectorBody.bounds.center;
+                height = _collectorBody.bounds.size.y;
+            }
+            else if (_collectorSprite != null && _collectorSprite.enabled && _collectorSprite.gameObject.activeInHierarchy)
+            {
+                center = _collectorSprite.bounds.center;
+                height = _collectorSprite.bounds.size.y;
+            }
+            if (height <= 0f) height = fallbackPlayerHeight;
+            return true;
+        }
 
         internal void Launch(CurrencyData currency, int amount, float spread)
         {
@@ -71,9 +131,11 @@ namespace CTJ.Enemies
         {
             if (!_launched || _completed || IsCollecting) return;
             float dt = Time.fixedDeltaTime;
+            if (IsHoming) { TickHoming(dt); return; }
             _airTime += dt;
-            _velocity += Physics2D.gravity * gravityScale * dt;
-            Vector2 delta = _velocity * dt;
+            Vector2 gravity = Physics2D.gravity * gravityScale;
+            Vector2 delta = _velocity * dt + gravity * (0.5f * dt * dt);
+            _velocity += gravity * dt;
             float distance = delta.magnitude;
             if (distance > 0f && FindTerrain(delta / distance, distance + Skin, out RaycastHit2D hit))
             {
@@ -83,7 +145,7 @@ namespace CTJ.Enemies
                 transform.position = new Vector3(contactPosition.x, contactPosition.y, transform.position.z);
                 if (_velocity.y <= 0f && hit.normal.y >= 0.5f)
                 {
-                    HandleGroundContact(hit.normal);
+                    HandleGroundContact();
                     return;
                 }
 
@@ -96,7 +158,8 @@ namespace CTJ.Enemies
                 transform.position += (Vector3)delta;
             }
 
-            if (_airTime >= maxAirTime) BeginCollect();
+            // 꼭대기까지 먼저 올라간 다음에만 자석 이동을 시작합니다.
+            if ((_phase == CoinPhase.Bounce && _velocity.y <= 0f) || _airTime >= maxAirTime) BeginHoming();
         }
 
         private bool FindTerrain(Vector2 direction, float distance, out RaycastHit2D nearest)
@@ -106,7 +169,7 @@ namespace CTJ.Enemies
             float closest = float.PositiveInfinity;
             foreach (RaycastHit2D hit in _hits)
             {
-                if (hit.collider == null || hit.distance >= closest) continue;
+                if (hit.collider == null || hit.distance >= closest || hit.collider.GetComponentInParent<Agent>() != null) continue;
                 if (Vector2.Dot(direction, hit.normal) >= -0.0001f) continue;
                 // 일방향 발판은 아래/옆에서 통과하고, 내려올 때 윗면에서만 착지합니다.
                 if (hit.collider.usedByEffector && hit.collider.TryGetComponent(out PlatformEffector2D platform) &&
@@ -118,25 +181,56 @@ namespace CTJ.Enemies
             return nearest.collider != null;
         }
 
-        private void HandleGroundContact(Vector2 normal)
+        private void HandleGroundContact()
         {
-            if (BounceCount >= maxBounces || bounceSpeed <= 0f)
+            if (BounceCount > 0)
             {
+                BeginHoming();
+                return;
+            }
+            TryGetCollectorBounds(out _, out float playerHeight);
+            float height = Mathf.Max(minimumBounceHeight, playerHeight * Mathf.Max(0.5f, bounceHeightRatio));
+            float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
+            _velocity = new Vector2(_velocity.x * horizontalRetention, Mathf.Sqrt(2f * gravity * height));
+            BounceCount++;
+            _phase = CoinPhase.Bounce;
+            _airTime = 0f;
+        }
+
+        private void BeginHoming()
+        {
+            _phase = CoinPhase.Homing;
+            _velocity = Vector2.zero;
+            _homingSpeed = Mathf.Max(0.1f, initialHomingSpeed);
+            _missingTargetTime = 0f;
+        }
+
+        private void TickHoming(float dt)
+        {
+            if (!TryGetCollectorBounds(out Vector2 center, out _))
+            {
+                _missingTargetTime += dt;
+                if (_missingTargetTime >= targetWaitTimeout) BeginCollect();
+                return;
+            }
+            _missingTargetTime = 0f;
+            _homingSpeed = Mathf.MoveTowards(_homingSpeed, Mathf.Max(initialHomingSpeed, maxHomingSpeed), homingAcceleration * dt);
+            float distance = Vector2.Distance(transform.position, center);
+            if (distance <= Mathf.Max(collectDistance, _homingSpeed * dt))
+            {
+                SetPosition(center);
                 BeginCollect();
                 return;
             }
-
-            float speed = bounceSpeed * Mathf.Pow(bounceDamping, BounceCount);
-            Vector2 tangentVelocity = _velocity - normal * Vector2.Dot(_velocity, normal);
-            _velocity = tangentVelocity * horizontalRetention + normal * speed;
-            BounceCount++;
-            _airTime = 0f;
-            // FixedUpdate의 중력이 계속 작용하므로 다시 내려와 바닥에 닿습니다.
+            // 보상 회수 단계는 지형에 막히지 않습니다. 움직이는 플레이어 중심을 매번 다시 읽습니다.
+            SetPosition(Vector2.MoveTowards(transform.position, center, _homingSpeed * dt));
         }
+
+        private void SetPosition(Vector2 position) => transform.position = new Vector3(position.x, position.y, transform.position.z);
 
         private void BeginCollect()
         {
-            IsCollecting = true;
+            _phase = CoinPhase.Collect;
             _velocity = Vector2.zero;
             _animationTime = 0f;
             if (collectFrames == null || collectFrames.Length == 0)
@@ -157,6 +251,8 @@ namespace CTJ.Enemies
                 UpdateSpinSprite();
                 return;
             }
+
+            if (TryGetCollectorBounds(out Vector2 center, out _)) SetPosition(center);
 
             int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, collectFramesPerSecond));
             if (frame >= collectFrames.Length) CompleteReward();

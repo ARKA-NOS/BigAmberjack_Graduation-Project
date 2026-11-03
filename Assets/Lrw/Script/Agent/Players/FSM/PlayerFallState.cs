@@ -30,17 +30,8 @@ namespace Lrw.Script.Agent.Players.FSM
         private void HandleIdleStateChange()
         {
             if (!GroundChecker.FixedIsGround) return;
-            Player.ChangeState(PlayerStateEnum.IDLE);
             ControlMultiJumper.ResetMultiJumpCount();
-        }
-        
-        protected override void HandleJump()
-        {
-            base.HandleJump();
-            if (_fallTime < ControlJumper.CoyoteTime)
-            {
-                Player.ChangeState(PlayerStateEnum.JUMP);
-            }
+            Player.ChangeState(PlayerStateEnum.IDLE);
         }
         
     }

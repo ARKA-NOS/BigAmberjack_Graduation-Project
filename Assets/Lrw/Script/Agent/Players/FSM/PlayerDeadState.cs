@@ -10,12 +10,12 @@
         public override void Enter()
         {
             base.Enter();
-            ControlMovement.MoveLock(true);
+            ControlMovement.MoveXLock(true);
         }
 
         public override void Exit()
         {
-            ControlMovement.MoveLock(false);
+            ControlMovement.MoveXLock(false);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Lrw.Script.Agent.Players;
 using SDW.Scripts.Maps.Data;
@@ -39,6 +40,11 @@ namespace SDW.Scripts.Maps
         private RoomController _lastRoom;
 
         public IReadOnlyList<RoomController> Rooms => _rooms;
+        // 플레이어가 지금 있는 방. 미니맵처럼 늦게 켜진 쪽도 현재 방을 바로 알 수 있도록 남겨둔다.
+        public RoomController CurrentRoom { get; private set; }
+
+        // 어느 방이든 들어올 때마다(첫 방 포함) 호출된다.
+        public event Action<RoomController> RoomEntered;
 
         private void Start()
         {
@@ -108,12 +114,19 @@ namespace SDW.Scripts.Maps
                     room = instance.gameObject.AddComponent<RoomController>();
 
                 room.Initialize(roomData, index, stage.EnemySpawnPortal);
+                room.Entered += () => HandleRoomEntered(room);
 
                 if (!instance.TryGetComponent(out RoomCameraBounds _))
                     instance.gameObject.AddComponent<RoomCameraBounds>();
 
                 _rooms.Add(room);
             }
+        }
+
+        private void HandleRoomEntered(RoomController room)
+        {
+            CurrentRoom = room;
+            RoomEntered?.Invoke(room);
         }
 
         // 마지막 방을 뺀 모든 방의 Exit Point에 다음 방으로 가는 출구를 하나씩 만든다. (되돌아가는 출구는 없다)
@@ -240,6 +253,7 @@ namespace SDW.Scripts.Maps
             }
 
             _rooms.Clear();
+            CurrentRoom = null;
         }
 
         #endregion

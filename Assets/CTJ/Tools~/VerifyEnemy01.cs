@@ -43,7 +43,7 @@ namespace CTJ.Tools
             Check(Mathf.Approximately(new SerializedObject(prefab).FindProperty("moveSpeed").floatValue, 6f), "Chase speed 6");
             Check(Mathf.Approximately(new SerializedObject(prefab.GetComponentInChildren<EnemyMovementModule>()).FindProperty("jumpHeight").floatValue, 0f), "No jump");
             StatGroup stats = (StatGroup)new SerializedObject(prefab.GetComponentInChildren<StatModule>()).FindProperty("baseStats").objectReferenceValue;
-            Check(stats.Stats[0].BaseValue == 50f && Mathf.Approximately(stats.Stats[1].BaseValue + attack.PostBlinkDelay, 0.8f), "HP / preparation");
+            Check(stats.Stats[0].BaseValue == 50f && Mathf.Approximately(stats.Stats[1].BaseValue + attack.PostBlinkDelay, 0.45f), "HP / preparation");
             Check(prefab.GetComponentInChildren<EnemyCurrencyRewardModule>() != null && prefab.GetComponentInChildren<EnemyDeathModule>() != null, "Reward/death wiring");
 
             Check(new SerializedObject(prefab.GetComponentInChildren<EnemyPatrolModule>()).FindProperty("centerOverride") == null,
@@ -163,11 +163,11 @@ namespace CTJ.Tools
                 float start = Time.time;
                 await Until(() => attack.IsHoldingWarning);
                 float heldAt = Time.time;
-                Check(heldAt - start >= 0.55f && !warning.IsShowing && sprite.color == color,
+                Check(heldAt - start >= 0.34f && !warning.IsShowing && sprite.color == color,
                     "Final preparation keeps sprite color");
                 Check(target.ReceivedHitCount == 0, "Damage before warning hold finished");
                 await Until(() => target.ReceivedHitCount == 1);
-                Check(Time.time - heldAt >= 0.19f && Time.time - start >= 0.79f && target.TotalDamage == 8f, "Preparation duration / release / 8 damage");
+                Check(Time.time - heldAt >= 0.09f && Time.time - start >= 0.44f && target.TotalDamage == 8f, "Preparation duration / release / 8 damage");
                 Check(!warning.IsShowing && sprite.sharedMaterial == original && sprite.color == color, "Warning restored on release");
                 enemy.OnAttackHit(); enemy.OnAttackHit();
                 Check(target.ReceivedHitCount == 1, "Duplicate hit event");

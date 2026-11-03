@@ -232,9 +232,9 @@ namespace CTJ.Tools
                 if (!cliff) Box(arena, new Vector2(x - 1.8f, 1.5f), new Vector2(0.1f, 3f));
                 EnemyBase enemy = Spawn(arena, x);
                 EnemyDamageProbe target = Target(arena, new Vector2(x + 1f, 0f)); enemy.SetTarget(target.transform);
-                await Wait(1f);
+                await Until(() => enemy.GetComponentInChildren<EnemyProjectileSkill>().IsPreparing, "Attack when retreat is blocked");
                 Check(enemy.transform.position.x > x - 1.8f && enemy.transform.position.y > -0.1f &&
-                    Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.01f && !enemy.IsAttackInProgress,
+                    Mathf.Abs(enemy.GetComponent<Rigidbody2D>().linearVelocityX) < 0.01f && enemy.transform.Find("Visual").localScale.x > 0f,
                     "Retreat must stop at " + (cliff ? "cliff" : "wall"));
                 return new { passed = true, scenario = cliff ? "retreat cliff protection" : "retreat wall protection" };
             }

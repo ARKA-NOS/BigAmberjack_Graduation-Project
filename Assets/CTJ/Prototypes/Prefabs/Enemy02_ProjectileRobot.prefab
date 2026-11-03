@@ -260,6 +260,7 @@ Transform:
   - {fileID: 4709670898973010996}
   - {fileID: 3760290390041458826}
   - {fileID: 1328316507904798205}
+  - {fileID: 1893197636499220478}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1417259878035677417
@@ -1193,6 +1194,7 @@ MonoBehaviour:
     useSkill: 1
     useForAutomaticSelection: 1
     minRange: 0
+    allowCloseAttackWhenRetreatBlocked: 0
     maxRange: 10
     maxHeightDifference: -1
     requireGrounded: 0
@@ -1434,6 +1436,65 @@ MonoBehaviour:
   aimAtTargetCenter: 1
   aimLineWidth: 0.045
   turret: {fileID: 6298880592254298143}
+--- !u!1 &7308764647273572375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1893197636499220478}
+  - component: {fileID: 5753328565411977252}
+  m_Layer: 8
+  m_Name: ParticleModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1893197636499220478
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308764647273572375}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1637513422245136411}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5753328565411977252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308764647273572375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fd331d9a8767442a2ee098061942ed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyParticleModule
+  fallbackOrigin: {fileID: 1893197636499220478}
+  useHitPoint: 1
+  maxHitPointDistance: 3
+  effectScale: 1
+  hitEffects:
+  - label: Polygon Blood Spray
+    enabled: 1
+    prefab: {fileID: 6293476830590490486, guid: b64e1080b6b8831419f2529d63607fb2, type: 3}
+    randomPrefabs: []
+    scale: 1
+    offset: {x: 0, y: 0}
+    alignToHitDirection: 1
+    angleOffset: 0
+  maxConcurrentEffects: 24
+  maxEffectLifetime: 6
 --- !u!1 &7890392709940774175
 GameObject:
   m_ObjectHideFlags: 0
@@ -1612,8 +1673,8 @@ MonoBehaviour:
   scaleTargets:
   - {fileID: 3378619630861131687}
   - {fileID: 566111834872860712}
-  scalePulseAmount: 0.2
-  scalePulseDuration: 0.2
+  scalePulseAmount: 0.4
+  scalePulseDuration: 0.24
 --- !u!1 &9139517797483866563
 GameObject:
   m_ObjectHideFlags: 0

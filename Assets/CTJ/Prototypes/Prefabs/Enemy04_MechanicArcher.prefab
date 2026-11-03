@@ -50,6 +50,7 @@ MonoBehaviour:
     useSkill: 1
     useForAutomaticSelection: 1
     minRange: 5
+    allowCloseAttackWhenRetreatBlocked: 1
     maxRange: 11
     maxHeightDifference: -1
     requireGrounded: 1
@@ -106,6 +107,65 @@ MonoBehaviour:
   currencyPerCoin: 3
   maxCoinCount: 12
   spawnOffset: {x: 0, y: 0.35}
+--- !u!1 &1871368374233257543
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 391691011244729983}
+  - component: {fileID: 1741412192274280581}
+  m_Layer: 8
+  m_Name: ParticleModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &391691011244729983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871368374233257543}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.575, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2016057474934215564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1741412192274280581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871368374233257543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09fd331d9a8767442a2ee098061942ed, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyParticleModule
+  fallbackOrigin: {fileID: 391691011244729983}
+  useHitPoint: 1
+  maxHitPointDistance: 3
+  effectScale: 1
+  hitEffects:
+  - label: Polygon Blood Spray
+    enabled: 1
+    prefab: {fileID: 6293476830590490486, guid: b64e1080b6b8831419f2529d63607fb2, type: 3}
+    randomPrefabs: []
+    scale: 1
+    offset: {x: 0, y: 0}
+    alignToHitDirection: 1
+    angleOffset: 0
+  maxConcurrentEffects: 24
+  maxEffectLifetime: 6
 --- !u!1 &1905959694754196451
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,8 +211,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 1
-  knockbackSpeed: 2
-  knockbackDuration: 0.15
+  knockbackSpeed: 2.5
+  knockbackDuration: 0.2
   hitStunDuration: 0.22
   cancelAttackOnHit: 1
   enableBlink: 1
@@ -166,8 +226,8 @@ MonoBehaviour:
   enableScalePulse: 1
   scaleTargets:
   - {fileID: 2510843347804530270}
-  scalePulseAmount: 0.2
-  scalePulseDuration: 0.2
+  scalePulseAmount: 0.4
+  scalePulseDuration: 0.24
 --- !u!1 &2624449807773332465
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,6 +739,7 @@ Transform:
   - {fileID: 2073319394136169254}
   - {fileID: 131911513938246631}
   - {fileID: 6715398317868912171}
+  - {fileID: 391691011244729983}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &2433584864450556848

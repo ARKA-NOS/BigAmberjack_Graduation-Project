@@ -21,6 +21,8 @@ namespace CTJ.Enemies
             [Tooltip("끄면 거리 기반 자동 선택에서는 제외하고, 보스 패턴의 지정 실행으로만 사용합니다.")]
             [SerializeField] private bool useForAutomaticSelection = true;
             [SerializeField, Min(0f)] private float minRange;
+            [Tooltip("거리 확보 모듈이 벽/절벽 때문에 후퇴할 수 없을 때만 최소 사거리 제한을 해제합니다. 시야/높이/최대 사거리 검사는 유지합니다.")]
+            [SerializeField] private bool allowCloseAttackWhenRetreatBlocked;
             [SerializeField, Min(0f)] private float maxRange = 1.5f;
             [Tooltip("발 높이 차이. 음수면 높이 제한 없음. 근접은 0.5 권장.")]
             [SerializeField] private float maxHeightDifference = 0.5f;
@@ -37,13 +39,15 @@ namespace CTJ.Enemies
             public float MaxRange => Mathf.Max(0f, maxRange);
             public float ChargeDuration => Mathf.Max(0f, chargeDuration);
 
-            internal bool Matches(EnemyBase enemy, EnemyMovementModule movement)
+            internal bool Matches(EnemyBase enemy, EnemyMovementModule movement, EnemyKeepDistanceModule keepDistance)
             {
                 if (!Enabled || movement == null || enemy.Target == null ||
                     !enemy.Target.gameObject.activeInHierarchy || (requireGrounded && !movement.IsGrounded))
                     return false;
                 float distance = Vector2.Distance(enemy.transform.position, enemy.Target.position);
-                if (distance < Mathf.Max(0f, minRange) || distance > MaxRange ||
+                bool tooClose = distance < Mathf.Max(0f, minRange);
+                if ((tooClose && (!allowCloseAttackWhenRetreatBlocked || keepDistance == null || !keepDistance.IsRetreatBlocked(enemy.Target))) ||
+                    distance > MaxRange ||
                     (maxHeightDifference >= 0f && Mathf.Abs(movement.GetTargetHeightDifference(enemy.Target)) > maxHeightDifference))
                     return false;
                 Collider2D body = enemy.Target.GetComponent<Collider2D>();
@@ -57,6 +61,7 @@ namespace CTJ.Enemies
         private readonly HashSet<AbstractSkill> _registeredSkills = new HashSet<AbstractSkill>();
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
+        private EnemyKeepDistanceModule _keepDistance;
         private AbstractSkill _activeSkill;
         private Transform _castTarget;
         private float _chargeReleaseTime;
@@ -82,6 +87,7 @@ namespace CTJ.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _movement = owner.GetModule<EnemyMovementModule>();
+            _keepDistance = owner.GetModule<EnemyKeepDistanceModule>();
             _registeredSkills.Clear();
             // 공용 AfterInit과 같은 탐색 범위/첫 SO만 등록 규칙을 사용합니다.
             HashSet<SkillSO> keys = new HashSet<SkillSO>();
@@ -98,7 +104,7 @@ namespace CTJ.Enemies
         {
             if (!Ready) return false;
             foreach (SkillEntry entry in skills)
-                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement)) return true;
+                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _keepDistance)) return true;
             return false;
         }
 
@@ -107,7 +113,7 @@ namespace CTJ.Enemies
             if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
             foreach (SkillEntry entry in skills)
             {
-                if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement) || !CanUseSkill(entry.Skill.SkillSo)) continue;
+                if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement, _keepDistance) || !CanUseSkill(entry.Skill.SkillSo)) continue;
                 _activeSkill = entry.Skill;
                 _castTarget = _enemy.Target;
                 _chargeReleaseTime = Time.time + entry.ChargeDuration;

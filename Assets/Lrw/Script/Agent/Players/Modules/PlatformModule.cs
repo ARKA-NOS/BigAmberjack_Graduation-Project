@@ -36,21 +36,21 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             playerInput.OnPlatformKeyPressed -= OnPlatformKeyPressed;
         }
-
+        
         private void OnPlatformKeyPressed()
         {
             if(!_groundChecker.FixedIsGround) return;
             if(_coroutine != null)StopCoroutine(_coroutine);
             _coroutine = StartCoroutine(PlatformPassTime());
         }
-
+        
         private IEnumerator PlatformPassTime()
         {
             SetPassPlatform(true);
             yield return _wait;
             SetPassPlatform(false);
         }
-
+        
         private void SetPassPlatform(bool isPass)
         {
             if (isPass)
@@ -62,10 +62,11 @@ namespace Lrw.Script.Agent.Players.Modules
                 _collider.excludeLayers &= ~whatIsPlatform;
             }
         }
-
+        
         private void OnValidate()
         {
             _wait = new WaitForSeconds(passTime);
         }
+        
     }
 }

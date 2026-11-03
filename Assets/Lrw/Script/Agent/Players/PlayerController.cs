@@ -66,7 +66,7 @@ namespace Lrw.Script.Agent.Players
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
             StartCoroutine(HitInvincibilityTime());
         }
-
+    
         private IEnumerator HitInvincibilityTime()
         {
             SetInvincibility(this, true);

@@ -25,6 +25,16 @@ namespace CTJ.Enemies
             _movement = owner.GetModule<EnemyMovementModule>();
         }
 
+        internal bool IsRetreatBlocked(Transform target)
+        {
+            if (!isActiveAndEnabled || _enemy == null || _movement == null || target == null ||
+                !_movement.IsGrounded) return false;
+            Vector2 offset = target.position - _enemy.transform.position;
+            if (offset.sqrMagnitude >= MinimumDistance * MinimumDistance) return false;
+            float side = Mathf.Abs(offset.x) > 0.01f ? Mathf.Sign(offset.x) : _lastTargetSide;
+            return !_movement.CanMoveOnGround(-side, _enemy.MoveSpeed);
+        }
+
         internal float MoveTowardsTarget(Transform target, float speed)
         {
             if (!isActiveAndEnabled || _enemy == null || _movement == null || target == null)
@@ -57,7 +67,9 @@ namespace CTJ.Enemies
 
             // 후퇴/접근 모두 기존 벽·낭떠러지 검사 사용. 막혔다고 플레이어 쪽으로 돌진하지 않습니다.
             // 바라볼 방향은 EnemyBase가 실제 이동 방향으로 맞춥니다. 공격 진입 시에는 타깃을 봅니다.
-            return _movement.MoveOnGroundTowards(destinationX, speed, out _);
+            float direction = _movement.MoveOnGroundTowards(destinationX, speed, out bool blocked);
+            if (blocked) _enemy.FaceTarget();
+            return direction;
         }
 
         private void OnDrawGizmosSelected()

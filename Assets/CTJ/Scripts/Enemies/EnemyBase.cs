@@ -49,6 +49,7 @@ namespace CTJ.Enemies
         public bool IsDead { get; private set; }
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
+        internal float MoveSpeed => moveSpeed;
         protected virtual bool UsesGroundMovement => true;
 
         protected override void Awake()

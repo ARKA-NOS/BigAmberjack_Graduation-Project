@@ -20,7 +20,7 @@ namespace Lrw.Script.Agent.Players
         public event Action OnJumpKeyPressed;
         public event Action OnJumpKeyReleased;
         
-        public event Action OnPlatformKeyPressed;
+        public bool PlatformKey { get; private set; }
         
         public event Action OnInteractKeyPressed;
         public event Action OnInventoryKeyPressed;
@@ -120,8 +120,10 @@ namespace Lrw.Script.Agent.Players
 
         public void OnPlatform(InputAction.CallbackContext context)
         {
-            if(context.started)
-                OnPlatformKeyPressed?.Invoke();
+            if (context.started)
+                PlatformKey = true;
+            else if (context.canceled)
+                PlatformKey = false;
         }
 
         public void OnTestTitle(InputAction.CallbackContext context)

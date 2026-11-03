@@ -18,6 +18,7 @@ namespace Lrw.Script.Agent.Players.Modules
         private Coroutine _coroutine;
         
         private IGroundChecker _groundChecker;
+        private bool _isPlatformPass;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -28,19 +29,21 @@ namespace Lrw.Script.Agent.Players.Modules
             FDebug.Assert(owner.TryGetModule(out _groundChecker), "Owner is not found IGroundChecker");
             
             _wait = new WaitForSeconds(passTime);
-            
-            playerInput.OnPlatformKeyPressed += OnPlatformKeyPressed;
-        }
 
-        private void OnDestroy()
-        {
-            playerInput.OnPlatformKeyPressed -= OnPlatformKeyPressed;
+            _isPlatformPass = false;
+            
+            playerInput.OnJumpKeyReleased += OnPlatformMoveKeyPressed;
         }
         
-        private void OnPlatformKeyPressed()
+        private void OnDestroy()
         {
-            if(!_groundChecker.FixedIsGround) return;
-            if(_coroutine != null)StopCoroutine(_coroutine);
+            playerInput.OnJumpKeyReleased -= OnPlatformMoveKeyPressed;
+        }
+        
+        private void OnPlatformMoveKeyPressed()
+        {
+            if(_isPlatformPass || !playerInput.PlatformKey || !_groundChecker.FixedIsGround) return;
+            if(_coroutine != null) StopCoroutine(_coroutine);
             _coroutine = StartCoroutine(PlatformPassTime());
         }
         
@@ -53,6 +56,7 @@ namespace Lrw.Script.Agent.Players.Modules
         
         private void SetPassPlatform(bool isPass)
         {
+            _isPlatformPass = isPass;
             if (isPass)
             {
                 _collider.excludeLayers |= whatIsPlatform;
@@ -62,11 +66,13 @@ namespace Lrw.Script.Agent.Players.Modules
                 _collider.excludeLayers &= ~whatIsPlatform;
             }
         }
-        
+
+#if UNITY_EDITOR
         private void OnValidate()
         {
             _wait = new WaitForSeconds(passTime);
         }
+#endif
         
     }
 }

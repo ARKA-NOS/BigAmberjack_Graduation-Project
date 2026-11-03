@@ -43,5 +43,6 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             _currentJumpCount = 0;
         }
+        
     }
 }

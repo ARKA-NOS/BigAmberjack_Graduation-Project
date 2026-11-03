@@ -676,7 +676,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a1ac61e04369c440818bcfd39dff260, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyVerticalFlipModule
 --- !u!1 &2937257054156238508
 GameObject:
@@ -720,7 +720,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09d1dbe5648ecb34389598922337e57f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyOutlineModule
   sprites:
   - {fileID: 6854587744927362794}
@@ -1135,7 +1135,7 @@ MonoBehaviour:
   bodyCollider: {fileID: 3559739301108528582}
   terrainLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
   groundCheckDistance: 0.1
   obstacleCheckDistance: 0.3
   horizontalTolerance: 0.06
@@ -1424,9 +1424,10 @@ MonoBehaviour:
   damage: 15
   attackAnimator: {fileID: 0}
   attackStateName: Base Layer.Attack
-  preparationStateName:
-  idleStateName:
+  preparationStateName: 
+  idleStateName: 
   recoveryTime: 0.8
+  horizontalAimOnly: 0
   faceTargetDuringPreparation: 0
   showAimLine: 1
   trackTargetDuringPreparation: 1
@@ -1478,10 +1479,10 @@ BoxCollider2D:
   m_Material: {fileID: 6200000, guid: 37d01f2a464ab0041bb2e6e9d70d16eb, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 4294967231
+    m_Bits: 4294966207
   m_LayerOverridePriority: 1
   m_ForceSendLayers:
     serializedVersion: 2

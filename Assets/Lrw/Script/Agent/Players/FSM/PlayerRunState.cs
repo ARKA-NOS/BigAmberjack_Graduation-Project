@@ -27,7 +27,7 @@ namespace Lrw.Script.Agent.Players.FSM
 
         private void HandleIdleStateChange(float movementXKey)
         {
-            if (Mathf.Abs(movementXKey) > INPUT_DEADZONE) return;
+            if (Mathf.Abs(movementXKey) > InputDeadZone) return;
             Player.ChangeState(PlayerStateEnum.IDLE);
         }
     }

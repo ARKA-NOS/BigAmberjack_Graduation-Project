@@ -142,10 +142,10 @@ BoxCollider2D:
   m_Material: {fileID: 6200000, guid: 37d01f2a464ab0041bb2e6e9d70d16eb, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 4294967231
+    m_Bits: 4294966207
   m_LayerOverridePriority: 1
   m_ForceSendLayers:
     serializedVersion: 2
@@ -880,7 +880,7 @@ MonoBehaviour:
   bodyCollider: {fileID: 9006274625635471369}
   terrainLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
   groundCheckDistance: 0.1
   obstacleCheckDistance: 0.3
   horizontalTolerance: 0.06

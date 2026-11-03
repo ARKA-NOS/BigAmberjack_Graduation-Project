@@ -1,5 +1,7 @@
 # 아레나 범위 기즈모
 
+2026-11-02 추가: RobotEyeBoss의 Detect Floor가 켜져 있으면 주황색 바닥선은 실제 Ground 충돌면에 맞춥니다. Floor Distance는 탐지 실패 시의 대체값입니다. 편집 중에도 현재 배치 아래의 바닥을 검사하고, Play 중에는 실제 공격과 동일한 고정 아레나 중심·탐지 결과를 표시합니다. 자세한 내용은 BossMapFloorNotes.md에 있습니다. 아래는 최초 기즈모 구현 시점의 기록입니다.
+
 ## 사용법과 테스트
 
 1. Scene 뷰에서 Gizmos를 켭니다.

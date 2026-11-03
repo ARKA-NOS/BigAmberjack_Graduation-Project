@@ -22,6 +22,8 @@ namespace KHO.Scripts.UI.InventoryUI
         private float _prevTimeScale = 1f;
         private bool _isFrozen;
 
+        public bool IsOpen { get; private set; }
+
         private void Awake()
         {
             canvasGroup.alpha = 0f;
@@ -30,6 +32,7 @@ namespace KHO.Scripts.UI.InventoryUI
 
         public override void Open(object data)
         {
+            IsOpen = true;
             StartFade(1f);
             SetInteractable(true);
             Freeze();
@@ -39,6 +42,7 @@ namespace KHO.Scripts.UI.InventoryUI
         // 페이드아웃이 끝나기 전에 바로 입력을 끊고 시간을 되돌린다.
         public override void Close()
         {
+            IsOpen = false;
             StartFade(0f);
             SetInteractable(false);
             Unfreeze();

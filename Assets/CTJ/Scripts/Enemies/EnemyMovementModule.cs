@@ -11,8 +11,8 @@ namespace CTJ.Enemies
     {
         [Header("Terrain")]
         [SerializeField] private Collider2D bodyCollider;
-        [Tooltip("발판/벽 레이어만 지정합니다. 현재 프로젝트의 Ground는 6번입니다.")]
-        [SerializeField] private LayerMask terrainLayers = 1 << 6;
+        [Tooltip("발판/벽 레이어만 지정합니다. 현재 프로젝트의 Ground는 6번, Platform은 10번입니다.")]
+        [SerializeField] private LayerMask terrainLayers = (1 << 6) | (1 << 10);
         [SerializeField, Min(0.01f)] private float groundCheckDistance = 0.1f;
         [SerializeField, Min(0.01f)] private float obstacleCheckDistance = 0.3f;
         [SerializeField, Min(0.01f)] private float horizontalTolerance = 0.06f;
@@ -39,6 +39,7 @@ namespace CTJ.Enemies
         private float _nextPlanTime;
         private Transform _cachedTarget;
         private Collider2D _targetBody;
+        private float _lastGroundedFeetY;
 
         public bool IsGrounded => Ready && _body.linearVelocityY <= 0.1f &&
             CastTerrain(bodyCollider.bounds.center, ProbeSize, Vector2.down,
@@ -68,6 +69,7 @@ namespace CTJ.Enemies
 
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
+            if (bodyCollider != null) _lastGroundedFeetY = bodyCollider.bounds.min.y;
             if (_enemy == null || _body == null || bodyCollider == null)
                 Debug.LogWarning($"{name}: EnemyMovementModule의 적/물리 몸체/몸체 Collider를 확인하세요.", this);
         }
@@ -88,6 +90,7 @@ namespace CTJ.Enemies
             float heightDifference = targetPosition.y - bounds.min.y;
             float gravity = -Physics2D.gravity.y * _body.gravityScale;
             bool grounded = IsGrounded;
+            if (grounded) _lastGroundedFeetY = bounds.min.y;
 
             // 가장자리 밖에서 수직으로 솟은 뒤, 발이 발판 윗면보다 높아져야 안쪽으로 돌아옵니다.
             if (_risingPastLedge)
@@ -168,21 +171,36 @@ namespace CTJ.Enemies
                 return 0f;
             }
             float direction = Mathf.Sign(difference);
-            Bounds bounds = bodyCollider.bounds;
-            float lookAhead = Mathf.Max(obstacleCheckDistance, speed * Time.fixedDeltaTime + Skin);
-            Vector2 nextFoot = new Vector2(bounds.center.x + direction * (bounds.extents.x + lookAhead),
-                bounds.min.y + Skin);
-            bool wall = CastTerrain(bounds.center, ProbeSize, Vector2.right * direction,
-                lookAhead, out RaycastHit2D hit) && Mathf.Abs(hit.normal.x) > 0.5f;
-            bool floor = CastTerrain(nextFoot, Vector2.one * Skin, Vector2.down,
-                groundCheckDistance + Skin * 2f, out _, 0.5f);
-            if (wall || !floor)
+            if (!CanMoveOnGround(direction, speed))
             {
                 blocked = true;
                 Stop();
                 return 0f;
             }
             return SetHorizontal(destinationX, speed);
+        }
+
+        // 이동하지 않고 벽/절벽을 확인합니다. 거리 확보가 막혔는지 판단할 때도 사용합니다.
+        public bool CanMoveOnGround(float direction, float speed)
+        {
+            if (!Ready || !IsGrounded || Mathf.Approximately(direction, 0f)) return false;
+            direction = Mathf.Sign(direction);
+            float lookAhead = Mathf.Max(obstacleCheckDistance, Mathf.Max(0f, speed) * Time.fixedDeltaTime + Skin);
+            bool wall = CastTerrain(bodyCollider.bounds.center, ProbeSize, Vector2.right * direction,
+                lookAhead, out RaycastHit2D hit) && Mathf.Abs(hit.normal.x) > 0.5f;
+            return !wall && HasFloorAhead(direction, speed);
+        }
+
+        private bool HasFloorAhead(float direction, float speed)
+        {
+            Bounds bounds = bodyCollider.bounds;
+            if (IsGrounded) _lastGroundedFeetY = bounds.min.y;
+            float lookAhead = Mathf.Max(obstacleCheckDistance, Mathf.Max(0f, speed) * Time.fixedDeltaTime + Skin);
+            Vector2 nextFoot = new Vector2(bounds.center.x + direction * (bounds.extents.x + lookAhead),
+                bounds.min.y + Skin);
+            // 점프 중에도 마지막으로 밟았던 높이까지 확인하여 절벽 아래 바닥을 착지점으로 삼지 않습니다.
+            float distance = groundCheckDistance + Skin * 2f + Mathf.Max(0f, bounds.min.y - _lastGroundedFeetY);
+            return CastTerrain(nextFoot, Vector2.one * Skin, Vector2.down, distance, out _, 0.5f);
         }
 
         private bool TryPlanLedge(Transform target, Bounds bounds)
@@ -227,6 +245,12 @@ namespace CTJ.Enemies
             float direction = Mathf.Abs(difference) <= horizontalTolerance ? 0f : Mathf.Sign(difference);
             // 목표 X를 한 물리 프레임에 지나쳐 좌우로 떨리는 현상을 막습니다.
             float velocity = direction * Mathf.Min(Mathf.Max(0f, speed), Mathf.Abs(difference) / Time.fixedDeltaTime);
+            // 추격/발판 우회도 배회와 동일하게 앞쪽 지지를 확인합니다.
+            if (direction != 0f && !HasFloorAhead(direction, Mathf.Abs(velocity)))
+            {
+                _body.linearVelocityX = 0f;
+                return 0f;
+            }
             _body.linearVelocityX = velocity;
             return direction;
         }

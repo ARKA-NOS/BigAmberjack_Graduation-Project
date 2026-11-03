@@ -821,7 +821,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.65, y: 0.34}
+  m_Offset: {x: 0.425, y: 0.34}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -831,7 +831,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9, y: 0.65}
+  m_Size: {x: 1.35, y: 0.72}
   m_EdgeRadius: 0
 --- !u!1 &4944068331171746499
 GameObject:
@@ -935,8 +935,8 @@ MonoBehaviour:
   <SkillSo>k__BackingField: {fileID: 11400000, guid: a731ded9bd1cf5f4f9ff29b94d3d6f91, type: 2}
   <BaseCoolTime>k__BackingField: 2.5
   attackDelayStat: {fileID: 11400000, guid: 9d471adb7a7344f89ab2d30e31d80402, type: 2}
-  fallbackAttackDelay: 0.6
-  postBlinkDelay: 0.2
+  fallbackAttackDelay: 0.35
+  postBlinkDelay: 0.1
   blinkBeforeAttack: 0
   telegraphOpacity: 1
   telegraphPrefab: {fileID: 0}

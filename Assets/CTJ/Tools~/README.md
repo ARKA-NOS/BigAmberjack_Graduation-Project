@@ -27,6 +27,7 @@
 | VerifyBossMapFloor.cs | TestBossMap의 실제 바닥·경고 Canvas 메시·레이저 접지·맵 이동/지연 생성·수동 대체 검증 |
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
+| VerifyEnemyTerrainCombat.cs | 추격 절벽 방지·통과형 발판·좀비 몸통 판정/준비 시간·아처 후퇴 불가 시 사격 검증 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
 | VerifyEnemyNewHealth.cs | 현재 NewHealthModule 기반 체력·UI·보상 통합 검사 |
 | VerifyEnemyCoinReward.cs | 사망 코인 분배·바운스·스프라이트 소멸·지형·지연 지급·씬 정리 정산 검사 |
@@ -59,3 +60,5 @@
 2026-11-02 보스 화면 체력 바의 설정·테스트·문법 설명은 BossHealthBarNotes.md에 있습니다.
 
 같은 날 적용한 laser_beam의 원본 비율·높이 2.5배·벽 안전 공간과, 이후 수정한 중심부 판정/바닥 장식 제외·빠른 페이드·속도 27·흔들림 감쇠 설정은 BossLaserAssetNotes.md에 있습니다. 현재 형태 비교용 캡처는 BossLaserShape_Close.png입니다.
+
+2026-11-03 절벽 추격 방지, 좀비의 빨라진 준비·몸통 판정, 아처가 벽/절벽에서 후퇴하지 못할 때의 사격 규칙은 EnemyTerrainCombatNotes.md에 있습니다. 이전 문서의 좀비 0.8초 준비와 아처 최소 거리 제한에 우선하는 최신 설명입니다.

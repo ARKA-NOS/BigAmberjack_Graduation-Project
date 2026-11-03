@@ -28,9 +28,11 @@
 | VerifyEnemy04.cs | 최근 변경한 수평 사격·이동 방향·사거리 검증 |
 | VerifyEnemy04RangeStability.cs | 다른 발판에서 사거리 경계 떨림 재발 방지 |
 | VerifyEnemyTerrainCombat.cs | 추격 절벽 방지·통과형 발판·좀비 몸통 판정/준비 시간·아처 후퇴 불가 시 사격 검증 |
+| ConfigureEnemyBloodSpray.cs | 현재 단일 다각형 혈흔의 메시·프리팹 제작과 적 연결. 재실행 시 기본값을 덮어씀 |
+| VerifyEnemyBloodSpray.cs | 현재 혈흔의 지형 충돌·흔적 유지/페이드·방향·사망 후 수명·화면 표시 검사 |
 | VerifyEnemyArtRefresh.cs | 새 외형의 참조·공격/사망 애니메이션 연결 검사 |
 | VerifyEnemyNewHealth.cs | 현재 NewHealthModule 기반 체력·UI·보상 통합 검사 |
-| VerifyEnemyCoinReward.cs | 사망 코인 분배·바운스·스프라이트 소멸·지형·지연 지급·씬 정리 정산 검사 |
+| VerifyEnemyCoinReward.cs | 사망 코인 분배·큰 바운스·플레이어 중심 자석 회수·소멸·지형·지연 지급·씬 정리 정산 검사 |
 | VerifyEnemyOutline.cs | 현재 아웃라인의 피격·활성화·제거 검사 |
 | VerifyEnemyOuterContour.cs | 위치·회전·수납에 따른 외곽선 누락 재발 방지 |
 | VerifyEnemySuperArmor.cs | 현재 슈퍼아머의 준비/공격/후딜 조건 검사 |
@@ -49,7 +51,7 @@
 
 이후 코인 보상 작업으로 VerifyEnemyCoinReward.cs와 EnemyCoinRewardNotes.md를 추가했습니다. Backups/EnemyCurrencyRewardModule.Immediate.cs.txt는 사용자 요청으로 보관한 이전 즉시 지급 코드이며, 삭제 대상이 아닙니다.
 
-2026-10-29 코인 수정의 현재 설정·테스트·문법 설명은 EnemyCoinBounceNotes.md에 있습니다. EnemyCoinRewardNotes.md는 최초 페이드 방식의 기록입니다.
+현재 코인 설정·테스트·문법은 EnemyCoinMagnetNotes.md에 있습니다. EnemyCoinBounceNotes.md는 이전 작은 바운스, EnemyCoinRewardNotes.md는 최초 페이드 방식의 기록입니다.
 
 2026-10-29 천장 터렛의 설정·코드 사용법·테스트·문법 설명은 EnemyVerticalFlipNotes.md에 있습니다.
 
@@ -62,3 +64,9 @@
 같은 날 적용한 laser_beam의 원본 비율·높이 2.5배·벽 안전 공간과, 이후 수정한 중심부 판정/바닥 장식 제외·빠른 페이드·속도 27·흔들림 감쇠 설정은 BossLaserAssetNotes.md에 있습니다. 현재 형태 비교용 캡처는 BossLaserShape_Close.png입니다.
 
 2026-11-03 절벽 추격 방지, 좀비의 빨라진 준비·몸통 판정, 아처가 벽/절벽에서 후퇴하지 못할 때의 사격 규칙은 EnemyTerrainCombatNotes.md에 있습니다. 이전 문서의 좀비 0.8초 준비와 아처 최소 거리 제한에 우선하는 최신 설명입니다.
+
+같은 날 추가한 피격 파티클 모듈, 넉백 2.5 / 0.2초(실측 약 0.265~0.271유닛), 스케일 0.4 / 0.24초의 기록은 EnemyParticleFeedbackNotes.md에 있습니다. 이 문서의 시트 기반 혈흔 에셋과 캡처는 후속 정리에서 삭제했습니다.
+
+이후 마지막 피격의 넉백·블링크가 끝난 뒤 사망하도록 변경했습니다. 사망 이벤트 순서·테스트·문법 설명은 EnemyBloodRandomDeathNotes.md입니다. 이 문서의 이전 혈흔 5종과 비교 캡처는 삭제했습니다.
+
+현재 혈흔은 텍스처를 사용하지 않는 단일 다각형 분사 방식입니다. 바닥 정지·벽 흘러내림·접촉 후 2~3초 유지/페이드의 설정과 문법 설명은 EnemyPolygonBloodNotes.md, 화면 비교는 EnemyBloodSprayPreview.png에 있습니다. 2026-11-04에 NEw pack blood 폴더, HitBlood/HitBlood2~5 프리팹·머티리얼, 옛 제작/검증 도구와 캡처를 삭제했습니다. 기존 학습 문서는 기록으로 보존했습니다.

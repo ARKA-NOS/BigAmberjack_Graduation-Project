@@ -13,8 +13,8 @@ namespace CTJ.Enemies
     {
         [Header("Knockback")]
         [SerializeField] private bool enableKnockback = true;
-        [SerializeField, Min(0f)] private float knockbackSpeed = 2f;
-        [SerializeField, Min(0f)] private float knockbackDuration = 0.15f;
+        [SerializeField, Min(0f)] private float knockbackSpeed = 2.5f;
+        [SerializeField, Min(0f)] private float knockbackDuration = 0.2f;
         [Tooltip("넉백 없이도 행동을 제한하는 피격 경직 시간. 0이면 기존 넉백 시간만 사용합니다.")]
         [SerializeField, Min(0f)] private float hitStunDuration;
 
@@ -36,13 +36,13 @@ namespace CTJ.Enemies
         [SerializeField] private SpriteRenderer[] sprites;
 
         [Header("Scale Pulse")]
-        [Tooltip("피격마다 가로/세로를 약하게 눌렀다가 복원합니다. 보스 등에서는 별도로 켤 수 있습니다.")]
+        [Tooltip("피격마다 가로/세로를 눌렀다가 복원합니다. 보스 등에서는 별도로 켤 수 있습니다.")]
         [SerializeField] private bool enableScalePulse;
         [Tooltip("그림만 가진 자식 Transform. 방향 전환 루트, 콜라이더, 발사 위치가 포함된 부모는 지정하지 않습니다.")]
         [SerializeField] private Transform[] scaleTargets;
         [Tooltip("최대 변형 비율. 실제 변형은 이 값의 50~100%이며 가로/세로 방향은 매번 무작위입니다.")]
-        [SerializeField, Range(0f, 0.8f)] private float scalePulseAmount = 0.08f;
-        [SerializeField, Min(0f)] private float scalePulseDuration = 0.16f;
+        [SerializeField, Range(0f, 0.8f)] private float scalePulseAmount = 0.4f;
+        [SerializeField, Min(0f)] private float scalePulseDuration = 0.24f;
 
         private EnemyBase _enemy;
         private Rigidbody2D _body;
@@ -81,7 +81,12 @@ namespace CTJ.Enemies
         public float ReactionRemainingNormalized => _reactionDuration > 0f
             ? Mathf.Clamp01(RemainingReactionTime / _reactionDuration) : 0f;
         public bool IsBlinking => _blinking;
-        private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
+        // 사망 대기는 실제 활성 효과의 남은 시간을 사용합니다. 모듈을 끄면 즉시 끝납니다.
+        internal float RemainingFeedbackTime => Ready ? Mathf.Max(RemainingReactionTime, Mathf.Max(
+            _blinking && enableBlink ? _blinkEnd - Time.time : 0f,
+            _scaling && enableScalePulse ? _scaleStart + _scaleLength - Time.time : 0f)) : 0f;
+        private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled &&
+            (!_enemy.IsDead || _enemy.IsPlayingDeathReaction);
 
         public override void Initialize(ModuleOwner owner)
         {

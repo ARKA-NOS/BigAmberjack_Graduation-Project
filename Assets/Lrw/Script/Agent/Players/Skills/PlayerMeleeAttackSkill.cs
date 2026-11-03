@@ -44,8 +44,6 @@ namespace Lrw.Script.Agent.Players.Skills
         public override float CoolTime => BaseCoolTime / attackSpeedStat.Value;
 
         private Vector3 _offset;
-
-        private bool _useTimeIsGround;
         
         public override void InitSkill(ModuleOwner owner)
         {
@@ -97,8 +95,6 @@ namespace Lrw.Script.Agent.Players.Skills
             _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
-            _useTimeIsGround = _groundChecker.FixedIsGround;
-            if(_useTimeIsGround) _movement.MoveXLock(true);
             _prevSpeed = _animator.speed;
             SetAnimationSpeed();
             PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
@@ -116,6 +112,7 @@ namespace Lrw.Script.Agent.Players.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+            GroundStop();
             SetAnimationSpeed();
         }
 
@@ -135,9 +132,15 @@ namespace Lrw.Script.Agent.Players.Skills
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-            if(_useTimeIsGround) _movement.MoveXLock(false);
+            _movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
+        }
+
+        private void GroundStop()
+        {
+            if(_groundChecker.FixedIsGround)
+                _movement.MoveXLock(true);
         }
 
         private void SetAnimationSpeed()

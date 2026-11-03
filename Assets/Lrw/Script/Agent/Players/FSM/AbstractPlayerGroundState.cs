@@ -22,22 +22,7 @@ namespace Lrw.Script.Agent.Players.FSM
             Player.ChangeState(PlayerStateEnum.FALL);
             return true;
         }
-
-        public override void Enter()
-        {
-            base.Enter();
-            Player.PlayerInput.OnJumpKeyPressed += HandleJumpStateChange;
-        }
         
-        public override void Exit()
-        {
-            base.Exit();
-            Player.PlayerInput.OnJumpKeyPressed -= HandleJumpStateChange;
-        }
-
-        private void HandleJumpStateChange()
-        {
-            Player.ChangeState(PlayerStateEnum.JUMP);
-        }
+        
     }
 }

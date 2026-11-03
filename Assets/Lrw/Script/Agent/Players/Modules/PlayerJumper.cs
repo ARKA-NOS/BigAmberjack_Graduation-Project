@@ -11,7 +11,7 @@ namespace Lrw.Script.Agent.Players.Modules
         [SerializeField] private StatData jumpPowerStatData;
         
         [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
-
+        [SerializeField, Range(0f, 1f)] private float jumpMinPower = 2f;
         [field: SerializeField]
         public float CoyoteTime { get; private set; } = 0.1f;
 
@@ -54,8 +54,8 @@ namespace Lrw.Script.Agent.Players.Modules
 
             if (_playerRb.linearVelocityY <= 0f)
                 return;
-
-            _playerRb.linearVelocityY *= jumpCutMultiplier;
+            
+            _playerRb.linearVelocityY = Mathf.Max(_playerRb.linearVelocityY * jumpCutMultiplier,jumpMinPower);
         }
 
         

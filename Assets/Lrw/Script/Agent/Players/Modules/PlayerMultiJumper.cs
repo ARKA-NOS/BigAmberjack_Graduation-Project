@@ -8,7 +8,6 @@ namespace Lrw.Script.Agent.Players.Modules
 {
     public class PlayerMultiJumper : Module, IControlMultiJumper,IAfterInitModule
     {
-        [SerializeField] private bool activeDoubleJump = true;
         [SerializeField] private StatData multiJumpCountStatData;
         [SerializeField] private AssetNameSo multiJumpVfx; 
         
@@ -34,7 +33,7 @@ namespace Lrw.Script.Agent.Players.Modules
 
         public bool CanDoubleJump()
         {
-            if (_groundChecker.IsGroundChecking() || _currentJumpCount  > _multiJumpCount.Value - 1 || !activeDoubleJump) return false;
+            if (_groundChecker.IsGroundChecking() || _currentJumpCount  > _multiJumpCount.Value - 1) return false;
             _currentJumpCount++;
             _vfxModule?.PlayVfx(multiJumpVfx.AssetHash);
             return true;
@@ -44,5 +43,6 @@ namespace Lrw.Script.Agent.Players.Modules
         {
             _currentJumpCount = 0;
         }
+        
     }
 }

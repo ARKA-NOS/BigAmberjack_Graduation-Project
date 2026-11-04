@@ -96,6 +96,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3447574758287310105, guid: f03e1e4d742a88548bc4dc1c34c06806, type: 3}
+      propertyPath: 'treeSoList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 4416dccf291ea0f40b266619b5028942, type: 2}
     - target: {fileID: 3467709289930996747, guid: f03e1e4d742a88548bc4dc1c34c06806, type: 3}
       propertyPath: m_Name
       value: UpgradeManager

@@ -43,7 +43,7 @@ namespace Lrw.Script.Agent.Players
         protected override void Start()
         {
             base.Start();
-            PlayerInput.SetPlayerInputActive(true);
+            PlayerInput.EnableInput();
         }
 
         private void OnDestroy()

@@ -42,7 +42,7 @@ namespace Lrw.Script.Agent.Players.Modules
             MovementDirectionX = movementXInput;
         }
         
-        public void MoveLock(bool value)
+        public void MoveXLock(bool value)
         {
             _isMoveLock = value;
             if(value) _playerRb.linearVelocityX = 0;

@@ -31,6 +31,7 @@ namespace Lrw.Script.Agent.Players.Skills
         private IAnimationTrigger _trigger;
         private Animator _animator;
         
+        private IGroundChecker _groundChecker;
         private IControlMovement _movement;
         
         private Stat damageStat;
@@ -67,6 +68,9 @@ namespace Lrw.Script.Agent.Players.Skills
             FDebug.Assert(owner.TryGetModule(out _movement),
                 $"[MeleeAttackSkill : {owner.name}] IControlMovement is not found");
             
+            FDebug.Assert(owner.TryGetModule(out _groundChecker),
+                $"[MeleeAttackSkill : {owner.name}] IGroundChecker is not found");
+            
             damageStat = statModule.GetStat(physicalDamage);
             attackSpeedStat = statModule.GetStat(attackSpeed);
             
@@ -91,7 +95,6 @@ namespace Lrw.Script.Agent.Players.Skills
             _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
-            _movement.MoveLock(true);
             _prevSpeed = _animator.speed;
             SetAnimationSpeed();
             PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
@@ -109,6 +112,7 @@ namespace Lrw.Script.Agent.Players.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+            GroundStop();
             SetAnimationSpeed();
         }
 
@@ -128,9 +132,15 @@ namespace Lrw.Script.Agent.Players.Skills
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-            _movement.MoveLock(false);
+            _movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
+        }
+
+        private void GroundStop()
+        {
+            if(_groundChecker.FixedIsGround)
+                _movement.MoveXLock(true);
         }
 
         private void SetAnimationSpeed()

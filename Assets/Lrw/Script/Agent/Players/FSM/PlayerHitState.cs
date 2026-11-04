@@ -14,7 +14,7 @@ namespace Lrw.Script.Agent.Players.FSM
         public override void Enter()
         {
             base.Enter();
-            ControlMovement.MoveLock(true);
+            ControlMovement.MoveXLock(true);
             _animationTrigger.OnAnimationEnd += OnOnAnimationEnd;
         }
 
@@ -26,7 +26,7 @@ namespace Lrw.Script.Agent.Players.FSM
         public override void Exit()
         {
             base.Exit();
-            ControlMovement.MoveLock(false);
+            ControlMovement.MoveXLock(false);
             _animationTrigger.OnAnimationEnd -= OnOnAnimationEnd;
         }
         

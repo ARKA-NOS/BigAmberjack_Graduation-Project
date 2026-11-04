@@ -426,7 +426,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4237181409073337394, guid: 6f9458a5b86a65b42ae4e513a73c9ce8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 5.7318115
+      value: 5.7319336
       objectReference: {fileID: 0}
     - target: {fileID: 4237181409073337394, guid: 6f9458a5b86a65b42ae4e513a73c9ce8, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3260,6 +3260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2100970778}
   - component: {fileID: 2100970779}
+  - component: {fileID: 2100970780}
   m_Layer: 0
   m_Name: Test Currrency UI
   m_TagString: Untagged
@@ -3305,6 +3306,18 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &2100970780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100970777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 002b66bc7f3e41e78e827e36c976f997, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.CurrencyUI.CurrencyUI
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

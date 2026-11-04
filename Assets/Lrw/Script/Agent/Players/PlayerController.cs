@@ -39,7 +39,13 @@ namespace Lrw.Script.Agent.Players
             
             ServiceLocator.Register<IPlayerController>(this);
         }
-        
+
+        protected override void Start()
+        {
+            base.Start();
+            PlayerInput.SetPlayerInputActive(true);
+        }
+
         private void OnDestroy()
         {
             agentStateMachine.StateExit();

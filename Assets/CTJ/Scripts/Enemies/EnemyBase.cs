@@ -264,8 +264,8 @@ namespace CTJ.Enemies
                 Die(hit);
             else if (hit.HasValue)
             {
-                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
             }
             OnHealthChanged(current, delta, max);
         }
@@ -288,8 +288,9 @@ namespace CTJ.Enemies
                 if (collider.isTrigger) collider.enabled = false;
             if (hit.HasValue)
             {
-                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
+                // 파티클은 피격 스케일 변형 전의 그림을 기준으로 접촉점을 보정합니다.
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
             }
             if (isActiveAndEnabled) StartCoroutine(FinishDeathAfterReaction());
             else FinishDeath();

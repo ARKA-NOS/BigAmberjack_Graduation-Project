@@ -96,26 +96,33 @@ namespace CTJ.Enemies
         {
             // 실제 체력 감소가 확정되고 사망 처리에 들어가기 전에 전달받습니다.
             if (!isActiveAndEnabled) return;
+
             Vector3 origin = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
             Vector3 position = ResolveHitPosition(point, origin);
+
             if (!HasDirection(direction) && damage.Dealer != null) direction = origin - damage.Dealer.transform.position;
             if (!HasDirection(direction)) direction = -normal;
             if (!HasDirection(direction) && _enemy.Target != null) direction = origin - _enemy.Target.position;
             if (!HasDirection(direction)) direction = Vector2.right;
+
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             _activeEffects.RemoveAll(effect => effect == null);
             foreach (HitEffect entry in hitEffects)
             {
                 if (entry == null || !entry.enabled || entry.scale <= 0f) continue;
+
                 ParticleSystem selectedPrefab = entry.SelectPrefab();
+
                 if (selectedPrefab == null) continue;
+
                 while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
                 {
                     EnemyHitParticle oldest = _activeEffects[0];
                     if (oldest != null) { oldest.gameObject.SetActive(false); Destroy(oldest.gameObject); }
                     _activeEffects.RemoveAt(0);
                 }
+
                 float effectAngle = angle;
                 if (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) && damage.Dealer != null)
                 {
@@ -123,15 +130,19 @@ namespace CTJ.Enemies
                     Vector2 away = origin - damage.Dealer.transform.position;
                     if (HasDirection(away)) effectAngle = Mathf.Atan2(away.y, away.x) * Mathf.Rad2Deg;
                 }
+
                 Quaternion rotation = Quaternion.Euler(0f, 0f, entry.angleOffset + (entry.alignToHitDirection ? effectAngle : 0f));
                 ParticleSystem particle = Instantiate(selectedPrefab, position + rotation * (Vector3)entry.offset, rotation);
+
                 // 적의 부모/반전/펀치 스케일과 분리하되, 같은 씬에 두어 씬 언로드 때 함께 정리합니다.
                 SceneManager.MoveGameObjectToScene(particle.gameObject, gameObject.scene);
                 particle.transform.localScale *= Mathf.Max(0.01f, effectScale) * entry.scale;
                 particle.gameObject.SetActive(true);
+
                 EnemyHitParticle lifetime = particle.GetComponent<EnemyHitParticle>();
                 if (lifetime == null) lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
                 lifetime.Play(particle, maxEffectLifetime);
+
                 _activeEffects.Add(lifetime);
             }
         }

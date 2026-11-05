@@ -46,10 +46,10 @@ namespace CTJ.Enemies
         [Header("Collect Scale Pulse")]
         [SerializeField] private bool enableCollectScalePulse = true;
         [Tooltip("도착 직후 원래 크기 대비 최대 배율입니다.")]
-        [SerializeField, Min(1f)] private float collectScalePeak = 1.35f;
-        [SerializeField, Range(0.1f, 1f)] private float collectScaleDip = 0.7f;
+        [SerializeField, Min(1f)] private float collectScalePeak = 1.8f;
+        [SerializeField, Range(0.1f, 1f)] private float collectScaleDip = 0.35f;
         [Tooltip("확대 → 축소 → 원래 크기까지 걸리는 시간. 소멸 애니메이션 안에서 재생합니다.")]
-        [SerializeField, Min(0.01f)] private float collectScaleDuration = 0.24f;
+        [SerializeField, Min(0.01f)] private float collectScaleDuration = 0.26f;
 
         private const float Skin = 0.005f;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);

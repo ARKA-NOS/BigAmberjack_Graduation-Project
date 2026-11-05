@@ -27,9 +27,9 @@ namespace CTJ.Enemies
         [SerializeField, Min(0f)] private float blinkDuration = 0.35f;
         [SerializeField, Min(0.01f)] private float blinkInterval = 0.05f;
         [Tooltip("원본 그림 위에 섞을 피격 색. 스프라이트 자체의 투명도는 유지합니다.")]
-        [SerializeField, ColorUsage(false)] private Color hitColor = Color.white;
+        [SerializeField, ColorUsage(false)] private Color hitColor = new Color(1f, 0.32f, 0.36f, 1f);
         [Tooltip("0: 원본 그림, 1: 피격 색으로 완전히 덮기. 중간 값은 무늬가 보이는 점멸입니다.")]
-        [SerializeField, Range(0f, 1f)] private float hitColorBlend = 0.35f;
+        [SerializeField, Range(0f, 1f)] private float hitColorBlend = 0.65f;
         [Tooltip("원본 RGB와 피격 색을 혼합하는 CTJ 피격 머티리얼.")]
         [SerializeField] private Material hitMaterial;
         [Tooltip("피격 표시용 SpriteRenderer만 지정합니다. 비워두면 소유 적의 자식에서 찾습니다.")]

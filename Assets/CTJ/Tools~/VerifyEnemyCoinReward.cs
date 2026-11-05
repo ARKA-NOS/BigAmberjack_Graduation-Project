@@ -350,7 +350,7 @@ namespace CTJ.Tools
                 Check(height >= playerHeight * 0.5f - 0.01f && Mathf.Abs(height - expectedHeight) < 0.04f,
                     "Bounce height follows body size: " + height);
                 Check(coin == null && gold.Count == 3 && moved && arrived, "Moving / delayed target collected exactly once");
-                Check(maxScale > 1.3f && minScale < 0.75f && scaleRestored, "Arrival pulse grows, shrinks, restores without delaying payout");
+                Check(maxScale > 1.74f && minScale < 0.41f && scaleRestored, "Stronger arrival pulse grows, shrinks, restores without delaying payout");
                 return new { playerHeight, measuredBounce = height, delayedTarget, followsOffsetCenter = arrived, maxScale, minScale, scaleRestored, paid = gold.Count };
             }
             finally { if (coin != null) Object.Destroy(coin.gameObject); Object.Destroy(stage); }

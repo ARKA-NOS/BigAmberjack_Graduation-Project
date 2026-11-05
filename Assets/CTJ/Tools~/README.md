@@ -35,6 +35,7 @@
 | VerifyEnemyCoinReward.cs | 사망 코인 분배·큰 바운스·플레이어 중심 자석 회수·소멸·지형·지연 지급·씬 정리 정산 검사 |
 | VerifyEnemyFeedbackPolish.cs | 좀비 사망 위치·혈흔 접촉점·붉은 피격 색 검사. Apply는 프리팹/클립 기본값을 다시 적용하는 제작용 |
 | VerifyEnemyOutline.cs | 현재 아웃라인의 피격·활성화·제거 검사 |
+| VerifyEnemyOutlinePixels.cs | 피격 전용 모드·검정/적색 설정·줌/해상도/에셋 크기별 픽셀 두께와 치명타 표시 검사. Apply는 기본값 설정용 |
 | VerifyEnemyOuterContour.cs | 위치·회전·수납에 따른 외곽선 누락 재발 방지 |
 | VerifyEnemySuperArmor.cs | 현재 슈퍼아머의 준비/공격/후딜 조건 검사 |
 
@@ -73,3 +74,5 @@
 현재 혈흔은 텍스처를 사용하지 않는 단일 다각형 분사 방식입니다. 바닥 정지·벽 흘러내림·접촉 후 2~3초 유지/페이드의 설정과 문법 설명은 EnemyPolygonBloodNotes.md, 화면 비교는 EnemyBloodSprayPreview.png에 있습니다. 2026-11-04에 NEw pack blood 폴더, HitBlood/HitBlood2~5 프리팹·머티리얼, 옛 제작/검증 도구와 캡처를 삭제했습니다. 기존 학습 문서는 기록으로 보존했습니다.
 
 2026-11-05 좀비 사망 마지막 프레임의 위치 오류, 혈흔 발생점 보정, 적색 블링크, 코인 도착 시 크기 연출의 설정·테스트·문법은 EnemyFeedbackPolishNotes.md에 있습니다.
+
+같은 날 추가한 피격 전용 아웃라인, 검정/어두운 적색 테두리, 균일한 화면 픽셀 두께와 코인 확대·축소 강화는 EnemyOutlineHitOnlyNotes.md가 최신 설명입니다.

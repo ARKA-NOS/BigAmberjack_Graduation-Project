@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using DevLib.ModuleSystem;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.Players;
-using Lrw.Script.Agent.StatSystem;
+using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Players;
+using _Scripts.Agent.StatSystem;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.StatUI
+namespace _Scripts.UI.InventoryUI.StatUI
 {
     // 현재 플레이어의 스탯을 ViewModel에 넘긴다. 플레이어 프리팹은 건드리지 않고 ServiceLocator로 찾는다.
     // 플레이어는 던전 생성 시 나중에 생기거나 씬 전환 때 다시 만들어지므로, 연결이 끊기면 다시 찾는다.

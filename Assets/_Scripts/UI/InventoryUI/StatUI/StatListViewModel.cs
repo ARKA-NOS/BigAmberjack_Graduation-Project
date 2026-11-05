@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.Agent.StatSystem;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.StatUI
+namespace _Scripts.UI.InventoryUI.StatUI
 {
     [CreateAssetMenu(fileName = "Stat List View Module", menuName = "UI/Stat List View Module")]
     public class StatListViewModel : AbstractUIViewModel<IReadOnlyDictionary<StatData, Stat>>

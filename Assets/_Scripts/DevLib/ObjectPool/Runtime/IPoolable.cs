@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.ObjectPool.Runtime
+namespace _Scripts.DevLib.ObjectPool.Runtime
 {
     public interface IPoolable
     {

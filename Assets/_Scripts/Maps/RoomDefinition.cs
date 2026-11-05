@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // Room Prefab의 루트에 붙여서, 플레이어 도착 위치와 출구 위치를 미리 지정해두는 컴포넌트.
     // 상자/NPC 위치는 InteractableSpawnPoint, 적 등장 위치는 EncounterZone이 각자 들고 있다.

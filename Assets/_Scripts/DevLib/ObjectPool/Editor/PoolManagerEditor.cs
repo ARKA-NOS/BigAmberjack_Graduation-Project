@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using DevLib.ObjectPool.Runtime;
+using _Scripts.DevLib.ObjectPool.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevLib.ObjectPool.Editor
+namespace _Scripts.DevLib.ObjectPool.Editor
 {
     public class PoolManagerEditor : EditorWindow
     {

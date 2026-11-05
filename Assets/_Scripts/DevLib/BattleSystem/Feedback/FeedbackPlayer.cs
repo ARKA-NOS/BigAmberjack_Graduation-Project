@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace DevLib.BattleSystem.Feedback
+namespace _Scripts.DevLib.BattleSystem.Feedback
 {
     public class FeedbackPlayer : MonoBehaviour
     {

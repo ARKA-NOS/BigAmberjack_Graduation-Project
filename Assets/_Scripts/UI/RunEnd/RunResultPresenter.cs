@@ -1,17 +1,17 @@
 using System.Collections.Generic;
-using CTJ.Enemies;
-using DevLib.ModuleSystem;
-using KHO.Scripts.InventorySystem;
-using KHO.Scripts.ItemSystem;
-using Lrw.Script._Core._EventSystem;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script._Core.SceneSystem;
-using Lrw.Script.Agent.Players;
-using Lrw.Script.Currency;
+using _Scripts._Core._EventSystem;
+using _Scripts._Core._ServiceLocator;
+using _Scripts._Core.SceneSystem;
+using _Scripts.Agent.Enemies;
+using _Scripts.Agent.Players;
+using _Scripts.Currency;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Inventory;
+using _Scripts.Item;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SDW.Scripts.RunEnd
+namespace _Scripts.UI.RunEnd
 {
     // 탐험 종료 처리. RunEndedEvent를 받으면 결과 데이터를 모아 RunResultViewModel에 Bind하고,
     // 결과 화면의 "다음"을 누르면 다음 단계로 넘어간다. UI 컴포넌트는 직접 참조하지 않는다.
@@ -79,7 +79,7 @@ namespace SDW.Scripts.RunEnd
             ModuleOwner player = ServiceLocator.Get<IPlayerController>() as ModuleOwner;
             if (player == null || !player.TryGetModule(out IInventoryModule inventory))
             {
-                for (int i = 0; i < Inventory.SlotCount; i++)
+                for (int i = 0; i < Inventory.Inventory.SlotCount; i++)
                     icons.Add(null);
 
                 return icons;

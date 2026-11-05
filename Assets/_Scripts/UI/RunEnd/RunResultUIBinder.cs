@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.UI.BindSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SDW.Scripts.RunEnd
+namespace _Scripts.UI.RunEnd
 {
     // 탐험 종료 화면. RunResultViewModel에 Bind된 RunResultData를 표시한다.
     // 이 컴포넌트가 붙은 오브젝트는 항상 켜 두고, 화면 표시는 root로 켜고 끈다.

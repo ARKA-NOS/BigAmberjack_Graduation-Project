@@ -1,8 +1,8 @@
-﻿using DevLib.ModuleSystem;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+﻿using _Scripts.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace DevLib.BattleSystem
+namespace _Scripts.DevLib.BattleSystem
 {
     public struct DamageData
     {

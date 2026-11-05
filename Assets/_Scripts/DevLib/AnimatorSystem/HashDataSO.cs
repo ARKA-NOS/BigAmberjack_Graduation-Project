@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DevLib.AnimatorSystem
+namespace _Scripts.DevLib.AnimatorSystem
 {
     [CreateAssetMenu(fileName = "Hash data", menuName = "Lib/Animator Hash data", order = 5)]
     public class HashDataSO : ScriptableObject

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DevLib.ObjectPool.Runtime;
+using _Scripts.DevLib.ObjectPool.Runtime;
 using UnityEngine;
 using UnityEngine.Audio;
 using Random = UnityEngine.Random;
 
-namespace DevLib.SoundSystem
+namespace _Scripts.DevLib.SoundSystem
 {
     [RequireComponent(typeof(AudioSource))]
     public class SoundPlayer : PoolableMono

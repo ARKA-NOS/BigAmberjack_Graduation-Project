@@ -1,6 +1,6 @@
-using Lrw.Script._Core._EventSystem;
+using _Scripts._Core._EventSystem;
 
-namespace SDW.Scripts.RunEnd
+namespace _Scripts.UI.RunEnd
 {
     public enum RunEndReason
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Lrw.Script.Agent.Players.InteractSystem;
+using _Scripts.Agent.Players.InteractSystem;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Spawn
+namespace _Scripts.Maps.Spawn
 {
     // 스폰 포인트 하나에서 무엇이 나올지 정하는 테이블.
     // 등장 확률을 먼저 굴리고, 성공하면 후보 중 가중치로 하나를 고른다.

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SDW.Scripts.Minimap
+namespace _Scripts.UI.Minimap
 {
     // 현재 방의 지형과 플레이어/적/상자/NPC 아이콘을 그린다.
     // 같은 ViewModel 에셋을 연결한 Binder 두 개를 두고, 하나는 FollowPlayer(오른쪽 아래 작은 맵), 하나는 FitRoom(전체 맵)으로 쓴다.

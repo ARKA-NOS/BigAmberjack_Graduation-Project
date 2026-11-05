@@ -1,10 +1,10 @@
-using CTJ.Enemies.Bosses;
-using DevLib.BattleSystem;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.Agent.Enemies.Bosses;
+using _Scripts.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.DevLib.BattleSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace CTJ.Testing
+namespace _Scripts.Testing.Enemy
 {
     // BossPatternTest 전용 조작 타깃. 실제 PlayerPack이나 게임 UI를 대체하지 않습니다.
     public sealed class BossTestControls : MonoBehaviour

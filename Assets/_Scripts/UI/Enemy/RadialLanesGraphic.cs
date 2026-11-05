@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CTJ.UI
+namespace _Scripts.UI.Enemy
 {
     // 한 Canvas 안에 탄환 수만큼 사각 경고를 그립니다. 공용 경고의 알파/점멸을 그대로 사용합니다.
     public sealed class RadialLanesGraphic : MaskableGraphic

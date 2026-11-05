@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using DevLib.EventChannelSystem;
-using DevLib.ObjectPool.Runtime;
+using _Scripts.DevLib.EventChannelSystem;
+using _Scripts.DevLib.ObjectPool.Runtime;
 using UnityEngine;
 
-namespace DevLib.SoundSystem
+namespace _Scripts.DevLib.SoundSystem
 {
     public class SoundManager : MonoBehaviour
     {

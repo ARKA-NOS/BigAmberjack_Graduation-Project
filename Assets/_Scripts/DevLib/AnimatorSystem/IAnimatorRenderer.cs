@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DevLib.AnimatorSystem
+namespace _Scripts.DevLib.AnimatorSystem
 {
     public interface IAnimatorRenderer
     {

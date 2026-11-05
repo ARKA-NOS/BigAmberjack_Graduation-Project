@@ -1,8 +1,8 @@
 using System.Collections;
-using CTJ.Enemies;
+using _Scripts.Agent.Enemies;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 적이 등장할 때 쓰는 포탈 연출. 포탈이 열리면서 소용돌이 애니메이션을 재생하고, 애니메이션이 끝나면 적을 꺼낸 뒤 닫힌다.
     // 적은 생성 즉시 방에 등록되지만, 연출이 끝날 때까지 비활성 홀더 아래에 있어서 Awake/AI가 돌지 않는다.

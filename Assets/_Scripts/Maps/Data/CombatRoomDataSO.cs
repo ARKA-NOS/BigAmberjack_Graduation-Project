@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     // 넓은 탐험 맵. 적은 프리팹의 EncounterZone이, 상자/NPC는 InteractableSpawnPoint가 배치한다.
     // 출구 조건은 기본값(AlwaysClearedCondition)이라 적이 남아 있어도 출구는 항상 열려 있다.

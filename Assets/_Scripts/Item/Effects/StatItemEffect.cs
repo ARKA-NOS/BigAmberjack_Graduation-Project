@@ -1,8 +1,8 @@
-using DevLib.ModuleSystem;
-using Lrw.Script.Agent.StatSystem;
+using _Scripts.Agent.StatSystem;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.ItemSystem.Effects
+namespace _Scripts.Item.Effects
 {
     [CreateAssetMenu(fileName = "Stat Item Effect", menuName = "KHO/Item Effect/Stat", order = 0)]
     public class StatItemEffect : ItemEffectSO

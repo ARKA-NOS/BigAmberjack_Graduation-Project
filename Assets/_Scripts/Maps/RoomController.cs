@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using CTJ.Enemies;
-using SDW.Scripts.Maps.Conditions;
-using SDW.Scripts.Maps.Data;
-using SDW.Scripts.Maps.Encounter;
-using SDW.Scripts.Maps.Spawn;
+using _Scripts.Agent.Enemies;
+using _Scripts.Maps.Conditions;
+using _Scripts.Maps.Data;
+using _Scripts.Maps.Encounter;
+using _Scripts.Maps.Spawn;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 생성된 방 인스턴스의 런타임 상태를 관리한다.
     // 무엇을 할지는 RoomDataSO(자식 SO)가 정하고, 이 컴포넌트는 입장 → 조건 시작 → 클리어 순서만 책임진다.

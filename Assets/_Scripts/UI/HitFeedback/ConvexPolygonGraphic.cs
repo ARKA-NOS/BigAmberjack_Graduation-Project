@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CTJ.UI
+namespace _Scripts.UI.HitFeedback
 {
     // 순서대로 주어진 볼록 다각형을 기본 Canvas UI로 채웁니다. 피해 판정은 하지 않습니다.
     public sealed class ConvexPolygonGraphic : MaskableGraphic

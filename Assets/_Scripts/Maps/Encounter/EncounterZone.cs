@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using CTJ.Enemies;
-using Lrw.Script.Agent.Players;
+using _Scripts.Agent.Enemies;
+using _Scripts.Agent.Players;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Encounter
+namespace _Scripts.Maps.Encounter
 {
     // 방 프리팹 안의 전투 구역. 플레이어가 트리거에 처음 들어오면 배리어로 근처를 막고 EncounterSO의 웨이브를 차례로 생성한다.
     // 웨이브의 적이 모두 죽으면 다음 웨이브로 넘어가고, 마지막 웨이브까지 끝나면 배리어를 열고 Cleared를 알린다.

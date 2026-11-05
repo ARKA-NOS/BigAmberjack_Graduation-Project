@@ -1,7 +1,7 @@
-﻿using DevLib.ModuleSystem;
+﻿using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace DevLib.BattleSystem
+namespace _Scripts.DevLib.BattleSystem
 {
     public abstract class AbstractDamageCaster : MonoBehaviour
     {

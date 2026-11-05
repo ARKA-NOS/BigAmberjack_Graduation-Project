@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 칸 하나의 마우스 올림/벗어남을 부모의 InventoryTooltipController로 넘긴다. 끌기 시작하면 툴팁을 닫는다.
     [RequireComponent(typeof(InventorySlotUI))]

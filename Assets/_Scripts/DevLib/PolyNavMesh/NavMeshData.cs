@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// 베이킹된 NavMesh 폴리곤 데이터를 저장하는 ScriptableObject.

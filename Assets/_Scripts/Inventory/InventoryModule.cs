@@ -1,10 +1,10 @@
 using System;
-using DevLib.ModuleSystem;
-using KHO.Scripts.ItemSystem;
-using KHO.Scripts.UI.InventoryUI;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Item;
+using _Scripts.UI.InventoryUI;
 using UnityEngine;
 
-namespace KHO.Scripts.InventorySystem
+namespace _Scripts.Inventory
 {
     public class InventoryModule : Module, IInventoryModule
     {

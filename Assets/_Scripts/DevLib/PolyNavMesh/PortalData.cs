@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// 두 폴리곤이 공유하는 엣지(Portal). Funnel 알고리즘에서 경로가 통과하는 "문"에 해당한다.

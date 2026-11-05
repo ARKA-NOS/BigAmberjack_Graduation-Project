@@ -1,9 +1,9 @@
 using System.Linq;
-using KHO.Scripts.Eunms;
-using KHO.Scripts.ItemSystem.Effects;
+using _Scripts.Item.Effects;
+using _Scripts.Item.Enums;
 using UnityEngine;
 
-namespace KHO.Scripts.ItemSystem
+namespace _Scripts.Item
 {
     [CreateAssetMenu(fileName = "Item", menuName = "KHO/Item", order = 0)]
     public class ItemSO : ScriptableObject

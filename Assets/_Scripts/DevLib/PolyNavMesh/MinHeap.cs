@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// 최소 힙 기반 우선순위 큐. A* 탐색의 Open List로 사용된다.

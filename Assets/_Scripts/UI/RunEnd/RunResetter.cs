@@ -1,11 +1,11 @@
-using Lrw.Script._Core._Manager;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.Players;
-using Lrw.Script.Agent.Players.PlayerPackSystem;
-using SDW.Scripts.Maps;
+using _Scripts._Core._Manager;
+using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Players;
+using _Scripts.Agent.Players.PlayerPackSystem;
+using _Scripts.Maps;
 using UnityEngine;
 
-namespace SDW.Scripts.RunEnd
+namespace _Scripts.UI.RunEnd
 {
     // 탐험이 끝나 다른 씬으로 넘어가기 직전에, 씬을 넘어 남는 상태를 정리한다.
     // 플레이어는 사망했을 때만 파괴해서 다음 씬에서 새로 생성되게 하고, 보스 클리어 시에는 그대로 유지한다.

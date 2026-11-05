@@ -1,7 +1,8 @@
+using _Scripts.UI.Enemy;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CTJ.UI
+namespace _Scripts.UI.HitFeedback
 {
     // 적 스킬에서 호출하지만 판정이나 피해 처리는 하지 않는 재사용 가능한 Canvas 표시입니다.
     [RequireComponent(typeof(Canvas), typeof(RectTransform))]

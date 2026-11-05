@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DevLib.BattleSystem
+namespace _Scripts.DevLib.BattleSystem
 {
     [CreateAssetMenu(fileName = "CameraShakeData", menuName = "System/CameraShakeData", order = 60)]
     public class CameraShakeDataSO : ScriptableObject

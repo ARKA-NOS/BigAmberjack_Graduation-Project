@@ -1,4 +1,7 @@
-﻿public enum AttackTypeEnum
+﻿namespace _Scripts.DevLib.BattleSystem
 {
-    Melee
+    public enum AttackTypeEnum
+    {
+        Melee
+    }
 }

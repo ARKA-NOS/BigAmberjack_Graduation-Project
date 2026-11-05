@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UIElements;
 
-namespace DevLib.ObjectPool.Editor
+namespace _Scripts.DevLib.ObjectPool.Editor
 {
     [UxmlElement]
     public partial class MySplitView : TwoPaneSplitView

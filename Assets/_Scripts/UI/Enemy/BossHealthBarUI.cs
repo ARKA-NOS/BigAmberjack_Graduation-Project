@@ -1,9 +1,9 @@
-using CTJ.Enemies.Bosses;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.Agent.Enemies.Bosses;
+using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CTJ.UI
+namespace _Scripts.UI.Enemy
 {
     [DisallowMultipleComponent, RequireComponent(typeof(Canvas))]
     public sealed class BossHealthBarUI : MonoBehaviour

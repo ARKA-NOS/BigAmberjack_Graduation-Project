@@ -1,0 +1,151 @@
+﻿using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace _Scripts.Agent.Players
+{
+    [CreateAssetMenu(fileName = "PlayerInput", menuName = "SO/Player input", order = 0)]
+    public class PlayerInputSo : ScriptableObject, Controls.IPlayerActions, Controls.IPlayerUIActions
+    {
+        public event Action OnDashKeyPressed;
+
+        #region SkillKeyEvent
+
+        public event Action<bool> OnMeleeSkillKeyPressed;
+        public event Action<bool> OnSkill1KeyPressed;
+        public event Action<bool> OnSkill2KeyPressed;
+
+        #endregion
+        
+        public event Action OnJumpKeyPressed;
+        public event Action OnJumpKeyReleased;
+        
+        public bool PlatformKey { get; private set; }
+        
+        public event Action OnInteractKeyPressed;
+        public event Action OnInventoryKeyPressed;
+        public event Action OnTitleKeyPressed;
+        
+        private Controls _controls;
+        
+        public Vector2 MovementKey { get; private set; }
+        public Vector2 MousePos { get; private set; }
+
+        private void OnEnable()
+        {
+            if (_controls == null)
+            {
+                _controls = new Controls();
+                _controls.Player.SetCallbacks(this);
+                _controls.PlayerUI.SetCallbacks(this);
+            }
+
+            EnableInput();
+        }
+        
+        public void EnableInput()
+        {
+            _controls.PlayerUI.Enable();
+            SetPlayerInputActive(true);
+        }
+
+
+        private void OnDisable()
+        {
+            _controls.PlayerUI.Disable();
+            SetPlayerInputActive(false);
+        }
+
+        public void SetPlayerInputActive(bool active)
+        {
+            if(_controls == null) return;
+            
+            if (active)
+            {
+                _controls.Player.Enable();
+            }
+            else
+            {
+                _controls.Player.Disable();
+            }
+        }
+        
+        
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            MovementKey = context.ReadValue<Vector2>(); 
+        }
+
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                OnJumpKeyPressed?.Invoke();            
+            if (context.canceled)
+                OnJumpKeyReleased?.Invoke();
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnMeleeSkillKeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnMeleeSkillKeyPressed?.Invoke(false);
+        }
+
+        public void OnSkill1(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill1KeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnSkill1KeyPressed?.Invoke(false);
+        }
+
+        public void OnSkill2(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnSkill2KeyPressed?.Invoke(true);
+            if (context.canceled)
+                OnSkill2KeyPressed?.Invoke(false);
+        }
+
+        public void OnInteract(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnInteractKeyPressed?.Invoke();
+        }
+
+        public void OnInventory(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnInventoryKeyPressed?.Invoke();
+        }
+
+        public void OnMouse(InputAction.CallbackContext context)
+        {
+            MousePos = context.ReadValue<Vector2>();
+        }
+
+        public void OnPlatform(InputAction.CallbackContext context)
+        {
+            if (context.started)
+                PlatformKey = true;
+            else if (context.canceled)
+                PlatformKey = false;
+        }
+
+        public void OnTestTitle(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnTitleKeyPressed?.Invoke();
+        }
+
+        public Vector2 GetMouseWorldPosition()
+            => Camera.main.ScreenToWorldPoint(MousePos);
+
+        public void OnDash(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                OnDashKeyPressed?.Invoke();
+        }
+    }
+}

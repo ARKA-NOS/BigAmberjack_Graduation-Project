@@ -1,11 +1,11 @@
-using Lrw.Script.UI.UpgradeUI;
 using System.Collections.Generic;
-using Lrw.Script.Upgrade;
-using Lrw.Script.Upgrade.SO;
+using _Scripts.UI.UpgradeUI;
+using _Scripts.Upgrade;
+using _Scripts.Upgrade.SO;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SDW.Scripts.UI.UpgradeUI
+namespace _Scripts.UI.Upgrade
 {
     public class TestUpgradeLineDrawer : MonoBehaviour
     {

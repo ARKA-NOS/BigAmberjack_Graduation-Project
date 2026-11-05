@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Lrw.Script.Agent.StatSystem;
+using _Scripts.Agent.StatSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.StatUI
+namespace _Scripts.UI.InventoryUI.StatUI
 {
     public enum StatValueFormat
     {

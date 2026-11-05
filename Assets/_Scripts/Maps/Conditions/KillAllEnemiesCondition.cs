@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Conditions
+namespace _Scripts.Maps.Conditions
 {
     // 방에서 스폰된 적이 전부 죽으면(또는 파괴되면) 클리어된다.
     public class KillAllEnemiesCondition : IRoomClearCondition

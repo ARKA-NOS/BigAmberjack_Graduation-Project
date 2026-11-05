@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Lrw.Script.Agent.Players;
-using SDW.Scripts.Maps;
-using SDW.Scripts.Maps.Data;
+using _Scripts.Agent.Players;
+using _Scripts.Maps;
+using _Scripts.Maps.Data;
 using UnityEngine;
 
-namespace SDW.Scripts.Minimap
+namespace _Scripts.UI.Minimap
 {
     // 플레이어가 방에 들어올 때마다 그 방의 미니맵 데이터를 MinimapViewModel에 Bind한다.
     // 지형 텍스처는 방마다 처음 들어갈 때 한 번만 굽고 캐시한다.

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.ObjectPool.Runtime
+namespace _Scripts.DevLib.ObjectPool.Runtime
 {
     [CreateAssetMenu(fileName = "Pool Item", menuName = "Lib/Object Pool/Pool Item", order = 10)]
     public class PoolItemSO : ScriptableObject

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.BattleSystem
+namespace _Scripts.DevLib.BattleSystem
 {
     public interface IDamageable
     {

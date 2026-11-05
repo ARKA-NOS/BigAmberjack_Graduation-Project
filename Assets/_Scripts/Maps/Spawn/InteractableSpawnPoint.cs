@@ -1,7 +1,7 @@
-using Lrw.Script.Agent.Players.InteractSystem;
+using _Scripts.Agent.Players.InteractSystem;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Spawn
+namespace _Scripts.Maps.Spawn
 {
     // 방 프리팹에 배치하는 상호작용 오브젝트(상자, NPC, 상점 등) 스폰 위치.
     // 방에 처음 입장할 때 RoomController가 Spawn을 호출하고, 테이블이 정한 오브젝트를 이 위치에 생성한다.

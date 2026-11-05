@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Lrw.Script.Agent.Players;
-using SDW.Scripts.Maps.Data;
-using SDW.Scripts.UI;
-using UnityEngine;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.Players.CharacterSystem;
-using Lrw.Script.Agent.Players.PlayerPackSystem;
-using Lrw.Script.Agent.HealthSystem;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
-using SDW.Scripts.RunEnd;
-#if UNITY_EDITOR
+using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.Agent.Players;
+using _Scripts.Agent.Players.CharacterSystem;
+using _Scripts.Agent.Players.PlayerPackSystem;
+using _Scripts.Maps.Data;
+using _Scripts.UI;
+using _Scripts.UI.RunEnd;
 using UnityEditor;
-#endif
+using UnityEngine;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // StageSO가 고른 방 순서대로 방을 왼쪽에서 오른쪽으로 일직선 배치하고,
     // 각 방의 출구(Portal)를 다음 방으로만 연결한다. 이전 방으로는 돌아갈 수 없다.

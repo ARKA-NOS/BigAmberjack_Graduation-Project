@@ -1,8 +1,8 @@
-using Lrw.Script.UI;
+using _Scripts.UI.UI_System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 공용 Controls 에셋을 건드리지 않기 위해 인벤토리 창 키(기본 V: 열기·닫기, ESC: 닫기만)를 여기서 직접 받는다.
     // 창 열기·닫기는 UIManager가 처리하므로 씬에 GameManager(UIManager)가 있어야 한다.

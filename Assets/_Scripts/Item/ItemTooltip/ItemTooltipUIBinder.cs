@@ -1,9 +1,8 @@
-using KHO.Scripts.ItemSystem;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.ItemTooltip
+namespace _Scripts.Item.ItemTooltip
 {
     // 상호작용 대상인 바닥 아이템 위에 툴팁과 키 안내를 띄운다.
     // Screen Space - Overlay 캔버스 아래에 두고, 아이템의 월드 좌표를 화면 좌표로 바꿔 따라다닌다.

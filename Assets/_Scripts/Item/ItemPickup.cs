@@ -1,13 +1,13 @@
-using DevLib.ModuleSystem;
-using KHO.Scripts.InventorySystem;
-using KHO.Scripts.UI.ItemTooltip;
-using Lrw.Script._Core._EventSystem;
-using Lrw.Script.Agent.Players.InteractSystem;
-using Lrw.Script.UI.PlayerUI.InteractUI_system;
+using _Scripts._Core._EventSystem;
+using _Scripts.Agent.Players.InteractSystem;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Inventory;
+using _Scripts.Item.ItemTooltip;
+using _Scripts.UI.PlayerUI.InteractUI_system;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace KHO.Scripts.ItemSystem
+namespace _Scripts.Item
 {
     // 바닥에 떨어진 아이템. 상호작용 키(F)를 짧게 누르면 줍고, 꾹 누르고 있으면 파괴한다.
     // InteractModule은 누른 순간에만 Interact를 부르므로, 뗐는지/누르고 있는지는 holdKey로 따로 읽는다.

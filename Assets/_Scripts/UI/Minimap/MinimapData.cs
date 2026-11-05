@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using CTJ.Enemies;
-using SDW.Scripts.Maps;
-using SDW.Scripts.Maps.Spawn;
+using _Scripts.Agent.Enemies;
+using _Scripts.Interactable.Chest;
+using _Scripts.Interactable.NPC;
+using _Scripts.Maps;
+using _Scripts.Maps.Spawn;
 using UnityEngine;
 
-namespace SDW.Scripts.Minimap
+namespace _Scripts.UI.Minimap
 {
     // 미니맵이 현재 방을 그리는 데 필요한 값. 방에 들어갈 때 MinimapPresenter가 한 번 Bind한다.
     // 적은 웨이브로 나중에 생기고 상자/NPC는 입장 직후에 생기므로, 아이콘 목록은 Bind 시점에 복사하지 않고
@@ -56,10 +58,10 @@ namespace SDW.Scripts.Minimap
         {
             switch (interactable)
             {
-                case Interact.Chest.Chest:
+                case Chest:
                     type = MinimapMarkerType.Chest;
                     return true;
-                case Interact.NPC.Npc:
+                case Npc:
                     type = MinimapMarkerType.Npc;
                     return true;
                 default:

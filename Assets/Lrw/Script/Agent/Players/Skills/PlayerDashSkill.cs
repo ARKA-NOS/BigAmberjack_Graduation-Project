@@ -112,6 +112,8 @@ namespace Lrw.Script.Agent.Players.Skills
             if (direction.sqrMagnitude <= 0f)
                 return;
             
+            _damageable.SetInvincibility(this, true);
+            
             _haveFsm.ChangeState(PlayerStateEnum.DASH);
             
             direction.Normalize();

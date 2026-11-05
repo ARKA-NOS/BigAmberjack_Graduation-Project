@@ -16,8 +16,8 @@ namespace Lrw.Script.Agent
         protected INewHealthModule NewHealthModule { get; private set; }
 
         private Dictionary<object, bool> invincibilityDict;
-        protected bool IsInvincibility => invincibilityDict.Any(x => x.Value);
-         
+        public bool IsInvincibility => invincibilityDict.Any(x => x.Value);
+        
         protected override void Awake()
         {
             base.Awake();

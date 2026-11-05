@@ -39,9 +39,16 @@ namespace Lrw.Script.Agent.Players
                 _controls.Player.SetCallbacks(this);
                 _controls.PlayerUI.SetCallbacks(this);
             }
+
+            EnableInput();
+        }
+        
+        public void EnableInput()
+        {
             _controls.PlayerUI.Enable();
             SetPlayerInputActive(true);
         }
+
 
         private void OnDisable()
         {

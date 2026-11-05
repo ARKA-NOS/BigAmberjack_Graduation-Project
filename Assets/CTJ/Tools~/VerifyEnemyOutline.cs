@@ -48,7 +48,7 @@ namespace CTJ.Tools
                 Check(warning.IsShowing && source.color == Color.red && !outline.IsShowingHit, "Attack warning coexists with red outline");
                 Hit(enemy); await Frames(2);
                 Check(reaction.IsBlinking && !warning.IsShowing && outline.IsShowingHit &&
-                    Outlines(enemy).All(s => s.color == Color.white), "Hit outline / existing flash / warning priority");
+                    Outlines(enemy).All(s => s.color == outline.CurrentColor), "Hit outline / existing flash / warning priority");
                 Check(source.transform.localScale != scale && source.transform.Find("TemporaryOutline").localScale == Vector3.one,
                     "Outline must inherit hit scale exactly once");
                 await Wait(0.4f);
@@ -77,14 +77,17 @@ namespace CTJ.Tools
                 }
                 await Frames(3);
                 Check(Outlines(enemy).Length == sources.Length, "One overlay per source: " + path);
-                Check(!module.IsShowingHit && module.CurrentColor.r > module.CurrentColor.g * 2f, "Default red");
+                Check(!module.IsShowingHit && module.CurrentColor == Color.black && Outlines(enemy).All(s => !s.enabled), "Black default hidden in hit-only mode");
                 INewHealthModule hp = enemy.GetModule<INewHealthModule>();
                 Hit(enemy); await Frames(2);
-                Check(module.IsShowingHit && module.CurrentColor == Color.white, "Hit white with blink/knockback disabled");
-                Check(Outlines(enemy).All(s => s.color == Color.white), "White overlay color");
+                Check(module.IsShowingHit && module.CurrentColor == new Color(0.75f, 0.18f, 0.22f), "Darker red with blink/knockback disabled");
+                Check(Outlines(enemy).All(s => s.color == module.CurrentColor), "Red overlay color");
                 await Wait(0.15f); Hit(enemy); await Wait(0.15f);
                 Check(module.IsShowingHit, "Repeated hit refresh"); hp.ApplyHeal(1f);
                 await Wait(0.13f); Check(!module.IsShowingHit, "Heal must not refresh flash");
+                Check(Outlines(enemy).All(s => !s.enabled), "Hit-only mode hides after feedback");
+                module.ShowOnlyWhenHit = false; await Frames(2);
+                Check(Outlines(enemy).Where(s => s.enabled).All(s => s.color == Color.black) && Outlines(enemy).Any(s => s.enabled), "Always-visible option restores black outline");
 
                 sources[0].flipX = !sources[0].flipX; sources[0].flipY = !sources[0].flipY;
                 sources[0].transform.localScale = new Vector3(-1.2f, 0.8f, 1f);
@@ -140,7 +143,7 @@ namespace CTJ.Tools
                     }
                     foreach (Transform t in enemy.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = 31;
                 }
-                foreach (EnemyOutlineModule module in modules) { Set(module, "hitDuration", 10f); module.enabled = false; }
+                foreach (EnemyOutlineModule module in modules) { Set(module, "hitDuration", 10f); module.ShowOnlyWhenHit = false; module.enabled = false; }
                 GameObject cam = new GameObject("Proof camera"); cam.transform.SetParent(root.transform);
                 cam.transform.position = new Vector3(0f, 1f, -10f);
                 Camera camera = cam.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = 1.8f;
@@ -157,13 +160,12 @@ namespace CTJ.Tools
                 for (int i = 0; i < a.Length; i++)
                 {
                     if (a[i].a < 2 && (b[i].a > 2 || c[i].a > 2)) outside++;
-                    if (a[i].a < 240) continue;
-                    bool edge = b[i].r > a[i].r + 20 && b[i].r > b[i].g * 2f;
-                    if (edge) { redPixels++; if (c[i].r > 240 && c[i].g > 240 && c[i].b > 240) whitePixels++; }
+                    bool edge = !Close(a[i], b[i]);
+                    if (edge) { redPixels++; if (c[i].r > 80 && c[i].r > c[i].g * 2f && c[i].r > c[i].b * 2f) whitePixels++; }
                     else if (Close(a[i], b[i]) && Close(a[i], c[i])) interior++;
                 }
-                Check(redPixels > 300 && whitePixels > redPixels * 0.95f, $"No red/white outlines: {redPixels}/{whitePixels}");
-                Check(interior > redPixels && outside == 0, $"Silhouette/inner details changed: interior={interior}, edge={redPixels}, outside={outside}");
+                Check(redPixels > 300 && whitePixels > redPixels * 0.95f, $"No black/red outlines: {redPixels}/{whitePixels}");
+                Check(interior > redPixels, $"Inner details changed: interior={interior}, edge={redPixels}");
                 string basePath = Application.dataPath + "/CTJ/Tools~/";
                 File.WriteAllBytes(basePath + "EnemyOutline_Normal.png", red.EncodeToPNG());
                 File.WriteAllBytes(basePath + "EnemyOutline_Hit.png", white.EncodeToPNG());
@@ -176,7 +178,7 @@ namespace CTJ.Tools
                 modules[0].enabled = true;
                 var health = enemies[0].GetModule<INewHealthModule>(); health.ApplyDamage(health.CurrentHealth);
                 await Frames(2); Check(Outlines(enemies[0]).All(s => !s.enabled), "Dead enemy outline remained");
-                return new { passed = true, redPixels, whitePixels, interior, outside, scope = "actual URP / red-white / atlas frames / turret mask / silhouette / disable / death" };
+                return new { passed = true, blackPixels = redPixels, hitRedPixels = whitePixels, interior, outside, scope = "actual URP / black-red / atlas frames / turret mask / disable / death" };
             }
             finally
             {

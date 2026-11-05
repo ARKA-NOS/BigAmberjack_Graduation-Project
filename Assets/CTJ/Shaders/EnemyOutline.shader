@@ -60,10 +60,11 @@ Shader "CTJ/Enemies/TemporaryOutline"
                     float4 clip = TransformObjectToHClip(input.positionOS);
                     float4 clipX = TransformObjectToHClip(input.positionOS + float3(1, 0, 0));
                     float4 clipY = TransformObjectToHClip(input.positionOS + float3(0, 1, 0));
-                    float2 screen = GetScaledScreenParams().xy * 0.5;
+                    // 최종 출력 해상도 기준입니다. URP Render Scale을 낮춰도 표시 두께는 같습니다.
+                    float2 screen = _ScreenParams.xy * 0.5;
                     float2 pixelsPerUnit = float2(length((clipX.xy / clipX.w - clip.xy / clip.w) * screen),
                         length((clipY.xy / clipY.w - clip.xy / clip.w) * screen));
-                    // 대각선 샘플의 화면 거리까지 포함해 회전한 파츠의 선도 잘리지 않게 합니다.
+                    // 매우 얇거나 회전한 파츠에서도 래스터화 경계가 잘리지 않게 여유를 둡니다.
                     float2 expand = (_OutlineWidth * 1.414214 + 1) / max(pixelsPerUnit, 0.001);
                     input.positionOS.xy += corner * unity_SpriteProps.xy * expand;
                     input.uv += corner * expand / max(_SpriteLocalRect.zw, 0.0001) * (_SpriteUVRect.zw - _SpriteUVRect.xy);
@@ -84,33 +85,35 @@ Shader "CTJ/Enemies/TemporaryOutline"
 
             half4 OutlineFragment(Varyings input) : SV_Target
             {
-                // 화면 픽셀 단위이므로 단색 사각형 터렛과 픽셀 아트 모두 같은 두께로 표시합니다.
-                float2 dx = ddx(input.uv) * _OutlineWidth;
-                float2 dy = ddy(input.uv) * _OutlineWidth;
+                // ddx/ddy는 내부 렌더 타깃의 1픽셀입니다. 최종 화면의 1픽셀로 환산합니다.
+                float2 pixelRatio = GetScaledScreenParams().xy / max(_ScreenParams.xy, 1);
+                float2 dx = ddx(input.uv) * pixelRatio.x;
+                float2 dy = ddy(input.uv) * pixelRatio.y;
                 half center = AlphaAt(input.uv);
-                if (_OuterOutline > 0.5)
+                half outer = center;
+                half inner = center;
+                // 16방향을 모두 같은 반지름으로 검사합니다. dx+dy의 대각선은 sqrt(2)배
+                // 멀리 검사하던 문제를 없애, 경계 방향/모델 크기에 따라 두께가 변하지 않습니다.
+                static const float2 directions[16] = {
+                    float2(1,0), float2(0.9238795,0.3826834), float2(0.7071068,0.7071068), float2(0.3826834,0.9238795),
+                    float2(0,1), float2(-0.3826834,0.9238795), float2(-0.7071068,0.7071068), float2(-0.9238795,0.3826834),
+                    float2(-1,0), float2(-0.9238795,-0.3826834), float2(-0.7071068,-0.7071068), float2(-0.3826834,-0.9238795),
+                    float2(0,-1), float2(0.3826834,-0.9238795), float2(0.7071068,-0.7071068), float2(0.9238795,-0.3826834)
+                };
+                int steps = (int)ceil(_OutlineWidth);
+                [loop] for (int step = 1; step <= steps; step++)
                 {
-                    half outer = 0;
-                    // 최대 거리만 검사하면 얇은 받침/포신을 건너뛰어 선에 틈이 생깁니다.
-                    // 안쪽 1픽셀부터 지정 두께까지 검사해 경계 바로 옆도 채웁니다.
-                    int steps = (int)ceil(_OutlineWidth);
-                    [loop] for (int step = 1; step <= steps; step++)
+                    float radius = min((float)step, _OutlineWidth);
+                    [unroll] for (int direction = 0; direction < 16; direction++)
                     {
-                        float fraction = min(step / max(_OutlineWidth, 0.001), 1);
-                        float2 sx = dx * fraction, sy = dy * fraction;
-                        outer = max(outer, max(AlphaAt(input.uv + sx), AlphaAt(input.uv - sx)));
-                        outer = max(outer, max(AlphaAt(input.uv + sy), AlphaAt(input.uv - sy)));
-                        outer = max(outer, max(AlphaAt(input.uv + sx + sy), AlphaAt(input.uv - sx - sy)));
-                        outer = max(outer, max(AlphaAt(input.uv + sx - sy), AlphaAt(input.uv - sx + sy)));
+                        float2 offset = (dx * directions[direction].x + dy * directions[direction].y) * radius;
+                        half sampleAlpha = AlphaAt(input.uv + offset);
+                        outer = max(outer, sampleAlpha);
+                        inner = min(inner, sampleAlpha);
                     }
-                    return half4(input.color.rgb, (_OutlineWidth > 0 ? outer * (1 - center) : 0) * input.color.a);
                 }
-                half neighbor = min(AlphaAt(input.uv + dx), AlphaAt(input.uv - dx));
-                neighbor = min(neighbor, min(AlphaAt(input.uv + dy), AlphaAt(input.uv - dy)));
-                neighbor = min(neighbor, min(AlphaAt(input.uv + dx + dy), AlphaAt(input.uv - dx - dy)));
-                neighbor = min(neighbor, min(AlphaAt(input.uv + dx - dy), AlphaAt(input.uv - dx + dy)));
-                // 실루엣 안쪽 가장자리만 덮으므로 메쉬 확장이나 원본 머티리얼 교체가 필요 없습니다.
-                half edge = _OutlineWidth > 0 ? center * (1 - neighbor) : 0;
+                half edge = _OuterOutline > 0.5 ? outer * (1 - center) : center * (1 - inner);
+                if (_OutlineWidth <= 0) edge = 0;
                 return half4(input.color.rgb, edge * input.color.a);
             }
             ENDHLSL

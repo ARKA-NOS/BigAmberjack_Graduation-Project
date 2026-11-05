@@ -39,7 +39,13 @@ namespace Lrw.Script.Agent.Players
             
             ServiceLocator.Register<IPlayerController>(this);
         }
-        
+
+        protected override void Start()
+        {
+            base.Start();
+            PlayerInput.EnableInput();
+        }
+
         private void OnDestroy()
         {
             agentStateMachine.StateExit();
@@ -66,7 +72,7 @@ namespace Lrw.Script.Agent.Players
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
             StartCoroutine(HitInvincibilityTime());
         }
-
+    
         private IEnumerator HitInvincibilityTime()
         {
             SetInvincibility(this, true);

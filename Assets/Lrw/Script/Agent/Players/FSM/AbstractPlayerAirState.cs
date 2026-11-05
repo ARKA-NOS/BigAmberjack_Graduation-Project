@@ -5,12 +5,10 @@ namespace Lrw.Script.Agent.Players.FSM
 {
     public abstract class AbstractPlayerAirState : AbstractPlayerState
     {
-        protected IControlJumper ControlJumper;
-        
+
         protected AbstractPlayerAirState(Agent agent, int stateClipHash, int layerIndex) : base(agent, stateClipHash, layerIndex)
         {
-            ControlJumper = Player.GetModule<IControlJumper>();
-            Debug.Assert(ControlJumper != null, "플레이어 점퍼가 없어요!!!");
+            
         }
 
         public override void Update()

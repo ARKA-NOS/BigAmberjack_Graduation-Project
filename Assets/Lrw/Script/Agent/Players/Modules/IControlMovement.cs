@@ -6,7 +6,7 @@ namespace Lrw.Script.Agent.Players.Modules
     {
         float MovementDirectionX { get; }
         void SetMovementDirectionX(float movementXInput);
-        void MoveLock(bool value);
+        void MoveXLock(bool value);
         void AddForce(Vector2 force, ForceMode2D impulse = ForceMode2D.Impulse);
     }
 }

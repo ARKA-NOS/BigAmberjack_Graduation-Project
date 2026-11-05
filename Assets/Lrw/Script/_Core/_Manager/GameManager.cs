@@ -6,9 +6,17 @@ namespace Lrw.Script._Core._Manager
     public class GameManager : MonoBehaviour
     {
         private AbstractManager[] _managers;
-        
+
+        private GameManager _instance;
         private void Awake()
         {
+            if (_instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            _instance = this;
             DontDestroyOnLoad(gameObject);
             Initialize();
         }
@@ -25,6 +33,8 @@ namespace Lrw.Script._Core._Manager
 
         private void OnDestroy()
         {
+            if (_instance == this)
+                _instance = null;
             GameEnd();
         }
 

@@ -1,7 +1,7 @@
-using DevLib.ModuleSystem;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.ItemSystem.Effects
+namespace _Scripts.Item.Effects
 {
     public abstract class ItemEffectSO : ScriptableObject
     {

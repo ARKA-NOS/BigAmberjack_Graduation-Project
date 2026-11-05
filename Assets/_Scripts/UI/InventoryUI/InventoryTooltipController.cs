@@ -1,9 +1,9 @@
-using KHO.Scripts.ItemSystem;
-using KHO.Scripts.UI.ItemTooltip;
+using _Scripts.Item;
+using _Scripts.Item.ItemTooltip;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 칸에 마우스를 올리면 그 칸 아이템의 툴팁을 마우스 옆에 띄운다.
     // 올려 둔 동안 칸의 아이템이 바뀌면(드래그로 맞바꿈 등) 내용도 따라 바뀐다.

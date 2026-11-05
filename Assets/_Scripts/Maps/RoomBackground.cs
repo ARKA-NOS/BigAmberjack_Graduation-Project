@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 방 프리팹 안에 두는 한 장짜리 배경. SpriteRenderer의 스프라이트를 바꾸면 배경이 교체된다.
     // 플레이 중에는 카메라를 따라다니며 화면을 덮고, 카메라가 방 끝으로 갈수록 배경도 그쪽 끝을 보여줘서 약한 패럴랙스가 생긴다.

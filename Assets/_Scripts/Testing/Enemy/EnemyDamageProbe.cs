@@ -1,7 +1,7 @@
-using DevLib.BattleSystem;
+using _Scripts.DevLib.BattleSystem;
 using UnityEngine;
 
-namespace CTJ.Testing
+namespace _Scripts.Testing.Enemy
 {
     // IDamageable이 아직 없는 테스트 타깃에만 붙입니다. 실제 체력 시스템은 아닙니다.
     public sealed class EnemyDamageProbe : MonoBehaviour, IDamageable

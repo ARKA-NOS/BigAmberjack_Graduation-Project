@@ -1,4 +1,4 @@
-namespace KHO.Scripts.Eunms
+namespace _Scripts.Item.Enums
 {
     public enum AcquireRoute
     {

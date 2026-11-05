@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using KHO.Scripts.ItemSystem;
+using _Scripts.Item;
 using UnityEngine;
 
-namespace KHO.Scripts.InventorySystem
+namespace _Scripts.Inventory
 {
     // 칸 묶음 하나. 최대 칸 수 안에서 사용 가능한 칸(Capacity)을 늘릴 수 있다.
     public class ItemContainer

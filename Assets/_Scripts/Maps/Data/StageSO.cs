@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     // 일직선 스테이지 구성. segments에 넣은 구간 순서대로, 각 구간에서 뽑은 방이 이어진다.
     // 예: 기본 맵 2~4 → 미니 보스 1 → 기본 맵 2~4 → 최종 보스 1

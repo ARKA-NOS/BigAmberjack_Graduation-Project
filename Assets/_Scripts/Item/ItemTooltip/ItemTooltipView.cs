@@ -1,11 +1,10 @@
 using System.Linq;
-using KHO.Scripts.Eunms;
-using KHO.Scripts.ItemSystem;
+using _Scripts.Item.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.ItemTooltip
+namespace _Scripts.Item.ItemTooltip
 {
     // 툴팁 패널 하나. 아이콘·이름·등급/태그·설명을 채우고, 부모 영역 밖으로 나가지 않게 위치를 잡는다.
     // 바닥 아이템 툴팁과 인벤토리 칸 툴팁이 같이 쓴다.

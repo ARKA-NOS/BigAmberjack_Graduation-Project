@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using KHO.Scripts.InventorySystem;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.Inventory;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 장착 또는 보관 칸 묶음 하나를 표시한다. 칸 UI는 slotParent의 자식을 쓰고, 최대 칸 수보다 적으면 template를 복제해 늘린다.
-    public class InventoryUIBinder : AbstractUIBinder<Inventory>
+    public class InventoryUIBinder : AbstractUIBinder<Inventory.Inventory>
     {
         [SerializeField] private InventorySlotType target;
         [SerializeField] private Transform slotParent;
@@ -37,7 +37,7 @@ namespace KHO.Scripts.UI.InventoryUI
 
         private void RefreshSlots()
         {
-            Inventory inventory = CurrentValue;
+            Inventory.Inventory inventory = CurrentValue;
             if (inventory == null) return;
 
             ItemContainer container = inventory.Get(target);

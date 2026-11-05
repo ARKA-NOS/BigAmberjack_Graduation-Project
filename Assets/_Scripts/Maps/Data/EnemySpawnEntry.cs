@@ -1,8 +1,8 @@
 using System;
-using CTJ.Enemies;
+using _Scripts.Agent.Enemies;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     [Serializable]
     public class EnemySpawnEntry

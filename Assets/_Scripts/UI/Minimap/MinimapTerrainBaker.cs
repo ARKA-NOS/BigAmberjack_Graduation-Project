@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace SDW.Scripts.Minimap
+namespace _Scripts.UI.Minimap
 {
     // 방의 지형을 미니맵용 텍스처 한 장으로 굽는다.
     // 장식 타일은 빼고, 플레이어가 밟거나 막히는 타일(TilemapCollider2D가 붙은 타일맵)만 칠한다.

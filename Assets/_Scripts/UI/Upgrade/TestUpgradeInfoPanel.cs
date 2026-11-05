@@ -1,9 +1,9 @@
-using Lrw.Script.Upgrade.SO;
+using _Scripts.Upgrade.SO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SDW.Scripts.UI.UpgradeUI
+namespace _Scripts.UI.Upgrade
 {
     public class TestUpgradeInfoPanel : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 using System;
-using KHO.Scripts.ItemSystem;
+using _Scripts.Item;
 
-namespace KHO.Scripts.InventorySystem
+namespace _Scripts.Inventory
 {
     public interface IInventoryModule
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 칸 하나의 드래그 입력을 부모의 InventoryDragController로 넘긴다.
     // 빈 칸을 끌면 아이템 대신 칸 목록을 스크롤한다.

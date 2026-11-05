@@ -5,14 +5,14 @@
             <ui:Button text="New Item" name="CreateBtn" />
         </ui:VisualElement>
         <ui:VisualElement name="Content" style="flex-grow: 1;">
-            <DevLib.ObjectPool.Editor.MySplitView fixed-pane-initial-dimension="250">
+            <_Scripts.DevLib.ObjectPool.Editor.MySplitView fixed-pane-initial-dimension="250">
                 <ui:VisualElement name="LeftPanel" style="flex-grow: 1;">
                     <ui:ScrollView name="ItemView" style="flex-grow: 1; background-color: rgba(120, 120, 120, 0.7);" />
                 </ui:VisualElement>
                 <ui:VisualElement name="RightPanel" style="flex-grow: 1;">
                     <ui:VisualElement name="InspectorView" style="flex-grow: 1;" />
                 </ui:VisualElement>
-            </DevLib.ObjectPool.Editor.MySplitView>
+            </_Scripts.DevLib.ObjectPool.Editor.MySplitView>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

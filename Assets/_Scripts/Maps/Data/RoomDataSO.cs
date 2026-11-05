@@ -1,7 +1,7 @@
-using SDW.Scripts.Maps.Conditions;
+using _Scripts.Maps.Conditions;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     // 방 데이터의 부모 SO. 방 종류마다 이 클래스를 상속한 자식 SO를 만든다.
     // RoomController는 이 부모 타입만 알고, 입장 → 출구 조건 시작 → 클리어 처리 순서로 호출한다.

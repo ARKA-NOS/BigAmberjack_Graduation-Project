@@ -1,10 +1,10 @@
-﻿using DevLib.ObjectPool.Runtime;
+﻿using _Scripts.DevLib.ObjectPool.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevLib.ObjectPool.Editor
+namespace _Scripts.DevLib.ObjectPool.Editor
 {
     [CustomEditor(typeof(PoolItemSO))]
     public class PoolItemSOEditor : UnityEditor.Editor

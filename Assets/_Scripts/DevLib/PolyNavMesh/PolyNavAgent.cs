@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DevLib.ModuleSystem;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// 폴리곤 기반 NavMesh를 이용한 경로 탐색 에이전트.

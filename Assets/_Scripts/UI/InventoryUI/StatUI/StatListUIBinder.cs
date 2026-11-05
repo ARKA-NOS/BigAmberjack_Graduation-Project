@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Lrw.Script.Agent.StatSystem;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.Agent.StatSystem;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.StatUI
+namespace _Scripts.UI.InventoryUI.StatUI
 {
     // display에 적힌 스탯만, 적힌 순서대로 "현재값 (+변화량)" 형식으로 표시한다.
     public class StatListUIBinder : AbstractUIBinder<IReadOnlyDictionary<StatData, Stat>>

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.ModuleSystem
+namespace _Scripts.DevLib.ModuleSystem
 {
     public abstract class Module : MonoBehaviour,IModule
     {

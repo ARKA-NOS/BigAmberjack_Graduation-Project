@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     // 스테이지의 한 구간. roomPool에서 minCount~maxCount개를 균등 확률로 뽑는다(중복 허용).
     // 후보를 하나만 넣고 개수를 1~1로 두면 고정 방(미니 보스, 최종 보스 등)이 된다.

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using SDW.Scripts.Maps.Data;
+using _Scripts.Maps.Data;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Encounter
+namespace _Scripts.Maps.Encounter
 {
     // 전투 구역의 웨이브 하나. 이전 웨이브의 적이 모두 죽은 뒤 startDelay만큼 기다렸다가 생성된다.
     [Serializable]

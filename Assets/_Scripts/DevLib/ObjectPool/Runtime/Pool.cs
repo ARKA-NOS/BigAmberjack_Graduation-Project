@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace DevLib.ObjectPool.Runtime
+namespace _Scripts.DevLib.ObjectPool.Runtime
 {
     public class Pool
     {

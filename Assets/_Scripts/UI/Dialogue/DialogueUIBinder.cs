@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.UI.BindSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SDW.Scripts.UI.Dialogue
+namespace _Scripts.UI.Dialogue
 {
     // 화면 하단 대화창(이름표 + 대사 + 선택지). DialogueViewModel에 Bind된 DialogueData를 표시한다.
     // 이 컴포넌트가 붙은 오브젝트는 항상 켜 두고, 대화창 표시는 dialogueRoot로 켜고 끈다.

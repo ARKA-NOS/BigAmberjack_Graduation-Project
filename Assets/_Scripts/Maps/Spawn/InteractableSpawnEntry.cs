@@ -1,8 +1,8 @@
 using System;
-using Lrw.Script.Agent.Players.InteractSystem;
+using _Scripts.Agent.Players.InteractSystem;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Spawn
+namespace _Scripts.Maps.Spawn
 {
     // 스폰 테이블의 후보 하나. 상자, NPC, 상점 등 상호작용 오브젝트 프리팹이면 무엇이든 넣을 수 있다.
     [Serializable]

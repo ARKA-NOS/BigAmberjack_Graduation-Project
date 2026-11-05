@@ -1,7 +1,7 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-namespace DevLib.BattleSystem.Feedback
+namespace _Scripts.DevLib.BattleSystem.Feedback
 {
     public class CameraImpulseFeedback : AbstractFeedback
     {

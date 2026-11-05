@@ -1,4 +1,4 @@
-namespace DevLib.ModuleSystem
+namespace _Scripts.DevLib.ModuleSystem
 {
     public interface IModule
     {

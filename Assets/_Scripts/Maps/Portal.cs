@@ -1,10 +1,10 @@
-using DevLib.ModuleSystem;
-using Lrw.Script.Agent.Players.InteractSystem;
-using SDW.Scripts.UI;
+using _Scripts.Agent.Players.InteractSystem;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 다음 방으로만 가는 단방향 출구.
     // 플레이어의 InteractModule이 이 오브젝트를 찾아 상호작용 키를 누르면, 화면을 Fade로 가린 상태에서

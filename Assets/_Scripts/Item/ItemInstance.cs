@@ -1,7 +1,7 @@
-using DevLib.ModuleSystem;
-using KHO.Scripts.ItemSystem.Effects;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Item.Effects;
 
-namespace KHO.Scripts.ItemSystem
+namespace _Scripts.Item
 {
     // 인벤토리에 실제로 들어가는 아이템. 같은 ItemSO라도 인스턴스마다 효과가 따로 적용된다.
     public class ItemInstance

@@ -3,7 +3,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace DevLib.SoundSystem.Editor
+namespace _Scripts.DevLib.SoundSystem.Editor
 {
     [CustomEditor(typeof(SoundClipSo))]
     public class SoundClipSoEditor : UnityEditor.Editor

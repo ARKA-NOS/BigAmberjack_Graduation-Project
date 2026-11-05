@@ -1,7 +1,7 @@
-using SDW.Scripts.Maps.Conditions;
+using _Scripts.Maps.Conditions;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     // 보스 방. 미니 보스와 최종 보스를 같이 관리한다.
     // 보스는 방 프리팹에 미리 배치한다. (RoomController가 초기화할 때 프리팹 안의 적을 등록한다)

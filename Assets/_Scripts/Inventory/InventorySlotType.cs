@@ -1,4 +1,4 @@
-namespace KHO.Scripts.InventorySystem
+namespace _Scripts.Inventory
 {
     public enum InventorySlotType
     {

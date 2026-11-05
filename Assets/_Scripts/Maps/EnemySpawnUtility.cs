@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using CTJ.Enemies;
-using SDW.Scripts.Maps.Data;
+using _Scripts.Agent.Enemies;
+using _Scripts.Maps.Data;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 보스 방(RoomDataSO)과 전투 구역(EncounterZone)이 같이 쓰는 적 생성 로직.
     // 생성한 적은 방의 자식으로 두고 RoomController에 등록해서, 출구 조건과 상호작용 잠금이 이 적들을 보게 한다.

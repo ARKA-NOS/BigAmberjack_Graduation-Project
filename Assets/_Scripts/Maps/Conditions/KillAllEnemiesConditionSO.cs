@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Conditions
+namespace _Scripts.Maps.Conditions
 {
     [CreateAssetMenu(fileName = "Cond_KillAllEnemies", menuName = "Map/Condition/Kill All Enemies")]
     public class KillAllEnemiesConditionSO : RoomClearConditionSO

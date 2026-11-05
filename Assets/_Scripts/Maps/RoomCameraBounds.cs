@@ -1,7 +1,7 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 방에 들어오면 카메라가 이 방 밖(다른 방이나 빈 공간)을 비추지 않도록 Cinemachine Confiner 2D의 범위를 이 방으로 바꾼다.
     // 범위는 customBounds가 있으면 그 콜라이더, 없으면 방 안의 모든 타일맵을 감싸는 사각형이다.

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.Bookmark
+namespace _Scripts.UI.InventoryUI.Bookmark
 {
     // 창 옆에 붙은 책갈피 하나. 선택되면 바깥쪽으로 더 길게 튀어나온다.
     [RequireComponent(typeof(Button))]

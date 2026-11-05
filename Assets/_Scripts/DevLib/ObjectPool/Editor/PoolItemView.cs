@@ -1,8 +1,8 @@
 ﻿using System;
-using DevLib.ObjectPool.Runtime;
+using _Scripts.DevLib.ObjectPool.Runtime;
 using UnityEngine.UIElements;
 
-namespace DevLib.ObjectPool.Editor
+namespace _Scripts.DevLib.ObjectPool.Editor
 {
     public class PoolItemView
     {

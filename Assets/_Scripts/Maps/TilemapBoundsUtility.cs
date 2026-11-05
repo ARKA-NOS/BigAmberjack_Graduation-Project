@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace SDW.Scripts.Maps
+namespace _Scripts.Maps
 {
     // 방 안 타일맵의 실제 타일 범위를 합친 월드 범위. 카메라 범위와 배경 크기가 같이 쓴다.
     public static class TilemapBoundsUtility

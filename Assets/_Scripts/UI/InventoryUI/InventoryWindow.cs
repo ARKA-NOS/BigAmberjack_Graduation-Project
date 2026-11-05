@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Linq;
-using DevLib.ModuleSystem;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.Players;
-using Lrw.Script.Agent.Players.Modules;
-using Lrw.Script.UI;
+using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Players;
+using _Scripts.Agent.Players.Modules;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.UI.UI_System;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 창이 열려 있는 동안 게임 시간을 멈추고(Time.timeScale = 0) 플레이어 스킬 입력(공격·스킬·대시)을 끈다.
     // 시간이 멈춰도 페이드가 진행되도록 FadeWindow 대신 unscaled 시간으로 직접 페이드한다.

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.BattleSystem.Feedback
+namespace _Scripts.DevLib.BattleSystem.Feedback
 {
     public abstract class AbstractFeedback : MonoBehaviour
     {

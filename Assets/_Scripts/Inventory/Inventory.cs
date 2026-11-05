@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using KHO.Scripts.ItemSystem;
+using _Scripts.Item;
 
-namespace KHO.Scripts.InventorySystem
+namespace _Scripts.Inventory
 {
     // 장착 칸(효과 적용, 최대 9칸까지 늘어남)과 보관 칸(효과 없음, 20칸)을 가진다.
     public class Inventory

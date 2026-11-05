@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.StatUI
+namespace _Scripts.UI.InventoryUI.StatUI
 {
     // 스탯 한 줄: 왼쪽 이름, 오른쪽 값
     public class StatRowUI : MonoBehaviour

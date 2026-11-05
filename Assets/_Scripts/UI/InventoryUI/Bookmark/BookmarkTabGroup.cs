@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace KHO.Scripts.UI.Bookmark
+namespace _Scripts.UI.InventoryUI.Bookmark
 {
     // 책갈피와 페이지를 같은 순서로 짝지어, 누른 책갈피의 페이지만 켠다.
     public class BookmarkTabGroup : MonoBehaviour

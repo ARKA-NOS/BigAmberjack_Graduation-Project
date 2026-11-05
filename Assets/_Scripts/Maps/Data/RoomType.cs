@@ -1,4 +1,4 @@
-namespace SDW.Scripts.Maps.Data
+namespace _Scripts.Maps.Data
 {
     public enum RoomType
     {

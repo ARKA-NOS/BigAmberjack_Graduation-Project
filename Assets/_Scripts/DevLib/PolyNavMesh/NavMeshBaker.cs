@@ -1,11 +1,10 @@
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// 타일맵을 NavMesh 폴리곤 데이터로 베이킹하는 컴포넌트.

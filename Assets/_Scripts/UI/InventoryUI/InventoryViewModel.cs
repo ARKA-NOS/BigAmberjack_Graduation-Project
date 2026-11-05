@@ -1,11 +1,10 @@
-using KHO.Scripts.InventorySystem;
-using Lrw.Script.UI.BindSystem;
+using _Scripts.UI.BindSystem;
 using UnityEngine;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     [CreateAssetMenu(fileName = "Inventory View Module", menuName = "UI/Inventory View Module")]
-    public class InventoryViewModel : AbstractUIViewModel<Inventory>
+    public class InventoryViewModel : AbstractUIViewModel<Inventory.Inventory>
     {
     }
 }

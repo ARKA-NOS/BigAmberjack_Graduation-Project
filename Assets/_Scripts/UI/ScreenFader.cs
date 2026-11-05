@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace SDW.Scripts.UI
+namespace _Scripts.UI
 {
     // 검은 화면으로 전환/복귀하는 간단한 Fade 연출.
     // ScreenFader 프리팹은 씬에 하나만 존재한다고 가정하며, 사용하는 쪽에서 SerializeField로 직접 참조한다.

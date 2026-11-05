@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace SDW.Scripts.Maps.Tiles
+namespace _Scripts.Maps.Tiles
 {
     /// <summary>
     /// 벽 RuleTile과 경사면 RuleTile이 서로를 이웃으로 인식하게 해 주는 지형 타일.

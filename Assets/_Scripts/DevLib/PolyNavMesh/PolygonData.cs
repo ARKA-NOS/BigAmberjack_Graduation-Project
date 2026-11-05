@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// NavMesh를 구성하는 하나의 볼록 폴리곤 데이터 (직렬화용).

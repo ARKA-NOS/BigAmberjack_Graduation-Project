@@ -1,7 +1,7 @@
-﻿using DevLib.EventChannelSystem;
+﻿using _Scripts.DevLib.EventChannelSystem;
 using UnityEngine;
 
-namespace DevLib.SoundSystem
+namespace _Scripts.DevLib.SoundSystem
 {
     public static class SoundEvents
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     [CreateAssetMenu(fileName = "PolyNavAgentData", menuName = "Lib/PolyNavMesh/Nav Agent data", order = 10)]
     public class PolyNavAgentDataSo : ScriptableObject

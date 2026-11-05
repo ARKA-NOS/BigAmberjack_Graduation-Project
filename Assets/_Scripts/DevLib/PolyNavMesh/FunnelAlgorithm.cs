@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DevLib.PolyNavMesh
+namespace _Scripts.DevLib.PolyNavMesh
 {
     /// <summary>
     /// Funnel 알고리즘 (String Pulling) 구현.

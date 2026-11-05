@@ -1,9 +1,9 @@
-using CTJ.Enemies;
-using Lrw.Script.Agent.HealthSystem.NewHealthSystem;
+using _Scripts.Agent.Enemies;
+using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CTJ.UI
+namespace _Scripts.UI.Enemy
 {
     // 임시 표시 전용. 적/모듈에서 이 UI를 참조하지 않으므로 자식 오브젝트째 삭제해도 전투는 유지됩니다.
     [DisallowMultipleComponent, RequireComponent(typeof(Canvas), typeof(RectTransform))]

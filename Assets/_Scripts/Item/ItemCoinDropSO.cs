@@ -1,8 +1,8 @@
-using CTJ.Enemies;
-using Lrw.Script.Currency;
+using _Scripts.Agent.Enemies;
+using _Scripts.Currency;
 using UnityEngine;
 
-namespace KHO.Scripts.ItemSystem
+namespace _Scripts.Item
 {
     // 아이템을 파괴했을 때 재화를 코인으로 흩뿌린다. 적 처치 보상과 같은 EnemyRewardCoin을 쓰며,
     // 코인이 튕기다 사라질 때 코인이 직접 재화를 지급하므로 여기서는 바로 Add하지 않는다.

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Tiles
+namespace _Scripts.Maps.Tiles
 {
     /// <summary>
     /// 타일셋 안의 한 블록(예: 8x8 벽 프레임)을 바리에이션 소스로 쓰기 위한 데이터.

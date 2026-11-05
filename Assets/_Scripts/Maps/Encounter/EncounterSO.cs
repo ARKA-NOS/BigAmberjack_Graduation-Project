@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SDW.Scripts.Maps.Encounter
+namespace _Scripts.Maps.Encounter
 {
     // 전투 구역에서 나올 적 구성. 웨이브가 하나면 단일 스폰, 여러 개면 웨이브형 스폰이다.
     // 위치(스폰 포인트, 배리어)는 방 프리팹의 EncounterZone이 가지고, 이 SO는 무엇이 나올지만 정한다.

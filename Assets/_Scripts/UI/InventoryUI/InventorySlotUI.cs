@@ -1,9 +1,9 @@
-using KHO.Scripts.InventorySystem;
-using KHO.Scripts.ItemSystem;
+using _Scripts.Inventory;
+using _Scripts.Item;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     public class InventorySlotUI : MonoBehaviour
     {

@@ -1,12 +1,12 @@
-using DevLib.ModuleSystem;
-using KHO.Scripts.InventorySystem;
-using Lrw.Script._Core._ServiceLocator;
-using Lrw.Script.Agent.Players;
+using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Players;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Inventory;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace KHO.Scripts.UI.InventoryUI
+namespace _Scripts.UI.InventoryUI
 {
     // 칸 드래그 앤 드롭. 끄는 동안 아이콘(ghost)을 마우스에 붙이고, 다른 칸에 놓으면 인벤토리 모듈에 맞바꾸기를 요청한다.
     // 화면 갱신은 모듈 → ViewModel → Binder 흐름으로 따로 일어난다.

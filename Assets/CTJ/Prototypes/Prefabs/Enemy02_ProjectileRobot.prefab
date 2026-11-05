@@ -732,8 +732,9 @@ MonoBehaviour:
   - {fileID: 2511740910181684683}
   - {fileID: 6716274046145799369}
   outlineMaterial: {fileID: 2100000, guid: 111859d1d17dee245b7ef0e9b591c410, type: 2}
-  normalColor: {r: 0.55, g: 0.08, b: 0.08, a: 1}
-  hitColor: {r: 1, g: 1, b: 1, a: 1}
+  normalColor: {r: 0, g: 0, b: 0, a: 1}
+  hitColor: {r: 0.75, g: 0.18, b: 0.22, a: 1}
+  showOnlyWhenHit: 1
   width: 2
   outerSilhouetteOnly: 1
   hitDuration: 0.25
@@ -1483,6 +1484,15 @@ MonoBehaviour:
   fallbackOrigin: {fileID: 1893197636499220478}
   useHitPoint: 1
   maxHitPointDistance: 3
+  hitSprites:
+  - {fileID: 6854587744927362794}
+  - {fileID: 7563514865956274334}
+  - {fileID: 2231091454589041002}
+  - {fileID: 2656560026808109084}
+  - {fileID: 3951798348850558489}
+  - {fileID: 2511740910181684683}
+  - {fileID: 6716274046145799369}
+  hitPointInset: 0.1
   effectScale: 1
   hitEffects:
   - label: Polygon Blood Spray
@@ -1658,8 +1668,8 @@ MonoBehaviour:
   enableBlink: 1
   blinkDuration: 0.35
   blinkInterval: 0.05
-  hitColor: {r: 1, g: 1, b: 1, a: 1}
-  hitColorBlend: 0.35
+  hitColor: {r: 1, g: 0.32, b: 0.36, a: 1}
+  hitColorBlend: 0.65
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
   sprites:
   - {fileID: 6854587744927362794}

@@ -43,6 +43,14 @@ namespace CTJ.Enemies
         [SerializeField] private Sprite[] collectFrames;
         [SerializeField, Min(1f)] private float collectFramesPerSecond = 12f;
 
+        [Header("Collect Scale Pulse")]
+        [SerializeField] private bool enableCollectScalePulse = true;
+        [Tooltip("도착 직후 원래 크기 대비 최대 배율입니다.")]
+        [SerializeField, Min(1f)] private float collectScalePeak = 1.8f;
+        [SerializeField, Range(0.1f, 1f)] private float collectScaleDip = 0.35f;
+        [Tooltip("확대 → 축소 → 원래 크기까지 걸리는 시간. 소멸 애니메이션 안에서 재생합니다.")]
+        [SerializeField, Min(0.01f)] private float collectScaleDuration = 0.26f;
+
         private const float Skin = 0.005f;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
         private SpriteRenderer _visual;
@@ -62,6 +70,7 @@ namespace CTJ.Enemies
         private float _nextTargetSearch;
         private float _homingSpeed;
         private float _missingTargetTime;
+        private Vector3 _originalScale;
 
         public int Amount { get; private set; }
         public int BounceCount { get; private set; }
@@ -114,6 +123,7 @@ namespace CTJ.Enemies
             _currency = currency;
             Amount = amount;
             _visual = GetComponent<SpriteRenderer>();
+            _originalScale = transform.localScale;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
             float low = Mathf.Max(0f, Mathf.Min(upwardSpeedRange.x, upwardSpeedRange.y));
@@ -253,10 +263,25 @@ namespace CTJ.Enemies
             }
 
             if (TryGetCollectorBounds(out Vector2 center, out _)) SetPosition(center);
+            UpdateCollectScale();
 
             int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, collectFramesPerSecond));
             if (frame >= collectFrames.Length) CompleteReward();
             else _visual.sprite = collectFrames[frame];
+        }
+
+        private void UpdateCollectScale()
+        {
+            float t = Mathf.Clamp01(_animationTime / Mathf.Max(0.01f, collectScaleDuration));
+            float scale = 1f;
+            if (enableCollectScalePulse && t < 1f)
+            {
+                if (t < 0.3f) scale = Mathf.Lerp(1f, collectScalePeak, Mathf.SmoothStep(0f, 1f, t / 0.3f));
+                else if (t < 0.75f) scale = Mathf.Lerp(collectScalePeak, collectScaleDip, Mathf.SmoothStep(0f, 1f, (t - 0.3f) / 0.45f));
+                else scale = Mathf.Lerp(collectScaleDip, 1f, Mathf.SmoothStep(0f, 1f, (t - 0.75f) / 0.25f));
+            }
+            // 원래 배율에서 계산하므로 프레임마다 크기가 누적되지 않습니다.
+            transform.localScale = _originalScale * scale;
         }
 
         private void UpdateSpinSprite()

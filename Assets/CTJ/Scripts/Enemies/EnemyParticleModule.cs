@@ -52,6 +52,10 @@ namespace CTJ.Enemies
         [SerializeField] private bool useHitPoint = true;
         [Tooltip("기준점에서 이 거리보다 먼 피격 좌표는 기준점으로 대체합니다. 잘못 전달된 (0,0) 좌표 등을 방지합니다.")]
         [SerializeField, Min(0f)] private float maxHitPointDistance = 3f;
+        [Tooltip("피격 좌표를 보정할 실제 몸체 그림. 비워두면 초기화 시 적의 그림을 수집합니다.")]
+        [SerializeField] private SpriteRenderer[] hitSprites;
+        [Tooltip("콜라이더 접촉점이 그림 밖에 뜨지 않도록 그림 범위로 제한한 뒤, 중심 쪽으로 넣는 거리(월드 유닛).")]
+        [SerializeField, Min(0f)] private float hitPointInset = 0.1f;
         [SerializeField, Min(0.01f)] private float effectScale = 1f;
         [SerializeField] private List<HitEffect> hitEffects = new List<HitEffect>();
         [Tooltip("적 한 마리의 동시 효과 수. 초과하면 가장 오래된 효과부터 정리합니다.")]
@@ -68,6 +72,8 @@ namespace CTJ.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+            if (hitSprites == null || hitSprites.Length == 0)
+                hitSprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -90,28 +96,33 @@ namespace CTJ.Enemies
         {
             // 실제 체력 감소가 확정되고 사망 처리에 들어가기 전에 전달받습니다.
             if (!isActiveAndEnabled) return;
+
             Vector3 origin = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
-            Vector3 position = origin;
-            if (useHitPoint && IsFinite(point) && Vector2.Distance(point, origin) <= maxHitPointDistance)
-                position = new Vector3(point.x, point.y, origin.z);
+            Vector3 position = ResolveHitPosition(point, origin);
+
             if (!HasDirection(direction) && damage.Dealer != null) direction = origin - damage.Dealer.transform.position;
             if (!HasDirection(direction)) direction = -normal;
             if (!HasDirection(direction) && _enemy.Target != null) direction = origin - _enemy.Target.position;
             if (!HasDirection(direction)) direction = Vector2.right;
+
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             _activeEffects.RemoveAll(effect => effect == null);
             foreach (HitEffect entry in hitEffects)
             {
                 if (entry == null || !entry.enabled || entry.scale <= 0f) continue;
+
                 ParticleSystem selectedPrefab = entry.SelectPrefab();
+
                 if (selectedPrefab == null) continue;
+
                 while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
                 {
                     EnemyHitParticle oldest = _activeEffects[0];
                     if (oldest != null) { oldest.gameObject.SetActive(false); Destroy(oldest.gameObject); }
                     _activeEffects.RemoveAt(0);
                 }
+
                 float effectAngle = angle;
                 if (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) && damage.Dealer != null)
                 {
@@ -119,17 +130,46 @@ namespace CTJ.Enemies
                     Vector2 away = origin - damage.Dealer.transform.position;
                     if (HasDirection(away)) effectAngle = Mathf.Atan2(away.y, away.x) * Mathf.Rad2Deg;
                 }
+
                 Quaternion rotation = Quaternion.Euler(0f, 0f, entry.angleOffset + (entry.alignToHitDirection ? effectAngle : 0f));
                 ParticleSystem particle = Instantiate(selectedPrefab, position + rotation * (Vector3)entry.offset, rotation);
+
                 // 적의 부모/반전/펀치 스케일과 분리하되, 같은 씬에 두어 씬 언로드 때 함께 정리합니다.
                 SceneManager.MoveGameObjectToScene(particle.gameObject, gameObject.scene);
                 particle.transform.localScale *= Mathf.Max(0.01f, effectScale) * entry.scale;
                 particle.gameObject.SetActive(true);
+
                 EnemyHitParticle lifetime = particle.GetComponent<EnemyHitParticle>();
                 if (lifetime == null) lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
                 lifetime.Play(particle, maxEffectLifetime);
+
                 _activeEffects.Add(lifetime);
             }
+        }
+
+        private Vector3 ResolveHitPosition(Vector2 point, Vector3 origin)
+        {
+            if (!useHitPoint || !IsFinite(point) || Vector2.Distance(point, origin) > maxHitPointDistance)
+                return origin;
+
+            Vector2 position = point;
+            Vector2 center = origin;
+            float nearest = float.PositiveInfinity;
+            if (hitSprites != null)
+                foreach (SpriteRenderer sprite in hitSprites)
+                {
+                    if (sprite == null || sprite.sprite == null || !sprite.enabled ||
+                        !sprite.gameObject.activeInHierarchy || sprite.color.a <= 0f) continue;
+                    Bounds bounds = sprite.bounds;
+                    Vector2 candidate = bounds.ClosestPoint(new Vector3(point.x, point.y, bounds.center.z));
+                    float distance = (candidate - point).sqrMagnitude;
+                    if (distance >= nearest) continue;
+                    nearest = distance;
+                    position = candidate;
+                    center = bounds.center;
+                }
+            position = Vector2.MoveTowards(position, center, Mathf.Max(0f, hitPointInset));
+            return new Vector3(position.x, position.y, origin.z);
         }
 
         private static bool IsFinite(Vector2 value) => !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&

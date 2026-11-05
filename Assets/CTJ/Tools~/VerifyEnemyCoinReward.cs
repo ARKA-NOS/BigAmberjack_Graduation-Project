@@ -308,6 +308,9 @@ namespace CTJ.Tools
             BoxCollider2D target = Collector(stage, new Vector2(x + 4f, 0f), playerHeight);
             var gold = new CurrencyData(AssetDatabase.LoadAssetAtPath<CurrencySO>(GoldPath), 0);
             var coin = Object.Instantiate(AssetDatabase.LoadAssetAtPath<EnemyRewardCoin>(CoinPath), new Vector3(x, 0.3f), Quaternion.identity);
+            var coinData = new SerializedObject(coin);
+            float expectedHeight = Mathf.Max(coinData.FindProperty("minimumBounceHeight").floatValue,
+                playerHeight * coinData.FindProperty("bounceHeightRatio").floatValue);
             try
             {
                 if (!delayedTarget) SetCollector(coin, target.transform);
@@ -315,6 +318,8 @@ namespace CTJ.Tools
                     .Invoke(coin, new object[] { gold, 3, 0.5f });
                 float floorY = -100f, apex = -100f, homingAt = -1f;
                 bool moved = false, arrived = false;
+                float originalScale = coin.transform.localScale.x, maxScale = 1f, minScale = 1f;
+                bool scaleRestored = false;
                 float until = Time.time + 7f;
                 while (coin != null && Time.time < until)
                 {
@@ -330,18 +335,23 @@ namespace CTJ.Tools
                     }
                     if (coin.IsCollecting)
                     {
+                        float ratio = coin.transform.localScale.x / originalScale;
+                        maxScale = Mathf.Max(maxScale, ratio); minScale = Mathf.Min(minScale, ratio);
+                        if (minScale < 0.8f && Mathf.Abs(ratio - 1f) < 0.001f) scaleRestored = true;
                         Check(Vector2.Distance(coin.transform.position, target.bounds.center) < 0.01f, "Track actual offset body center");
                         arrived = true;
                         target.transform.position += new Vector3(0.002f, 0f);
                     }
+                    else Check(Mathf.Approximately(coin.transform.localScale.x, originalScale), "No pulse before arrival");
                     if (coin.GetComponent<SpriteRenderer>().enabled) Check(gold.Count == 0, "No payout before vanish");
                     await Task.Yield();
                 }
                 float height = apex - floorY;
-                Check(height >= playerHeight * 0.5f && Mathf.Abs(height - playerHeight * 0.65f) < 0.04f,
+                Check(height >= playerHeight * 0.5f - 0.01f && Mathf.Abs(height - expectedHeight) < 0.04f,
                     "Bounce height follows body size: " + height);
                 Check(coin == null && gold.Count == 3 && moved && arrived, "Moving / delayed target collected exactly once");
-                return new { playerHeight, measuredBounce = height, delayedTarget, followsOffsetCenter = arrived, paid = gold.Count };
+                Check(maxScale > 1.74f && minScale < 0.41f && scaleRestored, "Stronger arrival pulse grows, shrinks, restores without delaying payout");
+                return new { playerHeight, measuredBounce = height, delayedTarget, followsOffsetCenter = arrived, maxScale, minScale, scaleRestored, paid = gold.Count };
             }
             finally { if (coin != null) Object.Destroy(coin.gameObject); Object.Destroy(stage); }
         }

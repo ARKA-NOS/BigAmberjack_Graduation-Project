@@ -10,8 +10,10 @@ namespace CTJ.Enemies
     {
         [SerializeField] private SpriteRenderer[] sprites;
         [SerializeField] private Material outlineMaterial;
-        [SerializeField, ColorUsage(false)] private Color normalColor = new Color(0.55f, 0.08f, 0.08f, 1f);
-        [SerializeField, ColorUsage(false)] private Color hitColor = Color.white;
+        [SerializeField, ColorUsage(false)] private Color normalColor = Color.black;
+        [SerializeField, ColorUsage(false)] private Color hitColor = new Color(0.75f, 0.18f, 0.22f, 1f);
+        [Tooltip("테스트 옵션. 켜면 피격 시간 동안만 표시하고, 끄면 평소 검정 테두리도 표시합니다.")]
+        [SerializeField] private bool showOnlyWhenHit = true;
         [Tooltip("화면 픽셀 기준 테두리 두께입니다. Outer Silhouette Only를 켜면 바깥쪽, 끄면 안쪽에 표시합니다. 0이면 숨깁니다.")]
         [SerializeField, Range(0f, 6f)] private float width = 2f;
         [Tooltip("불투명 파츠들의 바깥 테두리를 모든 파츠 뒤에 그려 내부 경계를 숨깁니다. 같은 SortingGroup/Layer의 Simple·Full Rect 스프라이트용입니다.")]
@@ -40,6 +42,7 @@ namespace CTJ.Enemies
 
         public bool IsShowingHit => isActiveAndEnabled && Time.time < _hitUntil;
         public Color CurrentColor => IsShowingHit ? hitColor : normalColor;
+        public bool ShowOnlyWhenHit { get => showOnlyWhenHit; set => showOnlyWhenHit = value; }
 
         public override void Initialize(ModuleOwner owner)
         {
@@ -69,8 +72,7 @@ namespace CTJ.Enemies
 
         private void OnHealthChanged(float current, float delta, float maximum)
         {
-            if (current <= 0f) _hitUntil = 0f;
-            else if (delta < 0f) _hitUntil = Time.time + Mathf.Max(0f, hitDuration);
+            if (delta < 0f) _hitUntil = Time.time + Mathf.Max(0f, hitDuration);
         }
 
         private void CreateViews()
@@ -94,8 +96,8 @@ namespace CTJ.Enemies
         {
             if (!_initialized) return;
             if (_views == null) CreateViews();
-            bool visible = _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&
-                           outlineMaterial != null && width > 0f;
+            bool visible = _enemy != null && _enemy.isActiveAndEnabled && (!_enemy.IsDead || _enemy.IsPlayingDeathReaction) &&
+                           outlineMaterial != null && width > 0f && (!showOnlyWhenHit || IsShowingHit);
             Color color = CurrentColor;
             int lowestOrder = int.MaxValue;
             if (outerSilhouetteOnly)

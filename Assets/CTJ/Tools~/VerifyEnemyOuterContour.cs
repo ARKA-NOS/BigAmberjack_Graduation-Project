@@ -27,6 +27,7 @@ namespace CTJ.Tools
                 turret.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
                 turret.GetComponentInChildren<EnemyTurretModule>().enabled = false;
                 EnemyOutlineModule outline = turret.GetComponentInChildren<EnemyOutlineModule>();
+                outline.ShowOnlyWhenHit = false;
                 Transform rise = turret.transform.Find("Visual/RiseRoot");
                 Transform pivot = rise.Find("LauncherPivot");
                 Camera camera = new GameObject("Contour camera").AddComponent<Camera>(); camera.transform.SetParent(root.transform);
@@ -52,6 +53,7 @@ namespace CTJ.Tools
                     {
                         Color32[] a = before.GetPixels32(), b = after.GetPixels32(); Color32 bg = a[0];
                         int expected = 0, missing = 0, interior = 0;
+                        var absent = new List<string>();
                         for (int y = 1; y < rt.height - 1; y++)
                             for (int x = 1; x < rt.width - 1; x++)
                             {
@@ -59,11 +61,11 @@ namespace CTJ.Tools
                                 if (!Close(a[p], bg)) { if (!Close(a[p], b[p])) interior++; continue; }
                                 if (Close(a[p - 1], bg) && Close(a[p + 1], bg) && Close(a[p - rt.width], bg) && Close(a[p + rt.width], bg)) continue;
                                 expected++;
-                                if (Close(a[p], b[p])) missing++;
+                                if (Close(a[p], b[p])) { missing++; if (absent.Count < 6) absent.Add(x + "," + y + ":" + a[p] + " -> " + b[p]); }
                             }
                         File.WriteAllBytes("Assets/CTJ/Tools~/Enemy02_Contour_" + i + ".png", after.EncodeToPNG());
                         results.Add(new { i, position = position.ToString(), angle, expected, missing, interior });
-                        Check(expected > 100 && missing == 0 && interior == 0, "Incomplete contour: " + i + ", missing=" + missing + ", interior=" + interior);
+                        Check(expected > 100 && missing == 0 && interior == 0, "Incomplete contour: " + i + ", missing=" + missing + ", interior=" + interior + ", background=" + bg + ", first=" + string.Join("; ", absent));
                     }
                     finally { Object.Destroy(before); Object.Destroy(after); }
                 }

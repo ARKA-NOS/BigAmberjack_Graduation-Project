@@ -11,17 +11,17 @@ namespace _Scripts.Maps.New_Map
         [field:SerializeField] public Room RoomPrefab { get; private set; }
         
         [field:Header("자동 설정")]
-        [field:SerializeField] public List<RectInt> Bounds {get; private set;}
+        [field:SerializeField] public List<RectInt> Rects {get; private set;}
         
         private void OnValidate()
         {
             if (RoomPrefab != null)
             {
-                Bounds = GetBounds(RoomPrefab.GetTileMap());
+                Rects = GetBounds(RoomPrefab.GetTileMap());
             }
             else
             {
-                Bounds = null;
+                Rects = null;
                 FDebug.LogWarning("[Room SO] RoomPrefab is null", this);
             }
         }
@@ -31,8 +31,6 @@ namespace _Scripts.Maps.New_Map
         private static List<RectInt> GetBounds(Tilemap tileMap)
         {
             if (tileMap == null) return null;
-            
-            tileMap.CompressBounds();
             
             HashSet<Vector3Int> hashSet = new HashSet<Vector3Int>();
             

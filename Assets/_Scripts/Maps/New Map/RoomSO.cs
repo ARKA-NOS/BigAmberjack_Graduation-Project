@@ -110,12 +110,10 @@ namespace _Scripts.Maps.New_Map
             {
                 Vector2 localPos = roomLink.transform.position - position;
                 
-                links.Add(new RoomLinkData(roomLink, localPos));
-                
+                links.Add(new RoomLinkData(localPos, roomLink.Direction, roomLink.LinkSize));
             }
-            
-            
-            
+
+            return links;
         }
 
         #endregion

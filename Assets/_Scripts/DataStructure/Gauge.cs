@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace _Scripts.DataStructure
 {
+    [Serializable]
     public struct Gauge
     {
-        public float MaxValue { get; private set; }
-        public float CurrentValue { get; private set; }
+        [field: SerializeField] public float MaxValue { get; private set; }
+        [field: SerializeField] public float CurrentValue { get; private set; }
 
         public float Normalized => !Mathf.Approximately(MaxValue,0f) ? Mathf.Clamp01(CurrentValue / MaxValue) : 1f;
         

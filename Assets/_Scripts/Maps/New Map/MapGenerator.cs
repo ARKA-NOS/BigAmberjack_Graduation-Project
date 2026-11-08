@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using _Scripts._Core._Debug;
 using _Scripts.Loading;
-using _Scripts.UI.BindSystem.ViewModel;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace _Scripts.Maps.New_Map
@@ -9,81 +10,78 @@ namespace _Scripts.Maps.New_Map
     public class MapGenerator : MonoBehaviour
     {
         [SerializeField] private MapGenerateSetting mapGenerateSetting;
+
+        private MapGenerateSetting prevMapSetting;
         
-        [Header("UI Settings")]
-        [SerializeField] private GaugeViewModel mapGenerateSettingViewModel;
-
-
-        #region MapGenerate Start
-
         private void Awake()
         {
-            GenerateMap();
+            GenerateMap(mapGenerateSetting);
         }
         
-        public void GenerateMap()
+        #region MapGenerate
+        
+        public void GenerateMap(MapGenerateSetting mapSetting)
         {
-            if (mapGenerateSetting == null)
+            if (mapSetting == null)
             {
                 FDebug.LogError("[MapGenerator] MapGenerateSetting is null");
                 return;
             }
             
-            StartCoroutine(GenerateMapCoroutine());
+            GenerateMapUniTask(mapSetting).Forget();
+        }
+
+        // LoadingEvents.RaiseSetLoadingGauge("SettingMapData", 50f, 100f);
+        private async UniTaskVoid GenerateMapUniTask(MapGenerateSetting mapSetting)
+        {
+            await UnLoadAssets();
+            
+            await LoadAssets(mapSetting);
+            
+            await SettingMapData(mapSetting);
+            
+            await InstantiatePrefabs(mapSetting);
+            
+            await End(mapSetting);
+        }
+
+        #region Addressable
+
+        private async UniTask UnLoadAssets()
+        {
+            if(prevMapSetting == null) return;
+            
+            // 나중에
+        }
+
+        private async UniTask LoadAssets(MapGenerateSetting mapSetting)
+        {
+            // 나중에
         }
 
         #endregion
+
+        #region CreateMap
         
-        #region MapGenerate
-
-        private bool instantiateLoop = false;
-        private IEnumerator GenerateMapCoroutine()
-        {
-            Init();
-            
-            yield return LoadingEvents.RaiseSetLoadingGauge("Init", 25f, 100f);
-
-            SettingMapData();
-            
-            yield return LoadingEvents.RaiseSetLoadingGauge("SettingMapData", 50f, 100f);
-
-            instantiateLoop = true;
-            
-            while (instantiateLoop)
-            {
-                InstantiatePrefabs();
-                
-                yield return LoadingEvents.RaiseSetLoadingGauge("Prefab Instantiate",10f, 100f);
-            }
-
-            End();
-        }
-
-        private void Init()
-        {
-            
-            
-        }
-
-        private void SettingMapData()
+        private async UniTask SettingMapData(MapGenerateSetting mapSetting)
         {
             
         }
         
-        //전부 생성하면 instantiateLoop을 false로 만들기
-        private void InstantiatePrefabs()
+        private async UniTask InstantiatePrefabs(MapGenerateSetting mapSetting)
         {
             
             
         }
-
-        private void End()
+        
+        #endregion
+        
+        private async UniTask End(MapGenerateSetting mapSetting)
         {
-            
+            prevMapSetting = mapSetting;
         }
 
         #endregion
-        
         
     }
 }

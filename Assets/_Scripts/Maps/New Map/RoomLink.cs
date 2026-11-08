@@ -5,18 +5,18 @@ namespace _Scripts.Maps.New_Map
 {
     public class RoomLink : MonoBehaviour
     {
-        [SerializeField] private DirEnum direction;
-        [SerializeField] private int linkSize;
+        [field:SerializeField] public DirEnum Direction { get; private set; }
+        [field:SerializeField] public int LinkSize { get; private set; }
         
         private void OnDrawGizmos()
         {
-            for (int i = -linkSize; i <= linkSize; i++)
+            for (int i = -LinkSize; i <= LinkSize; i++)
             {
-                Vector2 drawPos = transform.position + (Quaternion.Euler(0,0,90f) * direction.GetVector2() * i);
+                Vector2 drawPos = transform.position + (Quaternion.Euler(0,0,90f) * Direction.GetVector2() * i);
                 DrawBox(drawPos);
             }
             Gizmos.color = Color.yellow;
-            DrawLineGizmo(transform.position, transform.position + (Vector3)direction.GetVector2());
+            DrawLineGizmo(transform.position, transform.position + (Vector3)Direction.GetVector2());
         }
         
         private void DrawBox(Vector2 pos)
@@ -24,7 +24,7 @@ namespace _Scripts.Maps.New_Map
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(pos, Vector3.one);
         }
-
+        
         private void DrawLineGizmo(Vector3 start, Vector3 end)
         {
             Vector3 dir = end - start;
@@ -41,9 +41,9 @@ namespace _Scripts.Maps.New_Map
             Gizmos.DrawLine(triPointB, arrowEnd);
             Gizmos.DrawLine(triPointA, triPointB);
         }
-
+        
         private Vector2 GetCheckVector()
-            => direction.GetVector2() * linkSize;
+            => Direction.GetVector2() * LinkSize;
         
         public static bool CanLink(RoomLink link1, RoomLink link2)
             => link1.GetCheckVector() - link2.GetCheckVector() == Vector2.zero;

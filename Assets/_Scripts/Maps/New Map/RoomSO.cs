@@ -9,30 +9,32 @@ namespace _Scripts.Maps.New_Map
     public class RoomSO : ScriptableObject
     {
         [field:SerializeField] public Room RoomPrefab { get; private set; }
+        [field:SerializeField] public float Priority { get; private set; }
         
         [field:Header("자동 설정")]
-        [field:SerializeField] public List<RectInt> Bounds {get; private set;}
+        [field:SerializeField] public List<RectInt> Rects {get; private set;}
+        [field:SerializeField] public List<RoomLinkData> LinkList { get; private set; }
         
         private void OnValidate()
         {
             if (RoomPrefab != null)
             {
-                Bounds = GetBounds(RoomPrefab.GetTileMap());
+                Rects = GetBounds(RoomPrefab.GetTileMap());
+                LinkList = GetLinks(RoomPrefab.transform.position, RoomPrefab.GetRoomLink());
             }
             else
             {
-                Bounds = null;
+                Rects = null;
+                LinkList = null;
                 FDebug.LogWarning("[Room SO] RoomPrefab is null", this);
             }
         }
         
         #region Rect Bake
-
+        
         private static List<RectInt> GetBounds(Tilemap tileMap)
         {
             if (tileMap == null) return null;
-            
-            tileMap.CompressBounds();
             
             HashSet<Vector3Int> hashSet = new HashSet<Vector3Int>();
             
@@ -95,8 +97,25 @@ namespace _Scripts.Maps.New_Map
             }
             return true;
         }
+        
+        #endregion
+
+        #region Link Bake
+
+        private List<RoomLinkData> GetLinks(Vector3 position, RoomLink[] roomLinks)
+        {
+            List<RoomLinkData> links = new();
+            
+            foreach (RoomLink roomLink in roomLinks)
+            {
+                Vector2 localPos = roomLink.transform.position - position;
+                
+                links.Add(new RoomLinkData(localPos, roomLink.Direction, roomLink.LinkSize));
+            }
+
+            return links;
+        }
 
         #endregion
-        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using _Scripts._Core._Debug;
 using _Scripts.Loading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace _Scripts.Maps.New_Map
@@ -31,25 +32,14 @@ namespace _Scripts.Maps.New_Map
         
         #region MapGenerate
 
-        private bool instantiateLoop = false;
-        private IEnumerator GenerateMapCoroutine()
+        // LoadingEvents.RaiseSetLoadingGauge("SettingMapData", 50f, 100f);
+        private async UniTaskVoid GenerateMapCoroutine()
         {
             Init();
-            
-            yield return LoadingEvents.RaiseSetLoadingGauge("Init", 25f, 100f);
 
             SettingMapData();
-            
-            yield return LoadingEvents.RaiseSetLoadingGauge("SettingMapData", 50f, 100f);
 
-            instantiateLoop = true;
-            
-            while (instantiateLoop)
-            {
-                InstantiatePrefabs();
-                
-                yield return LoadingEvents.RaiseSetLoadingGauge("Prefab Instantiate",10f, 100f);
-            }
+            InstantiatePrefabs();
 
             End();
         }

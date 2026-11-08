@@ -1,6 +1,4 @@
-﻿using System;
-using _Scripts.DataStructure;
-using UnityEngine;
+﻿using _Scripts.DataStructure;
 
 namespace _Scripts.Loading
 {
@@ -10,14 +8,15 @@ namespace _Scripts.Loading
         public Gauge LoadingGauge;
         public bool IsComplete;
 
-        public LoadingData(string loadingText, float current, float max)
+        public LoadingData(string loadingText, Gauge gauge)
         {
             Text = loadingText;
-            LoadingGauge = new Gauge(current, max);
-            IsComplete = Mathf.Approximately(current, max);
+            LoadingGauge = gauge;
+            IsComplete = gauge.IsMax;
         }
-        
-        
+
+        public override string ToString()
+            => $"{Text} Loading : " + (IsComplete ? "Complete" : $": {LoadingGauge}");
         
     }
 }

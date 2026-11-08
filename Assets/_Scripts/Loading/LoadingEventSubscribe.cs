@@ -4,18 +4,14 @@ using UnityEngine;
 
 namespace _Scripts.Loading
 {
-    public class LoadingManager : EventListener<SetLoadingGaugeEvent>
+    public class LoadingEventSubscribe : EventListener<SetLoadingGaugeEvent>
     {
         [SerializeField] private LoadingViewModel loadingViewModel;
         
         protected override void HandleEvent(SetLoadingGaugeEvent evt)
         {
-            if (loadingViewModel != null)
-            {
-                loadingViewModel.Bind(evt.Value);
-                FDebug.Log($"Loading : {evt.Value}");
-            }
-            
+            if (loadingViewModel == null) return;
+            loadingViewModel.Bind(evt.Value);
         }
         
     }

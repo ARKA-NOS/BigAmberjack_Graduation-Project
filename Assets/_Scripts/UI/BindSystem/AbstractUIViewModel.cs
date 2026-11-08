@@ -11,7 +11,7 @@ namespace _Scripts.UI.BindSystem
         public T BindData { get; private set; }
         
         public event Action OnBind;
-        public void Bind(T data)
+        public virtual void Bind(T data)
         {
             BindData = data;
             OnBind?.Invoke();

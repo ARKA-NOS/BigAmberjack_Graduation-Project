@@ -1,16 +1,15 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using _Scripts._Core._Debug;
-using _Scripts.Loading;
+using _Scripts.Maps.New_Map.MapSettingAsset;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace _Scripts.Maps.New_Map
 {
-    public class MapGenerator : MonoBehaviour
+    public partial class MapGenerator : MonoBehaviour
     {
         [SerializeField] private MapGenerateSetting mapGenerateSetting;
-
+        
         private MapGenerateSetting prevMapSetting;
         
         private void Awake()
@@ -31,52 +30,45 @@ namespace _Scripts.Maps.New_Map
             GenerateMapUniTask(mapSetting).Forget();
         }
 
-        // LoadingEvents.RaiseSetLoadingGauge("SettingMapData", 50f, 100f);
+        // 
         private async UniTaskVoid GenerateMapUniTask(MapGenerateSetting mapSetting)
         {
-            await UnLoadAssets();
+            CancellationToken ct = this.GetCancellationTokenOnDestroy();
             
-            await LoadAssets(mapSetting);
+            await UnLoadAssets(ct);
             
-            await SettingMapData(mapSetting);
+            await LoadAssets(mapSetting, ct);
             
-            await InstantiatePrefabs(mapSetting);
+            await MapDeployment(mapSetting, ct);
             
-            await End(mapSetting);
+            await InstantiatePrefabs(mapSetting, ct);
+            
+            End(mapSetting);
         }
 
         #region Addressable
 
-        private async UniTask UnLoadAssets()
+        private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;
             
             // 나중에
         }
 
-        private async UniTask LoadAssets(MapGenerateSetting mapSetting)
+        private async UniTask LoadAssets(MapGenerateSetting mapSetting, CancellationToken ct)
         {
             // 나중에
         }
 
         #endregion
-
-        #region CreateMap
         
-        private async UniTask SettingMapData(MapGenerateSetting mapSetting)
-        {
-            
-        }
-        
-        private async UniTask InstantiatePrefabs(MapGenerateSetting mapSetting)
+        private async UniTask InstantiatePrefabs(MapGenerateSetting mapSetting, CancellationToken ct)
         {
             
             
         }
         
-        #endregion
-        
-        private async UniTask End(MapGenerateSetting mapSetting)
+        private void End(MapGenerateSetting mapSetting)
         {
             prevMapSetting = mapSetting;
         }

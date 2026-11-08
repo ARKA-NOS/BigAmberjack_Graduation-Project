@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using _Scripts._Core._Debug;
+using _Scripts.Maps.New_Map.MapGenerateData;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace _Scripts.Maps.New_Map
+namespace _Scripts.Maps.New_Map.MapSettingAsset
 {
     [CreateAssetMenu(fileName = "MapModule", menuName = "MapSystem/MapModule", order = 0)]
     public class RoomSO : ScriptableObject
@@ -99,23 +100,26 @@ namespace _Scripts.Maps.New_Map
         }
         
         #endregion
-
+        
         #region Link Bake
 
         private List<RoomLinkData> GetLinks(Vector3 position, RoomLink[] roomLinks)
         {
             List<RoomLinkData> links = new();
+
+            if (roomLinks == null) return links;
             
             foreach (RoomLink roomLink in roomLinks)
             {
+                if(roomLink == null) continue;
                 Vector2 localPos = roomLink.transform.position - position;
-                
                 links.Add(new RoomLinkData(localPos, roomLink.Direction, roomLink.LinkSize));
             }
-
+            
             return links;
         }
 
         #endregion
+        
     }
 }

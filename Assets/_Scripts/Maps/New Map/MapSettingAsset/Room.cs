@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace _Scripts.Maps.New_Map
+namespace _Scripts.Maps.New_Map.MapSettingAsset
 {
     [RequireComponent(typeof(Tilemap))]
     public class Room : MonoBehaviour

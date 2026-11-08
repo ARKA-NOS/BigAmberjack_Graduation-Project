@@ -24,7 +24,7 @@ namespace _Scripts.Maps.New_Map
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(pos, Vector3.one);
         }
-
+        
         private void DrawLineGizmo(Vector3 start, Vector3 end)
         {
             Vector3 dir = end - start;
@@ -41,7 +41,7 @@ namespace _Scripts.Maps.New_Map
             Gizmos.DrawLine(triPointB, arrowEnd);
             Gizmos.DrawLine(triPointA, triPointB);
         }
-
+        
         private Vector2 GetCheckVector()
             => direction.GetVector2() * linkSize;
         

@@ -1,27 +1,21 @@
-﻿using _Scripts._Core._EventSystem;
-using _Scripts._Core._Manager;
+﻿using _Scripts._Core._Debug;
+using _Scripts.UI.Template;
 using UnityEngine;
 
 namespace _Scripts.Loading
 {
-    public class LoadingManager : AbstractManager
+    public class LoadingManager : EventListener<SetLoadingGaugeEvent>
     {
         [SerializeField] private LoadingViewModel loadingViewModel;
         
-        public override void Initialize()
+        protected override void HandleEvent(SetLoadingGaugeEvent evt)
         {
-            EventBus<SetLoadingGaugeEvent>.Subscribe(HandleSetLoadingGauge);
-        }
-
-        private void OnDestroy()
-        {
-            EventBus<SetLoadingGaugeEvent>.UnSubscribe(HandleSetLoadingGauge);
-        }
-
-        private void HandleSetLoadingGauge(SetLoadingGaugeEvent evt)
-        {
-            if(loadingViewModel != null)
+            if (loadingViewModel != null)
+            {
                 loadingViewModel.Bind(evt.Value);
+                FDebug.Log($"Loading : {evt.Value}");
+            }
+            
         }
         
     }

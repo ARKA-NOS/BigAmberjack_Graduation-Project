@@ -1,17 +1,23 @@
-﻿using _Scripts.DataStructure;
+﻿using System;
+using _Scripts.DataStructure;
+using UnityEngine;
 
 namespace _Scripts.Loading
 {
     public struct LoadingData
     {
-        public string Name;
+        public string Text;
         public Gauge LoadingGauge;
+        public bool IsComplete;
 
-        public LoadingData(string name, float current, float max)
+        public LoadingData(string loadingText, float current, float max)
         {
-            Name = name;
+            Text = loadingText;
             LoadingGauge = new Gauge(current, max);
+            IsComplete = Mathf.Approximately(current, max);
         }
+        
+        
         
     }
 }

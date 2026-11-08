@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using _Scripts._Core._Debug;
 using _Scripts.Loading;
-using _Scripts.UI.BindSystem.ViewModel;
 using UnityEngine;
 
 namespace _Scripts.Maps.New_Map
@@ -9,11 +8,7 @@ namespace _Scripts.Maps.New_Map
     public class MapGenerator : MonoBehaviour
     {
         [SerializeField] private MapGenerateSetting mapGenerateSetting;
-        
-        [Header("UI Settings")]
-        [SerializeField] private GaugeViewModel mapGenerateSettingViewModel;
-
-
+           
         #region MapGenerate Start
 
         private void Awake()
@@ -83,7 +78,6 @@ namespace _Scripts.Maps.New_Map
         }
 
         #endregion
-        
         
     }
 }

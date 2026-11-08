@@ -27,7 +27,7 @@ namespace _Scripts.Maps.New_Map
         }
         
         #region Rect Bake
-
+        
         private static List<RectInt> GetBounds(Tilemap tileMap)
         {
             if (tileMap == null) return null;
@@ -93,7 +93,7 @@ namespace _Scripts.Maps.New_Map
             }
             return true;
         }
-
+        
         #endregion
         
     }

@@ -48,24 +48,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`(`Lrw/Script/Agent/Players/PlayerInputSo.cs`, 에셋은 `Assets/GameModules/PlayerInputSo.asset`)가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출한다.
 
-**UI(바인드 시스템)** — 게임 데이터를 화면에 보여주는 UI는 반드시 `Lrw/Script/UI/BindSystem`의 ViewModel–Binder 구조로 만든다. 게임 로직(모듈 등)은 UI 컴포넌트를 직접 참조하지 않고, ScriptableObject ViewModel 에셋을 사이에 두고 데이터만 넘긴다.
-- `AbstractUIViewModel<T>`(ScriptableObject) — 데이터를 가진 쪽이 `[SerializeField]`로 들고 있다가 값이 바뀌면 `Bind(data)`를 호출한다. 값은 `BindData`에 저장되고 `OnBind` 이벤트가 발생한다.
-- `AbstractUIBinder<T>`(MonoBehaviour) — UI 오브젝트에 붙이고 인스펙터에서 같은 ViewModel 에셋을 연결한다. `CurrentValue`로 값을 읽어 UI를 갱신한다.
-  - `DataUpdate()`(필수) — 매 프레임 호출. 쿨타임, 지연 바처럼 계속 변하는 표시를 갱신한다.
-  - `OnDataChanged()`(선택) — `Bind`가 호출된 순간에만 실행. 값이 바뀔 때 한 번만 할 처리를 넣는다.
-- 새 UI를 만드는 순서:
-  1. 넘길 데이터 타입을 정한다. 기존 타입(`string`, `Gauge`, `ISkill`, `EffectList`)으로 되면 그대로 쓴다.
-  2. 그 타입의 ViewModel이 없으면 `AbstractUIViewModel<T>`를 상속한 빈 클래스에 `[CreateAssetMenu(fileName = "Xxx View Module", menuName = "UI/Xxx View Module")]`를 붙여 만든다.
-  3. `AbstractUIBinder<T>`를 상속한 Binder를 만들고 `DataUpdate()`를 구현한다.
-  4. `Create > UI > ...`로 ViewModel 에셋을 만들고, 데이터를 가진 컴포넌트와 Binder 양쪽에 같은 에셋을 연결한다.
-  5. 데이터를 가진 쪽에서 값이 바뀔 때 `viewModel.Bind(...)`를 호출한다(ViewModel 필드는 null 체크).
-- 파일 위치 — 여러 UI에서 쓰는 범용 ViewModel/Binder는 `BindSystem/ViewModel/`, `BindSystem/Binder/`에(`TextViewModel`, `GaugeViewModel`, `TextUIBinder`), 특정 UI 전용은 그 UI 폴더에 둔다(`UI/PlayerUI/HUD_UI/...`).
-- 참고 예시 — `HealthModule` → `GaugeViewModel` → `PlayerHealthUIBinder`(체력 바 + 지연 바), `PlayerSkillModule` → `SkillViewModel` → `PlayerSkillUIBinder`(아이콘, 쿨타임).
+**UI(MVVM)** — 게임 데이터를 화면에 보여주는 새 UI는 `_Scripts/UI/MVVM`(네임스페이스 `_Scripts.UI.MVVM`)의 MVVM 구조로 만든다. 자세한 규칙과 예시 코드는 `Assets/_Scripts/UI/MVVM/README.md`를 따른다.
+- 의존 방향은 **View → ViewModel → Model 인터페이스**다. Model(모듈, 매니저)은 ViewModel·View·UI 네임스페이스를 참조하지 않는다. ViewModel은 View와 `UnityEngine.UI`/TMP를 참조하지 않는다. View는 Model을 참조하지 않는다.
+- `ViewModelBase<TModel>`(ScriptableObject 에셋) — Model 인터페이스를 `OnConnect`에서 구독하고 `Observable<T>`/`ObservableList<T>`로 값을 노출한다(속성마다 Observable, 한 번에 바뀌는 묶음은 `Observable<XxxData>` 허용). `OnDisconnect`에서 구독 해제, `ResetState`에서 기본값으로 되돌린다. 메뉴는 `UI/MVVM/Xxx View Model`.
+- `ViewBase<TViewModel>`(MonoBehaviour) — 같은 ViewModel 에셋을 연결하고 `OnBind`에서 구독해 `.AddTo(Disposables)`로 등록한다. OnEnable에 구독, OnDisable에 해제되며 구독 즉시 현재 값으로 그려진다. 지연 바·트윈 같은 연출은 View가 맡는다.
+- `ConnectorBase`(MonoBehaviour) — Model 쪽 오브젝트(플레이어 프리팹 등)에 붙어 `viewModel.Connect(model)` / `Disconnect()`를 호출한다. Model과 ViewModel을 함께 아는 곳은 Connector뿐이다.
+- 입력 — 버튼 등은 ViewModel이 노출하는 데이터 안의 `Action`을 View가 `Invoke`한다(`BindClick`).
+- 매 프레임 바뀌는 값(쿨타임) — ViewModel이 `ITickableViewModel`을 구현하면 연결된 동안 `UIManager`가 `Tick()`을 호출한다. GameManager가 없는 씬에서는 `NullUITicker`라 Tick이 멈춘다.
+- 같은 UI가 여러 개(적 체력바) — `ViewModelBase.CreateRuntime(template)`으로 복제해 `view.SetViewModel(clone)`, 끝나면 `ReleaseRuntime()`.
 - 주의:
-  - Binder에서 `Awake`/`OnDestroy`/`Update`가 필요하면 `protected override`로 만들고 `base.Xxx()`를 꼭 호출한다. `private void Awake()`처럼 새로 선언해 베이스를 가리면 `OnBind` 구독이 빠진다.
-  - `Bind` 전의 `CurrentValue`는 `default`(참조 타입이면 null)이므로 null을 처리한다.
-  - ViewModel 에셋은 공유 상태다. 데이터 소스 하나당 에셋 하나를 둔다. 여러 오브젝트가 같은 에셋에 `Bind`하면 마지막 값으로 덮어써진다(예: 스킬 1/2는 에셋을 따로 만든다).
-  - `BindData`는 직렬화되지 않는 런타임 값이라 에셋에 저장되지 않는다. 저장이 필요한 값은 ViewModel에 두지 않는다.
+  - View/Connector/ViewModel에서 `OnEnable`/`OnDisable`/`Start`가 필요하면 `protected override`로 만들고 `base.Xxx()`를 꼭 호출한다.
+  - ViewModel 에셋은 공유 상태다. 에셋 하나에 Connector 하나만 연결한다(스킬 1/2는 에셋을 따로 만든다).
+  - ViewModel 값은 저장되지 않는 런타임 값이다. 저장이 필요한 값은 Model에 둔다.
+  - 창 열기/닫기는 MVVM 밖이다. 기존 `UIManagerEvents.OpenCloseWindow` + `AbstractWindow`를 쓰고 창 안의 내용만 MVVM으로 만든다.
+- 레거시 — `_Scripts/UI/BindSystem`(`AbstractUIViewModel<T>`/`AbstractUIBinder<T>`)은 이미 그걸 쓰는 UI에만 남아 있다. 새 UI에는 쓰지 않고, 기존 UI는 하나씩 MVVM으로 옮긴다.
 
 ## 컨벤션
 

@@ -53,6 +53,7 @@ namespace _Scripts.Agent.Enemies
         private const float Skin = 0.005f;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
         private SpriteRenderer _visual;
+        private EnemyCoinTrail _trail;
         private ContactFilter2D _terrainFilter;
         private CurrencyData _currency;
         private Vector2 _velocity;
@@ -122,6 +123,8 @@ namespace _Scripts.Agent.Enemies
             _currency = currency;
             Amount = amount;
             _visual = GetComponent<SpriteRenderer>();
+            _trail = GetComponent<EnemyCoinTrail>();
+            if (_trail != null) _trail.BeginTrail(_visual);
             _originalScale = transform.localScale;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
@@ -240,6 +243,7 @@ namespace _Scripts.Agent.Enemies
         private void BeginCollect()
         {
             _phase = CoinPhase.Collect;
+            if (_trail != null) _trail.StopTrail();
             _velocity = Vector2.zero;
             _animationTime = 0f;
             if (collectFrames == null || collectFrames.Length == 0)

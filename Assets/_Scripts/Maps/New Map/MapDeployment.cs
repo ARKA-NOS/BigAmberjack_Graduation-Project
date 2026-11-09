@@ -38,6 +38,11 @@ namespace _Scripts.Maps.New_Map
             
             Random random = new Random(mapSetting.Seed);
             
+            
+            
+            
+            
+            
              
             
             return result;

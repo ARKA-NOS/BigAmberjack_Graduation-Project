@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6343ca0540c4d09b6a957ed0cfef660, type: 3}
+  m_Name: Player Stat Group
+  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.StatSystem.StatGroup
+  <Stats>k__BackingField:
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 43956039511c547428d1fa4553333473, type: 2}
+    <BaseValue>k__BackingField: 100
+  - <StatData>k__BackingField: {fileID: 11400000, guid: e4495b6ac6ad2cb408a9b709c56f9b41, type: 2}
+    <BaseValue>k__BackingField: 10
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+    <BaseValue>k__BackingField: 10
+  - <StatData>k__BackingField: {fileID: 11400000, guid: b5c72bf08081a6049be9ae0f278834f5, type: 2}
+    <BaseValue>k__BackingField: 2
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 79c14af92222bd848b542d639e03d0db, type: 2}
+    <BaseValue>k__BackingField: 1
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 407c87306ac9f204bb92b2e51a6f91eb, type: 2}
+    <BaseValue>k__BackingField: 12
+  - <StatData>k__BackingField: {fileID: 11400000, guid: fc3e0d6dfa4fc0f44b9a5f5a537f26d4, type: 2}
+    <BaseValue>k__BackingField: 0.2
+  - <StatData>k__BackingField: {fileID: 11400000, guid: f7601b615103b314fbc1b5aed436dd92, type: 2}
+    <BaseValue>k__BackingField: 2
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 4455611de8f44f04cb8ccc6d28eb0a5b, type: 2}
+    <BaseValue>k__BackingField: 1
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 03cb7a715b275034e9b4947af317f75a, type: 2}
+    <BaseValue>k__BackingField: 0
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 84f8db238b1620f40a33711eee5a07fd, type: 2}
+    <BaseValue>k__BackingField: 0.2
+  - <StatData>k__BackingField: {fileID: 11400000, guid: a27d989aeba32e044833d661dbf23947, type: 2}
+    <BaseValue>k__BackingField: 1
+  - <StatData>k__BackingField: {fileID: 11400000, guid: adec61426d70758478f627cdfc4a5ab9, type: 2}
+    <BaseValue>k__BackingField: 5
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 8aa7055844afb384b87942c0fb77f6d4, type: 2}
+    <BaseValue>k__BackingField: 0
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 222b3edcccfcd0c499b578f8661207ff, type: 2}
+    <BaseValue>k__BackingField: 0
+  - <StatData>k__BackingField: {fileID: 11400000, guid: 8fdf2ec9b3314feaa04c953f68c1c5db, type: 2}
+    <BaseValue>k__BackingField: 1

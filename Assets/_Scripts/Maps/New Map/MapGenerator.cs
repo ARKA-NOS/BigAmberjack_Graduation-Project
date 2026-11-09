@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using _Scripts._Core._Debug;
+using _Scripts.DataStructure;
+using _Scripts.Loading;
 using _Scripts.Maps.New_Map.MapGenerateData;
 using _Scripts.Maps.New_Map.MapSettingAsset;
 using Cysharp.Threading.Tasks;
@@ -71,6 +73,8 @@ namespace _Scripts.Maps.New_Map
             await UniTask.SwitchToMainThread(ct);
             
             List<UniTask> taskList = new List<UniTask>();
+
+            SetLoadingGauge("InstantiateRoom", 0, 100);
             
             foreach (RoomDeploymentData roomDeploymentData in roomDataList)
             {
@@ -79,6 +83,10 @@ namespace _Scripts.Maps.New_Map
             }
 
             await UniTask.WhenAll(taskList);
+            
+            await UniTask.SwitchToMainThread(ct);
+            
+            SetLoadingGauge("InstantiateRoom", 100, 100);
         }
 
         private async UniTask<Room> InstantiateRoomAsync(RoomDeploymentData roomData, CancellationToken ct)
@@ -90,6 +98,8 @@ namespace _Scripts.Maps.New_Map
                 await op.ToUniTask(cancellationToken: ct);
             }
             
+            await UniTask.SwitchToMainThread(ct);
+            
             return op.Result != null && op.Result.Length > 0 ? op.Result[0] : null;
         }
         
@@ -99,6 +109,9 @@ namespace _Scripts.Maps.New_Map
         }
 
         #endregion
+        
+        private static void SetLoadingGauge(string text, int current, int max)
+            => LoadingEvents.RaiseSetLoadingGauge(text, new Gauge(current,max));
         
     }
 }

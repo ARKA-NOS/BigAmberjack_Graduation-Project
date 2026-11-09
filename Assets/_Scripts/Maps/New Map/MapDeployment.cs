@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Threading;
 using _Scripts._Core._Debug;
-using _Scripts.DataStructure;
-using _Scripts.Loading;
 using _Scripts.Maps.New_Map.MapGenerateData;
 using _Scripts.Maps.New_Map.MapSettingAsset;
 using Cysharp.Threading.Tasks;
@@ -453,9 +451,6 @@ namespace _Scripts.Maps.New_Map
         #endregion
 
         #region Helper
-
-        private static void SetLoadingGauge(string text, int current, int max)
-            => LoadingEvents.RaiseSetLoadingGauge(text, new Gauge(current,max));
 
         private bool RectListOverlaps(List<RectInt> rect1, List<RectInt> rect2)
             => rect1.Any(i => rect2.Any(i.Overlaps));

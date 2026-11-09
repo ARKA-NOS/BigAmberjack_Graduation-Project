@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 372da74244e74b9e95bd378b91a94d8c, type: 3}
   m_Name: Map Create Setting
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapGenerateSetting
-  <Seed>k__BackingField: 0
+  <Seed>k__BackingField: 3
   <DefaultRoom>k__BackingField: {fileID: 11400000, guid: 42a181f8fdbeaf3488a3667ee7e2ce6e, type: 2}
   <Rooms>k__BackingField:
   - {fileID: 11400000, guid: 128154f208e69bb4885a4c19dcd750fe, type: 2}
   - {fileID: 11400000, guid: 107ff463e93bea041a98f7f17d1e2059, type: 2}
   - {fileID: 11400000, guid: 42a181f8fdbeaf3488a3667ee7e2ce6e, type: 2}
-  <MapCount>k__BackingField: 10
+  - {fileID: 11400000, guid: c1da718e142755a4f800bdc0fe2f9256, type: 2}
+  - {fileID: 11400000, guid: 9ceadb61fe9decd45a024e25262891ab, type: 2}
+  <MapCount>k__BackingField: 100
   <BranchRange>k__BackingField: {x: 1, y: 10}
   <BranchCount>k__BackingField: 2

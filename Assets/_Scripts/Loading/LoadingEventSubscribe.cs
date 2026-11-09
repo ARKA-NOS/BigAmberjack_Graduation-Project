@@ -1,5 +1,4 @@
-﻿using _Scripts._Core._Debug;
-using _Scripts.UI.Template;
+﻿using _Scripts.UI.Template;
 using UnityEngine;
 
 namespace _Scripts.Loading

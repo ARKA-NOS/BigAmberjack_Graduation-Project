@@ -12,30 +12,19 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         [field:SerializeField] public Room RoomPrefab { get; private set; }
         [field:SerializeField] public float Priority { get; private set; }
         
-        [field:Header("자동 설정")]
-        [field:SerializeField] public List<RectInt> Rects {get; private set;}
-        [field:SerializeField] public List<RoomLinkData> LinkList { get; private set; }
-        
         private void OnValidate()
         {
-            if (RoomPrefab != null)
+            if (RoomPrefab == null)
             {
-                Rects = GetBounds(RoomPrefab.GetTileMap());
-                LinkList = GetLinks(RoomPrefab.transform.position, RoomPrefab.GetRoomLink());
-            }
-            else
-            {
-                Rects = null;
-                LinkList = null;
                 FDebug.LogWarning("[Room SO] RoomPrefab is null", this);
             }
         }
         
         #region Rect Bake
         
-        private static List<RectInt> GetBounds(Tilemap tileMap)
+        private List<RectInt> GetBounds(Vector2Int position)
         {
-            if (tileMap == null) return null;
+            Tilemap tileMap = RoomPrefab.GetTileMap();
             
             HashSet<Vector3Int> hashSet = new HashSet<Vector3Int>();
             
@@ -46,7 +35,7 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
                 {
                     if (!tileMap.HasTile(new Vector3Int(x, y, 0))) continue;
                     
-                    hashSet.Add(new Vector3Int(x, y, 0));
+                    hashSet.Add(new Vector3Int(x, y, 0) + (Vector3Int)position);
                 }
             }
             
@@ -103,16 +92,16 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         
         #region Link Bake
 
-        private List<RoomLinkData> GetLinks(Vector3 position, RoomLink[] roomLinks)
+        public List<RoomLinkData> GetLinks(Vector2 position)
         {
             List<RoomLinkData> links = new();
-
-            if (roomLinks == null) return links;
+            
+            RoomLink[] roomLinks = RoomPrefab.GetRoomLink();
             
             foreach (RoomLink roomLink in roomLinks)
             {
                 if(roomLink == null) continue;
-                Vector2 localPos = roomLink.transform.position - position;
+                Vector2 localPos = roomLink.transform.position - (Vector3)position;
                 links.Add(new RoomLinkData(localPos, roomLink.Direction, roomLink.LinkSize));
             }
             

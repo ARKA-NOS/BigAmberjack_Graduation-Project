@@ -18,7 +18,7 @@ namespace _Scripts.Maps.New_Map
         private async UniTask<List<RoomDeploymentData>> MapDeployment(MapGenerateSetting mapSetting, CancellationToken ct)
         {
             if(mapSetting == null) return null;
-
+            
             var work = UniTask.RunOnThreadPool(() => MapDeploymentInThread(mapSetting), cancellationToken: ct);
             
             while (work.Status == UniTaskStatus.Pending)
@@ -36,47 +36,56 @@ namespace _Scripts.Maps.New_Map
         {
             List<RoomDeploymentData> result = new List<RoomDeploymentData>();
             
-            Vector2 currentPos = Vector2.zero;
+            Vector2Int startPos = Vector2Int.zero;
             
-            RoomDeploymentData currentRoom = new RoomDeploymentData(mapSetting.DefaultRoom,currentPos);
+            RoomDeploymentData currentRoom = new RoomDeploymentData(mapSetting.DefaultRoom,startPos);
             
             result.Add(currentRoom);
             
             List<RectInt> currentMapRects = new();
-            currentMapRects.AddRange(currentRoom.RoomPrefab.GetLinks(Vector2Int.zero));
+            currentMapRects.AddRange(currentRoom.RoomPrefab.GetBounds(startPos));
             
             List<RoomLinkData> linkDataList = new();
-            linkDataList.AddRange(currentRoom.RoomPrefab.GetLinks(currentPos));
+            linkDataList.AddRange(currentRoom.RoomPrefab.GetLinks(startPos));
 
             Random random = new(mapSetting.Seed);
             
             for (int i = 0; i < mapSetting.MapCount; i++)
             {
-                int linkIndex = random.Next(0, linkDataList.Count);
-                List<RoomSO> canLinkRooms = GetCanLinkRooms(currentMapRects, linkDataList[linkIndex], mapSetting.Rooms);
+                List<RoomSO> canLinkRooms = GetCanLinkRooms(currentMapRects, linkDataList, mapSetting.Rooms, random);
+                if(canLinkRooms == null || canLinkRooms.Count == 0) break;
                 int index = random.Next(0, canLinkRooms.Count);
                 RoomSO room = canLinkRooms[index];
                 currentRoom = SetRectList(currentMapRects, linkDataList, room);
                 result.Add(currentRoom);
+                deploymentCount = i + 1;
             }
             
             return result;
         }
         
         //연결 가능한 거만 전부 찾기
-        private List<RoomSO> GetCanLinkRooms(List<RectInt> rectList, RoomLinkData roomLinkDataList,
-            List<RoomSO> rooms)
+        private List<RoomSO> GetCanLinkRooms(List<RectInt> rectList, List<RoomLinkData> roomLinkDataList,
+            List<RoomSO> rooms, Random random)
         {
             
             
             
-        }
 
+            return null;
+        }
+        
+        
+        
+        
+        
+        
+        //연결하고 list에 반영후 연결한 데이터 반환
         private RoomDeploymentData SetRectList(List<RectInt> rectList, List<RoomLinkData> roomLinkDataList, RoomSO setRoom)
         {
-            
-            
-            
+
+
+            return default;
         }
         
         #region Helper

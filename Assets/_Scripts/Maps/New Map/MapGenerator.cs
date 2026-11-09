@@ -51,12 +51,14 @@ namespace _Scripts.Maps.New_Map
         private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;
-            
+
+            await UniTask.Yield(ct);
             // 나중에
         }
 
         private async UniTask LoadAssets(MapGenerateSetting mapSetting, CancellationToken ct)
         {
+            await UniTask.Yield(ct);
             // 나중에
         }
 
@@ -64,8 +66,7 @@ namespace _Scripts.Maps.New_Map
         
         private async UniTask InstantiatePrefabs(MapGenerateSetting mapSetting, CancellationToken ct)
         {
-            
-            
+            await UniTask.Yield(ct);
         }
         
         private void End(MapGenerateSetting mapSetting)

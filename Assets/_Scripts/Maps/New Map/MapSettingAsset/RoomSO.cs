@@ -22,7 +22,7 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         
         #region Rect Bake
         
-        private List<RectInt> GetBounds(Vector2Int position)
+        public List<RectInt> GetBounds(Vector2Int position)
         {
             Tilemap tileMap = RoomPrefab.GetTileMap();
             

@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using _Scripts._Core._Debug;
+using _Scripts.Maps.New_Map.MapGenerateData;
 using _Scripts.Maps.New_Map.MapSettingAsset;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -39,9 +41,9 @@ namespace _Scripts.Maps.New_Map
             
             await LoadAssets(mapSetting, ct);
             
-            await MapDeployment(mapSetting, ct);
+            List<RoomDeploymentData> roomDeploymentDataList = await MapDeployment(mapSetting, ct);
             
-            await InstantiatePrefabs(mapSetting, ct);
+            await InstantiatePrefabs(roomDeploymentDataList, ct);
             
             End(mapSetting);
         }
@@ -64,9 +66,31 @@ namespace _Scripts.Maps.New_Map
 
         #endregion
         
-        private async UniTask InstantiatePrefabs(MapGenerateSetting mapSetting, CancellationToken ct)
+        private async UniTask InstantiatePrefabs(List<RoomDeploymentData> roomDataList, CancellationToken ct)
         {
-            await UniTask.Yield(ct);
+            await UniTask.SwitchToMainThread(ct);
+            
+            List<UniTask> taskList = new List<UniTask>();
+            
+            foreach (RoomDeploymentData roomDeploymentData in roomDataList)
+            {
+                var task = InstantiateRoomAsync(roomDeploymentData, ct);
+                taskList.Add(task);
+            }
+
+            await UniTask.WhenAll(taskList);
+        }
+
+        private async UniTask<Room> InstantiateRoomAsync(RoomDeploymentData roomData, CancellationToken ct)
+        {
+            var op = InstantiateAsync(roomData.RoomPrefab, transform, roomData.Position, Quaternion.identity);
+            
+            using (ct.Register(op.Cancel))
+            {
+                await op.ToUniTask(cancellationToken: ct);
+            }
+            
+            return op.Result != null && op.Result.Length > 0 ? op.Result[0] : null;
         }
         
         private void End(MapGenerateSetting mapSetting)

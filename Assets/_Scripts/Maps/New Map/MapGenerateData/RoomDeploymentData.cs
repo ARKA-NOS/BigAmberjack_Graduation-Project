@@ -5,10 +5,10 @@ namespace _Scripts.Maps.New_Map.MapGenerateData
 {
     public struct RoomDeploymentData
     {
-        public RoomSO RoomPrefab;
+        public Room RoomPrefab;
         public Vector2 Position;
 
-        public RoomDeploymentData(RoomSO roomPrefab, Vector2 position)
+        public RoomDeploymentData(Room roomPrefab, Vector2 position)
         {
             RoomPrefab = roomPrefab;
             Position = position;

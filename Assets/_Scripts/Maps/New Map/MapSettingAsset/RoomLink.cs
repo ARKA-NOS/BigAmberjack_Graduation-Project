@@ -45,8 +45,7 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         private Vector2 GetCheckVector()
             => Direction.GetVector2() * LinkSize;
         
-        public static bool CanLink(RoomLink link1, RoomLink link2)
-            => link1.GetCheckVector() - link2.GetCheckVector() == Vector2.zero;
+        
         
     }
 }

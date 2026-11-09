@@ -1,16 +1,16 @@
 ﻿using _Scripts._Core._EventSystem;
+using _Scripts.DataStructure;
 
 namespace _Scripts.Loading
 {
     public static class LoadingEvents
     {
         private static readonly SetLoadingGaugeEvent SetLoadingGauge = new();
-
-        public static object RaiseSetLoadingGauge(string name, float current, float max)
+        
+        public static void RaiseSetLoadingGauge(string name, Gauge gauge)
         {
-            LoadingData loadingData = new(name, current, max);
+            LoadingData loadingData = new(name, gauge);
             EventBus<SetLoadingGaugeEvent>.Raise(SetLoadingGauge.Init(loadingData));
-            return null;
         }
     }
 

@@ -976,6 +976,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ccf70f28b7e467cb8daf377fe07bb93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.MapCreateSystem.Room
+  tilemap: {fileID: 8299694750601168516}
+  links:
+  - {fileID: 753374641183359533}
+  - {fileID: 5003684713938992544}
 --- !u!1 &8589091442945726637
 GameObject:
   m_ObjectHideFlags: 0
@@ -1020,8 +1024,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29fe74cd0534f229fd9b3a3ba33f777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.MapCreateSystem.MapLink
-  direction: 0
-  linkSize: 1
+  <Direction>k__BackingField: 0
+  <LinkSize>k__BackingField: 0
 --- !u!1 &8590296663760223486
 GameObject:
   m_ObjectHideFlags: 0
@@ -1066,5 +1070,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29fe74cd0534f229fd9b3a3ba33f777, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.MapCreateSystem.MapLink
-  direction: 2
-  linkSize: 1
+  <Direction>k__BackingField: 0
+  <LinkSize>k__BackingField: 0

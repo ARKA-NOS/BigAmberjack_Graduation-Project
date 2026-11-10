@@ -11,105 +11,100 @@ using Random = System.Random;
 namespace _Scripts.Maps.New_Map
 {
     /*
-     * 방 배치 규칙
-     * - MapCount : 시작 방(DefaultRoom)을 포함한 전체 방 개수.
-     * - BranchCount : 가지 개수. BranchRange(x ~ y, 양 끝 포함) : 가지 하나의 방 개수.
-     * - 메인 경로 방 개수 = MapCount - 가지 방 개수 합. 메인 경로에는 최소 2개(시작, 끝)를 남긴다.
-     * - 가지는 메인 경로의 끝 방을 뺀 방에서 뻗어 나간다(끝 방은 막다른 방으로 남긴다).
-     * - 두 링크는 RoomLinkData.CanLink면 연결할 수 있고, 연결하면 두 링크의 위치가 겹치게 놓인다.
-     * - 방끼리 타일이 겹치면 배치하지 않는다.
+     * 방 배치 흐름
+     * - 메인 스레드: RoomSO → RoomBakeData 굽기(Tilemap, Transform은 메인 스레드에서만 쓸 수 있다)
+     * - 스레드풀: 연결 그래프(MapGraph) → 배치·백트래킹(MapPlacement) → 경로 검사(MapPathValidation)
+     * - 한 번의 시도가 실패하면 그래프부터 다시 만들고, MaxFullRetries번 모두 실패하면 기본 맵을 쓴다.
+     * - 난수는 System.Random(Seed) 하나만 쓰고 소비 순서를 고정한다: 그래프 → 배치 → (실패 시) 다음 그래프.
      */
     public partial class MapGenerator
     {
-        // 배치 전체를 처음부터 다시 시도하는 최대 횟수
-        private const int MaxDeploymentAttempts = 30;
-        // 경로 하나를 만들 때 방 1개당 허용하는 배치/되돌리기 횟수
-        private const int BacktrackBudgetPerRoom = 10;
         // 링크 위치 차이를 정수 칸으로 볼 때 허용 오차
         private const float LinkAlignEpsilon = 0.01f;
 
         private volatile int deploymentCount;
 
-        private async UniTask<List<RoomDeploymentData>> MapDeployment(MapGenerateSetting mapSetting, CancellationToken ct)
+        private async UniTask<DeploymentResult> MapDeployment(MapGenerateSetting mapSetting, int seed, CancellationToken ct)
         {
-            if(mapSetting == null) return new List<RoomDeploymentData>();
+            if (mapSetting == null) return DeploymentResult.Fallback(0, 0);
 
             await UniTask.SwitchToMainThread(ct);
 
-            // Tilemap, Transform은 메인 스레드에서만 쓸 수 있으므로 스레드에 넘기기 전에 순수 데이터로 굽는다.
-            (RoomBakeData startRoom, List<RoomBakeData> rooms) = await BakeRooms(mapSetting, ct);
-            if (startRoom == null)
-            {
-                FDebug.LogError("[MapGenerator] DefaultRoom을 사용할 수 없어 맵을 배치하지 못했습니다.", mapSetting);
-                return new List<RoomDeploymentData>();
-            }
+            MapSettingData setting = new MapSettingData(mapSetting, seed);
+            (RoomBakeData defaultRoom, List<RoomBakeData> rooms) = await BakeRooms(mapSetting, ct);
 
             deploymentCount = 0;
-            var work = UniTask.RunOnThreadPool(() => MapDeploymentInThread(mapSetting, startRoom, rooms, ct), cancellationToken: ct);
+            int total = setting.TotalRoomCount;
+            var work = UniTask.RunOnThreadPool(() => MapDeploymentInThread(setting, defaultRoom, rooms, ct), cancellationToken: ct);
 
             while (work.Status == UniTaskStatus.Pending)
             {
-                SetLoadingGauge("Map Deployment", deploymentCount, mapSetting.MapCount);
+                SetLoadingGauge("Map Deployment", deploymentCount, total);
                 await UniTask.Yield(ct);
             }
 
-            List<RoomDeploymentData> list = await work;
-            SetLoadingGauge("Map Deployment", mapSetting.MapCount, mapSetting.MapCount);
-            return list;
+            DeploymentResult result = await work;
+            SetLoadingGauge("Map Deployment", total, total);
+            return result;
         }
 
-        // 여기서부터는 스레드풀에서 실행된다. Unity API(Tilemap, Transform, Object 비교 등)를 호출하지 않는다.
-        private List<RoomDeploymentData> MapDeploymentInThread(MapGenerateSetting mapSetting, RoomBakeData startRoom, List<RoomBakeData> rooms, CancellationToken ct)
+        // 여기서부터는 스레드풀에서 실행된다. Unity API(Tilemap, Transform, Object 비교, UnityEngine.Random)를 호출하지 않는다.
+        private DeploymentResult MapDeploymentInThread(MapSettingData setting, RoomBakeData defaultRoom, List<RoomBakeData> rooms, CancellationToken ct)
         {
-            List<RoomDeploymentData> result = new List<RoomDeploymentData>();
+            Random random = new Random(setting.Seed);
+            int backtracks = 0;
 
-            Random random = new Random(mapSetting.Seed);
-
-            int totalCount = Mathf.Max(1, mapSetting.MapCount);
-            List<int> branchLengths = CreateBranchLengths(mapSetting, totalCount, random);
-            int mainCount = totalCount - branchLengths.Sum();
-
-            DeploymentState best = null;
-            for (int attempt = 0; attempt < MaxDeploymentAttempts; attempt++)
+            for (int attempt = 0; attempt < setting.MaxFullRetries; attempt++)
             {
                 ct.ThrowIfCancellationRequested();
 
-                DeploymentState state = new DeploymentState();
-                state.Place(startRoom, Vector2Int.zero);
-                deploymentCount = state.Count;
+                List<MapNode> nodes = BuildGraph(setting, random);
 
-                bool success = BuildPath(state, 0, mainCount - 1, rooms, random, ct)
-                               && BuildBranches(state, branchLengths, rooms, random, ct);
+                // 설정 오류는 그래프를 다시 만들어도 같으므로 바로 기본 맵으로 간다.
+                if (nodes == null || !HasRequiredRooms(nodes, rooms, defaultRoom))
+                    return DeploymentResult.Fallback(backtracks, attempt);
 
-                if (success)
-                {
-                    best = state;
-                    break;
-                }
+                PlacementContext context = new PlacementContext(nodes, BuildPlacementOrder(nodes), rooms, defaultRoom, setting);
+                deploymentCount = 0;
 
-                if (best == null || state.Count > best.Count)
-                    best = state;
+                if (TryPlaceRooms(context, random, ct, ref backtracks) && ValidatePaths(context))
+                    return DeploymentResult.Success(CreateDeploymentData(context), backtracks, attempt);
             }
 
-            if (best.Count < totalCount)
-                FDebug.LogWarning($"[MapGenerator] 방을 {totalCount}개 중 {best.Count}개만 배치했습니다. 방 링크 위치/방향/크기 설정을 확인하세요.");
+            return DeploymentResult.Fallback(backtracks, setting.MaxFullRetries - 1);
+        }
 
-            foreach (PlacedRoom placed in best.Rooms)
-                result.Add(new RoomDeploymentData(placed.Data.Prefab, placed.Position));
+        private static List<RoomDeploymentData> CreateDeploymentData(PlacementContext context)
+        {
+            List<RoomDeploymentData> result = new List<RoomDeploymentData>(context.State.Count);
 
-            deploymentCount = best.Count;
+            for (int k = 0; k < context.State.Count; k++)
+            {
+                MapNode node = context.Nodes[context.Order[k]];
+                PlacedRoom placed = context.State.Rooms[k];
+
+                result.Add(new RoomDeploymentData(
+                    placed.Data.Prefab,
+                    placed.Position,
+                    node.Role,
+                    node.Id,
+                    placed.ParentIndex,
+                    (bool[])placed.UsedLinks.Clone()));
+            }
+
             return result;
         }
 
         #region Bake (Main Thread)
 
-        private async UniTask<(RoomBakeData startRoom, List<RoomBakeData> rooms)> BakeRooms(MapGenerateSetting mapSetting, CancellationToken ct)
+        private async UniTask<(RoomBakeData defaultRoom, List<RoomBakeData> rooms)> BakeRooms(MapGenerateSetting mapSetting, CancellationToken ct)
         {
             List<RoomSO> sources = new List<RoomSO> { mapSetting.DefaultRoom };
             if (mapSetting.Rooms != null)
                 sources.AddRange(mapSetting.Rooms);
 
             // 같은 RoomSO가 여러 번 들어 있어도 한 번만 굽는다. 실패한 방은 null로 기록한다.
+            // Dictionary는 조회에만 쓰고, 결과 목록은 Rooms 순서대로 만든다.
             Dictionary<RoomSO, RoomBakeData> baked = new Dictionary<RoomSO, RoomBakeData>();
             for (int i = 0; i < sources.Count; i++)
             {
@@ -123,7 +118,7 @@ namespace _Scripts.Maps.New_Map
             }
             SetLoadingGauge("Room Bake", sources.Count, sources.Count);
 
-            RoomBakeData startRoom = mapSetting.DefaultRoom != null ? baked[mapSetting.DefaultRoom] : null;
+            RoomBakeData defaultRoom = mapSetting.DefaultRoom != null ? baked[mapSetting.DefaultRoom] : null;
 
             List<RoomBakeData> rooms = new List<RoomBakeData>();
             if (mapSetting.Rooms != null)
@@ -138,7 +133,7 @@ namespace _Scripts.Maps.New_Map
             if (rooms.Count == 0)
                 FDebug.LogWarning("[MapGenerator] 배치할 수 있는 Rooms가 없습니다.", mapSetting);
 
-            return (startRoom, rooms);
+            return (defaultRoom, rooms);
         }
 
         private static RoomBakeData BakeRoom(RoomSO room)
@@ -156,6 +151,14 @@ namespace _Scripts.Maps.New_Map
                 return null;
             }
 
+            // links 배열 순서가 굽기와 마감의 링크 인덱스이므로 빈 칸이 있으면 두 순서가 어긋난다.
+            RoomLink[] roomLinks = prefab.GetRoomLink();
+            if (roomLinks != null && roomLinks.Any(link => link == null))
+            {
+                FDebug.LogWarning($"[MapGenerator] {room.name} : links 배열에 빈 칸이 있어 배치에서 제외합니다.", room);
+                return null;
+            }
+
             // 타일 셀 좌표 기준. 방을 정수 칸 단위로 옮기므로 (0,0) 기준으로 구워 두고 배치할 때 더한다.
             List<RectInt> rects = room.GetBounds(Vector2Int.zero);
             if (rects.Count == 0)
@@ -165,7 +168,7 @@ namespace _Scripts.Maps.New_Map
             }
 
             // GetLinks는 링크 위치에서 넘긴 위치를 빼서 돌려주므로, 프리팹 루트 위치를 넘겨 루트 기준 로컬 좌표를 얻는다.
-            List<RoomLinkData> links = prefab.GetRoomLink() != null
+            List<RoomLinkData> links = roomLinks != null
                 ? room.GetLinks(prefab.transform.position)
                 : new List<RoomLinkData>();
 
@@ -174,185 +177,13 @@ namespace _Scripts.Maps.New_Map
 
         #endregion
 
-        #region Deployment (Thread)
-
-        private static List<int> CreateBranchLengths(MapGenerateSetting mapSetting, int totalCount, Random random)
-        {
-            List<int> lengths = new List<int>();
-
-            Vector2Int range = mapSetting.BranchRange;
-            int min = Mathf.Max(0, Mathf.Min(range.x, range.y));
-            int max = Mathf.Max(0, Mathf.Max(range.x, range.y));
-
-            // 메인 경로에 시작 방과 끝 방은 남겨야 한다.
-            int budget = Mathf.Max(0, totalCount - 2);
-
-            for (int i = 0; i < mapSetting.BranchCount && budget > 0; i++)
-            {
-                int length = Mathf.Min(random.Next(min, max + 1), budget);
-                if (length <= 0) continue;
-
-                lengths.Add(length);
-                budget -= length;
-            }
-
-            return lengths;
-        }
-
-        // anchorIndex 방에서 시작해 방 length개를 한 줄로 잇는다.
-        // 막히면 마지막 방을 빼고 그 앞 방에서 다시 시도한다. 실패하면 만든 데까지 남기고 false를 반환한다.
-        private bool BuildPath(DeploymentState state, int anchorIndex, int length, List<RoomBakeData> rooms, Random random, CancellationToken ct)
-        {
-            int baseCount = state.Count;
-            int budget = length * BacktrackBudgetPerRoom;
-            int tail = anchorIndex;
-
-            while (state.Count - baseCount < length)
-            {
-                ct.ThrowIfCancellationRequested();
-                if (budget-- <= 0) return false;
-
-                if (TryAttachRoom(state, tail, rooms, random))
-                {
-                    tail = state.Count - 1;
-                }
-                else
-                {
-                    // 시작점에서조차 붙일 수 없으면 이 경로는 만들 수 없다.
-                    if (state.Count == baseCount) return false;
-
-                    state.RemoveLast();
-                    tail = state.Count > baseCount ? state.Count - 1 : anchorIndex;
-                }
-
-                deploymentCount = state.Count;
-            }
-
-            return true;
-        }
-
-        private bool BuildBranches(DeploymentState state, List<int> branchLengths, List<RoomBakeData> rooms, Random random, CancellationToken ct)
-        {
-            // 메인 경로의 끝 방은 가지 시작점에서 뺀다.
-            int mainCount = state.Count;
-            List<int> anchors = Enumerable.Range(0, Mathf.Max(1, mainCount - 1)).ToList();
-
-            foreach (int length in branchLengths)
-            {
-                Shuffle(anchors, random);
-
-                bool built = false;
-                foreach (int anchor in anchors)
-                {
-                    int before = state.Count;
-                    if (BuildPath(state, anchor, length, rooms, random, ct))
-                    {
-                        built = true;
-                        break;
-                    }
-
-                    state.RollbackTo(before);
-                    deploymentCount = state.Count;
-                }
-
-                if (!built) return false;
-            }
-
-            return true;
-        }
-
-        // fromIndex 방의 빈 링크에 새 방을 하나 붙인다. 방은 Priority 가중치 순서로 고른다.
-        private bool TryAttachRoom(DeploymentState state, int fromIndex, List<RoomBakeData> rooms, Random random)
-        {
-            PlacedRoom from = state.Rooms[fromIndex];
-
-            List<int> freeLinks = from.GetFreeLinks();
-            if (freeLinks.Count == 0) return false;
-            Shuffle(freeLinks, random);
-
-            foreach (RoomBakeData room in GetWeightedOrder(rooms, random))
-            {
-                foreach (int fromLink in freeLinks)
-                {
-                    RoomLinkData linkA = from.Data.Links[fromLink];
-
-                    List<int> toLinks = room.GetConnectableLinks(linkA);
-                    Shuffle(toLinks, random);
-
-                    foreach (int toLink in toLinks)
-                    {
-                        // 두 링크 위치가 겹치도록 새 방의 위치를 정한다.
-                        if (!TryGetCellOffset(linkA.Position - room.Links[toLink].Position, out Vector2Int offset)) continue;
-
-                        Vector2Int position = from.Position + offset;
-                        if (IsOverlapping(state, room, position)) continue;
-
-                        state.Place(room, position, fromIndex, fromLink, toLink);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool IsOverlapping(DeploymentState state, RoomBakeData room, Vector2Int position)
-        {
-            RectInt bounds = OffsetRect(room.Bounds, position);
-            List<RectInt> rects = null;
-
-            foreach (PlacedRoom placed in state.Rooms)
-            {
-                // 외곽 사각형이 안 겹치면 세부 사각형은 볼 필요가 없다.
-                if (!bounds.Overlaps(placed.WorldBounds)) continue;
-
-                rects ??= room.GetWorldRects(position);
-                if (RectListOverlaps(rects, placed.WorldRects)) return true;
-            }
-
-            return false;
-        }
-
-        // Priority를 가중치로 한 비복원 추출 순서. 가중치가 남지 않으면 나머지는 균등하게 섞는다.
-        private static List<RoomBakeData> GetWeightedOrder(List<RoomBakeData> rooms, Random random)
-        {
-            List<RoomBakeData> remain = new List<RoomBakeData>(rooms);
-            List<RoomBakeData> order = new List<RoomBakeData>(rooms.Count);
-
-            while (remain.Count > 0)
-            {
-                float total = remain.Sum(r => Mathf.Max(0f, r.Priority));
-                int pick = random.Next(remain.Count);
-
-                if (total > 0f)
-                {
-                    double roll = random.NextDouble() * total;
-                    for (int i = 0; i < remain.Count; i++)
-                    {
-                        float weight = Mathf.Max(0f, remain[i].Priority);
-                        if (weight <= 0f) continue;
-
-                        pick = i;
-                        roll -= weight;
-                        if (roll < 0) break;
-                    }
-                }
-
-                order.Add(remain[pick]);
-                remain.RemoveAt(pick);
-            }
-
-            return order;
-        }
-
-        #endregion
-
         #region Data
 
-        // 메인 스레드에서 구운 방 정보. 스레드에서는 이 데이터만 읽는다.
+        // 메인 스레드에서 구운 방 정보. 스레드에서는 이 데이터만 읽는다. Links 순서는 Room.links와 같다.
         private sealed class RoomBakeData
         {
             public readonly Room Prefab;
+            public readonly RoomRole Role;
             public readonly float Priority;
             public readonly List<RectInt> Rects;
             public readonly RectInt Bounds;
@@ -361,6 +192,7 @@ namespace _Scripts.Maps.New_Map
             public RoomBakeData(RoomSO room, Room prefab, List<RectInt> rects, List<RoomLinkData> links)
             {
                 Prefab = prefab;
+                Role = room.Role;
                 Priority = room.Priority;
                 Rects = rects;
                 Links = links;
@@ -386,18 +218,20 @@ namespace _Scripts.Maps.New_Map
         {
             public readonly RoomBakeData Data;
             public readonly Vector2Int Position;
-            public readonly int ParentIndex;
-            public readonly int ParentLink;
-            public readonly bool[] UsedLinks;
+            public readonly int ParentIndex;   // 배치 목록 안의 부모 인덱스, 시작방은 -1
+            public readonly int ParentLink;    // 부모에서 이 방과 이어진 링크
+            public readonly int InLink;        // 이 방에서 부모와 이어진 링크
+            public readonly bool[] UsedLinks;  // 들어오는 링크와 자식에 쓴 링크가 true
             public readonly List<RectInt> WorldRects;
             public readonly RectInt WorldBounds;
 
-            public PlacedRoom(RoomBakeData data, Vector2Int position, int parentIndex, int parentLink)
+            public PlacedRoom(RoomBakeData data, Vector2Int position, int parentIndex, int parentLink, int inLink)
             {
                 Data = data;
                 Position = position;
                 ParentIndex = parentIndex;
                 ParentLink = parentLink;
+                InLink = inLink;
                 UsedLinks = new bool[data.Links.Count];
                 WorldRects = data.GetWorldRects(position);
                 WorldBounds = OffsetRect(data.Bounds, position);
@@ -421,11 +255,11 @@ namespace _Scripts.Maps.New_Map
             public readonly List<PlacedRoom> Rooms = new List<PlacedRoom>();
             public int Count => Rooms.Count;
 
-            public void Place(RoomBakeData data, Vector2Int position, int parentIndex = -1, int parentLink = -1, int selfLink = -1)
+            public void Place(RoomBakeData data, Vector2Int position, int parentIndex = -1, int parentLink = -1, int inLink = -1)
             {
-                PlacedRoom placed = new PlacedRoom(data, position, parentIndex, parentLink);
-                if (selfLink >= 0)
-                    placed.UsedLinks[selfLink] = true;
+                PlacedRoom placed = new PlacedRoom(data, position, parentIndex, parentLink, inLink);
+                if (inLink >= 0)
+                    placed.UsedLinks[inLink] = true;
                 if (parentIndex >= 0)
                     Rooms[parentIndex].UsedLinks[parentLink] = true;
 
@@ -440,12 +274,29 @@ namespace _Scripts.Maps.New_Map
 
                 Rooms.RemoveAt(Rooms.Count - 1);
             }
+        }
 
-            public void RollbackTo(int count)
+        // 스레드 작업 결과. 실패하면 IsFallback이 true이고 Rooms는 비어 있다.
+        private sealed class DeploymentResult
+        {
+            public readonly List<RoomDeploymentData> Rooms;
+            public readonly bool IsFallback;
+            public readonly int Backtracks;
+            public readonly int FullRetries;
+
+            private DeploymentResult(List<RoomDeploymentData> rooms, bool isFallback, int backtracks, int fullRetries)
             {
-                while (Rooms.Count > count)
-                    RemoveLast();
+                Rooms = rooms;
+                IsFallback = isFallback;
+                Backtracks = backtracks;
+                FullRetries = fullRetries;
             }
+
+            public static DeploymentResult Success(List<RoomDeploymentData> rooms, int backtracks, int fullRetries)
+                => new DeploymentResult(rooms, false, backtracks, fullRetries);
+
+            public static DeploymentResult Fallback(int backtracks, int fullRetries)
+                => new DeploymentResult(new List<RoomDeploymentData>(), true, backtracks, fullRetries);
         }
 
         #endregion
@@ -484,7 +335,40 @@ namespace _Scripts.Maps.New_Map
             }
         }
 
-        #endregion
+        // 가중치를 쓴 비복원 추출 순서. 가중치가 모두 같으면 균등 셔플과 같고, 가중치가 남지 않으면 나머지는 균등하게 섞는다.
+        private static List<T> GetWeightedOrder<T>(List<T> items, System.Func<T, float> getWeight, Random random)
+        {
+            List<T> remain = new List<T>(items);
+            List<T> order = new List<T>(items.Count);
 
+            float total = remain.Sum(item => Mathf.Max(0f, getWeight(item)));
+
+            while (remain.Count > 0)
+            {
+                int pick = random.Next(remain.Count);
+
+                if (total > 0f)
+                {
+                    double roll = random.NextDouble() * total;
+                    for (int i = 0; i < remain.Count; i++)
+                    {
+                        float weight = Mathf.Max(0f, getWeight(remain[i]));
+                        if (weight <= 0f) continue;
+
+                        pick = i;
+                        roll -= weight;
+                        if (roll < 0) break;
+                    }
+                }
+
+                total -= Mathf.Max(0f, getWeight(remain[pick]));
+                order.Add(remain[pick]);
+                remain.RemoveAt(pick);
+            }
+
+            return order;
+        }
+
+        #endregion
     }
 }

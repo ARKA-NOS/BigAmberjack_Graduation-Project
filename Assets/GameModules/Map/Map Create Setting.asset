@@ -13,13 +13,21 @@ MonoBehaviour:
   m_Name: Map Create Setting
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapGenerateSetting
   <Seed>k__BackingField: 3
-  <DefaultRoom>k__BackingField: {fileID: 11400000, guid: 42a181f8fdbeaf3488a3667ee7e2ce6e, type: 2}
+  <DefaultRoom>k__BackingField: {fileID: 11400000, guid: 128154f208e69bb4885a4c19dcd750fe, type: 2}
   <Rooms>k__BackingField:
   - {fileID: 11400000, guid: 128154f208e69bb4885a4c19dcd750fe, type: 2}
   - {fileID: 11400000, guid: 107ff463e93bea041a98f7f17d1e2059, type: 2}
   - {fileID: 11400000, guid: 42a181f8fdbeaf3488a3667ee7e2ce6e, type: 2}
   - {fileID: 11400000, guid: c1da718e142755a4f800bdc0fe2f9256, type: 2}
   - {fileID: 11400000, guid: 9ceadb61fe9decd45a024e25262891ab, type: 2}
-  <MapCount>k__BackingField: 30
-  <BranchRange>k__BackingField: {x: 2, y: 29}
-  <BranchCount>k__BackingField: 2
+  - {fileID: 11400000, guid: a52927a1ecd60344b9b66c41db98a694, type: 2}
+  - {fileID: 11400000, guid: 969e28dc0e403aa47ace05a39c4db305, type: 2}
+  <MainCombatCount>k__BackingField: 5
+  <BranchAnchorRange>k__BackingField: {x: 2, y: 4}
+  <ShopBranchCount>k__BackingField: 1
+  <RewardBranchCount>k__BackingField: 1
+  <RewardBranchCombatCount>k__BackingField: 1
+  <MaxPlacementSteps>k__BackingField: 4000
+  <MaxFullRetries>k__BackingField: 5
+  <MapBounds>k__BackingField: {x: 100, y: 100}
+  <FallbackMapPrefab>k__BackingField: {fileID: 6811135894836302115, guid: 26fa5427c1758f64b90d4c0f15857bd9, type: 3}

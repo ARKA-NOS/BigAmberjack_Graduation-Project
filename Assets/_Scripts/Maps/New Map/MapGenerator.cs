@@ -33,8 +33,7 @@ namespace _Scripts.Maps.New_Map
             
             GenerateMapUniTask(mapSetting).Forget();
         }
-
-        // 
+        
         private async UniTaskVoid GenerateMapUniTask(MapGenerateSetting mapSetting)
         {
             CancellationToken ct = this.GetCancellationTokenOnDestroy();
@@ -49,9 +48,9 @@ namespace _Scripts.Maps.New_Map
             
             End(mapSetting);
         }
-
+        
         #region Addressable
-
+        
         private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;
@@ -65,7 +64,7 @@ namespace _Scripts.Maps.New_Map
             await UniTask.Yield(ct);
             // 나중에
         }
-
+        
         #endregion
         
         private async UniTask InstantiatePrefabs(List<RoomDeploymentData> roomDataList, CancellationToken ct)
@@ -73,7 +72,7 @@ namespace _Scripts.Maps.New_Map
             await UniTask.SwitchToMainThread(ct);
             
             List<UniTask> taskList = new List<UniTask>();
-
+            
             SetLoadingGauge("InstantiateRoom", 0, 100);
             
             foreach (RoomDeploymentData roomDeploymentData in roomDataList)
@@ -81,14 +80,14 @@ namespace _Scripts.Maps.New_Map
                 var task = InstantiateRoomAsync(roomDeploymentData, ct);
                 taskList.Add(task);
             }
-
+            
             await UniTask.WhenAll(taskList);
             
             await UniTask.SwitchToMainThread(ct);
             
             SetLoadingGauge("InstantiateRoom", 100, 100);
         }
-
+        
         private async UniTask<Room> InstantiateRoomAsync(RoomDeploymentData roomData, CancellationToken ct)
         {
             var op = InstantiateAsync(roomData.RoomPrefab, transform, roomData.Position, Quaternion.identity);
@@ -107,7 +106,7 @@ namespace _Scripts.Maps.New_Map
         {
             prevMapSetting = mapSetting;
         }
-
+        
         #endregion
         
         private static void SetLoadingGauge(string text, int current, int max)

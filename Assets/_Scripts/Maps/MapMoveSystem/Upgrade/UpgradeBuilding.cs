@@ -9,7 +9,7 @@ namespace _Scripts.Maps.MapMoveSystem.Upgrade
 {
     public class UpgradeBuilding : AbstractInteractObject
     {
-        [SerializeField] private TestUpgradeUI testUI;
+        [SerializeField] private UpgradeTreeWindow testUI;
         
         [SerializeField] private UpgradeTreeSO treeData;
         

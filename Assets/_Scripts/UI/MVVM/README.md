@@ -1,6 +1,6 @@
 # UI MVVM 가이드
 
-게임 데이터를 화면에 보여주는 새 UI는 이 폴더(`_Scripts/UI/MVVM`, 네임스페이스 `_Scripts.UI.MVVM`)의 MVVM 구조로 만든다.
+게임 데이터를 화면에 보여주는 새 UI는 이 폴더(`_Scripts/UI/MVVM`)의 MVVM 구조로 만든다. 코어는 기능별 하위 폴더로 나뉘고 네임스페이스는 폴더를 따른다(`_Scripts.UI.MVVM.Observables` 등).
 기존 `_Scripts/UI/BindSystem`은 레거시다. 이미 그걸 쓰는 UI만 남겨 두고, 새 UI에는 쓰지 않는다.
 
 ## 구조
@@ -24,16 +24,35 @@
 
 ## 코어 구성 요소
 
-| 타입 | 설명 |
-|---|---|
-| `Observable<T>` / `IReadOnlyObservable<T>` | 값이 바뀔 때만 알린다. `Subscribe`는 기본적으로 구독 즉시 현재 값으로 한 번 호출한다. `(prev, current)` 오버로드, `SetWithoutNotify`, `ForceNotify` |
-| `ObservableList<T>` / `IReadOnlyObservableList<T>` | `ListChange<T>`(Add/Remove/Replace/Reset)를 보낸다. 구독 즉시 Reset을 한 번 보낸다. `SetAll`, `NotifyItemChanged` |
-| `DisposableBag`, `AddTo` | 구독 핸들을 모아 한 번에 해제한다 |
-| `ViewModelBase<TModel>` | SO ViewModel 베이스. `Connect(model)` / `Disconnect()`, `Connected` 상태, `CreateRuntime` / `ReleaseRuntime` |
-| `ITickableViewModel` | 이벤트 없이 매 프레임 바뀌는 값(쿨타임)을 `Tick()`에서 읽는다. 연결되면 UIManager가 매 프레임 호출한다 |
-| `ViewBase<TViewModel>` | View 베이스. OnEnable에서 `OnBind`, OnDisable에서 구독 해제. `SetViewModel`로 복제본 주입 |
-| `ConnectorBase` | 첫 Start에서 `Connect()`, 이후 OnEnable/OnDisable마다 연결/해제. `Reconnect()` |
-| `UGuiBindingExtensions` | `BindText`, `BindFill`, `BindActive`, `BindVisible`(CanvasGroup), `BindClick` |
+| 폴더 (`_Scripts.UI.MVVM.*`) | 타입 | 설명 |
+|---|---|---|
+| `Observables` | `Observable<T>` / `IReadOnlyObservable<T>` | 값이 바뀔 때만 알린다. `Subscribe`는 기본적으로 구독 즉시 현재 값으로 한 번 호출한다. `(prev, current)` 오버로드, `SetWithoutNotify`, `ForceNotify` |
+| `Observables` | `ObservableList<T>` / `IReadOnlyObservableList<T>`, `ListChange<T>` | `ListChange<T>`(Add/Remove/Replace/Reset)를 보낸다. 구독 즉시 Reset을 한 번 보낸다. `SetAll`, `NotifyItemChanged` |
+| `Disposables` | `DisposableBag`, `AddTo`, `Disposable` | 구독 핸들을 모아 한 번에 해제한다 |
+| `ViewModels` | `ViewModelBase<TModel>` | SO ViewModel 베이스. `Connect(model)` / `Disconnect()`, `Connected` 상태, `CreateRuntime` / `ReleaseRuntime` |
+| `Views` | `ViewBase<TViewModel>` | View 베이스. OnEnable에서 `OnBind`, OnDisable에서 구독 해제. `SetViewModel`로 복제본 주입 |
+| `Connectors` | `ConnectorBase` | 첫 Start에서 `Connect()`, 이후 OnEnable/OnDisable마다 연결/해제. `Reconnect()` |
+| `Ticking` | `ITickableViewModel`, `IUITicker`, `NullUITicker` | 이벤트 없이 매 프레임 바뀌는 값(쿨타임)을 `Tick()`에서 읽는다. 연결되면 UIManager(`IUITicker`)가 매 프레임 호출한다 |
+| `Bindings` | `UGuiBindingExtensions` | `BindText`, `BindFill`, `BindActive`, `BindVisible`(CanvasGroup), `BindClick` |
+
+자주 쓰는 using:
+
+```csharp
+// ViewModel
+using _Scripts.UI.MVVM.Observables;
+using _Scripts.UI.MVVM.ViewModels;
+using _Scripts.UI.MVVM.Ticking;     // ITickableViewModel을 구현할 때
+
+// View
+using _Scripts.UI.MVVM.Views;
+using _Scripts.UI.MVVM.Bindings;
+using _Scripts.UI.MVVM.Disposables; // AddTo
+using _Scripts.UI.MVVM.Observables; // ListChange 등을 직접 쓸 때
+
+// Connector
+using _Scripts.UI.MVVM.Connectors;
+using _Scripts.UI.MVVM.ViewModels;  // CreateRuntime을 쓸 때
+```
 
 ## 새 UI 만드는 순서
 
@@ -337,6 +356,47 @@ public class EnemyHealthConnector : ConnectorBase
     }
 }
 ```
+
+## 예시 6. 창 (열 때 Model이 정해지는 경우)
+
+테크트리처럼 `UIManagerEvents.OpenCloseWindow(window, data)`로 열 때 Model이 정해지는 창은 창(`AbstractWindow`)이 Connector 역할을 한다.
+인스펙터 설정이 없는 ViewModel이면 에셋 없이 `CreateRuntime<T>()`로 창마다 하나 만들어 자식 View에 넣는다. 실제 코드는 `UI/UpgradeUI/UpgradeTreeWindow.cs`.
+
+```csharp
+public class UpgradeTreeWindow : FadeWindow
+{
+    private UpgradeTreeViewModel _viewModel;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _viewModel = ViewModelBase.CreateRuntime<UpgradeTreeViewModel>();
+        foreach (ViewBase<UpgradeTreeViewModel> view in GetComponentsInChildren<ViewBase<UpgradeTreeViewModel>>(true))
+            view.SetViewModel(_viewModel);
+    }
+
+    protected virtual void OnDestroy() => _viewModel.ReleaseRuntime();
+
+    public override void Open(object data)
+    {
+        base.Open(data);
+        if (data is UpgradeTreeSO treeSo)
+            _viewModel.Connect(ServiceLocator.Get<IUpgradeManager>().GetUpgradeTree(treeSo.TreeName));
+    }
+}
+```
+
+노드 버튼처럼 같은 View가 여러 개면 ViewModel이 항목마다 표시 데이터(`UpgradeNodeItem`: 상태 Observable + Action)를 만들어 주고, 각 View는 자기 항목만 구독한다.
+
+## 레거시 Binder에서 옮기기
+
+기존 `AbstractUIBinder<T>` / `AbstractUIViewModel<T>` UI를 옮길 때 프리팹·씬 연결을 유지하는 방법. 미니맵(`UI/Minimap`)이 이렇게 옮겨졌다.
+
+1. 스크립트 이름을 바꿀 때는 `.cs`와 `.cs.meta`를 **같이** 바꾼다. GUID가 그대로라 프리팹의 컴포넌트가 끊기지 않는다(클래스 이름 = 파일 이름).
+2. Binder → View: `ViewBase`의 `viewModel` 필드에 `[FormerlySerializedAs("bindData")]`가 있어서 기존 ViewModel 연결이 자동으로 옮겨진다.
+3. 그 밖에 이름을 바꾼 필드는 `[FormerlySerializedAs("예전이름")]`을 붙인다.
+4. ViewModel 클래스를 `ViewModelBase<TModel>`로 바꿔도 같은 파일(GUID)이면 기존 에셋을 그대로 쓴다. 새로 생긴 직렬화 필드는 C# 기본값으로 채워진다.
+5. 데이터를 넣던 쪽(Presenter, 모듈)에서 `viewModel.Bind(...)`를 지우고 Connector로 바꾼다.
 
 ## 주의
 

@@ -48,7 +48,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **입력** — `Assets/Settings/Controls.cs`는 Input Actions 에셋에서 자동 생성된다. `PlayerInputSo`(`Lrw/Script/Agent/Players/PlayerInputSo.cs`, 에셋은 `Assets/GameModules/PlayerInputSo.asset`)가 `Controls.IPlayerActions`를 구현하고 C# 이벤트를 노출한다.
 
-**UI(MVVM)** — 게임 데이터를 화면에 보여주는 새 UI는 `_Scripts/UI/MVVM`(네임스페이스 `_Scripts.UI.MVVM`)의 MVVM 구조로 만든다. 자세한 규칙과 예시 코드는 `Assets/_Scripts/UI/MVVM/README.md`를 따른다.
+**UI(MVVM)** — 게임 데이터를 화면에 보여주는 새 UI는 `_Scripts/UI/MVVM`의 MVVM 구조로 만든다. 코어는 기능별 하위 폴더(`Observables`, `Disposables`, `ViewModels`, `Views`, `Connectors`, `Ticking`, `Bindings`)로 나뉘고 네임스페이스는 폴더를 따른다(`_Scripts.UI.MVVM.Observables` 등). 자세한 규칙과 예시 코드는 `Assets/_Scripts/UI/MVVM/README.md`를 따른다.
 - 의존 방향은 **View → ViewModel → Model 인터페이스**다. Model(모듈, 매니저)은 ViewModel·View·UI 네임스페이스를 참조하지 않는다. ViewModel은 View와 `UnityEngine.UI`/TMP를 참조하지 않는다. View는 Model을 참조하지 않는다.
 - `ViewModelBase<TModel>`(ScriptableObject 에셋) — Model 인터페이스를 `OnConnect`에서 구독하고 `Observable<T>`/`ObservableList<T>`로 값을 노출한다(속성마다 Observable, 한 번에 바뀌는 묶음은 `Observable<XxxData>` 허용). `OnDisconnect`에서 구독 해제, `ResetState`에서 기본값으로 되돌린다. 메뉴는 `UI/MVVM/Xxx View Model`.
 - `ViewBase<TViewModel>`(MonoBehaviour) — 같은 ViewModel 에셋을 연결하고 `OnBind`에서 구독해 `.AddTo(Disposables)`로 등록한다. OnEnable에 구독, OnDisable에 해제되며 구독 즉시 현재 값으로 그려진다. 지연 바·트윈 같은 연출은 View가 맡는다.

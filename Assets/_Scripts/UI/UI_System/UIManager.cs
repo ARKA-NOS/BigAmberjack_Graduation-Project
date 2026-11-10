@@ -4,7 +4,7 @@ using _Scripts._Core._EventSystem;
 using _Scripts._Core._Manager;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players;
-using _Scripts.UI.MVVM;
+using _Scripts.UI.MVVM.Ticking;
 using UnityEngine;
 
 namespace _Scripts.UI.UI_System

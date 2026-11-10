@@ -28,7 +28,7 @@ namespace _Scripts.Agent.Enemies
         [Header("Death")]
         [Tooltip("선택 사항. 사망 시 Base Layer.Death 상태를 재생합니다.")]
         [SerializeField] private Animator deathAnimator;
-        [Tooltip("마지막 피격 연출이 끝나고 사망 애니메이션을 시작한 뒤 제거까지의 시간.")]
+        [Tooltip("HP가 0이 되어 사망 애니메이션을 시작한 뒤 제거까지의 시간. 피격 반응이 더 길면 반응 종료까지 유지합니다.")]
         [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
 
         private Rigidbody2D _rigidbody;
@@ -42,6 +42,7 @@ namespace _Scripts.Agent.Enemies
         private StateMachine<EnemyStateType> _stateMachine;
         private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? _pendingHit;
         private bool _deathFinalized;
+        private float _deathStartedAt;
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
@@ -53,6 +54,8 @@ namespace _Scripts.Agent.Enemies
         // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
         // 사망 타격도 포함하며 크리티컬 여부와 피격 위치/방향을 보존합니다.
         public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
+        // HP가 0 이하가 된 프레임에 사망 애니메이션과 함께 한 번 전달합니다.
+        public event Action DeathStarted;
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
         internal float MoveSpeed => moveSpeed;
@@ -286,6 +289,7 @@ namespace _Scripts.Agent.Enemies
             // 외부 콜백이나 남은 Animation Event보다 먼저 사망 상태를 확정합니다.
             IsDead = true;
             IsPlayingDeathReaction = true;
+            _deathStartedAt = Time.time;
             _skills?.StopAttack();
             StopAllCoroutines();
             StopHorizontalMovement();
@@ -298,6 +302,15 @@ namespace _Scripts.Agent.Enemies
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
                 _hitReaction?.React(hit.Value.damage, hit.Value.direction);
             }
+            if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
+                deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
+            {
+                deathAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+                deathAnimator.Play(DeathStateHash, 0, 0f);
+                // 타격이 Animator 평가 뒤에 들어온 프레임에도 사망 첫 장면을 즉시 보여줍니다.
+                deathAnimator.Update(0f);
+            }
+            DeathStarted?.Invoke();
             if (isActiveAndEnabled) StartCoroutine(FinishDeathAfterReaction());
             else FinishDeath();
         }
@@ -321,13 +334,8 @@ namespace _Scripts.Agent.Enemies
                 collider.enabled = false;
 
             enabled = false;
-            if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
-                deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
-            {
-                deathAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                deathAnimator.Play(DeathStateHash, 0, 0f);
-            }
-            Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay));
+            // 사망 애니메이션 시작부터 시간을 세되, 피격 반응이 끝나기 전에는 제거하지 않습니다.
+            Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
             if (_death != null) _death.ReportDeath();
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
             if (_currencyReward != null) _currencyReward.GrantDeathReward();

@@ -50,7 +50,8 @@ namespace _Scripts.Agent.Enemies
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         public bool IsDead { get; private set; }
         public bool IsPlayingDeathReaction { get; private set; }
-        // 실제 HP가 줄어든 타격만 전달합니다. 치명타격도 포함하며, 피격 위치/방향을 보존합니다.
+        // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
+        // 사망 타격도 포함하며 크리티컬 여부와 피격 위치/방향을 보존합니다.
         public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
@@ -258,7 +259,13 @@ namespace _Scripts.Agent.Enemies
         private void HandleHealthChanged(float current, float delta, float max)
         {
             var hit = delta < 0f ? _pendingHit : null;
-            if (hit.HasValue) _pendingHit = null;
+            if (hit.HasValue)
+            {
+                _pendingHit = null;
+                var appliedHit = hit.Value;
+                appliedHit.damage.DamageAmount = -delta;
+                hit = appliedHit;
+            }
             if (current <= 0f)
                 Die(hit);
             else if (hit.HasValue)

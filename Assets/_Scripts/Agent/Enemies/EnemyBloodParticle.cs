@@ -10,7 +10,7 @@ namespace _Scripts.Agent.Enemies
         [Header("Spray (World Units)")]
         [SerializeField] private Vector2Int particleCount = new Vector2Int(14, 20);
         [SerializeField] private Vector2 speedRange = new Vector2(2.8f, 5.2f);
-        [SerializeField, Range(0f, 170f)] private float spreadAngle = 105f;
+        [SerializeField, Range(0f, 360f)] private float spreadAngle = 105f;
         [SerializeField, Min(0f)] private float upwardSpeed = 1.2f;
         [SerializeField] private Vector2 sizeRange = new Vector2(0.09f, 0.22f);
         [SerializeField, Min(0f)] private float gravityScale = 1.4f;

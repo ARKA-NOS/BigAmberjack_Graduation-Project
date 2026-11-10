@@ -49,6 +49,10 @@ public static class VerifyHitCameraShake
             var data = new SerializedObject(module);
             Check(data.FindProperty("_impulseChannel").intValue == 1, "Wrong channel: " + path);
             Check(data.FindProperty("_criticalStrength").floatValue > data.FindProperty("_normalStrength").floatValue, "Critical not stronger: " + path);
+            Check(Mathf.Approximately(data.FindProperty("_directionJitterDegrees").floatValue, 35f), "Direction jitter missing: " + path);
+            Check(Mathf.Approximately(data.FindProperty("_lethalStrengthMultiplier").floatValue, 2f) &&
+                Mathf.Abs(data.FindProperty("_lethalDurationMultiplier").floatValue - 1.7f) < 0.001f,
+                "Lethal shake settings missing: " + path);
         }
         var listener = AssetDatabase.LoadAssetAtPath<GameObject>(CameraPath).GetComponent<CinemachineImpulseListener>();
         Check(listener != null && listener.enabled && listener.Use2DDistance && (listener.ChannelMask & 1) != 0, "Player camera listener mismatch");
@@ -89,6 +93,41 @@ public static class VerifyHitCameraShake
             var health = enemy.GetModule<INewHealthModule>();
             float initialHealth = health.CurrentHealth;
 
+            // 같은 방향의 타격을 반복해도 방향이 달라지고 설정 각도를 넘지 않는지 확인합니다.
+            var previousRandomState = UnityEngine.Random.state;
+            var angles = new List<float>();
+            try
+            {
+                UnityEngine.Random.InitState(20261111);
+                for (int i = 0; i < 12; i++)
+                {
+                    module.PlayShake(false, Vector2.right);
+                    Check(Count == 1, "Direction preview should emit one impulse");
+                    var signal = Events[0].SignalSource;
+                    signal.GetSignal(signal.SignalDuration * 0.5f, out var offset, out _);
+                    float angle = Vector2.SignedAngle(Vector2.right, offset);
+                    Check(Mathf.Abs(angle) <= 35.01f && offset.magnitude > 0.1f,
+                        "Random direction escaped configured angle or changed strength");
+                    angles.Add(angle);
+                    CinemachineCore.CurrentTimeOverride += 1f;
+                    Sample(Vector3.zero);
+                    Check(Count == 0, "Direction preview impulse did not expire");
+                }
+                Check(angles.Min() < -15f && angles.Max() > 15f && angles.Max() - angles.Min() > 35f,
+                    "Repeated hits still shake in nearly the same direction");
+                typeof(EnemyHitCameraShakeModule).GetField("_directionJitterDegrees", Private).SetValue(module, 0f);
+                module.PlayShake(false, Vector2.right);
+                var fixedSignal = Events[0].SignalSource;
+                fixedSignal.GetSignal(fixedSignal.SignalDuration * 0.5f, out var fixedOffset, out _);
+                Check(Mathf.Abs(Vector2.SignedAngle(Vector2.right, fixedOffset)) < 0.001f,
+                    "Zero jitter did not preserve the original direction");
+                CinemachineCore.CurrentTimeOverride += 1f;
+                Sample(Vector3.zero);
+                typeof(EnemyHitCameraShakeModule).GetField("_directionJitterDegrees", Private).SetValue(module, 35f);
+            }
+            finally { UnityEngine.Random.state = previousRandomState; }
+            CinemachineCore.CurrentTimeOverride = 100f;
+
             target = new GameObject("Stationary camera target");
             cameraRoot = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(CameraPath));
             var camera = cameraRoot.GetComponent<CinemachineCamera>();
@@ -100,7 +139,7 @@ public static class VerifyHitCameraShake
             float normalDuration = Events[0].SignalSource.SignalDuration;
             CinemachineCore.CurrentTimeOverride = 100f + normalDuration * 0.5f;
             var normal = Sample(Vector3.zero);
-            Check(normal.magnitude > 0.02f && normal.magnitude < 0.1f, "Normal signal outside weak range");
+            Check(normal.magnitude > 0.1f && normal.magnitude < 0.13f, "Normal signal outside configured range");
             camera.InternalUpdateCameraState(Vector3.up, 1f / 60f);
             float actualCameraOffset = camera.State.PositionCorrection.magnitude;
             Check(actualCameraOffset > 0.02f, "Existing PlayerCam listener did not apply the hit impulse");
@@ -121,6 +160,17 @@ public static class VerifyHitCameraShake
             CinemachineCore.CurrentTimeOverride = 102f;
             Sample(Vector3.zero);
 
+            module.PlayShake(false, Vector2.right, true);
+            Check(Count == 1, "Normal lethal preview missing");
+            float normalLethalDuration = Events[0].SignalSource.SignalDuration;
+            CinemachineCore.CurrentTimeOverride = 102f + normalLethalDuration * 0.5f;
+            float normalLethal = Sample(Vector3.zero).magnitude;
+            Check(Mathf.Abs(normalLethal / normal.magnitude - 2f) < 0.01f &&
+                Mathf.Abs(normalLethalDuration / normalDuration - 1.7f) < 0.01f,
+                "Normal lethal shake did not increase strength and duration");
+            CinemachineCore.CurrentTimeOverride = 102.8f;
+            Sample(Vector3.zero);
+
             Hit(enemy, 0f); Hit(enemy, -1f); Hit(enemy, float.NaN);
             health.ApplyHeal(1f);
             Check(Count == 0, "Invalid damage or healing caused a shake");
@@ -131,32 +181,41 @@ public static class VerifyHitCameraShake
             module.Initialize(enemy);
             Hit(enemy, 1f);
             Check(Count == 1, "Reinitialize / re-enable duplicated subscriptions");
-            CinemachineCore.CurrentTimeOverride = 103f;
+            CinemachineCore.CurrentTimeOverride = 103.5f;
             Sample(Vector3.zero);
 
+            health.ApplyHeal(100f);
+            Check(!enemy.IsDead, "Zero-strength test needs a surviving enemy");
             typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0f);
             Hit(enemy, 1f);
             Check(Count == 0, "Zero strength emitted an impulse");
-            typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0.06f);
+            typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0.12f);
             module.PlayShake(false, new Vector2(float.NaN, 0f));
             Check(Count == 1, "Invalid direction did not fall back safely");
-            CinemachineCore.CurrentTimeOverride = 103.06f;
+            CinemachineCore.CurrentTimeOverride = 103.56f;
             Check(Sample(Vector3.zero).magnitude > 0.02f, "Fallback direction produced invalid signal");
-            CinemachineCore.CurrentTimeOverride = 104f;
+            CinemachineCore.CurrentTimeOverride = 104.5f;
             Sample(Vector3.zero);
 
             Hit(enemy, 99999f, true);
             Check(enemy.IsDead && Count == 1, "Lethal hit missing or duplicated");
+            float criticalLethalDuration = Events[0].SignalSource.SignalDuration;
+            CinemachineCore.CurrentTimeOverride = 104.5f + criticalLethalDuration * 0.5f;
+            float criticalLethal = Sample(Vector3.zero).magnitude;
+            Check(Mathf.Abs(criticalLethal / critical - 2f) < 0.01f &&
+                Mathf.Abs(criticalLethalDuration / criticalDuration - 1.7f) < 0.01f,
+                "Actual critical lethal hit did not increase strength and duration");
             Object.Destroy(root);
             await Awaitable.NextFrameAsync();
-            CinemachineCore.CurrentTimeOverride = 104.09f;
-            Check(root == null && Sample(Vector3.zero).magnitude > 0.04f, "Enemy destruction cut off lethal shake");
-            CinemachineCore.CurrentTimeOverride = 105f;
+            Check(root == null && Sample(Vector3.zero).magnitude > 0.1f, "Enemy destruction cut off lethal shake");
+            CinemachineCore.CurrentTimeOverride = 105.5f;
             Check(Sample(Vector3.zero).sqrMagnitude == 0 && Count == 0, "Lethal impulse leaked");
             camera.InternalUpdateCameraState(Vector3.up, 1f / 60f);
             Check(camera.State.PositionCorrection.sqrMagnitude < 0.000001f, "Camera did not settle after shake");
             return new { passed = true, normalPeakSample = normal.magnitude, criticalPeakSample = critical,
-                normalDuration, criticalDuration, actualCameraOffset, distanceFalloffSample = partial,
+                normalDuration, criticalDuration, normalLethal, normalLethalDuration,
+                criticalLethal, criticalLethalDuration, actualCameraOffset, distanceFalloffSample = partial,
+                randomDirectionMin = angles.Min(), randomDirectionMax = angles.Max(),
                 lethalSurvivesEnemy = true, disabledAndZeroStrengthSuppressed = true, noDuplicateSubscriptions = true,
                 invalidDamageAndHealingSuppressed = true, cameraSettled = true };
         }

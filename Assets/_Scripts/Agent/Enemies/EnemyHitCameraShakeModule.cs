@@ -11,17 +11,25 @@ namespace _Scripts.Agent.Enemies
     {
         [Header("Normal Hit")]
         [Tooltip("흔들림 신호의 월드 유닛 배율. 카메라 Listener의 Gain이 최종 강도에 곱해집니다. 0이면 끕니다.")]
-        [SerializeField, Min(0f)] private float _normalStrength = 0.06f;
-        [SerializeField, Min(0.01f)] private float _normalDuration = 0.12f;
+        [SerializeField, Min(0f)] private float _normalStrength = 0.12f;
+        [SerializeField, Min(0.01f)] private float _normalDuration = 0.2f;
 
         [Header("Critical Hit")]
-        [SerializeField, Min(0f)] private float _criticalStrength = 0.12f;
-        [SerializeField, Min(0.01f)] private float _criticalDuration = 0.18f;
+        [SerializeField, Min(0f)] private float _criticalStrength = 0.24f;
+        [SerializeField, Min(0.01f)] private float _criticalDuration = 0.26f;
+
+        [Header("Lethal Hit")]
+        [Tooltip("마지막 타격의 흔들림 강도를 일반/크리티컬 설정에 곱합니다.")]
+        [SerializeField, Min(1f)] private float _lethalStrengthMultiplier = 2f;
+        [Tooltip("마지막 타격의 지속 시간을 일반/크리티컬 설정에 곱합니다.")]
+        [SerializeField, Min(1f)] private float _lethalDurationMultiplier = 1.7f;
 
         [Header("Direction / Camera Range")]
         [SerializeField] private bool _useHitDirection = true;
         [Tooltip("피격 방향이 없거나 Use Hit Direction을 끈 경우 사용합니다. 길이는 강도에 영향을 주지 않습니다.")]
         [SerializeField] private Vector2 _fallbackDirection = new Vector2(1f, 0.3f);
+        [Tooltip("피격 방향을 기준으로 타격마다 좌우로 달라지는 최대 각도입니다. 0이면 방향을 고정합니다.")]
+        [SerializeField, Range(0f, 90f)] private float _directionJitterDegrees = 35f;
         [Tooltip("현재 PlayerCam은 채널 1을 수신합니다. 보스 레이저의 채널 64와 별개입니다.")]
         [SerializeField, CinemachineImpulseChannelProperty] private int _impulseChannel = 1;
         [Tooltip("이 거리 안의 카메라는 전체 강도로 수신합니다. Use 2D Distance가 켜진 Listener를 사용합니다.")]
@@ -61,18 +69,28 @@ namespace _Scripts.Agent.Enemies
             if (!HasDirection(direction) && damage.Dealer != null)
                 direction = _enemy.transform.position - damage.Dealer.transform.position;
             if (!HasDirection(direction)) direction = -normal;
-            PlayShake(damage.IsCritical, direction);
+            // EnemyBase는 사망 타격의 DamageReceived 전에 IsDead를 확정합니다.
+            PlayShake(damage.IsCritical, direction, _enemy.IsDead);
         }
 
         // 연출만 실행합니다. 데미지 계산이나 크리티컬 확률은 변경하지 않습니다.
-        public void PlayShake(bool isCritical, Vector2 direction)
+        public void PlayShake(bool isCritical, Vector2 direction, bool isLethal = false)
         {
             if (!isActiveAndEnabled || _impulseChannel == 0) return;
             float strength = isCritical ? _criticalStrength : _normalStrength;
             float duration = isCritical ? _criticalDuration : _normalDuration;
+            if (isLethal)
+            {
+                strength *= Mathf.Max(1f, _lethalStrengthMultiplier);
+                duration *= Mathf.Max(1f, _lethalDurationMultiplier);
+            }
             if (!IsFinite(strength) || strength <= 0f || !IsFinite(duration) || duration <= 0f) return;
             if (!_useHitDirection || !HasDirection(direction)) direction = _fallbackDirection;
             if (!HasDirection(direction)) direction = Vector2.right;
+            Vector2 shakeDirection = direction.normalized;
+            float jitter = Mathf.Clamp(_directionJitterDegrees, 0f, 90f);
+            if (jitter > 0f)
+                shakeDirection = (Vector2)(Quaternion.Euler(0f, 0f, Random.Range(-jitter, jitter)) * (Vector3)shakeDirection);
 
             // 재생 중인 신호는 Definition을 참조하므로, 타격마다 별도 설정을 사용합니다.
             // 다음 크리티컬/인스펙터 변경이 이미 재생 중인 일반 타격의 길이를 바꾸지 않습니다.
@@ -85,7 +103,7 @@ namespace _Scripts.Agent.Enemies
                 DissipationDistance = Mathf.Max(0.01f, _fadeDistance)
             };
             Vector3 position = _enemy != null ? _enemy.transform.position : transform.position;
-            var impulse = definition.CreateAndReturnEvent(position, (Vector3)direction.normalized * strength);
+            var impulse = definition.CreateAndReturnEvent(position, (Vector3)shakeDirection * strength);
             if (impulse == null) return;
             impulse.Radius = Mathf.Max(0f, _fullStrengthRadius);
             impulse.CustomDissipation = -1f;
@@ -109,6 +127,18 @@ namespace _Scripts.Agent.Enemies
         private void PreviewCritical()
         {
             if (Application.isPlaying) PlayShake(true, _fallbackDirection);
+        }
+
+        [ContextMenu("Preview/Lethal Shake (Play Mode, No Damage)")]
+        private void PreviewLethal()
+        {
+            if (Application.isPlaying) PlayShake(false, _fallbackDirection, true);
+        }
+
+        [ContextMenu("Preview/Critical Lethal Shake (Play Mode, No Damage)")]
+        private void PreviewCriticalLethal()
+        {
+            if (Application.isPlaying) PlayShake(true, _fallbackDirection, true);
         }
 #endif
     }

@@ -44,12 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23f7c56c3ae246f1bdaab8c957eae337, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemyHitCameraShakeModule
-  _normalStrength: 0.06
-  _normalDuration: 0.12
-  _criticalStrength: 0.12
-  _criticalDuration: 0.18
+  _normalStrength: 0.12
+  _normalDuration: 0.2
+  _criticalStrength: 0.24
+  _criticalDuration: 0.26
+  _lethalStrengthMultiplier: 2
+  _lethalDurationMultiplier: 1.7
   _useHitDirection: 1
   _fallbackDirection: {x: 1, y: 0.3}
+  _directionJitterDegrees: 35
   _impulseChannel: 1
   _fullStrengthRadius: 12
   _fadeDistance: 8

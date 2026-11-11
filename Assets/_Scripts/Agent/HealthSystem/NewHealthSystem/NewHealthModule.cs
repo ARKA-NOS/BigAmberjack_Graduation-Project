@@ -1,0 +1,188 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using _Scripts._Core._Debug;
+using _Scripts.Agent.HealthSystem.NewHealthSystem.Healths;
+using _Scripts.Agent.StatSystem;
+using _Scripts.DevLib.ModuleSystem;
+using UnityEngine;
+
+namespace _Scripts.Agent.HealthSystem.NewHealthSystem
+{
+    public class NewHealthModule : Module,IAfterInitModule, INewHealthModule, IHealthLayers
+    {
+        [Header("Default Health Setting")]
+        [SerializeField] private AbstractHealthSo coreHealth;
+
+        [Header("Other Health Setting")] 
+        [SerializeField] private AbstractHealthSo[] otherHealths;
+
+        [Header("Stat Setting")] 
+        [SerializeField] private StatData defenseStatData;
+        [SerializeField] private StatData damageReductionStatData;
+
+        private IHealth _baseHealth;
+        private Dictionary<AbstractHealthSo, IHealth> _healthDict;
+        private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
+        private List<IHealth> _healths;
+        
+        public float CurrentHealth => _healths.Sum(x => x.HP);
+        public float MaxHealth =>
+            _baseHealth is IRangeHealth rangeHealth 
+                ? rangeHealth.HpGauge.MaxValue 
+                : _baseHealth.HP;
+        
+        public event Action OnDead;
+        public bool IsDead { get; private set; }
+        
+        public event HealthChanged OnHealthChanged;
+
+        public IReadOnlyList<IHealth> Healths => _healths;
+
+        public AbstractHealthSo GetHealthSo(IHealth health)
+            => health != null ? _healthSoDict.GetValueOrDefault(health) : null;
+
+        private IStatModule _statModule;
+        private Stat _damageReductionStat;
+        private Stat _defenseStat;
+        
+        public override void Initialize(ModuleOwner owner)
+        {
+            base.Initialize(owner);
+
+            _healthDict = new();
+            _healthSoDict = new();
+            _healths = new();
+            
+            FDebug.Assert(coreHealth != null, "[NewHealthModule] coreHealth is null");
+            
+            FDebug.Assert(_owner.TryGetModule(out _statModule),"[NewHealthModule] IStatModule is not found");
+            
+        }
+        
+        public void AfterInit()
+        {
+            StatSetting();
+            HealthSetting();
+        }
+
+        #region Setting
+
+        private void StatSetting()
+        {
+            FDebug.Assert(defenseStatData != null && damageReductionStatData != null,$"[NewHealthModule : {gameObject.name}] StatDAta Setting Error");
+            
+            // 방어 스탯은 없어도 된다. 스탯 그룹에 없으면(지금의 적들) 0으로 계산한다.
+            _statModule.TryGetStat(defenseStatData, out _defenseStat);
+            _statModule.TryGetStat(damageReductionStatData, out _damageReductionStat);
+        }
+
+        private void HealthSetting()
+        {
+            _baseHealth = coreHealth.CreateHealth(_owner);
+            _healthDict.Add(coreHealth, _baseHealth);
+            _healthSoDict.Add(_baseHealth, coreHealth);
+                
+            foreach (AbstractHealthSo abstractHealthSo in otherHealths)
+            {
+                IHealth health = abstractHealthSo.CreateHealth(_owner);
+                _healthDict.Add(abstractHealthSo,health);
+                _healthSoDict.Add(health, abstractHealthSo);
+            }
+
+            foreach(IHealth health in _healthDict.Values)
+            {
+                _healths.Add(health);
+            }
+            
+            _healths.Sort(Compere);
+        }
+
+        #endregion
+
+        private void Update()
+        {
+            UpdateHealths();
+        }
+
+        #region Update
+
+        private void UpdateHealths()
+        {
+            foreach (var valuePair in _healths)
+            {
+                valuePair.HealthUpdate();
+            }
+        }
+
+        #endregion
+
+        #region HealthChange
+
+        #region Damage
+
+        public void ApplyDamage(float damage, HealthType targets = HealthType.All)
+        {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
+            float defense = _defenseStat?.Value ?? 0f;
+            float damageReduction = _damageReductionStat?.Value ?? 0f;
+            float currentDamage = Mathf.Max(0f, GetApplyDamageValue(damage, defense, damageReduction));
+            for (int i = _healths.Count - 1; i >= 0; i--)
+            {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
+                currentDamage = _healths[i].ApplyDamage(currentDamage);
+            }
+
+            HealthDeltaEvent(CurrentHealth - prevHealth);
+        }
+
+        private static float GetApplyDamageValue(float damage, float defense, float damageReduction)
+            => damage * (100f / (100f +  defense)) * (1f - damageReduction);
+
+        #endregion
+
+        #region Heal
+
+        public void ApplyHeal(float heal, HealthType targets = HealthType.Core)
+        {
+            if(IsDead) return;
+            float prevHealth = CurrentHealth;
+            float currentHeal = heal;
+            for (int i = 0; i < _healths.Count; i++)
+            {
+                HealthType type = _healths[i].GetHealthType();
+                if (!IsTargetHealth(type,targets)) continue;
+                currentHeal = _healths[i].ApplyHeal(currentHeal);
+            }
+            HealthDeltaEvent(CurrentHealth - prevHealth);
+        }
+
+        #endregion
+        
+        private void HealthDeltaEvent(float delta)
+        {
+            float newCurrentHp = CurrentHealth;
+            OnHealthChanged?.Invoke(newCurrentHp, delta, MaxHealth);
+
+            if (newCurrentHp <= 0f)
+            {
+                OnDead?.Invoke();
+                IsDead = true;
+            }
+        }
+        
+        private static bool IsTargetHealth(HealthType type, HealthType targets)
+            => (type & targets) != HealthType.None;
+        
+        #endregion
+        
+        #region Healper
+        
+        private static int Compere(IHealth a, IHealth b)
+            => a.Priority.CompareTo(b.Priority);
+        
+        #endregion
+    }
+}

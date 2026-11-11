@@ -82,28 +82,46 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.1072931
-      value: 2.9690967
-      inSlope: -11.757208
-      outSlope: -11.757208
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.3598543
-      value: -0.00031808764
-      inSlope: 0.0011858692
-      outSlope: 0.0011858692
+      time: 0.1
+      value: 0
+      inSlope: -0.011824723
+      outSlope: -0.011824723
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.20959015
+      value: 0.04939729
+      inSlope: 0.061163902
+      outSlope: 0.061163902
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.36
+      value: 0
+      inSlope: 0.0005878999
+      outSlope: 0.0005878999
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.31330734
+      outWeight: 0.26066527
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 0.00049689884
-      outSlope: 0.00049689884
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -111,7 +129,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  moveSpeed: 20
+  lungeDistance: 0.5
 --- !u!1 &8695000900061937281
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,6 +321,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2033895578872294490, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121662431800251206, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121662431800251206, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121662431800251206, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121662431800251206, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}

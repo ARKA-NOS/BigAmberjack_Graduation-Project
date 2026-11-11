@@ -7,22 +7,25 @@ namespace _Scripts._Core.PoolSystem
     [CreateAssetMenu(fileName = "Pool SO", menuName = "PoolSystem/GameObject Pool SO", order = 0)]
     public class PoolSO : ScriptableObject
     {
-        [field:SerializeField] public GameObject Prefab { get; private set; }
+        [SerializeField] private GameObject prefab;
         
         public GameObject Spawn()
-            => LeanPool.Spawn(Prefab);
-        
-        public void Despawn(GameObject go)
-            => LeanPool.Despawn(go);
+            => LeanPool.Spawn(prefab);
         
         public T Spawn<T>()
         {
-            if (LeanPool.Spawn(Prefab).TryGetComponent(out T result))
+            if (LeanPool.Spawn(prefab).TryGetComponent(out T result))
                 return result;
             
             FDebug.LogError("Pool Prefab doesn't have a " + typeof(T).Name, this);
             return default;
         }
+        
+        public void Despawn(GameObject go)
+            => LeanPool.Despawn(go);
+        
+        public static void DespawnAll()
+            => LeanPool.DespawnAll();
         
     }
 }

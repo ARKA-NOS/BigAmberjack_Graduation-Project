@@ -1809,7 +1809,6 @@ GameObject:
   - component: {fileID: 2334568540575776487}
   - component: {fileID: 1135898834701235157}
   - component: {fileID: 6898973889443806245}
-  - component: {fileID: 760384250011587833}
   - component: {fileID: 4648735891824786466}
   - component: {fileID: 782884172859476908}
   m_Layer: 0
@@ -1961,19 +1960,6 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
     m_Priority: 0
---- !u!114 &760384250011587833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847477924754139727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d3cdef2fa1dd604282de905f546fe51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.StatUI.PlayerStatProvider
-  viewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
 --- !u!114 &4648735891824786466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1986,6 +1972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2efbe580fe0506e4ea7f45df3f8cde88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventoryDragController
+  viewModel: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
   windowGroup: {fileID: 2334568540575776487}
   ghost: {fileID: 5331870133643316176}
 --- !u!114 &782884172859476908
@@ -4162,7 +4149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aea5339f55a501f4db6d4d16cdda032a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.StatUI.StatListUIBinder
-  bindData: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
+  viewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
   display: {fileID: 11400000, guid: 2d368d78856196440b21b8971a143c1e, type: 2}
   rowParent: {fileID: 4726819645229098002}
   template: {fileID: 4592777740624382820}
@@ -4526,7 +4513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b41606d7f1de544bbe73010f3db07fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventoryUIBinder
-  bindData: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
+  viewModel: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
   target: 0
   slotParent: {fileID: 7882409123759165663}
   template: {fileID: 2000463000719623672}
@@ -5166,7 +5153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aea5339f55a501f4db6d4d16cdda032a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.StatUI.StatListUIBinder
-  bindData: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
+  viewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
   display: {fileID: 11400000, guid: b6fd247536eb44847a958b1604d6b01f, type: 2}
   rowParent: {fileID: 4180259808397686126}
   template: {fileID: 9170890557425644152}
@@ -11228,7 +11215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b41606d7f1de544bbe73010f3db07fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.InventoryUI.InventoryUIBinder
-  bindData: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
+  viewModel: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
   target: 1
   slotParent: {fileID: 6762238787095907103}
   template: {fileID: 2110860052224706635}

@@ -1,15 +1,14 @@
 using System.Collections.Generic;
-using _Scripts.UI.BindSystem;
+using _Scripts.UI.MVVM.Disposables;
+using _Scripts.UI.MVVM.Views;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace _Scripts.UI.Dialogue
 {
-    // 화면 하단 대화창(이름표 + 대사 + 선택지). DialogueViewModel에 Bind된 DialogueData를 표시한다.
-    // 이 컴포넌트가 붙은 오브젝트는 항상 켜 두고, 대화창 표시는 dialogueRoot로 켜고 끈다.
-    // (꺼져 있으면 Awake가 실행되지 않아 ViewModel 구독이 빠진다)
-    public class DialogueUIBinder : AbstractUIBinder<DialogueData>
+    // 화면 하단 대화창(이름표 + 대사 + 선택지). DialogueViewModel의 대화를 표시하고, 없으면(null) dialogueRoot를 끈다.
+    public class DialogueView : ViewBase<DialogueViewModel>
     {
         [SerializeField] private GameObject dialogueRoot;
         [SerializeField] private TMP_Text nameText;
@@ -20,21 +19,26 @@ namespace _Scripts.UI.Dialogue
 
         private readonly List<Button> _choiceButtons = new();
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             choiceButtonTemplate.gameObject.SetActive(false);
-            OnDataChanged();
+            dialogueRoot.SetActive(false);
         }
 
-        // 대화 내용은 Bind 시점에만 바뀌므로 매 프레임 갱신할 것이 없다.
-        protected override void DataUpdate()
+        protected override void OnBind(DialogueViewModel vm)
         {
+            vm.Dialogue.Subscribe(Show).AddTo(Disposables);
         }
 
-        protected override void OnDataChanged()
+        // 꺼질 때는 닫아 둔다. 다시 켜지면 구독하면서 지금 대화로 다시 그린다.
+        protected override void OnUnbind()
         {
-            DialogueData data = CurrentValue;
+            ClearChoices();
+            dialogueRoot.SetActive(false);
+        }
+
+        private void Show(DialogueData data)
+        {
             ClearChoices();
 
             if (data == null)
@@ -66,6 +70,8 @@ namespace _Scripts.UI.Dialogue
             // Destroy는 프레임 끝에 처리되므로, 같은 프레임에 다시 열어도 겹쳐 보이지 않게 먼저 끈다.
             foreach (Button button in _choiceButtons)
             {
+                if (button == null) continue;
+
                 button.gameObject.SetActive(false);
                 Destroy(button.gameObject);
             }

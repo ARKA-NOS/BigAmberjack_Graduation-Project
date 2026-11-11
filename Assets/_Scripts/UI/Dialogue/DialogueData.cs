@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace _Scripts.UI.Dialogue
 {
-    // 대화창에 표시할 내용. DialogueViewModel에 Bind하면 대화창이 이 내용으로 열린다.
-    // 대화창을 닫을 때는 null을 Bind한다.
+    // 대화창에 표시할 내용. DialogueEvents.Show로 보내면 대화창이 이 내용으로 열린다.
+    // 대화창을 닫을 때는 DialogueEvents.Hide를 부른다.
     public class DialogueData
     {
         public string Speaker { get; }

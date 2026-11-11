@@ -15,7 +15,7 @@ namespace _Scripts._Core {
             set {
                 T before = _value;
                 _value = value;
-                if ((before == null && value != null) || before!.Equals(_value) == false)
+                if ((before == null && value != null) || !before!.Equals(_value))
                     OnValueChanged?.Invoke(before, value);
             }
         }

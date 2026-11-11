@@ -219,6 +219,7 @@ GameObject:
   - component: {fileID: 8637972546059168636}
   - component: {fileID: 7572594936824681929}
   - component: {fileID: 3728814495393267975}
+  - component: {fileID: 2509263371137680872}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -336,6 +337,22 @@ MonoBehaviour:
   <PlayerInput>k__BackingField: {fileID: 11400000, guid: e1b94466858999e4c8089203ed69deef, type: 2}
   playerStates: {fileID: 11400000, guid: c1fe94e027fffb443a064a4d17fbcbf0, type: 2}
   InvincibilityTime: 1
+--- !u!114 &2509263371137680872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282547565697425842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c97ec4fc8704d249bcb46b4db9961c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.PlayerUI.HUD_UI.PlayerHudConnector
+  healthViewModel: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
+  skill1ViewModel: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
+  skill2ViewModel: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
+  effectViewModel: {fileID: 11400000, guid: ab50900c0c8f2b742a07da6a061e4847, type: 2}
 --- !u!1 &3542726505343172341
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,14 +727,6 @@ PrefabInstance:
       propertyPath: dashSkill
       value: 
       objectReference: {fileID: 11400000, guid: 60c94d8ca0a51d24c8565b2b2ec6ef22, type: 2}
-    - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
-      propertyPath: skill1ViewModel
-      value: 
-      objectReference: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
-    - target: {fileID: 8789096501712534091, guid: 4829dadbe3cd3b44bb6d487fb6fdd494, type: 3}
-      propertyPath: skill2ViewModel
-      value: 
-      objectReference: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -783,10 +792,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6415396870798794496, guid: c720731fcf2006e40813631e64411607, type: 3}
-      propertyPath: effectViewModel
-      value: 
-      objectReference: {fileID: 11400000, guid: ab50900c0c8f2b742a07da6a061e4847, type: 2}
     - target: {fileID: 6415396870798794496, guid: c720731fcf2006e40813631e64411607, type: 3}
       propertyPath: startEffects.Array.size
       value: 1
@@ -949,10 +954,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1389134581402385000}
     m_Modifications:
-    - target: {fileID: 990122206456862728, guid: d3a96503a12ef1a4682592b482675adc, type: 3}
-      propertyPath: healthViewModel
-      value: 
-      objectReference: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
     - target: {fileID: 3105458934391978782, guid: d3a96503a12ef1a4682592b482675adc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.26159

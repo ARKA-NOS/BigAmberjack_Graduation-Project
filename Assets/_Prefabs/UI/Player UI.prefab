@@ -546,7 +546,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aff30bfe46042d391cad8b58eb70ebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI.PlayerEffectUIBinder
-  bindData: {fileID: 11400000, guid: ab50900c0c8f2b742a07da6a061e4847, type: 2}
+  viewModel: {fileID: 11400000, guid: ab50900c0c8f2b742a07da6a061e4847, type: 2}
   playerEffectUIPrefab: {fileID: 2628337874541601638, guid: 303734056ab21174b806ebe6d4bd4837, type: 3}
 --- !u!1 &3448141101314787527
 GameObject:
@@ -1598,7 +1598,7 @@ PrefabInstance:
       value: Skill1UI
       objectReference: {fileID: 0}
     - target: {fileID: 3985688664027191613, guid: 0aecd29fb5a81764184bc03456b3b895, type: 3}
-      propertyPath: bindData
+      propertyPath: viewModel
       value: 
       objectReference: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
     - target: {fileID: 5601400083493500350, guid: 0aecd29fb5a81764184bc03456b3b895, type: 3}
@@ -1822,7 +1822,7 @@ PrefabInstance:
       value: Skill2UI
       objectReference: {fileID: 0}
     - target: {fileID: 3985688664027191613, guid: 0aecd29fb5a81764184bc03456b3b895, type: 3}
-      propertyPath: bindData
+      propertyPath: viewModel
       value: 
       objectReference: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
     - target: {fileID: 5601400083493500350, guid: 0aecd29fb5a81764184bc03456b3b895, type: 3}

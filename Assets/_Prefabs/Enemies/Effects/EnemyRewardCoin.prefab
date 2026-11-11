@@ -105,8 +105,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef28a46c25fc0d8408a3ded75448b90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyRewardCoin
-  horizontalSpeed: 1.8
-  upwardSpeedRange: {x: 2.8, y: 4.2}
+  horizontalSpeed: 4
+  upwardSpeedRange: {x: 3.5, y: 5.2}
+  scatterForceMultiplier: 1
+  scatterUpwardBias: 0.5
+  minimumLaunchElevation: 20
+  launchGravityPause: 0.12
   gravityScale: 3
   terrainLayers:
     serializedVersion: 2

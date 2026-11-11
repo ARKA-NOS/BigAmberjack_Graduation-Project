@@ -8,7 +8,7 @@ namespace _Scripts.Agent.Enemies
     public sealed class EnemyCoinTrail : MonoBehaviour
     {
         [SerializeField] private Material trailMaterial;
-        [Tooltip("이동 경로가 남는 시간(초). 길이는 대략 이동 속도 × 이 값이며, 빠른 자석 이동에서 더 길어집니다.")]
+        [Tooltip("이동 경로가 남는 시간(초)입니다.")]
         [SerializeField, Min(0.01f)] private float trailLifetime = 0.45f;
         [Tooltip("가장 두꺼운 부분의 월드 유닛 너비. 코인의 도착 펀치 스케일과 독립적입니다.")]
         [SerializeField, Min(0.001f)] private float trailWidth = 0.16f;

@@ -16,6 +16,7 @@ using Object = UnityEngine.Object;
 public static class VerifyCoinTrail
 {
     private const string CoinPath = "Assets/_Prefabs/Enemies/Effects/EnemyRewardCoin.prefab";
+    private const string ChestCoinPath = "Assets/_Prefabs/Chest/ChestRewardCoin.prefab";
     private const string SceneKey = "CTJ.CoinTrail.OriginalScene";
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private static void Check(bool condition, string message)
@@ -29,7 +30,10 @@ public static class VerifyCoinTrail
     {
         Check(!EditorApplication.isPlaying, "Edit Mode required");
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CoinPath);
+        GameObject chestPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ChestCoinPath);
         Check(prefab != null && prefab.GetComponent<EnemyCoinTrail>() != null, "Coin / trail reference missing");
+        Check(chestPrefab != null && chestPrefab.GetComponent<EnemyRewardCoin>() != null &&
+            chestPrefab.GetComponent<EnemyCoinTrail>() != null, "Chest coin variant / trail reference missing");
         Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(prefab) == 0, "Missing script");
         var settings = new SerializedObject(prefab.GetComponent<EnemyCoinTrail>());
         Material material = settings.FindProperty("trailMaterial").objectReferenceValue as Material;
@@ -37,8 +41,23 @@ public static class VerifyCoinTrail
         Check(!ShaderUtil.ShaderHasError(material.shader), "Shader compile error");
         AnimationCurve profile = settings.FindProperty("widthProfile").animationCurveValue;
         Check(profile.Evaluate(1f) == 0f, "Tail must taper to one point");
+        var coinSettings = new SerializedObject(prefab.GetComponent<EnemyRewardCoin>());
+        var chestSettings = new SerializedObject(chestPrefab.GetComponent<EnemyRewardCoin>());
+        Check(coinSettings.FindProperty("minimumLaunchElevation").floatValue > 0f &&
+            chestSettings.FindProperty("minimumLaunchElevation").floatValue > 0f &&
+            coinSettings.FindProperty("launchGravityPause").floatValue > 0f &&
+            chestSettings.FindProperty("launchGravityPause").floatValue > 0f,
+            "Upward launch or brief gravity pause missing");
+        Check(Mathf.Approximately(coinSettings.FindProperty("gravityScale").floatValue, 3f) &&
+            Mathf.Approximately(chestSettings.FindProperty("gravityScale").floatValue, 3f),
+            "Coin gravity was not restored");
         return new { passed = true, lifetime = settings.FindProperty("trailLifetime").floatValue,
-            width = settings.FindProperty("trailWidth").floatValue, shader = material.shader.name };
+            gravity = coinSettings.FindProperty("gravityScale").floatValue,
+            launchForce = coinSettings.FindProperty("scatterForceMultiplier").floatValue,
+            directionMode = "random angle within four upward sectors",
+            gravityPause = coinSettings.FindProperty("launchGravityPause").floatValue,
+            width = settings.FindProperty("trailWidth").floatValue, shader = material.shader.name,
+            chestCoin = chestPrefab.name };
     }
     public static object BeginPlay()
     {
@@ -67,32 +86,92 @@ public static class VerifyCoinTrail
         int payouts = 0;
         currency.OnCurrencyChanged += (current, previous) => payouts++;
         var coins = new List<EnemyRewardCoin>();
-        bool scatterTrail = false, bounceTrail = false, homingTrail = false, collectionStopped = false, faded = false;
+        bool bounceTrail = false, homingTrail = false, collectionStopped = false, faded = false;
         bool toggled = false, cleared = false, noPrematureReward = true;
+        bool launchedAcrossUpperArc = true, noTrailBeforeBounce = true;
+        bool fixedLaunchStrength = true, randomizedDirection = false;
+        bool gravityPausedInitially = false, gravityResumed = false;
+        bool fixedTrailLifetime = true, equalNearAndFarHomingSpeed = false;
         int maxPoints = 0;
-        float longest = 0f;
+        float longest = 0f, maxScatterRadius = 0f, firstBounceTimeTotal = 0f;
+        int firstBounceSamples = 0;
+        var launchPositions = new Vector3[8];
+        var firstBounceSeen = new bool[8];
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CoinPath);
+        GameObject chestPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ChestCoinPath);
         try
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
-                EnemyRewardCoin coin = Object.Instantiate(prefab, new Vector3(i * 0.1f, 0.6f, 0f), Quaternion.identity).GetComponent<EnemyRewardCoin>();
+                GameObject source = i < 4 ? prefab : chestPrefab;
+                EnemyRewardCoin coin = Object.Instantiate(source, new Vector3(i * 0.1f, 0.6f, 0f), Quaternion.identity).GetComponent<EnemyRewardCoin>();
                 coins.Add(coin);
+                launchPositions[i] = coin.transform.position;
                 if (i == 3) coin.GetComponent<EnemyCoinTrail>().enabled = false;
                 Call(coin, "SetCollector", collector.transform);
-                Call(coin, "Launch", currency, 3, (i + 0.5f) / 4f);
+                Call(coin, "Launch", currency, 3, (i % 4 + 0.5f) / 4f);
+                Vector2 velocity = (Vector2)typeof(EnemyRewardCoin).GetField("_velocity", Private).GetValue(coin);
+                Vector2 radialVelocity = velocity - Vector2.up * 0.5f;
+                float expectedSpeed = i < 4 ? 4.175f : 5.375f;
+                fixedLaunchStrength &= Mathf.Abs(radialVelocity.magnitude - expectedSpeed) < 0.001f;
+                float baseAngle = (20f + (i % 4 + 0.5f) * 35f) * Mathf.Deg2Rad;
+                Vector2 baseDirection = new Vector2(Mathf.Cos(baseAngle), Mathf.Sin(baseAngle));
+                randomizedDirection |= Vector2.Angle(baseDirection, radialVelocity) > 5f;
+                float launchAngle = Mathf.Atan2(radialVelocity.y, radialVelocity.x) * Mathf.Rad2Deg;
+                launchedAcrossUpperArc &= launchAngle >= 20f && launchAngle <= 160f && velocity.y > 0f &&
+                    Mathf.Sign(radialVelocity.x) == (i % 4 < 2 ? 1f : -1f);
+                noTrailBeforeBounce &= coin.GetComponentInChildren<TrailRenderer>() == null;
             }
+            Check(launchedAcrossUpperArc && randomizedDirection && fixedLaunchStrength && noTrailBeforeBounce,
+                "Upward random direction, fixed strength, or pre-bounce trail failed");
+            var pauseProbe = coins[1];
+            var velocityField = typeof(EnemyRewardCoin).GetField("_velocity", Private);
+            var airTimeField = typeof(EnemyRewardCoin).GetField("_airTime", Private);
+            Vector3 pauseStartPosition = pauseProbe.transform.position;
+            Vector2 pauseStartVelocity = (Vector2)velocityField.GetValue(pauseProbe);
+            Call(pauseProbe, "FixedUpdate");
+            gravityPausedInitially = Mathf.Abs(((Vector2)velocityField.GetValue(pauseProbe)).y - pauseStartVelocity.y) < 0.0001f;
+            airTimeField.SetValue(pauseProbe, 0.12f);
+            Call(pauseProbe, "FixedUpdate");
+            gravityResumed = ((Vector2)velocityField.GetValue(pauseProbe)).y < pauseStartVelocity.y;
+            pauseProbe.transform.position = pauseStartPosition;
+            velocityField.SetValue(pauseProbe, pauseStartVelocity);
+            airTimeField.SetValue(pauseProbe, 0f);
+            Check(gravityPausedInitially && gravityResumed, "Launch gravity pause did not end correctly");
+            var speedProbe = coins[0];
+            typeof(EnemyRewardCoin).GetField("_homingSpeed", Private).SetValue(speedProbe, 16f);
+            Vector3 launchPosition = speedProbe.transform.position;
+            speedProbe.transform.position = new Vector3(4f, 0f, 0f);
+            Call(speedProbe, "TickHoming", 0.02f);
+            float nearStep = speedProbe.transform.position.x - 4f;
+            speedProbe.transform.position = Vector3.zero;
+            Call(speedProbe, "TickHoming", 0.02f);
+            float farStep = speedProbe.transform.position.x;
+            equalNearAndFarHomingSpeed = Mathf.Abs(nearStep - farStep) < 0.001f && nearStep > 0f;
+            speedProbe.transform.position = launchPosition;
+            Check(equalNearAndFarHomingSpeed, "Homing speed should not depend on target distance");
             Physics2D.SyncTransforms();
             float start = Time.time;
-            while (Time.time - start < 8f)
+            while (Time.time - start < 10f)
             {
                 bool alive = false;
-                foreach (EnemyRewardCoin coin in coins)
+                for (int index = 0; index < coins.Count; index++)
                 {
+                    EnemyRewardCoin coin = coins[index];
                     if (coin == null) continue;
                     alive = true;
+                    if (coin.BounceCount == 0 && !coin.IsHoming)
+                        maxScatterRadius = Mathf.Max(maxScatterRadius,
+                            Vector2.Distance(coin.transform.position, launchPositions[index]));
+                    else if (coin.BounceCount > 0 && !firstBounceSeen[index])
+                    {
+                        firstBounceSeen[index] = true;
+                        firstBounceTimeTotal += Time.time - start;
+                        firstBounceSamples++;
+                    }
                     TrailRenderer trail = coin.GetComponentInChildren<TrailRenderer>();
                     if (trail == null) continue;
+                    fixedTrailLifetime &= Mathf.Abs(trail.time - 0.45f) < 0.001f;
                     maxPoints = Mathf.Max(maxPoints, trail.positionCount);
                     float length = 0f;
                     for (int n = 1; n < trail.positionCount; n++) length += Vector3.Distance(trail.GetPosition(n - 1), trail.GetPosition(n));
@@ -101,7 +180,7 @@ public static class VerifyCoinTrail
                     {
                         if (coin.IsHoming) homingTrail = true;
                         else if (coin.BounceCount > 0) bounceTrail = true;
-                        else scatterTrail = true;
+                        else noTrailBeforeBounce = false;
                     }
                     if (coin.IsCollecting)
                     {
@@ -111,7 +190,7 @@ public static class VerifyCoinTrail
                     }
                 }
                 if (!collectionStopped && currency.Count != 0) noPrematureReward = false;
-                if (!toggled && Time.time - start > 0.18f)
+                if (!toggled && coins[0] != null && coins[0].BounceCount > 0)
                 {
                     var component = coins[0].GetComponent<EnemyCoinTrail>();
                     component.enabled = false;
@@ -127,11 +206,19 @@ public static class VerifyCoinTrail
                 await Task.Delay(16);
             }
             Check(coins.TrueForAll(coin => coin == null), "Coins failed to finish");
-            Check(currency.Count == 12 && payouts == 4, "Reward lost or paid twice");
-            Check(noPrematureReward && scatterTrail && bounceTrail && homingTrail && collectionStopped && faded && cleared,
+            Check(currency.Count == 24 && payouts == 8, "Reward lost or paid twice");
+            Check(maxScatterRadius > 1.5f && firstBounceSamples == 8 &&
+                firstBounceTimeTotal / firstBounceSamples > 0.3f,
+                "Scatter spread or air time was too small");
+            Check(noPrematureReward && noTrailBeforeBounce && fixedTrailLifetime &&
+                bounceTrail && homingTrail && collectionStopped && faded && cleared,
                 "A trail lifecycle stage was not observed");
-            return new { passed = true, currency = currency.Count, payouts, scatterTrail, bounceTrail, homingTrail,
-                collectionStopped, faded, cleared, noPrematureReward, maxPoints, longest };
+            return new { passed = true, currency = currency.Count, payouts, launchedAcrossUpperArc,
+                randomizedDirection, fixedLaunchStrength, gravityPausedInitially, gravityResumed,
+                noTrailBeforeBounce, equalNearAndFarHomingSpeed, nearStep, farStep, fixedTrailLifetime,
+                bounceTrail, homingTrail,
+                collectionStopped, faded, cleared, noPrematureReward, maxScatterRadius,
+                firstBounceTime = firstBounceTimeTotal / firstBounceSamples, maxPoints, longest };
         }
         finally
         {

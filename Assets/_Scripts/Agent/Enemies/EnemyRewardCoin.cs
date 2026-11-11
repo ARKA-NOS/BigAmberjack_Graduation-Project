@@ -6,13 +6,25 @@ using UnityEngine;
 
 namespace _Scripts.Agent.Enemies
 {
-    // 적과 분리된 연출 객체. 분산 낙하 → 큰 바운스 → 플레이어 중심 추적 → 소멸/지급.
+    // 적과 분리된 연출 객체. 위쪽 분산 → 큰 바운스 → 플레이어 중심 추적 → 소멸/지급.
     [DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
     public sealed class EnemyRewardCoin : MonoBehaviour
     {
-        [Header("Scatter (World Units)")]
+        [Header("Upward Scatter (World Units/Second)")]
+        [InspectorName("Launch Speed A (Legacy Horizontal)")]
+        [Tooltip("기존 상자 프리팹의 값을 보존합니다. 아래 B 범위의 중간값과 평균하여 모든 방향에 같은 발사 속도를 적용합니다.")]
         [SerializeField, Min(0f)] private float horizontalSpeed = 1.8f;
+        [InspectorName("Launch Speed B Range (Legacy Vertical)")]
+        [Tooltip("기존 프리팹의 두 값을 보존합니다. 코인마다 무작위로 뽑지 않고 중간값만 발사 속도 계산에 사용합니다.")]
         [SerializeField] private Vector2 upwardSpeedRange = new Vector2(2.8f, 4.2f);
+        [Tooltip("발사 방향 전체에 곱하는 세기입니다.")]
+        [SerializeField, Min(0f)] private float scatterForceMultiplier = 1f;
+        [Tooltip("발사 방향에 추가하는 위쪽 속도입니다. 0이어도 발사 각도는 위쪽 반원으로 제한됩니다.")]
+        [SerializeField] private float scatterUpwardBias = 0.5f;
+        [Tooltip("수평에서 이 각도만큼 위로 띄워 발사합니다. 바닥을 향한 초기 발사를 막습니다.")]
+        [SerializeField, Range(0f, 89f)] private float minimumLaunchElevation = 20f;
+        [Tooltip("발사 직후 중력을 잠시 적용하지 않는 시간(초)입니다. 첫 낙하에만 적용합니다.")]
+        [SerializeField, Min(0f)] private float launchGravityPause = 0.12f;
         [SerializeField, Min(0.01f)] private float gravityScale = 1.5f;
         [Tooltip("바닥/벽 레이어만 선택하세요. 기본값은 Ground입니다. 트리거는 무시합니다.")]
         [SerializeField] private LayerMask terrainLayers = 1 << 6;
@@ -124,13 +136,20 @@ namespace _Scripts.Agent.Enemies
             Amount = amount;
             _visual = GetComponent<SpriteRenderer>();
             _trail = GetComponent<EnemyCoinTrail>();
-            if (_trail != null) _trail.BeginTrail(_visual);
             _originalScale = transform.localScale;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
             float low = Mathf.Max(0f, Mathf.Min(upwardSpeedRange.x, upwardSpeedRange.y));
             float high = Mathf.Max(low, Mathf.Max(upwardSpeedRange.x, upwardSpeedRange.y));
-            _velocity = new Vector2(Mathf.Lerp(-horizontalSpeed, horizontalSpeed, spread), Random.Range(low, high));
+            // 위쪽 반원만 네 구간으로 나누고, 각 코인의 발사 각도만 무작위로 고릅니다.
+            int sector = Mathf.FloorToInt(Mathf.Repeat(spread, 1f) * 4f);
+            float minAngle = Mathf.Clamp(minimumLaunchElevation, 0f, 89f);
+            float angle = Mathf.Lerp(minAngle, 180f - minAngle, (sector + Random.value) * 0.25f) * Mathf.Deg2Rad;
+            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            // 기존 적/상자 프리팹의 두 속도 설정을 유지하되, 방향별 힘 차이는 만들지 않습니다.
+            float launchSpeed = (Mathf.Max(0f, horizontalSpeed) + (low + high) * 0.5f) * 0.5f *
+                Mathf.Max(0f, scatterForceMultiplier);
+            _velocity = direction * launchSpeed + Vector2.up * scatterUpwardBias;
             if (spinFrames != null && spinFrames.Length > 0)
             {
                 // 같은 순간에 생성된 코인도 회전 자세가 조금씩 다르게 시작합니다.
@@ -145,7 +164,8 @@ namespace _Scripts.Agent.Enemies
             float dt = Time.fixedDeltaTime;
             if (IsHoming) { TickHoming(dt); return; }
             _airTime += dt;
-            Vector2 gravity = Physics2D.gravity * gravityScale;
+            Vector2 gravity = _phase == CoinPhase.Scatter && _airTime <= launchGravityPause
+                ? Vector2.zero : Physics2D.gravity * gravityScale;
             Vector2 delta = _velocity * dt + gravity * (0.5f * dt * dt);
             _velocity += gravity * dt;
             float distance = delta.magnitude;
@@ -207,6 +227,7 @@ namespace _Scripts.Agent.Enemies
             BounceCount++;
             _phase = CoinPhase.Bounce;
             _airTime = 0f;
+            if (_trail != null) _trail.BeginTrail(_visual);
         }
 
         private void BeginHoming()
@@ -215,6 +236,11 @@ namespace _Scripts.Agent.Enemies
             _velocity = Vector2.zero;
             _homingSpeed = Mathf.Max(0.1f, initialHomingSpeed);
             _missingTargetTime = 0f;
+            if (_trail != null)
+            {
+                // 지형을 찾지 못한 코인도 회수 단계에서는 잔상을 보입니다.
+                if (BounceCount == 0) _trail.BeginTrail(_visual);
+            }
         }
 
         private void TickHoming(float dt)

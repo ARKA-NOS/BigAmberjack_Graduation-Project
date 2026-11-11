@@ -33,7 +33,7 @@ namespace _Scripts.Agent.Players.Skills
         private IRenderer _renderer;
         private IAnimationTrigger _trigger;
         private Animator _animator;
-        
+
         private IGroundChecker _groundChecker;
         private IControlMovement _movement;
         
@@ -48,7 +48,9 @@ namespace _Scripts.Agent.Players.Skills
 
         private Vector3 _offset;
         private float _currentAnimationNormal;
-        
+
+        private bool _isLunge;
+
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
@@ -71,10 +73,10 @@ namespace _Scripts.Agent.Players.Skills
             
             FDebug.Assert(owner.TryGetModule(out _movement),
                 $"[MeleeAttackSkill : {owner.name}] IControlMovement is not found");
-            
+
             FDebug.Assert(owner.TryGetModule(out _groundChecker),
                 $"[MeleeAttackSkill : {owner.name}] IGroundChecker is not found");
-            
+
             damageStat = statModule.GetStat(physicalDamage);
             attackSpeedStat = statModule.GetStat(attackSpeed);
             
@@ -100,6 +102,7 @@ namespace _Scripts.Agent.Players.Skills
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
+            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f;
             SetAnimationSpeed();
             PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
         }
@@ -117,10 +120,10 @@ namespace _Scripts.Agent.Players.Skills
         {
             AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            base.UpdateSkill();
             GroundStop();
-            SetAnimationSpeed();
             AttackMove();
+            base.UpdateSkill();
+            SetAnimationSpeed();
         }
 
         protected override void OnEndSkill()
@@ -162,8 +165,11 @@ namespace _Scripts.Agent.Players.Skills
         
         private void AttackMove()
         {
+            if (!_isLunge)
+                return;
+
             Vector2 dir = _renderer.GetRight();
-            Owner.transform.Translate(dir * (moveSpeed * attackMoveCurve.Evaluate(_currentAnimationNormal) * Time.time));
+            Owner.transform.Translate(dir * (moveSpeed * attackMoveCurve.Evaluate(_currentAnimationNormal) * Time.deltaTime));
         }
         
     }

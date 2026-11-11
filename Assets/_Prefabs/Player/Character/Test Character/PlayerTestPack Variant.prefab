@@ -78,6 +78,40 @@ MonoBehaviour:
   animatorLayer: 0
   damageCaster: {fileID: 4431319950126978972}
   kbForce: 3
+  attackMoveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.1072931
+      value: 2.9690967
+      inSlope: -11.757208
+      outSlope: -11.757208
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.3598543
+      value: -0.00031808764
+      inSlope: 0.0011858692
+      outSlope: 0.0011858692
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.31330734
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0.00049689884
+      outSlope: 0.00049689884
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  moveSpeed: 20
 --- !u!1 &8695000900061937281
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +305,22 @@ PrefabInstance:
     - target: {fileID: 2033895578872294490, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_Size.x
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_Size.y
+      value: 1.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.39
       objectReference: {fileID: 0}
     - target: {fileID: 2632175840479627013, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
@@ -563,6 +613,10 @@ PrefabInstance:
     - target: {fileID: 7654112648948756072, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655627553767849489, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 7874707408945993320, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y

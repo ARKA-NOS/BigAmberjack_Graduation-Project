@@ -47,7 +47,8 @@ namespace _Scripts.Agent.Players.FSM
         
         protected virtual void HandleJump()
         {
-            if ((GroundChecker.FixedIsGround && !PlatformKeyPressed) || ControlMultiJumper.CanDoubleJump())
+            bool canGroundJump = (GroundChecker.FixedIsGround || ControlJumper.CanCoyoteJump()) && !PlatformKeyPressed;
+            if (canGroundJump || ControlMultiJumper.CanDoubleJump())
             {
                 Player.ChangeState(PlayerStateEnum.JUMP);
             }

@@ -107,11 +107,11 @@ TextureImporter:
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
-  spriteExtrude: 1
+  spriteExtrude: 6
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -132,7 +132,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -163,12 +163,12 @@ TextureImporter:
       name: BaseCharactor_Proto_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 330
-        width: 37
-        height: 57
+        x: 0
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -185,12 +185,12 @@ TextureImporter:
       name: BaseCharactor_Proto_1
       rect:
         serializedVersion: 2
-        x: 163
-        y: 330
-        width: 37
-        height: 57
+        x: 120
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -207,12 +207,12 @@ TextureImporter:
       name: BaseCharactor_Proto_2
       rect:
         serializedVersion: 2
-        x: 284
-        y: 330
-        width: 36
-        height: 57
+        x: 240
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -229,12 +229,12 @@ TextureImporter:
       name: BaseCharactor_Proto_3
       rect:
         serializedVersion: 2
-        x: 404
-        y: 330
-        width: 35
-        height: 57
+        x: 360
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -251,12 +251,12 @@ TextureImporter:
       name: BaseCharactor_Proto_4
       rect:
         serializedVersion: 2
-        x: 524
-        y: 330
-        width: 35
-        height: 57
+        x: 480
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -273,12 +273,12 @@ TextureImporter:
       name: BaseCharactor_Proto_5
       rect:
         serializedVersion: 2
-        x: 44
-        y: 248
-        width: 35
-        height: 57
+        x: 0
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -295,12 +295,12 @@ TextureImporter:
       name: BaseCharactor_Proto_6
       rect:
         serializedVersion: 2
-        x: 164
-        y: 249
-        width: 39
-        height: 49
+        x: 120
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -317,12 +317,12 @@ TextureImporter:
       name: BaseCharactor_Proto_7
       rect:
         serializedVersion: 2
-        x: 284
-        y: 249
-        width: 37
-        height: 49
+        x: 240
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -339,12 +339,12 @@ TextureImporter:
       name: BaseCharactor_Proto_8
       rect:
         serializedVersion: 2
-        x: 405
-        y: 249
-        width: 35
-        height: 50
+        x: 360
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -361,12 +361,12 @@ TextureImporter:
       name: BaseCharactor_Proto_9
       rect:
         serializedVersion: 2
-        x: 524
-        y: 249
-        width: 36
-        height: 49
+        x: 480
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -383,12 +383,12 @@ TextureImporter:
       name: BaseCharactor_Proto_10
       rect:
         serializedVersion: 2
-        x: 44
-        y: 167
-        width: 36
-        height: 49
+        x: 0
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -405,12 +405,12 @@ TextureImporter:
       name: BaseCharactor_Proto_11
       rect:
         serializedVersion: 2
-        x: 165
-        y: 167
-        width: 35
-        height: 50
+        x: 120
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -427,12 +427,12 @@ TextureImporter:
       name: BaseCharactor_Proto_12
       rect:
         serializedVersion: 2
-        x: 251
-        y: 166
-        width: 101
-        height: 70
+        x: 240
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -449,12 +449,12 @@ TextureImporter:
       name: BaseCharactor_Proto_13
       rect:
         serializedVersion: 2
-        x: 371
-        y: 166
-        width: 86
-        height: 51
+        x: 360
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -471,12 +471,12 @@ TextureImporter:
       name: BaseCharactor_Proto_14
       rect:
         serializedVersion: 2
-        x: 527
-        y: 169
-        width: 56
-        height: 49
+        x: 480
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -493,12 +493,12 @@ TextureImporter:
       name: BaseCharactor_Proto_15
       rect:
         serializedVersion: 2
-        x: 11
-        y: 84
-        width: 101
-        height: 70
+        x: 0
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -515,12 +515,12 @@ TextureImporter:
       name: BaseCharactor_Proto_16
       rect:
         serializedVersion: 2
-        x: 148
-        y: 90
-        width: 67
-        height: 65
+        x: 120
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -537,12 +537,12 @@ TextureImporter:
       name: BaseCharactor_Proto_17
       rect:
         serializedVersion: 2
-        x: 280
-        y: 88
-        width: 34
-        height: 66
+        x: 240
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -559,12 +559,12 @@ TextureImporter:
       name: BaseCharactor_Proto_18
       rect:
         serializedVersion: 2
-        x: 401
-        y: 87
-        width: 48
-        height: 50
+        x: 360
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -581,12 +581,12 @@ TextureImporter:
       name: BaseCharactor_Proto_19
       rect:
         serializedVersion: 2
-        x: 521
-        y: 86
-        width: 47
-        height: 52
+        x: 480
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -603,12 +603,12 @@ TextureImporter:
       name: BaseCharactor_Proto_20
       rect:
         serializedVersion: 2
-        x: 45
-        y: 4
-        width: 41
-        height: 55
+        x: 0
+        y: 0
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -625,7 +625,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bf48d666206eb464a8055fddf1d8b1e3
     internalID: 0
     vertices: []
     indices: 
@@ -633,7 +633,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":5.0},"gridSpriteSize":{"x":120.0,"y":82.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":1,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       BaseCharactor_Proto_0: -4205370725370084246
       BaseCharactor_Proto_1: 4656382532830071817

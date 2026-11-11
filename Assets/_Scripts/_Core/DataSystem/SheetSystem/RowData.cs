@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace _Scripts._Core.DataSystem.SheetSystem
 {
-    public class RowData
+    [Serializable]
+    public class RowData : IEnumerable<KeyValuePair<string, string>>
     {
         private readonly Dictionary<string, string> dataList = new();
         
@@ -11,5 +14,10 @@ namespace _Scripts._Core.DataSystem.SheetSystem
             get => dataList.GetValueOrDefault(key, string.Empty);
             set => dataList[key] = value;
         }
+        
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => dataList.GetEnumerator();
+        
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        
     }
 }

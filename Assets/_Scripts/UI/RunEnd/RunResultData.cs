@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace _Scripts.UI.RunEnd
 {
-    // 탐험 종료 화면에 표시할 내용. RunResultViewModel에 Bind하면 결과 화면이 열리고, null을 Bind하면 닫힌다.
+    // 탐험 종료 화면에 표시할 내용. RunResultViewModel.Result에 들어가면 결과 화면이 열리고, null이 되면 닫힌다.
     public class RunResultData
     {
         public RunEndReason Reason { get; }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6697669243465776665}
   - component: {fileID: 8777748407775245887}
   - component: {fileID: 6214127798328876647}
+  - component: {fileID: 8126972134923048101}
   m_Layer: 0
   m_Name: EnemyRewardCoin
   m_TagString: Untagged
@@ -142,3 +143,74 @@ MonoBehaviour:
   collectScalePeak: 1.8
   collectScaleDip: 0.35
   collectScaleDuration: 0.26
+--- !u!114 &8126972134923048101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4257485668835358545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c17f84255bc14745bd36b3df207a36f8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemyCoinTrail
+  trailMaterial: {fileID: 2100000, guid: a73bc4ae83c84300bde49234c70c197c, type: 2}
+  trailLifetime: 0.45
+  trailWidth: 0.16
+  widthProfile:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.12
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.4
+      value: 0.65
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.22
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  headColor: {r: 1, g: 0.92, b: 0.45, a: 0.45}
+  tailColor: {r: 1, g: 0.42, b: 0.06, a: 0.06}
+  minVertexDistance: 0.035
+  collectFadeDuration: 0.16
+  sortingOrderOffset: -1

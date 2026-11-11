@@ -58,6 +58,10 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float hitPointInset = 0.1f;
         [SerializeField, Min(0.01f)] private float effectScale = 1f;
         [SerializeField] private List<HitEffect> hitEffects = new List<HitEffect>();
+        [Header("Death Burst")]
+        [Tooltip("HP가 0 이하가 된 프레임에 적의 중심에서 한 번 방출합니다. 비우면 사용하지 않습니다.")]
+        [SerializeField] private ParticleSystem deathBurstPrefab;
+        [SerializeField, Min(0.01f)] private float deathBurstScale = 1f;
         [Tooltip("적 한 마리의 동시 효과 수. 초과하면 가장 오래된 효과부터 정리합니다.")]
         [SerializeField, Min(1)] private int maxConcurrentEffects = 12;
         [Tooltip("잘못된 루프/긴 수명 프리팹의 정리 상한(초). 일반 효과는 파티클이 끝나면 먼저 제거됩니다.")]
@@ -83,12 +87,17 @@ namespace _Scripts.Agent.Enemies
         {
             if (_subscribed || _enemy == null) return;
             _enemy.DamageReceived += PlayHit;
+            _enemy.DeathStarted += PlayDeathBurst;
             _subscribed = true;
         }
 
         private void Unsubscribe()
         {
-            if (_subscribed && _enemy != null) _enemy.DamageReceived -= PlayHit;
+            if (_subscribed && _enemy != null)
+            {
+                _enemy.DamageReceived -= PlayHit;
+                _enemy.DeathStarted -= PlayDeathBurst;
+            }
             _subscribed = false;
         }
 
@@ -107,7 +116,6 @@ namespace _Scripts.Agent.Enemies
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            _activeEffects.RemoveAll(effect => effect == null);
             foreach (HitEffect entry in hitEffects)
             {
                 if (entry == null || !entry.enabled || entry.scale <= 0f) continue;
@@ -115,13 +123,6 @@ namespace _Scripts.Agent.Enemies
                 ParticleSystem selectedPrefab = entry.SelectPrefab();
 
                 if (selectedPrefab == null) continue;
-
-                while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
-                {
-                    EnemyHitParticle oldest = _activeEffects[0];
-                    if (oldest != null) { oldest.gameObject.SetActive(false); Destroy(oldest.gameObject); }
-                    _activeEffects.RemoveAt(0);
-                }
 
                 float effectAngle = angle;
                 if (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) && damage.Dealer != null)
@@ -132,19 +133,38 @@ namespace _Scripts.Agent.Enemies
                 }
 
                 Quaternion rotation = Quaternion.Euler(0f, 0f, entry.angleOffset + (entry.alignToHitDirection ? effectAngle : 0f));
-                ParticleSystem particle = Instantiate(selectedPrefab, position + rotation * (Vector3)entry.offset, rotation);
-
-                // 적의 부모/반전/펀치 스케일과 분리하되, 같은 씬에 두어 씬 언로드 때 함께 정리합니다.
-                SceneManager.MoveGameObjectToScene(particle.gameObject, gameObject.scene);
-                particle.transform.localScale *= Mathf.Max(0.01f, effectScale) * entry.scale;
-                particle.gameObject.SetActive(true);
-
-                EnemyHitParticle lifetime = particle.GetComponent<EnemyHitParticle>();
-                if (lifetime == null) lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
-                lifetime.Play(particle, maxEffectLifetime);
-
-                _activeEffects.Add(lifetime);
+                SpawnEffect(selectedPrefab, position + rotation * (Vector3)entry.offset, rotation, entry.scale);
             }
+        }
+
+        private void PlayDeathBurst()
+        {
+            if (!isActiveAndEnabled || deathBurstPrefab == null || deathBurstScale <= 0f) return;
+            Vector3 position = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
+            // 사망 분사는 타격 방향에 관계없이 전방위로 뻗는 전용 프리팹을 사용합니다.
+            SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale);
+        }
+
+        private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale)
+        {
+            _activeEffects.RemoveAll(effect => effect == null);
+            while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
+            {
+                EnemyHitParticle oldest = _activeEffects[0];
+                if (oldest != null) { oldest.gameObject.SetActive(false); Destroy(oldest.gameObject); }
+                _activeEffects.RemoveAt(0);
+            }
+
+            ParticleSystem particle = Instantiate(prefab, position, rotation);
+            // 적이 사라져도 흔적은 남기고, 씬을 벗어나면 함께 정리합니다.
+            SceneManager.MoveGameObjectToScene(particle.gameObject, gameObject.scene);
+            particle.transform.localScale *= Mathf.Max(0.01f, effectScale) * scale;
+            particle.gameObject.SetActive(true);
+
+            EnemyHitParticle lifetime = particle.GetComponent<EnemyHitParticle>();
+            if (lifetime == null) lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
+            lifetime.Play(particle, maxEffectLifetime);
+            _activeEffects.Add(lifetime);
         }
 
         private Vector3 ResolveHitPosition(Vector2 point, Vector3 origin)

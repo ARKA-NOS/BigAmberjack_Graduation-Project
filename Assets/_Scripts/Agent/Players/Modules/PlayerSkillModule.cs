@@ -1,7 +1,7 @@
 ﻿using _Scripts._Core._Debug;
 using _Scripts.Agent.SkillSystem;
+using _Scripts.Agent.SkillSystem.Interface;
 using _Scripts.DevLib.ModuleSystem;
-using _Scripts.UI.PlayerUI.HUD_UI.Skill_UI;
 using UnityEngine;
 
 namespace _Scripts.Agent.Players.Modules
@@ -14,11 +14,7 @@ namespace _Scripts.Agent.Players.Modules
         [SerializeField] private SkillSO meleeSkill;
         [SerializeField] private SkillSO skill1;
         [SerializeField] private SkillSO skill2;
-        
-        [Header("View Model")]
-        [SerializeField] private SkillViewModel skill1ViewModel;
-        [SerializeField] private SkillViewModel skill2ViewModel;
-        
+
         private PlayerController _playerController;
         private PlayerInputSo _input;
 
@@ -50,10 +46,15 @@ namespace _Scripts.Agent.Players.Modules
             _input.OnSkill2KeyPressed -= Skill2KeyPressed;
         }
 
-        protected void Update()
+        public ISkill GetSlotSkill(PlayerSkillSlot slot)
         {
-            if(skill1ViewModel != null) skill1ViewModel.Bind(GetSkill(skill1));
-            if(skill2ViewModel != null) skill2ViewModel.Bind(GetSkill(skill2));
+            return slot switch
+            {
+                PlayerSkillSlot.Melee => GetSkill(meleeSkill),
+                PlayerSkillSlot.First => GetSkill(skill1),
+                PlayerSkillSlot.Second => GetSkill(skill2),
+                _ => null,
+            };
         }
 
         public void SetSkill(PlayerSkillSlot slot,SkillSO skill)

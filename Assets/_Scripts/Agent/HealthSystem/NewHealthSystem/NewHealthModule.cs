@@ -5,12 +5,11 @@ using _Scripts._Core._Debug;
 using _Scripts.Agent.HealthSystem.NewHealthSystem.Healths;
 using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.ModuleSystem;
-using _Scripts.UI.PlayerUI.HUD_UI.HP_UI;
 using UnityEngine;
 
 namespace _Scripts.Agent.HealthSystem.NewHealthSystem
 {
-    public class NewHealthModule : Module,IAfterInitModule, INewHealthModule
+    public class NewHealthModule : Module,IAfterInitModule, INewHealthModule, IHealthLayers
     {
         [Header("Default Health Setting")]
         [SerializeField] private AbstractHealthSo coreHealth;
@@ -21,10 +20,7 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem
         [Header("Stat Setting")] 
         [SerializeField] private StatData defenseStatData;
         [SerializeField] private StatData damageReductionStatData;
-        
-        [Header("UI Setting")] 
-        [SerializeField] private NewHealthViewModel healthViewModel;
-        
+
         private IHealth _baseHealth;
         private Dictionary<AbstractHealthSo, IHealth> _healthDict;
         private Dictionary<IHealth, AbstractHealthSo> _healthSoDict;
@@ -40,6 +36,11 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem
         public bool IsDead { get; private set; }
         
         public event HealthChanged OnHealthChanged;
+
+        public IReadOnlyList<IHealth> Healths => _healths;
+
+        public AbstractHealthSo GetHealthSo(IHealth health)
+            => health != null ? _healthSoDict.GetValueOrDefault(health) : null;
 
         private IStatModule _statModule;
         private Stat _damageReductionStat;
@@ -99,21 +100,9 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem
 
         #endregion
 
-        private void Start()
-        {
-            InitViewModel();
-        }
-
-        private void InitViewModel()
-        {
-            if(healthViewModel != null)
-                healthViewModel.Bind(new HealthData(_healths.Count));
-        }
-        
         private void Update()
         {
             UpdateHealths();
-            UpdateViewModule();
         }
 
         #region Update
@@ -123,32 +112,6 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem
             foreach (var valuePair in _healths)
             {
                 valuePair.HealthUpdate();
-            }
-        }
-        
-        private void UpdateViewModule()
-        {
-            if(healthViewModel == null) return;
-            
-            HealthData healthData = healthViewModel.BindData;
-
-            if (healthData == null)
-            {
-                InitViewModel();
-                healthData = healthViewModel.BindData;
-            }
-            
-            healthData.Clear();
-
-            foreach (IHealth health in _healths)
-            {
-                AbstractHealthSo healthSo = _healthSoDict[health];
-                
-                healthData.Add(new HealthViewData
-                (
-                    healthSo,
-                    health
-                ));
             }
         }
 

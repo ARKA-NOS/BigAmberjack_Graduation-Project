@@ -1,15 +1,16 @@
 using System.Collections.Generic;
-using _Scripts.UI.BindSystem;
+using _Scripts.UI.MVVM.Bindings;
+using _Scripts.UI.MVVM.Disposables;
+using _Scripts.UI.MVVM.Views;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace _Scripts.UI.RunEnd
 {
-    // 탐험 종료 화면. RunResultViewModel에 Bind된 RunResultData를 표시한다.
-    // 이 컴포넌트가 붙은 오브젝트는 항상 켜 두고, 화면 표시는 root로 켜고 끈다.
-    // (꺼져 있으면 Awake가 실행되지 않아 ViewModel 구독이 빠진다)
-    public class RunResultUIBinder : AbstractUIBinder<RunResultData>
+    // 탐험 종료 결과창. RunResultViewModel.Result를 그리고, "다음" 버튼을 결과 데이터의 OnNext에 넘긴다.
+    // 이 오브젝트는 항상 켜 두고 화면 표시는 root로 켜고 끈다(View 자신을 끄면 구독이 끊겨 다시 열리지 않는다).
+    public class RunResultView : ViewBase<RunResultViewModel>
     {
         [SerializeField] private GameObject root;
         [SerializeField] private Image goldIcon;
@@ -21,28 +22,14 @@ namespace _Scripts.UI.RunEnd
         [SerializeField] private List<Image> itemSlotIcons = new();
         [SerializeField] private Button nextButton;
 
-        protected override void Awake()
+        protected override void OnBind(RunResultViewModel vm)
         {
-            base.Awake();
-            nextButton.onClick.AddListener(HandleNextClicked);
-            OnDataChanged();
+            vm.Result.Subscribe(Show).AddTo(Disposables);
+            nextButton.BindClick(() => vm.Result.Value?.OnNext?.Invoke()).AddTo(Disposables);
         }
 
-        protected override void OnDestroy()
+        private void Show(RunResultData data)
         {
-            base.OnDestroy();
-            nextButton.onClick.RemoveListener(HandleNextClicked);
-        }
-
-        // 결과 내용은 Bind 시점에만 바뀌므로 매 프레임 갱신할 것이 없다.
-        protected override void DataUpdate()
-        {
-        }
-
-        protected override void OnDataChanged()
-        {
-            RunResultData data = CurrentValue;
-
             if (data == null)
             {
                 root.SetActive(false);
@@ -69,11 +56,6 @@ namespace _Scripts.UI.RunEnd
             }
 
             root.SetActive(true);
-        }
-
-        private void HandleNextClicked()
-        {
-            CurrentValue?.OnNext?.Invoke();
         }
     }
 }

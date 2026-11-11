@@ -315,7 +315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c88b498e71974acdae656b807ebff2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.PlayerUI.HUD_UI.HP_UI.New_HP_UI.NewHealthUIBinder
-  bindData: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
+  viewModel: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
   healthImagePrefab: {fileID: 278932769125286203, guid: 38364e4351bc59849bcb15ee3156fe56, type: 3}
   healthTextPrefab: {fileID: 8786319099161376652, guid: 4bdf28292b98f264fba777cf322039fb, type: 3}
   barContainer: {fileID: 842491878570182469}

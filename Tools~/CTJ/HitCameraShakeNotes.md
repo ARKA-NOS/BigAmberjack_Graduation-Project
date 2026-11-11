@@ -6,7 +6,7 @@
 
 실제 HP가 감소한 타격을 받으면 적의 `EnemyHitCameraShakeModule`이 짧은 Cinemachine Impulse를 발생시킨다. 일반 타격은 약하게, `DamageData.IsCritical == true`인 타격은 더 강하고 조금 더 길게 흔들린다. 그 타격으로 HP가 0이 되면 강도와 지속 시간을 추가로 늘린다. 크리티컬 확률과 데미지 배율은 계산하지 않는다.
 
-Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모듈 프리팹을 자식으로 연결했다. 새 적에도 이 프리팹을 자식으로 하나 추가하면 된다. 별도 매니저나 카메라 Transform 조작은 필요 없다.
+Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모듈 프리팹을 자식으로 연결했다. 새 적에도 이 프리팹을 자식으로 하나 추가하면 된다. `EnemyHitCameraShakeManager`가 모든 적의 피격 쉐이크 강도를 일괄 조절한다. 카메라 Transform은 직접 조작하지 않는다.
 
 ## 인스펙터 설정
 
@@ -14,11 +14,11 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모
 
 | 항목 | 기본값 | 설명 |
 | --- | --- | --- |
-| Normal Strength | 0.12 | 일반 타격의 흔들림 강도. 0이면 일반 타격 쉐이크를 끈다. |
+| Normal Strength | 0.08 | 일반 타격의 흔들림 강도. 0이면 일반 타격 쉐이크를 끈다. |
 | Normal Duration | 0.20초 | 일반 타격의 흔들림 길이. |
-| Critical Strength | 0.24 | 크리티컬 흔들림 강도. 0이면 크리티컬 쉐이크를 끈다. |
+| Critical Strength | 0.18 | 크리티컬 흔들림 강도. 0이면 크리티컬 쉐이크를 끈다. |
 | Critical Duration | 0.26초 | 크리티컬 흔들림 길이. |
-| Lethal Strength Multiplier | 2 | 사망 타격의 강도를 해당 일반/크리티컬 값에 곱한다. |
+| Lethal Strength Multiplier | 3.2 | 사망 타격의 강도를 해당 일반/크리티컬 값에 곱한다. |
 | Lethal Duration Multiplier | 1.7 | 사망 타격의 길이를 해당 일반/크리티컬 값에 곱한다. |
 | Use Hit Direction | 켜짐 | 피격 방향으로 밀렸다 돌아오는 방향성 있는 흔들림. |
 | Fallback Direction | (1, 0.3) | 방향이 없거나 Use Hit Direction을 껐을 때의 방향. 길이는 정규화한다. |
@@ -29,7 +29,9 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모
 
 강도는 월드 유닛 기준 신호 배율이다. Listener의 `Gain`과 화면 확대 정도에 따라 화면에서 느껴지는 크기는 달라진다. 현재 기본 카메라 Gain은 1이다. `Bump` 곡선으로 잠깐 반동이 생겼다가 원점으로 돌아오며, Z축 이동이나 회전은 넣지 않는다. 방향만 피격 순간에 한 번 무작위로 정해 신호가 재생되는 동안에는 고정한다. 따라서 방향 변화가 강도나 지속 시간을 바꾸지 않는다.
 
-기본값에서 일반 사망 타격은 강도 0.24·0.34초, 크리티컬 사망 타격은 강도 0.48·0.442초다. 두 사망 배율을 1로 두면 일반 피격과 같은 강도·길이가 된다.
+기본값에서 일반 사망 타격은 강도 0.256·0.34초, 크리티컬 사망 타격은 강도 0.576·0.442초다. 두 사망 배율을 1로 두면 일반 피격과 같은 강도·길이가 된다.
+
+게임 옵션 연결 지점은 `EnemyHitCameraShakeManager.SetIntensity(float intensity)`다. `1`은 프리팹 설정 그대로, `0.5`는 모든 적 피격 쉐이크의 강도 절반, `0`은 새 피격 쉐이크를 끈다. 0~1 범위를 벗어난 값은 제한된다. 씬을 바꿔도 같은 실행 중에는 값이 유지되고, 새 Play 세션에서는 1로 돌아간다. 옵션 저장·불러오기 UI는 아직 연결하지 않았다. 이 매니저는 적 피격 채널만 관리하며 보스 레이저 쉐이크는 영향을 받지 않는다.
 
 현재 카메라의 Impulse 합산 방식은 Additive다. 여러 적을 한 번에 타격하거나 보스 레이저와 타격이 겹치면 신호가 더해질 수 있다. 기본값은 한 번의 일반 타격 기준으로 약하게 설정했다.
 
@@ -54,15 +56,22 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모
 3. Hierarchy에서 적의 `EnemyHitCameraShakeModule` 자식을 선택한다. 컴포넌트 메뉴의 `Preview > Normal Shake (Play Mode, No Damage)`와 `Preview > Lethal Shake (Play Mode, No Damage)`를 비교한다. 크리티컬도 `Preview > Critical Shake`와 `Preview > Critical Lethal Shake`로 비교할 수 있다. 미리보기는 피해를 주지 않는다. 같은 항목을 여러 번 실행하면 피격 방향 기준 각도가 조금씩 달라진다.
 4. Play 중 Normal/Critical Strength·Duration, Lethal Strength/Duration Multiplier와 Direction Jitter Degrees를 바꾸어 원하는 감도로 맞춘다. 플레이 중 변경은 종료 시 되돌아가므로, 값을 기록한 뒤 Edit 모드에서 공통 모듈 프리팹이나 특정 적의 Override로 저장한다.
 5. 모듈 컴포넌트를 끄고 공격하면 HP·기존 피격 연출은 작동하되 새로운 카메라 쉐이크는 없어야 한다. 다시 켜면 한 번씩 정상 반응해야 한다.
+6. 게임 옵션 연동을 시험할 때는 임시 호출에서 `EnemyHitCameraShakeManager.SetIntensity(0.5f)`를 실행한 뒤 같은 적을 때린다. 화면 흔들림의 세기만 절반으로 줄고 길이는 유지되어야 한다. `SetIntensity(0f)`에서는 새 피격 쉐이크가 없어야 한다. 시험 후 `SetIntensity(1f)`로 되돌린다.
 
 흔들리지 않는다면 실제 사용 중인 Cinemachine 카메라의 **Cinemachine Impulse Listener**에서 활성화 여부, `Channel Mask`의 채널 1 수신, `Gain > 0`, `Use 2D Distance`를 확인한다. 현재 PlayerCam에는 이미 설정되어 있다. 보스 전용 채널 64만 받는 독립 테스트 카메라에서는 피격 채널 1이 수신되지 않는다. 공용 카메라 파일은 허용 영역 밖이므로 자동으로 수정하지 않는다.
 
 현재 일반 공격이 `IsCritical`을 설정하지 않으면 자동으로 일반 연출만 나온다. 나중에 공격 측에서 `IsCritical = true`를 전달하면 같은 모듈이 크리티컬 연출을 선택한다. 피격 모듈이 크리티컬 공격을 만들어내지는 않는다.
 
+## 2026-11-11 강도 재조정 및 사운드 매니저 확인
+
+- 일반 0.12 → 0.08, 크리티컬 0.24 → 0.18, 사망 배율 2 → 3.2로 조정했다. 일반 피격은 약해지고 사망 타격은 이전보다 조금 더 강하며 두 반응 사이의 차이가 커진다.
+- `Assets/_Scripts/DevLib/SoundSystem/SoundManager.cs`가 존재한다. `PlaySoundEvent`/`StopSoundEvent`를 수신하고 `PoolManagerSO`로 `SoundPlayer`를 재사용하는 구조다. 다만 현재 검사한 Assets의 씬·프리팹·에셋에는 `SoundManager` 스크립트 GUID를 참조하는 직렬화 컴포넌트가 없었다. 실제 게임에서 생성·설정되는지는 추가 연결 확인이 필요하다. 해당 팀원 영역의 파일은 수정하지 않았다.
+
 ## 검증 결과
 
-- Unity 컴파일: 오류 0, 경고 0.
+- 이전 구현 당시 Unity 컴파일: 오류 0, 경고 0. 이번 재조정은 사용자가 에디터에서 수동 컴파일했으며, 이 작업 셸에서는 Unity Pipeline 서버 연결이 되지 않아 에디터의 컴파일 결과를 직접 조회하지 못했다.
 - 여섯 적 프리팹: 모듈이 각각 하나, 활성 상태, Missing Script 없음, PlayerCam 채널 1 수신 확인.
+- 아래 수치는 2026-11-11 이전 강도 0.12/0.24와 사망 배율 2로 실행한 기록이다. 이번 강도 재조정은 Unity Play 실행으로 다시 측정하지 못했다. 사용자가 에디터에서 직접 컴파일했고, 별도로 프로젝트의 C# 소스와 참조를 사용한 문법·형식 검사는 오류 0건이었다. Unity Pipeline 서버에 연결되지 않아 아래 `RunPlay` 자동 실행 검증은 이번 수정에서 수행하지 못했다.
 - 독립 Play 씬에서 실제 Enemy01의 ApplyDamage와 기존 PlayerCam 프리팹을 연결해 검증했다. 신호 중간 지점의 카메라 보정량은 일반 약 0.1181유닛, 크리티컬 약 0.2363유닛이었다. 설정된 길이는 각각 0.20/0.26초다.
 - 같은 환경에서 일반 사망 미리보기는 약 0.2363유닛·0.34초, 실제 크리티컬 사망 타격은 약 0.4725유닛·0.442초였다. 적을 파괴해도 마지막 신호가 남은 시간 동안 이어지고 종료됐다.
 - 같은 방향으로 12회 재생했을 때 각도는 약 -33.9도부터 +33.3도까지 달라졌고 설정한 ±35도 안에 머물렀다. 방향 변동 중에도 강도가 유지됐고, 각도를 0으로 설정하면 원래 방향을 유지했다.
@@ -80,6 +89,7 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 공통 모
 - `[SerializeField] private`, `[Min]`, `[Tooltip]`, `[Header]`: 외부 코드가 설정값을 직접 바꾸는 통로는 줄이면서 인스펙터에서 강도·길이·거리 등을 조절한다. Min은 편집 편의를 위한 제한이므로 실행 시에도 유효성을 검사한다. 이번 강도·길이 조정은 필드 초기값과 직렬화된 공통 프리팹 값을 함께 바꿔, 새로 붙이는 모듈과 기존 적 프리팹의 기본값을 일치시켰다.
 - 조건 연산자 `isCritical ? ... : ...`: 같은 재생 경로에서 일반/크리티컬 설정만 선택한다. 연출 코드를 두 벌로 복사하지 않는다.
 - 선택 매개변수 `bool isLethal = false`: 기존 2개 인수의 `PlayShake` 미리보기 호출을 그대로 유지하면서 실제 사망 타격에만 배율을 적용한다. `Mathf.Max(1f, multiplier)`로 잘못된 직렬화 값이 사망 타격을 약하게 만들지 않도록 한다.
+- `static` 클래스와 정적 속성 `Intensity`: 씬의 적 수에 관계없이 게임 옵션의 공통 값을 한 곳에서 보관한다. `SetIntensity`에서 `Mathf.Clamp01`로 0~1에 제한하고 NaN/무한대는 무시한다. `RuntimeInitializeOnLoadMethod(SubsystemRegistration)`은 에디터의 Domain Reload가 꺼져도 새 Play 세션에서 기본값으로 돌린다.
 - 객체 초기화식 `new CinemachineImpulseDefinition { ... }`: 이번 타격에 필요한 채널·모양·길이를 한 곳에서 구성한다. 타격마다 별도 객체이므로 재생 중인 이전 신호 설정을 바꾸지 않는다.
 - `Vector2.normalized`: 방향 벡터 길이에 따라 흔들림이 커지지 않게 하고, 강도 필드가 크기를 결정하도록 한다.
 - `[Range(0f, 90f)]`와 `Random.Range(-jitter, jitter)`: 인스펙터에서 최대 흔들림 각도를 조정하고, 매 타격마다 양쪽으로 다른 각도를 뽑는다. `Quaternion.Euler(0f, 0f, angle)`로 2D 방향을 Z축 기준으로 돌린다. 방향 벡터의 길이는 유지되므로 타격 강도 설정은 그대로 적용된다.

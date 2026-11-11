@@ -17,6 +17,15 @@ public static class VerifyCoinTrail
 {
     private const string CoinPath = "Assets/_Prefabs/Enemies/Effects/EnemyRewardCoin.prefab";
     private const string ChestCoinPath = "Assets/_Prefabs/Chest/ChestRewardCoin.prefab";
+    private static readonly string[] EnemyPaths =
+    {
+        "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab",
+        "Assets/_Prefabs/Enemies/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab",
+        "Assets/_Prefabs/Enemies/Enemy/Enemy04/Enemy04_MechanicArcher.prefab",
+        "Assets/_Prefabs/Enemies/Test/Catto_Melee.prefab",
+        "Assets/_Prefabs/Enemies/Test/MadGhost_Ranged.prefab",
+        "Assets/_Prefabs/Enemies/Bosses/EyeBoss/RobotEyeBoss.prefab"
+    };
     private const string SceneKey = "CTJ.CoinTrail.OriginalScene";
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private static void Check(bool condition, string message)
@@ -26,9 +35,15 @@ public static class VerifyCoinTrail
     private static object Call(object target, string name, params object[] args) =>
         target.GetType().GetMethod(name, Private).Invoke(target, args);
 
+    public static object GetEditorState() => new
+    {
+        playing = EditorApplication.isPlaying,
+        scene = SceneManager.GetActiveScene().path,
+        dirty = SceneManager.GetActiveScene().isDirty
+    };
+
     public static object CheckAssets()
     {
-        Check(!EditorApplication.isPlaying, "Edit Mode required");
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CoinPath);
         GameObject chestPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ChestCoinPath);
         Check(prefab != null && prefab.GetComponent<EnemyCoinTrail>() != null, "Coin / trail reference missing");
@@ -43,6 +58,27 @@ public static class VerifyCoinTrail
         Check(profile.Evaluate(1f) == 0f, "Tail must taper to one point");
         var coinSettings = new SerializedObject(prefab.GetComponent<EnemyRewardCoin>());
         var chestSettings = new SerializedObject(chestPrefab.GetComponent<EnemyRewardCoin>());
+        float enemyLaunchBoost = 0f;
+        foreach (string path in EnemyPaths)
+        {
+            GameObject enemyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            EnemyCurrencyRewardModule reward = enemyPrefab != null
+                ? enemyPrefab.GetComponentInChildren<EnemyCurrencyRewardModule>(true) : null;
+            Check(reward != null, "Enemy coin reward module missing: " + path);
+            float multiplier = new SerializedObject(reward)
+                .FindProperty("deathCoinLaunchMultiplier").floatValue;
+            Check(multiplier > 1f, "Enemy death coin launch boost missing: " + path);
+            if (enemyLaunchBoost == 0f) enemyLaunchBoost = multiplier;
+        }
+        Check(coinSettings.FindProperty("coinDeathTime").floatValue > 0f &&
+            chestSettings.FindProperty("coinDeathTime").floatValue > 0f,
+            "Coin lifetime missing");
+        var trailSettings = new SerializedObject(prefab.GetComponent<EnemyCoinTrail>());
+        Check(trailSettings.FindProperty("fadeStartDistance").floatValue >
+            trailSettings.FindProperty("hideDistance").floatValue,
+            "Trail proximity fade distances invalid");
+        Check(Mathf.Approximately(trailSettings.FindProperty("fadeStartDistance").floatValue, 4.5f),
+            "Trail fade should begin farther away");
         Check(coinSettings.FindProperty("minimumLaunchElevation").floatValue > 0f &&
             chestSettings.FindProperty("minimumLaunchElevation").floatValue > 0f &&
             coinSettings.FindProperty("launchGravityPause").floatValue > 0f &&
@@ -56,6 +92,11 @@ public static class VerifyCoinTrail
             launchForce = coinSettings.FindProperty("scatterForceMultiplier").floatValue,
             directionMode = "random angle within four upward sectors",
             gravityPause = coinSettings.FindProperty("launchGravityPause").floatValue,
+            enemyLaunchBoost,
+            enemyPrefabCount = EnemyPaths.Length,
+            coinDeathTime = coinSettings.FindProperty("coinDeathTime").floatValue,
+            trailFadeStart = trailSettings.FindProperty("fadeStartDistance").floatValue,
+            trailHideDistance = trailSettings.FindProperty("hideDistance").floatValue,
             width = settings.FindProperty("trailWidth").floatValue, shader = material.shader.name,
             chestCoin = chestPrefab.name };
     }
@@ -92,6 +133,7 @@ public static class VerifyCoinTrail
         bool fixedLaunchStrength = true, randomizedDirection = false;
         bool gravityPausedInitially = false, gravityResumed = false;
         bool fixedTrailLifetime = true, equalNearAndFarHomingSpeed = false;
+        bool proximityFade = false;
         int maxPoints = 0;
         float longest = 0f, maxScatterRadius = 0f, firstBounceTimeTotal = 0f;
         int firstBounceSamples = 0;
@@ -99,6 +141,7 @@ public static class VerifyCoinTrail
         var firstBounceSeen = new bool[8];
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CoinPath);
         GameObject chestPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ChestCoinPath);
+        EnemyRewardCoin timeoutCoin = null, baselineProbe = null, boostedProbe = null;
         try
         {
             for (int i = 0; i < 8; i++)
@@ -109,10 +152,11 @@ public static class VerifyCoinTrail
                 launchPositions[i] = coin.transform.position;
                 if (i == 3) coin.GetComponent<EnemyCoinTrail>().enabled = false;
                 Call(coin, "SetCollector", collector.transform);
-                Call(coin, "Launch", currency, 3, (i % 4 + 0.5f) / 4f);
+                float launchBoost = i < 4 ? 1.45f : 1f;
+                Call(coin, "Launch", currency, 3, (i % 4 + 0.5f) / 4f, launchBoost);
                 Vector2 velocity = (Vector2)typeof(EnemyRewardCoin).GetField("_velocity", Private).GetValue(coin);
-                Vector2 radialVelocity = velocity - Vector2.up * 0.5f;
-                float expectedSpeed = i < 4 ? 4.175f : 5.375f;
+                Vector2 radialVelocity = velocity - Vector2.up * (0.5f * launchBoost);
+                float expectedSpeed = (i < 4 ? 4.175f : 5.375f) * launchBoost;
                 fixedLaunchStrength &= Mathf.Abs(radialVelocity.magnitude - expectedSpeed) < 0.001f;
                 float baseAngle = (20f + (i % 4 + 0.5f) * 35f) * Mathf.Deg2Rad;
                 Vector2 baseDirection = new Vector2(Mathf.Cos(baseAngle), Mathf.Sin(baseAngle));
@@ -127,6 +171,9 @@ public static class VerifyCoinTrail
             var pauseProbe = coins[1];
             var velocityField = typeof(EnemyRewardCoin).GetField("_velocity", Private);
             var airTimeField = typeof(EnemyRewardCoin).GetField("_airTime", Private);
+            float gravityBoost = (float)typeof(EnemyRewardCoin).GetField("_scatterGravityMultiplier", Private).GetValue(pauseProbe);
+            Check(Mathf.Abs(gravityBoost - 1.45f * 1.45f) < 0.001f,
+                "Enemy scatter gravity did not compensate for launch boost");
             Vector3 pauseStartPosition = pauseProbe.transform.position;
             Vector2 pauseStartVelocity = (Vector2)velocityField.GetValue(pauseProbe);
             Call(pauseProbe, "FixedUpdate");
@@ -193,6 +240,22 @@ public static class VerifyCoinTrail
                 if (!toggled && coins[0] != null && coins[0].BounceCount > 0)
                 {
                     var component = coins[0].GetComponent<EnemyCoinTrail>();
+                    TrailRenderer trail = coins[0].GetComponentInChildren<TrailRenderer>();
+                    var properties = new MaterialPropertyBlock();
+                    int tint = Shader.PropertyToID("_Color");
+                    component.SetCollectorDistance(4f);
+                    trail.GetPropertyBlock(properties);
+                    float farAlpha = properties.GetColor(tint).a;
+                    component.SetCollectorDistance(1.5f);
+                    trail.GetPropertyBlock(properties);
+                    float middleAlpha = properties.GetColor(tint).a;
+                    component.SetCollectorDistance(0.5f);
+                    trail.GetPropertyBlock(properties);
+                    float nearAlpha = properties.GetColor(tint).a;
+                    bool hidden = !trail.emitting && trail.positionCount == 0;
+                    component.SetCollectorDistance(4f);
+                    proximityFade = farAlpha > middleAlpha && middleAlpha > nearAlpha &&
+                        nearAlpha < 0.001f && hidden && trail.emitting;
                     component.enabled = false;
                     Check(coins[0].GetComponentInChildren<TrailRenderer>().positionCount == 0, "Disable retained trail");
                     component.enabled = true;
@@ -210,19 +273,78 @@ public static class VerifyCoinTrail
             Check(maxScatterRadius > 1.5f && firstBounceSamples == 8 &&
                 firstBounceTimeTotal / firstBounceSamples > 0.3f,
                 "Scatter spread or air time was too small");
-            Check(noPrematureReward && noTrailBeforeBounce && fixedTrailLifetime &&
+            Check(noPrematureReward && noTrailBeforeBounce && fixedTrailLifetime && proximityFade &&
                 bounceTrail && homingTrail && collectionStopped && faded && cleared,
                 "A trail lifecycle stage was not observed");
+
+            var probeCurrency = new CurrencyData(null, 0);
+            var savedRandomState = UnityEngine.Random.state;
+            try
+            {
+                baselineProbe = Object.Instantiate(prefab, new Vector3(-4f, 0.6f, 0f), Quaternion.identity)
+                    .GetComponent<EnemyRewardCoin>();
+                boostedProbe = Object.Instantiate(prefab, new Vector3(4f, 0.6f, 0f), Quaternion.identity)
+                    .GetComponent<EnemyRewardCoin>();
+                UnityEngine.Random.InitState(731);
+                Call(baselineProbe, "Launch", probeCurrency, 0, 0.125f, 1f);
+                UnityEngine.Random.InitState(731);
+                Call(boostedProbe, "Launch", probeCurrency, 0, 0.125f, 1.45f);
+            }
+            finally { UnityEngine.Random.state = savedRandomState; }
+            float baselineInitialSpeed = ((Vector2)velocityField.GetValue(baselineProbe)).magnitude;
+            float boostedInitialSpeed = ((Vector2)velocityField.GetValue(boostedProbe)).magnitude;
+            float baselineRange = -1f, boostedRange = -1f;
+            float rangeStart = Time.time;
+            while (Time.time - rangeStart < 3f && (baselineRange < 0f || boostedRange < 0f))
+            {
+                if (baselineRange < 0f && baselineProbe.BounceCount > 0)
+                    baselineRange = Mathf.Abs(baselineProbe.transform.position.x + 4f);
+                if (boostedRange < 0f && boostedProbe.BounceCount > 0)
+                    boostedRange = Mathf.Abs(boostedProbe.transform.position.x - 4f);
+                await Task.Delay(16);
+            }
+            bool similarScatterRange = baselineRange > 0.1f && boostedRange > 0.1f &&
+                Mathf.Abs(boostedRange - baselineRange) / baselineRange < 0.25f;
+            Check(Mathf.Abs(boostedInitialSpeed / baselineInitialSpeed - 1.45f) < 0.001f &&
+                similarScatterRange, "Enemy coin boost changed scatter range too much");
+
+            var timeoutCurrency = new CurrencyData(null, 0);
+            int timeoutPayouts = 0;
+            float timeoutPayoutAt = -1f;
+            float timeoutStart = Time.time;
+            timeoutCurrency.OnCurrencyChanged += (current, previous) =>
+            {
+                timeoutPayouts++;
+                timeoutPayoutAt = Time.time - timeoutStart;
+            };
+            timeoutCoin = Object.Instantiate(prefab, new Vector3(0f, 3f, 0f), Quaternion.identity)
+                .GetComponent<EnemyRewardCoin>();
+            typeof(EnemyRewardCoin).GetField("coinDeathTime", Private).SetValue(timeoutCoin, 0.25f);
+            Call(timeoutCoin, "Launch", timeoutCurrency, 5, 0.5f, 1f);
+            bool timeoutBeforeGround = true;
+            while (timeoutCoin != null && Time.time - timeoutStart < 1f)
+            {
+                timeoutBeforeGround &= timeoutCoin.BounceCount == 0;
+                await Task.Delay(16);
+            }
+            Check(timeoutCoin == null && timeoutBeforeGround && timeoutCurrency.Count == 5 &&
+                timeoutPayouts == 1 && timeoutPayoutAt >= 0.25f && timeoutPayoutAt < 0.6f,
+                "Timed-out coin did not disappear and pay exactly once");
             return new { passed = true, currency = currency.Count, payouts, launchedAcrossUpperArc,
                 randomizedDirection, fixedLaunchStrength, gravityPausedInitially, gravityResumed,
                 noTrailBeforeBounce, equalNearAndFarHomingSpeed, nearStep, farStep, fixedTrailLifetime,
-                bounceTrail, homingTrail,
+                bounceTrail, homingTrail, proximityFade,
                 collectionStopped, faded, cleared, noPrematureReward, maxScatterRadius,
+                baselineInitialSpeed, boostedInitialSpeed, baselineRange, boostedRange,
+                similarScatterRange, timeoutPayoutAt, timeoutPayouts, timeoutBeforeGround,
                 firstBounceTime = firstBounceTimeTotal / firstBounceSamples, maxPoints, longest };
         }
         finally
         {
             foreach (EnemyRewardCoin coin in coins) if (coin != null) Object.Destroy(coin.gameObject);
+            if (timeoutCoin != null) Object.Destroy(timeoutCoin.gameObject);
+            if (baselineProbe != null) Object.Destroy(baselineProbe.gameObject);
+            if (boostedProbe != null) Object.Destroy(boostedProbe.gameObject);
             Object.Destroy(floor);
             Object.Destroy(collector);
         }

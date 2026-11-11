@@ -22,6 +22,10 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.005f)] private float minVertexDistance = 0.035f;
         [Tooltip("플레이어에게 도착한 뒤 남은 트레일이 사라지는 시간. 코인의 지급 시점에는 영향을 주지 않습니다.")]
         [SerializeField, Min(0.01f)] private float collectFadeDuration = 0.16f;
+        [Tooltip("플레이어 중심까지 이 거리 안으로 들어오면 트레일이 점차 옅어집니다.")]
+        [SerializeField, Min(0.01f)] private float fadeStartDistance = 4.5f;
+        [Tooltip("플레이어 중심까지 이 거리 이하에서는 트레일을 비웁니다.")]
+        [SerializeField, Min(0f)] private float hideDistance = 0.75f;
         [SerializeField] private int sortingOrderOffset = -1;
 
         private static readonly int ColorId = Shader.PropertyToID("_Color");
@@ -31,12 +35,14 @@ namespace _Scripts.Agent.Enemies
         private bool _following;
         private bool _fading;
         private float _fadeElapsed;
+        private float _proximityOpacity = 1f;
 
         public void BeginTrail(SpriteRenderer visual)
         {
             _visual = visual;
             _following = true;
             _fading = false;
+            _proximityOpacity = 1f;
             if (!isActiveAndEnabled || trailMaterial == null) return;
 
             if (_trail == null)
@@ -80,6 +86,27 @@ namespace _Scripts.Agent.Enemies
             _trail.emitting = true;
         }
 
+        public void SetCollectorDistance(float distance)
+        {
+            if (!isActiveAndEnabled || !_following || _trail == null) return;
+            float near = Mathf.Max(0f, hideDistance);
+            float far = Mathf.Max(near + 0.01f, fadeStartDistance);
+            _proximityOpacity = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(near, far, distance));
+            if (_proximityOpacity <= 0.001f)
+            {
+                if (_trail.emitting)
+                {
+                    _trail.emitting = false;
+                    _trail.Clear();
+                }
+            }
+            else if (!_trail.emitting)
+            {
+                _trail.emitting = true;
+            }
+            SetOpacity(_proximityOpacity);
+        }
+
         public void StopTrail()
         {
             _following = false;
@@ -95,7 +122,7 @@ namespace _Scripts.Agent.Enemies
             if (!_fading || _trail == null) return;
             _fadeElapsed += Time.deltaTime;
             float t = Mathf.Clamp01(_fadeElapsed / Mathf.Max(0.01f, collectFadeDuration));
-            SetOpacity(1f - Mathf.SmoothStep(0f, 1f, t));
+            SetOpacity(_proximityOpacity * (1f - Mathf.SmoothStep(0f, 1f, t)));
             if (t < 1f) return;
             _fading = false;
             _trail.Clear();

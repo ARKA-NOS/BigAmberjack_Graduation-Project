@@ -126,6 +126,7 @@ MonoBehaviour:
   homingAcceleration: 35
   collectDistance: 0.12
   targetWaitTimeout: 5
+  coinDeathTime: 6
   spinFrames:
   - {fileID: 403084015249902486, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
   - {fileID: 3553354474230348599, guid: 47b05be8f050e7e4c981dd1dd0200d19, type: 3}
@@ -217,4 +218,6 @@ MonoBehaviour:
   tailColor: {r: 1, g: 0.42, b: 0.06, a: 0.06}
   minVertexDistance: 0.035
   collectFadeDuration: 0.16
+  fadeStartDistance: 4.5
+  hideDistance: 0.75
   sortingOrderOffset: -1

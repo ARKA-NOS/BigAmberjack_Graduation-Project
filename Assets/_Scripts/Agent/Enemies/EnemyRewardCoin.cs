@@ -48,6 +48,10 @@ namespace _Scripts.Agent.Enemies
         [Tooltip("플레이어가 없으면 재탐색하며 기다립니다. 끝까지 없을 때만 현재 위치에서 소멸/정산합니다.")]
         [SerializeField, Min(0.1f)] private float targetWaitTimeout = 5f;
 
+        [Header("Lifetime")]
+        [Tooltip("이 시간 안에 회수되지 못한 코인은 제거하고 보유 금액을 즉시 지급합니다.")]
+        [SerializeField, Min(0.1f)] private float coinDeathTime = 6f;
+
         [Header("Sprite Animation")]
         [SerializeField] private Sprite[] spinFrames;
         [SerializeField, Min(1f)] private float spinFramesPerSecond = 12f;
@@ -82,6 +86,8 @@ namespace _Scripts.Agent.Enemies
         private float _nextTargetSearch;
         private float _homingSpeed;
         private float _missingTargetTime;
+        private float _aliveTime;
+        private float _scatterGravityMultiplier = 1f;
         private Vector3 _originalScale;
 
         public int Amount { get; private set; }
@@ -128,12 +134,13 @@ namespace _Scripts.Agent.Enemies
             return true;
         }
 
-        internal void Launch(CurrencyData currency, int amount, float spread)
+        internal void Launch(CurrencyData currency, int amount, float spread, float launchSpeedMultiplier = 1f)
         {
             if (_launched) return;
             _launched = true;
             _currency = currency;
             Amount = amount;
+            _aliveTime = 0f;
             _visual = GetComponent<SpriteRenderer>();
             _trail = GetComponent<EnemyCoinTrail>();
             _originalScale = transform.localScale;
@@ -149,7 +156,10 @@ namespace _Scripts.Agent.Enemies
             // 기존 적/상자 프리팹의 두 속도 설정을 유지하되, 방향별 힘 차이는 만들지 않습니다.
             float launchSpeed = (Mathf.Max(0f, horizontalSpeed) + (low + high) * 0.5f) * 0.5f *
                 Mathf.Max(0f, scatterForceMultiplier);
-            _velocity = direction * launchSpeed + Vector2.up * scatterUpwardBias;
+            float boost = Mathf.Max(1f, launchSpeedMultiplier);
+            _velocity = (direction * launchSpeed + Vector2.up * scatterUpwardBias) * boost;
+            // 발사 속도의 제곱만큼 첫 낙하 중력을 키워 전체 비행 범위는 비슷하게 유지합니다.
+            _scatterGravityMultiplier = boost * boost;
             if (spinFrames != null && spinFrames.Length > 0)
             {
                 // 같은 순간에 생성된 코인도 회전 자세가 조금씩 다르게 시작합니다.
@@ -165,7 +175,8 @@ namespace _Scripts.Agent.Enemies
             if (IsHoming) { TickHoming(dt); return; }
             _airTime += dt;
             Vector2 gravity = _phase == CoinPhase.Scatter && _airTime <= launchGravityPause
-                ? Vector2.zero : Physics2D.gravity * gravityScale;
+                ? Vector2.zero : Physics2D.gravity * gravityScale *
+                    (_phase == CoinPhase.Scatter ? _scatterGravityMultiplier : 1f);
             Vector2 delta = _velocity * dt + gravity * (0.5f * dt * dt);
             _velocity += gravity * dt;
             float distance = delta.magnitude;
@@ -190,6 +201,9 @@ namespace _Scripts.Agent.Enemies
                 transform.position += (Vector3)delta;
             }
 
+            if (_phase == CoinPhase.Bounce && _trail != null &&
+                TryGetCollectorBounds(out Vector2 collectorCenter, out _))
+                _trail.SetCollectorDistance(Vector2.Distance(transform.position, collectorCenter));
             // 꼭대기까지 먼저 올라간 다음에만 자석 이동을 시작합니다.
             if ((_phase == CoinPhase.Bounce && _velocity.y <= 0f) || _airTime >= maxAirTime) BeginHoming();
         }
@@ -220,14 +234,19 @@ namespace _Scripts.Agent.Enemies
                 BeginHoming();
                 return;
             }
-            TryGetCollectorBounds(out _, out float playerHeight);
+            bool hasCollector = TryGetCollectorBounds(out Vector2 collectorCenter, out float playerHeight);
             float height = Mathf.Max(minimumBounceHeight, playerHeight * Mathf.Max(0.5f, bounceHeightRatio));
             float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
             _velocity = new Vector2(_velocity.x * horizontalRetention, Mathf.Sqrt(2f * gravity * height));
             BounceCount++;
             _phase = CoinPhase.Bounce;
             _airTime = 0f;
-            if (_trail != null) _trail.BeginTrail(_visual);
+            if (_trail != null)
+            {
+                _trail.BeginTrail(_visual);
+                if (hasCollector)
+                    _trail.SetCollectorDistance(Vector2.Distance(transform.position, collectorCenter));
+            }
         }
 
         private void BeginHoming()
@@ -254,6 +273,7 @@ namespace _Scripts.Agent.Enemies
             _missingTargetTime = 0f;
             _homingSpeed = Mathf.MoveTowards(_homingSpeed, Mathf.Max(initialHomingSpeed, maxHomingSpeed), homingAcceleration * dt);
             float distance = Vector2.Distance(transform.position, center);
+            if (_trail != null) _trail.SetCollectorDistance(distance);
             if (distance <= Mathf.Max(collectDistance, _homingSpeed * dt))
             {
                 SetPosition(center);
@@ -284,6 +304,12 @@ namespace _Scripts.Agent.Enemies
         private void Update()
         {
             if (!_launched || _completed) return;
+            _aliveTime += Time.deltaTime;
+            if (!IsCollecting && _aliveTime >= Mathf.Max(0.1f, coinDeathTime))
+            {
+                CompleteReward();
+                return;
+            }
             _animationTime += Time.deltaTime;
             if (!IsCollecting)
             {
@@ -323,6 +349,7 @@ namespace _Scripts.Agent.Enemies
         private void CompleteReward()
         {
             if (_completed) return;
+            if (_trail != null) _trail.StopTrail();
             _visual.enabled = false;
             Destroy(gameObject);
             PayReward();

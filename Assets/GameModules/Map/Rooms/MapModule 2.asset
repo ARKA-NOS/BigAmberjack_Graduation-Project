@@ -13,8 +13,5 @@ MonoBehaviour:
   m_Name: MapModule 2
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.MapCreateSystem.MapModuleSO
   <RoomPrefab>k__BackingField: {fileID: 2966644341451772189, guid: 4a79efa7fbb574846b945bcc4e66eb73, type: 3}
-  <Bounds>k__BackingField:
-  - x: 0
-    y: 0
-    width: 12
-    height: 8
+  <Priority>k__BackingField: 0
+  <Role>k__BackingField: 2

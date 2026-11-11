@@ -16,5 +16,8 @@ namespace _Scripts.Maps.New_Map.MapGenerateData
             Size = size;
         }
         
+        public static bool CanLink(RoomLinkData link1, RoomLinkData link2)
+            => link1.Direction.GetVector2() * link1.Size + link2.Direction.GetVector2() * link2.Size == Vector2.zero;
+        
     }
 }

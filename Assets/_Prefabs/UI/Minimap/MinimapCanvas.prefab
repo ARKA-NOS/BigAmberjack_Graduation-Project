@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aadf4ee4172dccd448b9709152db3b1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Minimap.MinimapUIBinder
-  bindData: {fileID: 11400000, guid: 1e9a68f0a43f82347a6813687c204008, type: 2}
+  viewModel: {fileID: 11400000, guid: 1e9a68f0a43f82347a6813687c204008, type: 2}
   viewMode: 1
   visualRoot: {fileID: 6724252449173625195}
   viewport: {fileID: 699529153924504589}
@@ -812,7 +812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aadf4ee4172dccd448b9709152db3b1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Minimap.MinimapUIBinder
-  bindData: {fileID: 11400000, guid: 1e9a68f0a43f82347a6813687c204008, type: 2}
+  viewModel: {fileID: 11400000, guid: 1e9a68f0a43f82347a6813687c204008, type: 2}
   viewMode: 0
   visualRoot: {fileID: 2730784700367986493}
   viewport: {fileID: 5521670184011759890}
@@ -929,9 +929,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Minimap.MinimapPresenter
   stageGenerator: {fileID: 0}
   viewModel: {fileID: 11400000, guid: 1e9a68f0a43f82347a6813687c204008, type: 2}
-  hiddenRoomTypes: 01000000
-  pixelsPerUnit: 1
-  terrainColor: {r: 1, g: 1, b: 1, a: 0.85}
 --- !u!114 &4799434558032071680
 MonoBehaviour:
   m_ObjectHideFlags: 0

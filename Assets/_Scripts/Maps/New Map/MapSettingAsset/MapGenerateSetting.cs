@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace _Scripts.Maps.New_Map.MapSettingAsset
 {
@@ -32,5 +33,13 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         [field: SerializeField] public Vector2Int MapBounds { get; private set; } = new(100, 100);
         // 미리 만든 기본 맵
         [field: SerializeField] public GameObject FallbackMapPrefab { get; private set; }
+
+        [field: Header("Wall")]
+        // 방 사이와 맵 바깥 가장자리의 빈 칸을 채울 타일. 없으면 벽을 채우지 않는다.
+        [field: SerializeField] public TileBase WallTile { get; private set; }
+        // 모든 방을 감싸는 사각형 바깥으로 더 채울 칸 수
+        [field: SerializeField, Min(0)] public int WallPadding { get; private set; } = 5;
+        // 한 프레임에 넣을 벽 타일 수. 0 이하이면 한 번에 모두 넣는다.
+        [field: SerializeField] public int WallTilesPerFrame { get; private set; } = 4096;
     }
 }

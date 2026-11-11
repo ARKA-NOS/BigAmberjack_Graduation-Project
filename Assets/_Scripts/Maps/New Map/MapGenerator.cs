@@ -12,12 +12,16 @@ namespace _Scripts.Maps.New_Map
 {
     /*
      * 생성 파이프라인
-     * 언로드 → 로드 → 배치(MapDeployment, 스레드풀) → 프리팹 생성 → 연결 지점 마감 → 완료 이벤트 → End
-     * 실패하면 프리팹 생성 대신 기본 맵(FallbackMapPrefab)을 만들고, 그 경우에도 완료 이벤트는 한 번 낸다.
+     * 언로드 → 로드 → 배치(MapDeployment, 스레드풀) → 프리팹 생성 → 연결 지점 마감 → 벽 채우기 → 완료 이벤트 → End
+     * 실패하면 프리팹 생성 대신 기본 맵(FallbackMapPrefab)을 만들고, 그 경우에도 벽 채우기와 완료 이벤트는 한 번씩 한다.
      */
     public partial class MapGenerator : MonoBehaviour
     {
+        private const string WallFillLoadingText = "Wall Fill";
+
         [SerializeField] private MapGenerateSetting mapGenerateSetting;
+        // 비어 있으면 자식에서 찾는다.
+        [SerializeField] private MapWallFiller wallFiller;
 
         private MapGenerateSetting prevMapSetting;
 
@@ -28,6 +32,9 @@ namespace _Scripts.Maps.New_Map
 
         private void Awake()
         {
+            if (wallFiller == null)
+                wallFiller = GetComponentInChildren<MapWallFiller>(true);
+
             GenerateMap(mapGenerateSetting);
         }
 
@@ -94,6 +101,8 @@ namespace _Scripts.Maps.New_Map
 
                 FDebug.Log($"[MapGenerator] 생성 완료 Seed={seed}, 방 {rooms.Count}개, 되돌리기 {deployment.Backtracks}회, 전체 재생성 {deployment.FullRetries}회");
             }
+
+            await FillWalls(mapSetting, rooms, ct);
 
             RaiseMapGenerated(seed, rooms, deployment.IsFallback);
             SetLoadingGauge("InstantiateRoom", 100, 100);
@@ -220,6 +229,38 @@ namespace _Scripts.Maps.New_Map
                     Destroy(spawned);
             }
             _spawnedObjects.Clear();
+
+            if (wallFiller != null)
+                wallFiller.Clear();
+        }
+
+        #endregion
+
+        #region Wall
+
+        // 연결 지점 마감 다음 단계: 방 사이와 맵 바깥 가장자리의 빈 칸을 벽 타일로 채운다.
+        // 완료 이벤트보다 먼저 해서, 이벤트를 받는 쪽은 벽까지 다 만들어진 맵을 본다.
+        private async UniTask FillWalls(MapGenerateSetting mapSetting, List<GeneratedRoom> rooms, CancellationToken ct)
+        {
+            await UniTask.SwitchToMainThread(ct);
+
+            SetLoadingGauge(WallFillLoadingText, 0, 1);
+
+            if (wallFiller == null)
+            {
+                FDebug.LogWarning("[MapGenerator] MapWallFiller가 없어 벽을 채우지 않습니다.", this);
+            }
+            else if (mapSetting.WallTile == null)
+            {
+                FDebug.LogWarning("[MapGenerator] WallTile이 없어 벽을 채우지 않습니다.", mapSetting);
+            }
+            else
+            {
+                await wallFiller.Fill(rooms, mapSetting.WallTile, mapSetting.WallPadding, mapSetting.WallTilesPerFrame,
+                    (current, max) => SetLoadingGauge(WallFillLoadingText, current, max), ct);
+            }
+
+            SetLoadingGauge(WallFillLoadingText, 1, 1);
         }
 
         #endregion

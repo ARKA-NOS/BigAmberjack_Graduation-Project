@@ -6,6 +6,7 @@ using _Scripts.UI.MVVM.Connectors;
 using _Scripts.UI.PlayerUI.HUD_UI.Effect_UI_System;
 using _Scripts.UI.PlayerUI.HUD_UI.HP_UI;
 using _Scripts.UI.PlayerUI.HUD_UI.Skill_UI;
+using _Scripts.UI.PlayerUI.HUD_UI.StatusRing_UI;
 using UnityEngine;
 
 namespace _Scripts.UI.PlayerUI.HUD_UI
@@ -15,6 +16,9 @@ namespace _Scripts.UI.PlayerUI.HUD_UI
     public class PlayerHudConnector : ConnectorBase
     {
         [SerializeField] private HealthViewModel healthViewModel;
+
+        [Header("Status Ring (HP/MP)")]
+        [SerializeField] private StatusRingViewModel statusRingViewModel;
 
         [Header("Skill")]
         [SerializeField] private SkillSlotViewModel skill1ViewModel;
@@ -35,6 +39,15 @@ namespace _Scripts.UI.PlayerUI.HUD_UI
             if (healthViewModel != null && owner.TryGetModule(out IHealthLayers health))
                 healthViewModel.Connect(health);
 
+            // 마나 모듈이 없는 캐릭터는 MP 없이 HP만 연결한다.
+            if (statusRingViewModel != null
+                && owner.TryGetModule(out INewHealthModule newHealth)
+                && owner.TryGetModule(out IHealthLayers healthLayers))
+            {
+                owner.TryGetModule(out IManaModule mana);
+                statusRingViewModel.Connect(new StatusRingSource(newHealth, healthLayers, mana));
+            }
+
             if (owner.TryGetModule(out IPlayerSkillModule skills))
             {
                 if (skill1ViewModel != null) skill1ViewModel.Connect(new SkillSlotSource(skills, PlayerSkillSlot.First));
@@ -48,6 +61,7 @@ namespace _Scripts.UI.PlayerUI.HUD_UI
         protected override void Disconnect()
         {
             if (healthViewModel != null) healthViewModel.Disconnect();
+            if (statusRingViewModel != null) statusRingViewModel.Disconnect();
             if (skill1ViewModel != null) skill1ViewModel.Disconnect();
             if (skill2ViewModel != null) skill2ViewModel.Disconnect();
             if (effectViewModel != null) effectViewModel.Disconnect();

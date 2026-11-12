@@ -9699,13 +9699,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38b8fe9a7d5c65b418edb142ee516ae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemyMetalFragmentParticle
-  fragmentCount: {x: 13, y: 19}
+  fragmentCount: {x: 5, y: 8}
   speedRange: {x: 3.2, y: 6.3}
   spreadAngle: 145
   upwardSpeed: 1.4
-  sizeRange: {x: 0.08, y: 0.2}
-  darkMetal: {r: 0.26, g: 0.28, b: 0.31, a: 1}
-  lightMetal: {r: 0.58, g: 0.6, b: 0.63, a: 1}
+  sizeRange: {x: 0.12, y: 0.22}
+  bodyColorWeights:
+  - Color: {r: 0.26, g: 0.28, b: 0.31, a: 1}
+    Weight: 5
+  - Color: {r: 0.43, g: 0.43, b: 0.43, a: 1}
+    Weight: 5
+  - Color: {r: 0.58, g: 0.6, b: 0.63, a: 1}
+    Weight: 5
+  - Color: {r: 0.51, g: 0.51, b: 0.51, a: 1}
+    Weight: 5
+  - Color: {r: 0.51, g: 0.44, b: 0.38, a: 1}
+    Weight: 1
   attachmentParticles: {fileID: 1069367154714405858}
   attachmentChance: 0.25
   attachmentColors:
@@ -9714,8 +9723,8 @@ MonoBehaviour:
   terrainLayers:
     serializedVersion: 2
     m_Bits: 1088
-  gravityScale: 1.9
-  bounce: 0.62
+  gravityScale: 2.2
+  bounce: 0.4
   tangentRetention: 0.84
   lifetimeRange: {x: 1, y: 1.5}
   fadeDuration: 0.25

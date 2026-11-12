@@ -86,8 +86,6 @@ public static class SetupMetalFragments
             bodyRenderer.SetMeshes(meshes);
             var data = new SerializedObject(emitter);
             data.FindProperty("attachmentParticles").objectReferenceValue = ConfigureAttachments(root, bodyRenderer, parts);
-            data.FindProperty("darkMetal").colorValue = new Color(0.26f, 0.28f, 0.31f);
-            data.FindProperty("lightMetal").colorValue = new Color(0.58f, 0.60f, 0.63f);
             var colors = data.FindProperty("attachmentColors");
             colors.arraySize = 2;
             colors.GetArrayElementAtIndex(0).colorValue = new Color(0.83f, 0.83f, 0.82f);

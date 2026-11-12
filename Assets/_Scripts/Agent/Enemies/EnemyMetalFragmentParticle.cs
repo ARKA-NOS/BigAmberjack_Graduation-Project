@@ -6,14 +6,23 @@ namespace _Scripts.Agent.Enemies
     [DisallowMultipleComponent, RequireComponent(typeof(ParticleSystem))]
     public sealed class EnemyMetalFragmentParticle : MonoBehaviour
     {
+        private static readonly Color FallbackMetalColor = new Color(0.58f, 0.60f, 0.63f);
+
         [Header("Scatter")]
         [SerializeField] private Vector2Int fragmentCount = new Vector2Int(13, 19);
         [SerializeField] private Vector2 speedRange = new Vector2(3.2f, 6.3f);
         [SerializeField, Range(0f, 360f)] private float spreadAngle = 145f;
         [SerializeField, Min(0f)] private float upwardSpeed = 1.4f;
         [SerializeField] private Vector2 sizeRange = new Vector2(0.08f, 0.20f);
-        [SerializeField] private Color darkMetal = new Color(0.26f, 0.28f, 0.31f);
-        [SerializeField] private Color lightMetal = new Color(0.58f, 0.60f, 0.63f);
+        [Tooltip("본체 파편의 색과 상대 가중치입니다. 가중치가 0인 항목은 선택에서 제외됩니다.")]
+        [SerializeField] private WeightedColor[] bodyColorWeights =
+        {
+            new WeightedColor(new Color(0.26f, 0.28f, 0.31f), 1f),
+            new WeightedColor(new Color(0.43f, 0.43f, 0.43f), 1f),
+            new WeightedColor(FallbackMetalColor, 1f),
+            new WeightedColor(new Color(0.51f, 0.51f, 0.51f), 1f),
+            new WeightedColor(new Color(0.51f, 0.44f, 0.38f), 1f)
+        };
         [Tooltip("작은 부품의 메시를 따로 렌더링할 파티클 시스템입니다.")]
         [SerializeField] private ParticleSystem attachmentParticles;
         [SerializeField, Range(0f, 1f)] private float attachmentChance = 0.25f;
@@ -34,6 +43,19 @@ namespace _Scripts.Agent.Enemies
         private const float Skin = 0.005f;
         private const int MaxContactsPerStep = 3;
 
+        [System.Serializable]
+        private struct WeightedColor
+        {
+            public Color Color;
+            [Min(0f)] public float Weight;
+
+            public WeightedColor(Color color, float weight)
+            {
+                Color = color;
+                Weight = weight;
+            }
+        }
+
         private struct Fragment
         {
             public Vector2 Position;
@@ -53,6 +75,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
+        private readonly Dictionary<Color, float> _weightByBodyColor = new Dictionary<Color, float>();
         private ContactFilter2D _filter;
         private Fragment[] _fragments;
         private ParticleSystem.Particle[] _renderParticles;
@@ -107,6 +130,7 @@ namespace _Scripts.Agent.Enemies
             _z = origin.z;
             float scale = Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.x));
             float aim = Mathf.Atan2(transform.right.y, transform.right.x);
+            double totalBodyColorWeight = PrepareBodyColorWeights();
             for (int i = 0; i < _count; i++)
             {
                 float angle = aim + spreadAngle * Mathf.Deg2Rad * ((i + Random.value) / _count - 0.5f);
@@ -117,7 +141,7 @@ namespace _Scripts.Agent.Enemies
                     Position = (Vector2)origin + Random.insideUnitCircle * 0.025f,
                     Velocity = direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed,
                     Size = new Vector2(size * Random.Range(0.92f, 1.08f), size * Random.Range(0.92f, 1.08f)),
-                    Tint = Color.Lerp(darkMetal, lightMetal, Random.value),
+                    Tint = PickBodyColor(totalBodyColorWeight),
                     Angle = Random.Range(0f, 360f),
                     Spin = Random.Range(-520f, 520f),
                     FadeAt = RandomBetween(lifetimeRange, 0.1f),
@@ -161,9 +185,7 @@ namespace _Scripts.Agent.Enemies
             fragment.AttachmentMeshIndex = attachmentMeshCount > 0
                 ? Random.Range(0, attachmentMeshCount)
                 : (fragment.MeshIndex + Random.Range(0, meshCount - 1) + 1) % meshCount;
-            fragment.AttachmentTint = attachmentColors.Length > 0
-                ? attachmentColors[Random.Range(0, attachmentColors.Length)]
-                : lightMetal;
+            fragment.AttachmentTint = PickColor(attachmentColors);
             fragment.Radius = Mathf.Max(fragment.Radius, fragment.AttachmentOffset.magnitude);
         }
 
@@ -291,6 +313,41 @@ namespace _Scripts.Agent.Enemies
 
         private static float RandomBetween(Vector2 range, float minimum) =>
             Random.Range(Mathf.Max(minimum, Mathf.Min(range.x, range.y)), Mathf.Max(minimum, Mathf.Max(range.x, range.y)));
+
+        private static Color PickColor(Color[] colors) =>
+            colors != null && colors.Length > 0 ? colors[Random.Range(0, colors.Length)] : FallbackMetalColor;
+
+        private double PrepareBodyColorWeights()
+        {
+            _weightByBodyColor.Clear();
+            if (bodyColorWeights == null) return 0d;
+
+            foreach (WeightedColor entry in bodyColorWeights)
+            {
+                float weight = entry.Weight;
+                _weightByBodyColor[entry.Color] = weight > 0f && !float.IsPositiveInfinity(weight) ? weight : 0f;
+            }
+
+            double total = 0d;
+            foreach (float weight in _weightByBodyColor.Values) total += weight;
+            return total;
+        }
+
+        private Color PickBodyColor(double totalWeight)
+        {
+            if (totalWeight <= 0d) return FallbackMetalColor;
+
+            double roll = Random.value * totalWeight;
+            Color lastColor = FallbackMetalColor;
+            foreach (var entry in _weightByBodyColor)
+            {
+                if (entry.Value <= 0f) continue;
+                lastColor = entry.Key;
+                roll -= entry.Value;
+                if (roll < 0d) return lastColor;
+            }
+            return lastColor;
+        }
 
         private void OnDisable()
         {

@@ -14,6 +14,8 @@ public static class VerifyDeathBloodBurst
 {
     private const string SourcePath = "Assets/_Prefabs/Enemies/Effects/HitBloodSpray.prefab";
     private const string DeathPath = "Assets/_Prefabs/Enemies/Effects/DeathBloodBurst.prefab";
+    private const string MetalHitPath = "Assets/_Prefabs/Enemies/Effects/HitMetalFragments.prefab";
+    private const string MetalBurstPath = "Assets/_Prefabs/Enemies/Effects/DeathMetalBurst.prefab";
     private const string EnemyPath = "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
     private const string OriginalScene = "CTJ.DeathBloodBurst.OriginalScene";
     private static void Check(bool condition, string message) { if (!condition) throw new Exception(message); }
@@ -39,13 +41,19 @@ public static class VerifyDeathBloodBurst
         var paths = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/_Prefabs/Enemies" })
             .Select(AssetDatabase.GUIDToAssetPath)
             .Where(path => AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<EnemyBase>() != null).ToArray();
+        var metalHit = AssetDatabase.LoadAssetAtPath<GameObject>(MetalHitPath).GetComponent<ParticleSystem>();
+        var metalBurst = AssetDatabase.LoadAssetAtPath<GameObject>(MetalBurstPath).GetComponent<ParticleSystem>();
         foreach (string path in paths)
         {
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             var modules = root.GetComponentsInChildren<EnemyParticleModule>(true);
             Check(modules.Length == 1, "Expected one particle module: " + path);
             var data = new SerializedObject(modules[0]);
-            Check(data.FindProperty("deathBurstPrefab").objectReferenceValue == burstRoot.GetComponent<ParticleSystem>(),
+            var hits = data.FindProperty("hitEffects");
+            bool usesMetal = Enumerable.Range(0, hits.arraySize).Any(index =>
+                hits.GetArrayElementAtIndex(index).FindPropertyRelative("prefab").objectReferenceValue == metalHit);
+            var expected = usesMetal ? metalBurst : burstRoot.GetComponent<ParticleSystem>();
+            Check(data.FindProperty("deathBurstPrefab").objectReferenceValue == expected,
                 "Death burst reference missing: " + path);
         }
         return new { passed = true, enemies = paths.Length, normalSpeed, burstSpeed,

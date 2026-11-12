@@ -12,6 +12,7 @@ using Object = UnityEngine.Object;
 public static class VerifyMetalFragments
 {
     private const string MetalPath = "Assets/_Prefabs/Enemies/Effects/HitMetalFragments.prefab";
+    private const string BurstPath = "Assets/_Prefabs/Enemies/Effects/DeathMetalBurst.prefab";
     private const string RobotPath = "Assets/_Prefabs/Enemies/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab";
     private const string ArcherPath = "Assets/_Prefabs/Enemies/Enemy/Enemy04/Enemy04_MechanicArcher.prefab";
 
@@ -35,11 +36,15 @@ public static class VerifyMetalFragments
             colors.GetArrayElementAtIndex(0).colorValue.r > colors.GetArrayElementAtIndex(1).colorValue.r + 0.1f,
             "Attachment palette must contain off-white and light gray");
         Vector2 sizeRange = emitter.FindProperty("sizeRange").vector2Value;
-        Check(sizeRange == new Vector2(0.08f, 0.20f), "Expected blood-sized metal particles");
-        Color dark = emitter.FindProperty("darkMetal").colorValue;
-        Color light = emitter.FindProperty("lightMetal").colorValue;
-        Check(dark == new Color(0.26f, 0.28f, 0.31f) && light == new Color(0.58f, 0.60f, 0.63f),
-            "Expected the original dark-to-light metal palette");
+        Check(sizeRange.x > 0f && sizeRange.y >= sizeRange.x, "Invalid metal particle size range");
+        var palette = emitter.FindProperty("bodyColorWeights");
+        Color[] bodyColors = ReadPalette(palette);
+        Check(bodyColors.Distinct().Count() == 5 && bodyColors.Length == 5 &&
+            bodyColors.Contains(new Color(0.26f, 0.28f, 0.31f)) && bodyColors.Contains(new Color(0.58f, 0.60f, 0.63f)) &&
+            bodyColors.Contains(new Color(0.51f, 0.51f, 0.51f)) &&
+            !bodyColors.Contains(new Color(0.34f, 0.43f, 0.52f)) &&
+            bodyColors.Any(color => color.r > color.g && color.g > color.b),
+            "Expected five body colors with neutral gray in place of blue-gray");
         var renderer = root.GetComponent<ParticleSystemRenderer>();
         var meshes = new Mesh[4];
         Check(root.GetComponentsInChildren<ParticleSystem>(true).Length == 2 && renderer.sharedMaterial != null &&
@@ -53,6 +58,16 @@ public static class VerifyMetalFragments
             attachmentRenderer.GetMeshes(parts) == parts.Length && parts.All(mesh => mesh != null) &&
             parts.Select(mesh => mesh.name).SequenceEqual(new[] { "MetalPartBracket", "MetalPartPin", "MetalPartWasher" }),
             "Expected three separate attachment shapes: bracket, pin, washer");
+        var burst = AssetDatabase.LoadAssetAtPath<GameObject>(BurstPath);
+        Check(burst != null && PrefabUtility.GetPrefabAssetType(burst) == PrefabAssetType.Variant &&
+            PrefabUtility.GetCorrespondingObjectFromSource(burst) == root, "Death burst must inherit HitMetalFragments");
+        var burstEmitter = new SerializedObject(burst.GetComponent<EnemyMetalFragmentParticle>());
+        Vector2Int hitCount = emitter.FindProperty("fragmentCount").vector2IntValue;
+        Vector2Int burstCount = burstEmitter.FindProperty("fragmentCount").vector2IntValue;
+        Check(burstCount.x > hitCount.y && burstCount.y >= burstCount.x &&
+            burstEmitter.FindProperty("speedRange").vector2Value.x > emitter.FindProperty("speedRange").vector2Value.y &&
+            Mathf.Approximately(burstEmitter.FindProperty("spreadAngle").floatValue, 360f),
+            "Expected a faster, denser, full-circle burst");
         foreach (string path in new[] { RobotPath, ArcherPath })
         {
             var enemy = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -60,15 +75,22 @@ public static class VerifyMetalFragments
             var entry = module.FindProperty("hitEffects").GetArrayElementAtIndex(0);
             Check(entry.FindPropertyRelative("prefab").objectReferenceValue == root.GetComponent<ParticleSystem>(),
                 "Metal hit effect is not connected: " + path);
+            Check(module.FindProperty("deathBurstPrefab").objectReferenceValue == burst.GetComponent<ParticleSystem>(),
+                "Metal death burst is not connected: " + path);
         }
-        return new { passed = true, meshes = meshes.Select(mesh => mesh.name).ToArray(), attachmentChance = 0.25f,
-            attachmentShapes = parts.Select(mesh => mesh.name).ToArray(), connectedEnemies = 2 };
+        return new { passed = true, meshes = meshes.Select(mesh => mesh.name).ToArray(),
+            bodyColors = bodyColors.Select(ColorUtility.ToHtmlStringRGB).ToArray(), attachmentChance = 0.25f,
+            attachmentShapes = parts.Select(mesh => mesh.name).ToArray(), connectedEnemies = 2,
+            hitCount = new[] { hitCount.x, hitCount.y }, burstCount = new[] { burstCount.x, burstCount.y } };
     }
 
     private static bool IsLightGray(Color color) =>
         color.r >= 0.68f && Mathf.Max(color.r, color.g, color.b) - Mathf.Min(color.r, color.g, color.b) < 0.025f;
 
     private static float Aspect(Vector3 size) => Mathf.Max(size.x, size.y) / Mathf.Min(size.x, size.y);
+
+    private static Color[] ReadPalette(SerializedProperty palette) => Enumerable.Range(0, palette.arraySize)
+        .Select(index => palette.GetArrayElementAtIndex(index).FindPropertyRelative("Color").colorValue).ToArray();
 
     private static GameObject Box(string name, Vector2 position, Vector2 size)
     {
@@ -105,7 +127,7 @@ public static class VerifyMetalFragments
                 new Vector3(0f, 0.72f), Quaternion.identity);
             var emitter = new SerializedObject(effect.GetComponent<EnemyMetalFragmentParticle>());
             var particles = effect.GetComponent<ParticleSystem>();
-            int shapesEmitted = VerifyShapeSelection(effect, emitter, particles);
+            var (shapesEmitted, colorsEmitted, favoredCount) = VerifyAppearanceSelection(effect, emitter, particles);
             emitter.FindProperty("fragmentCount").vector2IntValue = Vector2Int.one;
             emitter.FindProperty("speedRange").vector2Value = Vector2.one * 5f;
             emitter.FindProperty("spreadAngle").floatValue = 0f;
@@ -153,11 +175,12 @@ public static class VerifyMetalFragments
             archer = SpawnEnemy(ArcherPath, new Vector3(-3f, 0.04f));
             Hit(archer);
             sprays = FindFragments();
-            Check(sprays.Length == 2 && sprays.All(spray => spray.GetComponent<ParticleSystem>().particleCount >= 13),
+            Check(sprays.Length == 2 && sprays.All(spray => spray.GetComponent<ParticleSystem>().particleCount > 0),
                 "Enemy02 and Enemy04 must each emit a metal spray");
             Check(Object.FindObjectsByType<EnemyBloodParticle>(FindObjectsSortMode.None).Length == 0,
                 "A regular machine hit also emitted blood");
-            return new { passed = true, shapesEmitted, wallBounce = bouncedLeft, floorBounce = bouncedUp,
+            return new { passed = true, shapesEmitted, colorsEmitted, favoredCount,
+                wallBounce = bouncedLeft, floorBounce = bouncedUp,
                 separateGrayAttachmentRotatesWithFragment = true, robotHit = true, archerHit = true };
         }
         finally
@@ -173,12 +196,69 @@ public static class VerifyMetalFragments
         }
     }
 
-    private static int VerifyShapeSelection(GameObject effect, SerializedObject emitter, ParticleSystem particles)
+    public static async Task<object> RunDeath()
+    {
+        Check(Application.isPlaying && SceneManager.GetActiveScene().path == "", "Isolated Play Mode required");
+        bool previousBackground = Application.runInBackground;
+        GameObject robot = null, archer = null;
+        try
+        {
+            Application.runInBackground = true;
+            robot = SpawnEnemy(RobotPath, new Vector3(-3f, 3f));
+            archer = SpawnEnemy(ArcherPath, new Vector3(3f, 3f));
+
+            int deathEvents = 0;
+            foreach (GameObject enemy in new[] { robot, archer })
+            {
+                var agent = enemy.GetComponent<EnemyBase>();
+                agent.DeathStarted += () => deathEvents++;
+                Hit(enemy, 99999f);
+                Check(agent.IsDead, "Lethal hit did not kill " + enemy.name);
+                Hit(enemy, 99999f);
+            }
+
+            var bursts = FindFragments().Where(effect => effect.name.StartsWith("DeathMetalBurst")).ToArray();
+            Check(deathEvents == 2 && bursts.Length == 2 && bursts.All(effect => effect.transform.parent == null),
+                "Each enemy should emit one independent metal burst during its death event");
+            Check(Object.FindObjectsByType<EnemyBloodParticle>(FindObjectsSortMode.None).Length == 0,
+                "A metal enemy emitted blood on death");
+
+            var systems = bursts.Select(effect => effect.GetComponent<ParticleSystem>()).ToArray();
+            var counts = systems.Select(system => system.particleCount).ToArray();
+            Check(counts.All(count => count >= 36 && count <= 48), "Unexpected death fragment count");
+            float scatterAt = Time.fixedTime + 0.08f;
+            await Until(() => Time.fixedTime >= scatterAt, 2f, "Death burst did not advance");
+            var records = new ParticleSystem.Particle[64];
+            foreach (ParticleSystem system in systems)
+            {
+                int count = system.GetParticles(records);
+                Vector3 origin = system.transform.position;
+                var offsets = records.Take(count).Select(particle => particle.position - origin).ToArray();
+                Check(offsets.Any(offset => offset.x < -0.15f) && offsets.Any(offset => offset.x > 0.15f) &&
+                    offsets.Any(offset => offset.y < -0.15f) && offsets.Any(offset => offset.y > 0.15f),
+                    "Death burst did not scatter in all four directions");
+            }
+            await Until(() => bursts.All(burst => burst == null), 4f, "Metal death bursts did not clean up");
+            return new { passed = true, deathEvents, burstCount = counts, allDirections = true, emittedBlood = false };
+        }
+        finally
+        {
+            if (robot != null) Object.Destroy(robot);
+            if (archer != null) Object.Destroy(archer);
+            foreach (var fragment in FindFragments()) Object.Destroy(fragment.gameObject);
+            Application.runInBackground = previousBackground;
+        }
+    }
+
+    private static (int shapes, int colors, int favoredCount) VerifyAppearanceSelection(
+        GameObject effect, SerializedObject emitter, ParticleSystem particles)
     {
         const int sampleCount = 64;
         emitter.FindProperty("fragmentCount").vector2IntValue = Vector2Int.one * sampleCount;
         emitter.FindProperty("attachmentChance").floatValue = 0f;
         emitter.ApplyModifiedPropertiesWithoutUndo();
+        var palette = emitter.FindProperty("bodyColorWeights");
+        var expectedColors = ReadPalette(palette).Select(color => (Color32)color).ToArray();
         var records = new ParticleSystem.Particle[sampleCount];
         var randomState = UnityEngine.Random.state;
         try
@@ -186,9 +266,23 @@ public static class VerifyMetalFragments
             UnityEngine.Random.InitState(824);
             Play(effect, particles);
             Check(particles.GetParticles(records) == sampleCount, "Expected a full burst of body particles");
-            int seen = records.Select(particle => particle.GetMeshIndex(particles)).Distinct().Count();
-            Check(seen == 4, "Some body shapes never appeared in a real particle burst");
-            return seen;
+            int shapes = records.Select(particle => particle.GetMeshIndex(particles)).Distinct().Count();
+            var colors = records.Select(particle => particle.startColor).Distinct().ToArray();
+            Check(shapes == 4, "Some body shapes never appeared in a real particle burst");
+            Check(colors.Length == expectedColors.Length && colors.All(color => expectedColors.Contains(color)),
+                "A particle used a color outside the palette or a palette entry never appeared");
+
+            for (int i = 0; i < palette.arraySize; i++)
+                palette.GetArrayElementAtIndex(i).FindPropertyRelative("Weight").floatValue = i == 0 ? 4f : i == 1 ? 1f : 0f;
+            emitter.ApplyModifiedPropertiesWithoutUndo();
+            Play(effect, particles);
+            Check(particles.GetParticles(records) == sampleCount, "Expected a full weighted burst");
+            int favoredCount = records.Count(particle => particle.startColor.Equals(expectedColors[0]));
+            int otherCount = records.Count(particle => particle.startColor.Equals(expectedColors[1]));
+            Check(favoredCount + otherCount == sampleCount && favoredCount > otherCount && otherCount > 0,
+                "The higher-weight color should appear more often, and zero-weight colors should be skipped");
+
+            return (shapes, colors.Length, favoredCount);
         }
         finally { UnityEngine.Random.state = randomState; }
     }
@@ -207,14 +301,15 @@ public static class VerifyMetalFragments
     {
         var enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path), position, Quaternion.identity);
         foreach (var module in enemy.GetComponentsInChildren<MonoBehaviour>())
-            if (module is EnemyHitCameraShakeModule || module is EnemyDamageIndicatorModule) module.enabled = false;
+            if (module is EnemyHitCameraShakeModule or EnemyDamageIndicatorModule or EnemyDeathModule or EnemyCurrencyRewardModule)
+                module.enabled = false;
         return enemy;
     }
 
-    private static void Hit(GameObject root)
+    private static void Hit(GameObject root, float damage = 3f)
     {
         var enemy = root.GetComponent<EnemyBase>();
-        enemy.ApplyDamage(new DamageData { DamageAmount = 3f }, (Vector2)root.transform.position + Vector2.up * 0.75f,
+        enemy.ApplyDamage(new DamageData { DamageAmount = damage }, (Vector2)root.transform.position + Vector2.up * 0.75f,
             Vector2.right, Vector2.left);
     }
 

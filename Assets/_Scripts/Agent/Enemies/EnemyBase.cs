@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using _Scripts._Core._FSM;
 using _Scripts.Agent.Enemies.FSM;
+using _Scripts.Agent.Enemies.Skills;
 using _Scripts.Agent.Players;
 using _Scripts.DevLib.BattleSystem;
 using UnityEngine;
@@ -52,6 +53,9 @@ namespace _Scripts.Agent.Enemies
         public float ChaseReleaseRange => Mathf.Max(detectionRange, chaseReleaseRange);
         public float AttackRange => _skills != null ? _skills.MaximumRange : 0f;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
+        internal bool HasCommittedAttack => _skills != null && _skills.HasCommittedAttack;
+        internal bool FinishesAttackOutsideChaseRange =>
+            _skills?.ActiveSkill is EnemyAttackSkill { FinishesOutsideChaseRange: true };
         public bool IsDead { get; private set; }
         public bool IsPlayingDeathReaction { get; private set; }
         // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
@@ -110,6 +114,11 @@ namespace _Scripts.Agent.Enemies
                 return;
             }
             if (_hitReaction != null && _hitReaction.TickReaction()) return;
+            if (_skills != null && _skills.ActiveSkill is EnemyAttackSkill { ControlsMovement: true } attack)
+            {
+                attack.FixedUpdateAttack();
+                return;
+            }
             FixedUpdateAI();
         }
 
@@ -127,7 +136,7 @@ namespace _Scripts.Agent.Enemies
 
         public virtual void SetTarget(Transform newTarget)
         {
-            if (target != newTarget && _skills != null)
+            if (target != newTarget && _skills != null && !HasCommittedAttack)
                 _skills.StopAttack();
             target = newTarget;
         }

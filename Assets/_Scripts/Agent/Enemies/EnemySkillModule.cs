@@ -20,6 +20,8 @@ namespace _Scripts.Agent.Enemies
             [SerializeField] private bool useSkill = true;
             [Tooltip("끄면 거리 기반 자동 선택에서는 제외하고, 보스 패턴의 지정 실행으로만 사용합니다.")]
             [SerializeField] private bool useForAutomaticSelection = true;
+            [Tooltip("도약처럼 사용할 수 없을 때 추격을 계속해야 하는 스킬에 사용합니다. 끄면 기존처럼 사거리 안에서 쿨타임을 기다립니다.")]
+            [SerializeField] private bool requireUsableToEnterAttack;
             [SerializeField, Min(0f)] private float minRange;
             [Tooltip("거리 확보 모듈이 벽/절벽 때문에 후퇴할 수 없을 때만 최소 사거리 제한을 해제합니다. 시야/높이/최대 사거리 검사는 유지합니다.")]
             [SerializeField] private bool allowCloseAttackWhenRetreatBlocked;
@@ -36,18 +38,23 @@ namespace _Scripts.Agent.Enemies
             public AbstractSkill Skill => skill;
             public bool Enabled => useSkill && skill != null && skill.isActiveAndEnabled && skill.SkillSo != null;
             public bool UseForAutomaticSelection => useForAutomaticSelection;
+            public bool RequireUsableToEnterAttack => requireUsableToEnterAttack;
             public float MaxRange => Mathf.Max(0f, maxRange);
             public float ChargeDuration => Mathf.Max(0f, chargeDuration);
+
+            internal bool IsInRange(EnemyBase enemy, Vector2 targetPosition, EnemyKeepDistanceModule keepDistance)
+            {
+                float distance = Vector2.Distance(enemy.transform.position, targetPosition);
+                return distance <= MaxRange && (distance >= Mathf.Max(0f, minRange) ||
+                    (allowCloseAttackWhenRetreatBlocked && keepDistance != null && keepDistance.IsRetreatBlocked(enemy.Target)));
+            }
 
             internal bool Matches(EnemyBase enemy, EnemyMovementModule movement, EnemyKeepDistanceModule keepDistance)
             {
                 if (!Enabled || movement == null || enemy.Target == null ||
                     !enemy.Target.gameObject.activeInHierarchy || (requireGrounded && !movement.IsGrounded))
                     return false;
-                float distance = Vector2.Distance(enemy.transform.position, enemy.Target.position);
-                bool tooClose = distance < Mathf.Max(0f, minRange);
-                if ((tooClose && (!allowCloseAttackWhenRetreatBlocked || keepDistance == null || !keepDistance.IsRetreatBlocked(enemy.Target))) ||
-                    distance > MaxRange ||
+                if (!IsInRange(enemy, enemy.Target.position, keepDistance) ||
                     (maxHeightDifference >= 0f && Mathf.Abs(movement.GetTargetHeightDifference(enemy.Target)) > maxHeightDifference))
                     return false;
                 Collider2D body = enemy.Target.GetComponent<Collider2D>();
@@ -68,6 +75,7 @@ namespace _Scripts.Agent.Enemies
 
         public IReadOnlyList<SkillEntry> Skills => skills;
         public AbstractSkill ActiveSkill => IsBusy ? _activeSkill : null;
+        internal bool HasCommittedAttack => ActiveSkill is EnemyAttackSkill { CompletesAfterTargetLost: true };
         public bool IsBusy => _activeSkill != null &&
             (_activeSkill.IsUsing || _activeSkill is IChargeSkill { IsCharging: true });
         private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
@@ -104,7 +112,8 @@ namespace _Scripts.Agent.Enemies
         {
             if (!Ready) return false;
             foreach (SkillEntry entry in skills)
-                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _keepDistance)) return true;
+                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _keepDistance) &&
+                    (!entry.RequireUsableToEnterAttack || CanUseSkill(entry.Skill.SkillSo))) return true;
             return false;
         }
 
@@ -141,6 +150,10 @@ namespace _Scripts.Agent.Enemies
         // 쿨타임과 분리된 구성 검사. 패턴 FSM이 사용 해제된 스킬을 무한히 기다리지 않도록 합니다.
         public bool IsSkillEnabled(AbstractSkill skill) => isActiveAndEnabled && TryGetEnabledEntry(skill, out _);
 
+        internal bool IsTargetInSkillRange(AbstractSkill skill, Vector2 targetPosition) =>
+            Ready && TryGetEnabledEntry(skill, out SkillEntry entry) &&
+            entry.IsInRange(_enemy, targetPosition, _keepDistance);
+
         private bool TryGetEnabledEntry(AbstractSkill skill, out SkillEntry entry)
         {
             foreach (SkillEntry candidate in skills)
@@ -160,8 +173,9 @@ namespace _Scripts.Agent.Enemies
         private void Update()
         {
             if (!IsBusy) return;
-            if (!Ready || !IsSkillEnabled(_activeSkill) || _castTarget == null ||
-                !_castTarget.gameObject.activeInHierarchy || _enemy.Target != _castTarget)
+            if (!Ready || !IsSkillEnabled(_activeSkill) ||
+                (!HasCommittedAttack && (_castTarget == null ||
+                !_castTarget.gameObject.activeInHierarchy || _enemy.Target != _castTarget)))
             {
                 StopAttack();
                 return;

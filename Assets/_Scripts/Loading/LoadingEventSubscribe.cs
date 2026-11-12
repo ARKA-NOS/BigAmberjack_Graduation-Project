@@ -1,5 +1,4 @@
 ﻿using _Scripts.UI.Template;
-using Lean.Pool;
 using UnityEngine;
 
 namespace _Scripts.Loading

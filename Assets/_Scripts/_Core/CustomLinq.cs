@@ -5,7 +5,7 @@ namespace _Scripts._Core
 {
     public static class CustomLinq
     {
-        public static void Foreach<T>(this IEnumerable<T> arr,Action<T> action)
+        public static void Foreach<T>(this IEnumerable<T> arr, Action<T> action)
         {
             foreach (var item in arr)
             {

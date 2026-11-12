@@ -831,6 +831,7 @@ GameObject:
   - component: {fileID: 9034655272816669380}
   - component: {fileID: 9038480519222183050}
   - component: {fileID: 8009150812393212804}
+  - component: {fileID: 2875920700846243275}
   m_Layer: 0
   m_Name: DialogueCanvas
   m_TagString: Untagged
@@ -933,9 +934,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60800f5720101484f9b4978f74d57030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.UI.Dialogue.DialogueUIBinder
-  bindData: {fileID: 11400000, guid: 32f9d2a2e0ef8294b9dcb79ca8bb70dc, type: 2}
+  viewModel: {fileID: 11400000, guid: 32f9d2a2e0ef8294b9dcb79ca8bb70dc, type: 2}
   dialogueRoot: {fileID: 1594965825880915523}
   nameText: {fileID: 4410902564751933777}
   lineText: {fileID: 330502172224587265}
   choiceContainer: {fileID: 1754188178700460024}
   choiceButtonTemplate: {fileID: 8165911688568809015}
+--- !u!114 &2875920700846243275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6996783364746091940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cd9a5d9ac694d758a2e89732b1bf8ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.Dialogue.DialogueConnector
+  viewModel: {fileID: 11400000, guid: 32f9d2a2e0ef8294b9dcb79ca8bb70dc, type: 2}

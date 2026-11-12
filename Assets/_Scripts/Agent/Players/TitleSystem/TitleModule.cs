@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.QuestSystem;
-using _Scripts.DataStructure;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Maps;
 using _Scripts.Maps.Data;
 using _Scripts.UI.AlarmUI;
-using _Scripts.UI.PlayerUI.Title_UI;
 using UnityEngine;
 
 namespace _Scripts.Agent.Players.TitleSystem
 {
-    public class TitleModule : Module, IAfterInitModule, ITitleStageReceiver
+    public class TitleModule : Module, IAfterInitModule, ITitleStageReceiver, ITitleModule
     {
         [SerializeField] private TitleGroupSo[] titleGroups;
-        [SerializeField] private TitleListViewModel titleListViewModel;
 
         [Header("Stage Setting")]
         [Tooltip("첫 MapEnteredEvent가 오기 전까지 쓰는 시작 맵. 비워 두면 Stage가 없는 그룹만 진행한다.")]
@@ -30,6 +28,11 @@ namespace _Scripts.Agent.Players.TitleSystem
 
         public RoomDataSO CurrentStage { get; private set; }
 
+        public event Action OnTitlesChanged;
+
+        public IReadOnlyCollection<Title> Titles
+            => _titles != null ? (IReadOnlyCollection<Title>)_titles.Values : Array.Empty<Title>();
+
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
@@ -41,9 +44,6 @@ namespace _Scripts.Agent.Players.TitleSystem
             _stageTitles = new();
             
             EventBus<MapEnteredEvent>.Subscribe(SceneMoveEvent);
-
-            if(titleListViewModel != null)
-                titleListViewModel.Bind(new TitleListViewData(new()));
         }
         
         public void AfterInit()
@@ -65,6 +65,8 @@ namespace _Scripts.Agent.Players.TitleSystem
                     AddWaitingTitle(titleSo, requiredTitles);
                 }
             }
+
+            OnTitlesChanged?.Invoke();
         }
 
         private void OnDestroy()
@@ -104,6 +106,8 @@ namespace _Scripts.Agent.Players.TitleSystem
             {
                 title.SetActive(_stageTitles.Contains(title.TitleSo));
             }
+
+            OnTitlesChanged?.Invoke();
         }
 
         // 현재 스테이지 그룹과 Stage가 비어 있는 공통 그룹의 칭호만 진행 대상으로 모은다.
@@ -154,17 +158,25 @@ namespace _Scripts.Agent.Players.TitleSystem
             Title title = new Title(titleSo, _questModule);
             _titles.Add(titleSo, title);
             title.OnComplete += OnTitleComplete;
+            title.OnProgressChanged += OnTitleProgressChanged;
             title.SetActive(_stageTitles.Contains(titleSo));
+        }
+
+        private void OnTitleProgressChanged(Title title)
+        {
+            OnTitlesChanged?.Invoke();
         }
 
         private void OnTitleComplete(Title title)
         {
             title.OnComplete -= OnTitleComplete;
+            title.OnProgressChanged -= OnTitleProgressChanged;
             Upgrade(title);
             _completedTitles.Add(title.TitleSo);
             UnlockWaitingTitles(title.TitleSo);
 
             SendAlarm(title);
+            OnTitlesChanged?.Invoke();
         }
         
         private void SendAlarm(Title title)
@@ -192,42 +204,6 @@ namespace _Scripts.Agent.Players.TitleSystem
                     InitTitle(waitingTitle);
                 }
             }
-        }
-
-        private void Update()
-        {
-            UpdateViewModel();
-        }
-
-        private void UpdateViewModel()
-        {
-            if(titleListViewModel == null || titleListViewModel.BindData == null) return;
-
-            List<TitleViewData> titleViewDataList = titleListViewModel.BindData.TitleViewList;
-
-            if (titleViewDataList == null) return;
-
-            titleViewDataList.Clear();
-
-            foreach (Title title in _titles.Values)
-            {
-                // 다른 스테이지의 칭호는 완료한 것만 보여준다.
-                if (!title.IsActive && !title.IsComplete) continue;
-
-                TitleViewData viewData = new TitleViewData(
-                    title.TitleSo.TitleName,title.TitleSo.TitleDescription,title.TitleSo.UpgradeDescription,
-                    title.GetQuests()
-                        .Select(x =>
-                            new QuestViewData(x.QuestSo.QuestName, x.QuestSo.QuestDescription,
-                                new Gauge(x.CurrentAmount,x.RequiredAmount),
-                                x.IsComplete)
-                        )
-                        .ToList(),
-                    title.IsComplete
-                );
-                titleViewDataList.Add(viewData);
-            }
-
         }
     }
 }

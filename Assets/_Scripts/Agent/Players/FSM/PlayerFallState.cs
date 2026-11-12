@@ -19,6 +19,7 @@ namespace _Scripts.Agent.Players.FSM
         {
             if (!GroundChecker.FixedIsGround) return;
             ControlMultiJumper.ResetMultiJumpCount();
+            ControlJumper.ResetCoyote();
             Player.ChangeState(PlayerStateEnum.IDLE);
         }
         

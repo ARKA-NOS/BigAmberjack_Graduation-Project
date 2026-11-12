@@ -710,6 +710,7 @@ GameObject:
   - component: {fileID: 4481032091661034657}
   - component: {fileID: 8356697213724388510}
   - component: {fileID: 6300840305206051708}
+  - component: {fileID: 7968793297447493754}
   m_Layer: 5
   m_Name: ItemTooltipCanvas
   m_TagString: Untagged
@@ -795,8 +796,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5493f44aeb9c5e646ac98e1b82ac72b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KHO.Scripts.UI.ItemTooltip.ItemTooltipUIBinder
-  bindData: {fileID: 11400000, guid: 975cdaf925de7c34dba96df30d000011, type: 2}
-  view: {fileID: 5501449566510590049}
+  viewModel: {fileID: 11400000, guid: 975cdaf925de7c34dba96df30d000011, type: 2}
+  panel: {fileID: 5501449566510590049}
   screenOffset: {x: 0, y: 30}
   destroyHoldFill: {fileID: 2105784037872448184}
 --- !u!1 &3710299263230086153
@@ -2343,3 +2344,16 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7968793297447493754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3240995161904748032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e04c5aa574b4c8fa48d824ff988597b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Item.ItemTooltip.ItemTooltipConnector
+  viewModel: {fileID: 11400000, guid: 975cdaf925de7c34dba96df30d000011, type: 2}

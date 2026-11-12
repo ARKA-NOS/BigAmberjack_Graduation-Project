@@ -1,17 +1,15 @@
-using _Scripts._Core._ServiceLocator;
-using _Scripts.Agent.Players;
-using _Scripts.DevLib.ModuleSystem;
-using _Scripts.Inventory;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _Scripts.UI.InventoryUI
 {
-    // 칸 드래그 앤 드롭. 끄는 동안 아이콘(ghost)을 마우스에 붙이고, 다른 칸에 놓으면 인벤토리 모듈에 맞바꾸기를 요청한다.
-    // 화면 갱신은 모듈 → ViewModel → Binder 흐름으로 따로 일어난다.
+    // 칸 드래그 앤 드롭. 끄는 동안 아이콘(ghost)을 마우스에 붙이고, 다른 칸에 놓으면 ViewModel에 맞바꾸기를 요청한다.
+    // 화면 갱신은 모듈 → ViewModel → View 흐름으로 따로 일어난다.
     public class InventoryDragController : MonoBehaviour
     {
+        [Tooltip("칸 맞바꾸기를 요청할 ViewModel. 칸 View들과 같은 에셋을 넣는다.")]
+        [SerializeField] private InventoryViewModel viewModel;
         [Tooltip("창의 CanvasGroup. 닫혀 있으면(interactable false) 드래그를 받지 않는다.")]
         [SerializeField] private CanvasGroup windowGroup;
         [Tooltip("끄는 동안 마우스를 따라다니는 아이콘. 레이캐스트를 받지 않아야 아래 칸에 놓을 수 있다.")]
@@ -56,11 +54,9 @@ namespace _Scripts.UI.InventoryUI
 
         public void Drop(InventorySlotUI target)
         {
-            if (_dragging == null || target == _dragging) return;
-            if (ServiceLocator.Get<IPlayerController>() is not ModuleOwner player || player == null) return;
-            if (!player.TryGetModule(out IInventoryModule inventory)) return;
+            if (_dragging == null || target == _dragging || viewModel == null) return;
 
-            inventory.TryMoveItem(_dragging.Type, _dragging.Index, target.Type, target.Index);
+            viewModel.TryMoveItem(_dragging.Type, _dragging.Index, target.Type, target.Index);
         }
 
         private void MoveGhost(PointerEventData eventData)

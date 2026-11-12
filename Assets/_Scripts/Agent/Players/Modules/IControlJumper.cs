@@ -2,8 +2,9 @@
 {
     public interface IControlJumper
     {
-        float CoyoteTime { get; }
         bool IsJumpFall { get; set; }
+        bool CanCoyoteJump();
+        void ResetCoyote();
         void Jump();
         void CancelJump();
     }

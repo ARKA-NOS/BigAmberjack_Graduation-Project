@@ -39,13 +39,13 @@ namespace _Scripts.Agent.Players
             
             ServiceLocator.Register<IPlayerController>(this);
         }
-
+        
         protected override void Start()
         {
             base.Start();
             PlayerInput.EnableInput();
         }
-
+        
         private void OnDestroy()
         {
             agentStateMachine.StateExit();
@@ -53,7 +53,6 @@ namespace _Scripts.Agent.Players
             ServiceLocator.Register<IPlayerController>(new NullPlayerController());
         }
         
-
         private void Update()
         {
             agentStateMachine.UpdateMachine();
@@ -72,14 +71,14 @@ namespace _Scripts.Agent.Players
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
             StartCoroutine(HitInvincibilityTime());
         }
-    
+        
         private IEnumerator HitInvincibilityTime()
         {
             SetInvincibility(this, true);
             yield return new WaitForSeconds(InvincibilityTime);
             SetInvincibility(this, false);
         }
-
+        
         public void SetInputActive(bool active)
         {
             foreach (ICanInputOnOff canInputOnOff in _canInputOnOffs)

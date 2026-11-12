@@ -14,6 +14,8 @@ namespace _Scripts._Core.DataSystem.SheetSystem
             get => dataList.GetValueOrDefault(key, string.Empty);
             set => dataList[key] = value;
         }
+
+        public bool HasKey(string key) => dataList.ContainsKey(key);
         
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => dataList.GetEnumerator();
         

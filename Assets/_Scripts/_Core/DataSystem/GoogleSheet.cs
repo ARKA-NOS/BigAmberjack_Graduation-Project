@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using _Scripts._Core._Debug;
 using _Scripts._Core.DataSystem.GoogleSheetSystem;
@@ -11,23 +12,13 @@ namespace _Scripts._Core.DataSystem
     public class GoogleSheet : ScriptableObject
     {
         [SerializeField, TextArea] private string googleSheetURL;
-
-        // 읽을 때마다 시트를 새로 내려받는다(응답이 올 때까지 메인 스레드를 막는다).
-        private Sheet _sheet;
         
-        public Sheet GetSheet()
-        {
-            if (_sheet == null)
-                BakeSheetData();
-            return _sheet;
-        }
-        
-        private void BakeSheetData()
+        public Sheet GetSheetData()
         {
             string csvString = GetGoogleSheetData(googleSheetURL);
-            _sheet = new(csvString);
+            return new Sheet(csvString);
         }
-
+        
         //sheet를 csv로 변환하고 그걸 텍스트화 하여 반환한다.
         private string GetGoogleSheetData(string url)
         {
@@ -45,7 +36,7 @@ namespace _Scripts._Core.DataSystem
 
             return csv;
         }
-
+        
 #if UNITY_EDITOR
         [ContextMenu("Reload Sheet")]
         private void ReloadSheet()
@@ -53,7 +44,7 @@ namespace _Scripts._Core.DataSystem
             StringBuilder log = new();
             int rowCount = 0;
 
-            foreach (RowData row in GetSheet())
+            foreach (RowData row in GetSheetData())
             {
                 rowCount++;
                 foreach (KeyValuePair<string, string> cell in row)

@@ -1,4 +1,5 @@
 ﻿using _Scripts._Core._Debug;
+using _Scripts.Agent.FSM;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.Agent.SkillSystem.NormalSkill;
@@ -19,7 +20,7 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private HashDataSO animHash;
+        [SerializeField] private StateSo[] comboStates;
         [SerializeField] private int animatorLayer = 0;
         
         [Header("DamageCast Setting")]
@@ -29,6 +30,9 @@ namespace _Scripts.Agent.Players.Skills
         [Header("AttackMove")]
         [SerializeField] private AnimationCurve attackMoveCurve;
         [SerializeField] private float lungeDistance = 1f;
+
+        [Header("Combotime")]
+        [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
 
         private const int CurveAreaSampleCount = 100;
         private const int CurveStepSampleCount = 10;
@@ -41,7 +45,7 @@ namespace _Scripts.Agent.Players.Skills
 
         private IGroundChecker _groundChecker;
         private IControlMovement _movement;
-        
+
         private Stat damageStat;
         private Stat attackSpeedStat;
         
@@ -56,6 +60,8 @@ namespace _Scripts.Agent.Players.Skills
         private bool _isAttackState;
 
         private bool _isLunge;
+
+        public int ComboCount { get; private set; } = 0;
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -116,11 +122,23 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
+            bool comboCounterOver = ComboCount >= comboStates.Length;
+            bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            if (comboCounterOver || comboWindowExhaust)
+            {
+                ComboCount = 0;
+            }
+
+            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0))
+            {
+                ComboCount = 1;
+            }
+            _playerController.ChangeState((PlayerStateEnum)comboStates[ComboCount].assetIndex);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
-            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f;
+            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f
+                       && _groundChecker.FixedIsGround;
             if (_isLunge)
             {
                 _movement.MoveXLock(true);
@@ -146,7 +164,7 @@ namespace _Scripts.Agent.Players.Skills
                 ? _animator.GetNextAnimatorStateInfo(animatorLayer)
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            _isAttackState = info.shortNameHash == animHash.HashValue;
+            _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
             GroundStop();
             AttackMove();
             base.UpdateSkill();
@@ -156,6 +174,7 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
+            ComboCount++;
             SkillEndSetting();
         }
 

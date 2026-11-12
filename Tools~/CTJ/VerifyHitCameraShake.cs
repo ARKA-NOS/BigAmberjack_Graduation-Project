@@ -49,8 +49,11 @@ public static class VerifyHitCameraShake
             var data = new SerializedObject(module);
             Check(data.FindProperty("_impulseChannel").intValue == 1, "Wrong channel: " + path);
             Check(data.FindProperty("_criticalStrength").floatValue > data.FindProperty("_normalStrength").floatValue, "Critical not stronger: " + path);
+            Check(Mathf.Approximately(data.FindProperty("_normalStrength").floatValue, 0.08f) &&
+                Mathf.Approximately(data.FindProperty("_criticalStrength").floatValue, 0.18f),
+                "Hit shake strength mismatch: " + path);
             Check(Mathf.Approximately(data.FindProperty("_directionJitterDegrees").floatValue, 35f), "Direction jitter missing: " + path);
-            Check(Mathf.Approximately(data.FindProperty("_lethalStrengthMultiplier").floatValue, 2f) &&
+            Check(Mathf.Approximately(data.FindProperty("_lethalStrengthMultiplier").floatValue, 3.2f) &&
                 Mathf.Abs(data.FindProperty("_lethalDurationMultiplier").floatValue - 1.7f) < 0.001f,
                 "Lethal shake settings missing: " + path);
         }
@@ -76,9 +79,11 @@ public static class VerifyHitCameraShake
         Check(Application.isPlaying && SceneManager.GetActiveScene().path == "", "Isolated play scene required");
         float previousClock = CinemachineCore.CurrentTimeOverride;
         bool previousTimeMode = Manager.IgnoreTimeScale;
+        float previousIntensity = EnemyHitCameraShakeManager.Intensity;
         GameObject root = null, cameraRoot = null, target = null;
         try
         {
+            EnemyHitCameraShakeManager.SetIntensity(1f);
             // 검증용 빈 씬에서만 시간을 고정합니다. 게임 코드/씬 에셋은 변경하지 않습니다.
             Manager.Clear();
             Manager.IgnoreTimeScale = false;
@@ -106,7 +111,7 @@ public static class VerifyHitCameraShake
                     var signal = Events[0].SignalSource;
                     signal.GetSignal(signal.SignalDuration * 0.5f, out var offset, out _);
                     float angle = Vector2.SignedAngle(Vector2.right, offset);
-                    Check(Mathf.Abs(angle) <= 35.01f && offset.magnitude > 0.1f,
+                    Check(Mathf.Abs(angle) <= 35.01f && offset.magnitude > 0.07f,
                         "Random direction escaped configured angle or changed strength");
                     angles.Add(angle);
                     CinemachineCore.CurrentTimeOverride += 1f;
@@ -139,7 +144,7 @@ public static class VerifyHitCameraShake
             float normalDuration = Events[0].SignalSource.SignalDuration;
             CinemachineCore.CurrentTimeOverride = 100f + normalDuration * 0.5f;
             var normal = Sample(Vector3.zero);
-            Check(normal.magnitude > 0.1f && normal.magnitude < 0.13f, "Normal signal outside configured range");
+            Check(normal.magnitude > 0.07f && normal.magnitude < 0.09f, "Normal signal outside configured range");
             camera.InternalUpdateCameraState(Vector3.up, 1f / 60f);
             float actualCameraOffset = camera.State.PositionCorrection.magnitude;
             Check(actualCameraOffset > 0.02f, "Existing PlayerCam listener did not apply the hit impulse");
@@ -150,12 +155,29 @@ public static class VerifyHitCameraShake
             CinemachineCore.CurrentTimeOverride = 101f;
             Check(Sample(Vector3.zero).sqrMagnitude == 0 && Count == 0, "Normal impulse did not expire");
 
+            EnemyHitCameraShakeManager.SetIntensity(0.5f);
+            module.PlayShake(false, Vector2.right);
+            CinemachineCore.CurrentTimeOverride = 101f + normalDuration * 0.5f;
+            float halfIntensity = Sample(Vector3.zero).magnitude;
+            Check(Mathf.Abs(halfIntensity / normal.magnitude - 0.5f) < 0.01f,
+                "Global intensity did not scale the hit shake");
+            CinemachineCore.CurrentTimeOverride = 101.5f;
+            Sample(Vector3.zero);
+            EnemyHitCameraShakeManager.SetIntensity(0f);
+            module.PlayShake(false, Vector2.right, true);
+            Check(Count == 0, "Zero global intensity emitted a lethal impulse");
+            EnemyHitCameraShakeManager.SetIntensity(2f);
+            Check(Mathf.Approximately(EnemyHitCameraShakeManager.Intensity, 1f), "Intensity maximum was not clamped");
+            EnemyHitCameraShakeManager.SetIntensity(float.NaN);
+            Check(Mathf.Approximately(EnemyHitCameraShakeManager.Intensity, 1f), "Invalid intensity changed the setting");
+            CinemachineCore.CurrentTimeOverride = 101f;
+
             Hit(enemy, 2f, true);
             Check(Count == 1, "Critical damage must emit exactly one impulse");
             float criticalDuration = Events[0].SignalSource.SignalDuration;
             CinemachineCore.CurrentTimeOverride = 101f + criticalDuration * 0.5f;
             float critical = Sample(Vector3.zero).magnitude;
-            Check(Mathf.Abs(critical / normal.magnitude - 2f) < 0.01f && criticalDuration > normalDuration, "Critical intensity/duration mismatch");
+            Check(Mathf.Abs(critical / normal.magnitude - 2.25f) < 0.01f && criticalDuration > normalDuration, "Critical intensity/duration mismatch");
             Check(Mathf.Approximately(initialHealth - health.CurrentHealth, 4f), "Visual critical changed damage calculation");
             CinemachineCore.CurrentTimeOverride = 102f;
             Sample(Vector3.zero);
@@ -165,7 +187,7 @@ public static class VerifyHitCameraShake
             float normalLethalDuration = Events[0].SignalSource.SignalDuration;
             CinemachineCore.CurrentTimeOverride = 102f + normalLethalDuration * 0.5f;
             float normalLethal = Sample(Vector3.zero).magnitude;
-            Check(Mathf.Abs(normalLethal / normal.magnitude - 2f) < 0.01f &&
+            Check(Mathf.Abs(normalLethal / normal.magnitude - 3.2f) < 0.01f &&
                 Mathf.Abs(normalLethalDuration / normalDuration - 1.7f) < 0.01f,
                 "Normal lethal shake did not increase strength and duration");
             CinemachineCore.CurrentTimeOverride = 102.8f;
@@ -189,7 +211,7 @@ public static class VerifyHitCameraShake
             typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0f);
             Hit(enemy, 1f);
             Check(Count == 0, "Zero strength emitted an impulse");
-            typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0.12f);
+            typeof(EnemyHitCameraShakeModule).GetField("_normalStrength", Private).SetValue(module, 0.08f);
             module.PlayShake(false, new Vector2(float.NaN, 0f));
             Check(Count == 1, "Invalid direction did not fall back safely");
             CinemachineCore.CurrentTimeOverride = 103.56f;
@@ -202,7 +224,7 @@ public static class VerifyHitCameraShake
             float criticalLethalDuration = Events[0].SignalSource.SignalDuration;
             CinemachineCore.CurrentTimeOverride = 104.5f + criticalLethalDuration * 0.5f;
             float criticalLethal = Sample(Vector3.zero).magnitude;
-            Check(Mathf.Abs(criticalLethal / critical - 2f) < 0.01f &&
+            Check(Mathf.Abs(criticalLethal / critical - 3.2f) < 0.01f &&
                 Mathf.Abs(criticalLethalDuration / criticalDuration - 1.7f) < 0.01f,
                 "Actual critical lethal hit did not increase strength and duration");
             Object.Destroy(root);
@@ -217,12 +239,14 @@ public static class VerifyHitCameraShake
                 criticalLethal, criticalLethalDuration, actualCameraOffset, distanceFalloffSample = partial,
                 randomDirectionMin = angles.Min(), randomDirectionMax = angles.Max(),
                 lethalSurvivesEnemy = true, disabledAndZeroStrengthSuppressed = true, noDuplicateSubscriptions = true,
+                globalHalfIntensity = halfIntensity, globalMuteSuppressed = true,
                 invalidDamageAndHealingSuppressed = true, cameraSettled = true };
         }
         finally
         {
             Manager.Clear();
             Manager.IgnoreTimeScale = previousTimeMode;
+            EnemyHitCameraShakeManager.SetIntensity(previousIntensity);
             CinemachineCore.CurrentTimeOverride = previousClock;
             if (root != null) Object.Destroy(root);
             if (cameraRoot != null) Object.Destroy(cameraRoot);

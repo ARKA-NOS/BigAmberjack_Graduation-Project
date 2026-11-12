@@ -28,8 +28,10 @@ namespace _Scripts.Agent.Enemies
         [Header("Death")]
         [Tooltip("선택 사항. 사망 시 Base Layer.Death 상태를 재생합니다.")]
         [SerializeField] private Animator deathAnimator;
-        [Tooltip("HP가 0이 되어 사망 애니메이션을 시작한 뒤 제거까지의 시간. 피격 반응이 더 길면 반응 종료까지 유지합니다.")]
+        [Tooltip("Death 애니메이션이 없는 적이 사망 후 페이드를 시작하기까지의 시간입니다.")]
         [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
+        [Tooltip("사망 애니메이션 마지막 프레임을 유지하며 사라지는 시간입니다.")]
+        [SerializeField, Min(0.01f)] private float deathFadeDuration = 0.2f;
 
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
@@ -42,6 +44,7 @@ namespace _Scripts.Agent.Enemies
         private StateMachine<EnemyStateType> _stateMachine;
         private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? _pendingHit;
         private bool _deathFinalized;
+        private bool _hasDeathAnimation;
         private float _deathStartedAt;
 
         public Transform Target => target;
@@ -305,6 +308,7 @@ namespace _Scripts.Agent.Enemies
             if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
                 deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
             {
+                _hasDeathAnimation = true;
                 deathAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 deathAnimator.Play(DeathStateHash, 0, 0f);
                 // 타격이 Animator 평가 뒤에 들어온 프레임에도 사망 첫 장면을 즉시 보여줍니다.
@@ -333,12 +337,62 @@ namespace _Scripts.Agent.Enemies
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
                 collider.enabled = false;
 
-            enabled = false;
-            // 사망 애니메이션 시작부터 시간을 세되, 피격 반응이 끝나기 전에는 제거하지 않습니다.
-            Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
             if (_death != null) _death.ReportDeath();
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
             if (_currencyReward != null) _currencyReward.GrantDeathReward();
+            // 사망 중에는 AI가 이미 IsDead로 멈춰 있습니다. 컴포넌트를 켜 둬 페이드 코루틴을 실행합니다.
+            if (isActiveAndEnabled) StartCoroutine(FadeAndDespawn());
+            else Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
+        }
+
+        private IEnumerator FadeAndDespawn()
+        {
+            if (_hasDeathAnimation && deathAnimator != null && deathAnimator.isActiveAndEnabled)
+            {
+                AnimatorStateInfo state = deathAnimator.GetCurrentAnimatorStateInfo(0);
+                while (state.fullPathHash == DeathStateHash && state.normalizedTime < 1f)
+                {
+                    yield return null;
+                    if (deathAnimator == null || !deathAnimator.isActiveAndEnabled ||
+                        deathAnimator.runtimeAnimatorController == null) break;
+                    state = deathAnimator.GetCurrentAnimatorStateInfo(0);
+                }
+                if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
+                    deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
+                {
+                    // 전환이나 루프 영향 없이 마지막 그림을 확정한 뒤 그대로 고정합니다.
+                    deathAnimator.Play(DeathStateHash, 0, 1f);
+                    deathAnimator.Update(0f);
+                    deathAnimator.speed = 0f;
+                }
+            }
+            else
+            {
+                float remaining = deathDespawnDelay - (Time.time - _deathStartedAt);
+                if (remaining > 0f) yield return new WaitForSeconds(remaining);
+            }
+
+            SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
+            float[] originalAlphas = new float[sprites.Length];
+            for (int i = 0; i < sprites.Length; i++)
+                if (sprites[i] != null) originalAlphas[i] = sprites[i].color.a;
+
+            float duration = Mathf.Max(0.01f, deathFadeDuration);
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float alpha = 1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                for (int i = 0; i < sprites.Length; i++)
+                {
+                    if (sprites[i] == null) continue;
+                    Color color = sprites[i].color;
+                    color.a = originalAlphas[i] * alpha;
+                    sprites[i].color = color;
+                }
+                yield return null;
+            }
+            Destroy(gameObject);
         }
 
         private void OnDestroy()

@@ -1,70 +1,70 @@
 fileFormatVersion: 2
-guid: fa090dbb88cba3e43a30df98c0d5dd3e
+guid: 005f64720c86b43448253c7d68f5701b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4205370725370084246
-    second: BaseCharactor_Proto_0
+      213: 1424010306875769492
+    second: base_charactor_game2-export_0
   - first:
-      213: 4656382532830071817
-    second: BaseCharactor_Proto_1
+      213: 4035947814861330535
+    second: base_charactor_game2-export_1
   - first:
-      213: -2298547760776367706
-    second: BaseCharactor_Proto_2
+      213: 6014073985589587569
+    second: base_charactor_game2-export_2
   - first:
-      213: -9199873746749944851
-    second: BaseCharactor_Proto_3
+      213: 744193420654875584
+    second: base_charactor_game2-export_3
   - first:
-      213: 8976884676609635215
-    second: BaseCharactor_Proto_4
+      213: -6884923462266005036
+    second: base_charactor_game2-export_4
   - first:
-      213: -7838621010252659098
-    second: BaseCharactor_Proto_5
+      213: -8214485288731286994
+    second: base_charactor_game2-export_5
   - first:
-      213: 2765167922096227143
-    second: BaseCharactor_Proto_6
+      213: 8225563178481626936
+    second: base_charactor_game2-export_6
   - first:
-      213: 1660733189877248197
-    second: BaseCharactor_Proto_7
+      213: -7927151987087370831
+    second: base_charactor_game2-export_7
   - first:
-      213: -3492593964832922600
-    second: BaseCharactor_Proto_8
+      213: 5904346292917599998
+    second: base_charactor_game2-export_8
   - first:
-      213: -6447708193858622325
-    second: BaseCharactor_Proto_9
+      213: -8334352567736068339
+    second: base_charactor_game2-export_9
   - first:
-      213: 6414424388326618334
-    second: BaseCharactor_Proto_10
+      213: -1065330440268030930
+    second: base_charactor_game2-export_10
   - first:
-      213: 3628769149586698567
-    second: BaseCharactor_Proto_11
+      213: 2979468955634884289
+    second: base_charactor_game2-export_11
   - first:
-      213: 7389056755447356306
-    second: BaseCharactor_Proto_12
+      213: 3593901041056747598
+    second: base_charactor_game2-export_12
   - first:
-      213: -3118261828296510448
-    second: BaseCharactor_Proto_13
+      213: -3400614424756152900
+    second: base_charactor_game2-export_13
   - first:
-      213: 324413521542299412
-    second: BaseCharactor_Proto_14
+      213: -659142109510689394
+    second: base_charactor_game2-export_14
   - first:
-      213: 6728870243143153433
-    second: BaseCharactor_Proto_15
+      213: 5567536889519264457
+    second: base_charactor_game2-export_15
   - first:
-      213: 1075645875788177328
-    second: BaseCharactor_Proto_16
+      213: -1286964163577008485
+    second: base_charactor_game2-export_16
   - first:
-      213: -7686718243727696713
-    second: BaseCharactor_Proto_17
+      213: 1804812497342348962
+    second: base_charactor_game2-export_17
   - first:
-      213: -1821160805951444534
-    second: BaseCharactor_Proto_18
+      213: -1476839927664000348
+    second: base_charactor_game2-export_18
   - first:
-      213: 5872789362376705449
-    second: BaseCharactor_Proto_19
+      213: -7547684587852042045
+    second: base_charactor_game2-export_19
   - first:
-      213: -1034734981484522207
-    second: BaseCharactor_Proto_20
+      213: -9023609378274326335
+    second: base_charactor_game2-export_20
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -111,7 +111,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -156,480 +156,467 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BaseCharactor_Proto_0
+      name: Player_Proto_0
       rect:
         serializedVersion: 2
-        x: 43
-        y: 330
-        width: 37
-        height: 57
+        x: 0
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a644d753b9583a5c0800000000000000
-      internalID: -4205370725370084246
+      spriteID: 5c44c49cbbbdf304a855bda749a5028d
+      internalID: -333265268
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_1
+      name: Player_Proto_1
       rect:
         serializedVersion: 2
-        x: 163
-        y: 330
-        width: 37
-        height: 57
+        x: 120
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 90c8ba73e3bce9040800000000000000
-      internalID: 4656382532830071817
+      spriteID: caf952ab8b952a54eb796ffffef81ead
+      internalID: -927641363
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_2
+      name: Player_Proto_2
       rect:
         serializedVersion: 2
-        x: 284
-        y: 330
-        width: 36
-        height: 57
+        x: 240
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6a1b7a36dfae910e0800000000000000
-      internalID: -2298547760776367706
+      spriteID: 18ac182dc65d7e1468a2ed929bcd967a
+      internalID: 131370966
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_3
+      name: Player_Proto_3
       rect:
         serializedVersion: 2
-        x: 404
-        y: 330
-        width: 35
-        height: 57
+        x: 360
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: deb0782029b735080800000000000000
-      internalID: -9199873746749944851
+      spriteID: bd5ddd295a6581c47a5bb2f4704dd0f5
+      internalID: -1605929514
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_4
+      name: Player_Proto_4
       rect:
         serializedVersion: 2
-        x: 524
-        y: 330
-        width: 35
-        height: 57
+        x: 480
+        y: 328
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f83f6f24d0d449c70800000000000000
-      internalID: 8976884676609635215
+      spriteID: c41524214e3a376409b2b49ebe875443
+      internalID: 1783004995
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_5
+      name: Player_Proto_5
       rect:
         serializedVersion: 2
-        x: 44
-        y: 248
-        width: 35
-        height: 57
+        x: 0
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6660af2d8bf973390800000000000000
-      internalID: -7838621010252659098
+      spriteID: f8373b9a0d269ce449a754a3b566076e
+      internalID: 556239708
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_6
+      name: Player_Proto_6
       rect:
         serializedVersion: 2
-        x: 164
-        y: 249
-        width: 39
-        height: 49
+        x: 120
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 743c9dc1399df5620800000000000000
-      internalID: 2765167922096227143
+      spriteID: 40a841415c4a14944b59c57376aaea8b
+      internalID: -756561006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_7
+      name: Player_Proto_7
       rect:
         serializedVersion: 2
-        x: 284
-        y: 249
-        width: 37
-        height: 49
+        x: 240
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c0b559890c1c0710800000000000000
-      internalID: 1660733189877248197
+      spriteID: e8c393f5aa154ff46b84d7094dce4208
+      internalID: -1859027642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_8
+      name: Player_Proto_8
       rect:
         serializedVersion: 2
-        x: 405
-        y: 249
-        width: 35
-        height: 50
+        x: 360
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 814e5752b40d78fc0800000000000000
-      internalID: -3492593964832922600
+      spriteID: 3e9929f6b08a236499838ab8a6f54458
+      internalID: -32575061
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_9
+      name: Player_Proto_9
       rect:
         serializedVersion: 2
-        x: 524
-        y: 249
-        width: 36
-        height: 49
+        x: 480
+        y: 246
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b8c6ea12f832586a0800000000000000
-      internalID: -6447708193858622325
+      spriteID: 7824def06487f4742a499ac02aa82df2
+      internalID: -1780903235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_10
+      name: Player_Proto_10
       rect:
         serializedVersion: 2
-        x: 44
-        y: 167
-        width: 36
-        height: 49
+        x: 0
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ed47fc00ffc940950800000000000000
-      internalID: 6414424388326618334
+      spriteID: acc2131373fecd54ab8b30f96caa710c
+      internalID: -201898231
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_11
+      name: Player_Proto_11
       rect:
         serializedVersion: 2
-        x: 165
-        y: 167
-        width: 35
-        height: 50
+        x: 120
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 741f205c05afb5230800000000000000
-      internalID: 3628769149586698567
+      spriteID: 6f23d9d86d3d5b347a0a2f6ad0c42325
+      internalID: -519840530
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_12
+      name: Player_Proto_12
       rect:
         serializedVersion: 2
-        x: 251
-        y: 166
-        width: 101
-        height: 70
+        x: 240
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 29bd3ad58f33b8660800000000000000
-      internalID: 7389056755447356306
+      spriteID: 0734fff573a498446bb0e195fee8f0bb
+      internalID: -1180019354
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_13
+      name: Player_Proto_13
       rect:
         serializedVersion: 2
-        x: 371
-        y: 166
-        width: 86
-        height: 51
+        x: 360
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 014f9bf6365b9b4d0800000000000000
-      internalID: -3118261828296510448
+      spriteID: 84cc2ebc860c72540912b75a015373cb
+      internalID: -73632768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_14
+      name: Player_Proto_14
       rect:
         serializedVersion: 2
-        x: 527
-        y: 169
-        width: 56
-        height: 49
+        x: 480
+        y: 164
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 41fbcd7016c808400800000000000000
-      internalID: 324413521542299412
+      spriteID: eb2c47e49184af748bec17937915a22f
+      internalID: 1481509912
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_15
+      name: Player_Proto_15
       rect:
         serializedVersion: 2
-        x: 11
-        y: 84
-        width: 101
-        height: 70
+        x: 0
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9177e36c5dfb16d50800000000000000
-      internalID: 6728870243143153433
+      spriteID: bebace289ef28e34998ae1085c79508c
+      internalID: -1147063762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_16
+      name: Player_Proto_16
       rect:
         serializedVersion: 2
-        x: 148
-        y: 90
-        width: 67
-        height: 65
+        x: 120
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0bfd77a99367dee00800000000000000
-      internalID: 1075645875788177328
+      spriteID: cf9b4ba7357fc9641955f6584a12c961
+      internalID: 1942024126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_17
+      name: Player_Proto_17
       rect:
         serializedVersion: 2
-        x: 280
-        y: 88
-        width: 34
-        height: 66
+        x: 240
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7bc981abb7a435590800000000000000
-      internalID: -7686718243727696713
+      spriteID: 98e186c81262fbd468aae06d8c1abb1b
+      internalID: -453910254
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_18
+      name: Player_Proto_18
       rect:
         serializedVersion: 2
-        x: 401
-        y: 87
-        width: 48
-        height: 50
+        x: 360
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ac9666a55efe9b6e0800000000000000
-      internalID: -1821160805951444534
+      spriteID: a739e689768308f448ecc03194e64c8c
+      internalID: -1071821160
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_19
+      name: Player_Proto_19
       rect:
         serializedVersion: 2
-        x: 521
-        y: 86
-        width: 47
-        height: 52
+        x: 480
+        y: 82
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9a508294fc6508150800000000000000
-      internalID: 5872789362376705449
+      spriteID: 51859b739549ed649aece6cb647dca96
+      internalID: -796073141
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaseCharactor_Proto_20
+      name: Player_Proto_20
       rect:
         serializedVersion: 2
-        x: 45
-        y: 4
-        width: 41
-        height: 55
+        x: 480
+        y: 0
+        width: 120
+        height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 125d1ff3402e3a1f0800000000000000
-      internalID: -1034734981484522207
+      spriteID: fa90ac0c315addc4d8cee989efc063e6
+      internalID: 624201831
       vertices: []
       indices: 
       edges: []
@@ -638,7 +625,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9b869e58c42bab142add37674a00dd22
     internalID: 0
     vertices: []
     indices: 
@@ -646,29 +633,31 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":5.0,"y":5.0},"gridSpriteSize":{"x":120.0,"y":82.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      BaseCharactor_Proto_0: -4205370725370084246
-      BaseCharactor_Proto_1: 4656382532830071817
-      BaseCharactor_Proto_10: 6414424388326618334
-      BaseCharactor_Proto_11: 3628769149586698567
-      BaseCharactor_Proto_12: 7389056755447356306
-      BaseCharactor_Proto_13: -3118261828296510448
-      BaseCharactor_Proto_14: 324413521542299412
-      BaseCharactor_Proto_15: 6728870243143153433
-      BaseCharactor_Proto_16: 1075645875788177328
-      BaseCharactor_Proto_17: -7686718243727696713
-      BaseCharactor_Proto_18: -1821160805951444534
-      BaseCharactor_Proto_19: 5872789362376705449
-      BaseCharactor_Proto_2: -2298547760776367706
-      BaseCharactor_Proto_20: -1034734981484522207
-      BaseCharactor_Proto_3: -9199873746749944851
-      BaseCharactor_Proto_4: 8976884676609635215
-      BaseCharactor_Proto_5: -7838621010252659098
-      BaseCharactor_Proto_6: 2765167922096227143
-      BaseCharactor_Proto_7: 1660733189877248197
-      BaseCharactor_Proto_8: -3492593964832922600
-      BaseCharactor_Proto_9: -6447708193858622325
+      Player_Proto_0: -333265268
+      Player_Proto_1: -927641363
+      Player_Proto_10: -201898231
+      Player_Proto_11: -519840530
+      Player_Proto_12: -1180019354
+      Player_Proto_13: -73632768
+      Player_Proto_14: 1481509912
+      Player_Proto_15: -1147063762
+      Player_Proto_16: 1942024126
+      Player_Proto_17: -453910254
+      Player_Proto_18: -1071821160
+      Player_Proto_19: -796073141
+      Player_Proto_2: 131370966
+      Player_Proto_20: 624201831
+      Player_Proto_3: -1605929514
+      Player_Proto_4: 1783004995
+      Player_Proto_5: 556239708
+      Player_Proto_6: -756561006
+      Player_Proto_7: -1859027642
+      Player_Proto_8: -32575061
+      Player_Proto_9: -1780903235
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -2,21 +2,22 @@
 
 namespace _Scripts._Core {
     public interface IReadOnlyNotifyValue<T> {
-        public event Action<T, T> OnValueChanged;
+        public event Action<ChangeData<T>> OnValueChanged;
         public T Value { get; }
     }
 
     public class NotifyValue<T> : IReadOnlyNotifyValue<T> {
-        public event Action<T, T> OnValueChanged;
+        public event Action<ChangeData<T>> OnValueChanged;
         private T _value;
 
         public T Value {
             get => _value;
-            set {
+            set
+            {
                 T before = _value;
                 _value = value;
-                if ((before == null && value != null) || before!.Equals(_value) == false)
-                    OnValueChanged?.Invoke(before, value);
+                if ((before == null && value != null) || (before != null && value == null) || !before.Equals(_value))
+                    OnValueChanged?.Invoke(new ChangeData<T>(before, value));
             }
         }
 

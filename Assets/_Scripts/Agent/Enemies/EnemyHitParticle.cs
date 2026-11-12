@@ -31,6 +31,11 @@ namespace _Scripts.Agent.Enemies
                 _expiresAt = _startedAt + Mathf.Max(maximumLifetime, blood.MaximumLifetime);
                 blood.Emit();
             }
+            else if (TryGetComponent(out EnemyMetalFragmentParticle metal))
+            {
+                _expiresAt = _startedAt + Mathf.Max(maximumLifetime, metal.MaximumLifetime);
+                metal.Emit(_root);
+            }
         }
 
         private void Update()

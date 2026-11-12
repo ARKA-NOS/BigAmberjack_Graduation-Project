@@ -125,9 +125,10 @@ namespace _Scripts.Agent.Enemies
                 if (selectedPrefab == null) continue;
 
                 float effectAngle = angle;
-                if (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) && damage.Dealer != null)
+                if (damage.Dealer != null && (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) ||
+                    selectedPrefab.TryGetComponent<EnemyMetalFragmentParticle>(out _)))
                 {
-                    // 전달 방향 규약이 서로 다른 공격도, 혈흔은 가해자로부터 멀어지는 쪽으로 뿜습니다.
+                    // 전달 방향 규약이 서로 다른 공격도 입자는 가해자로부터 멀어지는 쪽으로 뿜습니다.
                     Vector2 away = origin - damage.Dealer.transform.position;
                     if (HasDirection(away)) effectAngle = Mathf.Atan2(away.y, away.x) * Mathf.Rad2Deg;
                 }

@@ -159,15 +159,15 @@ MonoBehaviour:
   hitPointInset: 0.1
   effectScale: 1
   hitEffects:
-  - label: Polygon Blood Spray
+  - label: Metal Fragments
     enabled: 1
-    prefab: {fileID: 6293476830590490486, guid: b64e1080b6b8831419f2529d63607fb2, type: 3}
+    prefab: {fileID: 6293476830590490486, guid: 76321f2ec945cdb4d99611668995b590, type: 3}
     randomPrefabs: []
     scale: 1
     offset: {x: 0, y: 0}
     alignToHitDirection: 1
     angleOffset: 0
-  deathBurstPrefab: {fileID: 6293476830590490486, guid: b65d51ed12ab78e4a81cea5f3527eb8c, type: 3}
+  deathBurstPrefab: {fileID: 4089219423034216467, guid: 997bb30506d63564493a53509a01b2c0, type: 3}
   deathBurstScale: 1
   maxConcurrentEffects: 24
   maxEffectLifetime: 6

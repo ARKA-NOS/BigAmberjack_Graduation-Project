@@ -145,6 +145,12 @@ namespace _Scripts.Agent.Enemies
             SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale);
         }
 
+        internal void PlayLandingEffect(ParticleSystem prefab, Vector3 position)
+        {
+            if (isActiveAndEnabled && prefab != null)
+                SpawnEffect(prefab, position, Quaternion.identity, 1f);
+        }
+
         private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale)
         {
             _activeEffects.RemoveAll(effect => effect == null);

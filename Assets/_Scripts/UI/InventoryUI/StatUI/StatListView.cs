@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using _Scripts.Agent.StatSystem;
-using _Scripts.UI.BindSystem;
+using _Scripts.UI.MVVM.Disposables;
+using _Scripts.UI.MVVM.Views;
 using UnityEngine;
 
 namespace _Scripts.UI.InventoryUI.StatUI
 {
     // display에 적힌 스탯만, 적힌 순서대로 "현재값 (+변화량)" 형식으로 표시한다.
-    public class StatListUIBinder : AbstractUIBinder<IReadOnlyDictionary<StatData, Stat>>
+    // 줄마다 그 스탯의 값만 구독해서, 스탯 하나가 바뀌면 그 줄만 다시 그린다.
+    public class StatListView : ViewBase<StatListViewModel>
     {
         private const string IncreaseColor = "#7CE07C";
         private const string DecreaseColor = "#E07C7C";
@@ -17,28 +18,12 @@ namespace _Scripts.UI.InventoryUI.StatUI
 
         private readonly List<StatRowUI> _rows = new();
 
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
             rowParent.GetComponentsInChildren(true, _rows);
         }
 
-        private void Start()
-        {
-            RefreshRows();
-        }
-
-        // 스탯은 값이 바뀔 때만 다시 그리면 되므로 매 프레임 할 일은 없다.
-        protected override void DataUpdate()
-        {
-        }
-
-        protected override void OnDataChanged()
-        {
-            RefreshRows();
-        }
-
-        private void RefreshRows()
+        protected override void OnBind(StatListViewModel vm)
         {
             if (display == null) return;
 
@@ -46,22 +31,34 @@ namespace _Scripts.UI.InventoryUI.StatUI
             while (_rows.Count < entries.Length && template != null)
                 _rows.Add(Instantiate(template, rowParent));
 
-            IReadOnlyDictionary<StatData, Stat> stats = CurrentValue;
             for (int i = 0; i < _rows.Count; i++)
             {
                 bool active = i < entries.Length;
                 _rows[i].gameObject.SetActive(active);
-                if (active) _rows[i].Set(entries[i].DisplayName, FormatEntry(entries[i], stats));
+                if (!active) continue;
+
+                StatRowUI row = _rows[i];
+                StatDisplaySO.Entry entry = entries[i];
+
+                // 아직 없는 스탯용으로 비워 둔 줄은 값 자리에 '-'를 표시한다.
+                if (entry.Stat == null)
+                {
+                    row.Set(entry.DisplayName, "-");
+                    continue;
+                }
+
+                vm.GetStat(entry.Stat)
+                    .Subscribe(value => row.Set(entry.DisplayName, FormatEntry(entry, value)))
+                    .AddTo(Disposables);
             }
         }
 
-        private static string FormatEntry(StatDisplaySO.Entry entry, IReadOnlyDictionary<StatData, Stat> stats)
+        private static string FormatEntry(StatDisplaySO.Entry entry, StatValueData stat)
         {
-            if (entry.Stat == null || stats == null || !stats.TryGetValue(entry.Stat, out Stat stat))
-                return "-";
+            if (!stat.HasValue) return "-";
 
             string value = StatDisplaySO.FormatValue(stat.Value, entry.Format);
-            float delta = stat.ModifyValue;
+            float delta = stat.Modify;
             if (Mathf.Approximately(delta, 0f)) return value;
 
             string sign = delta > 0f ? "+" : "-";

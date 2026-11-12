@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace _Scripts.UI.InventoryUI
 {
+    // 인벤토리 칸 하나의 그림. InventorySlotListView가 위치와 표시 데이터를 넣어 준다.
     public class InventorySlotUI : MonoBehaviour
     {
         private const float LockedAlpha = 0.3f;
@@ -14,10 +15,10 @@ namespace _Scripts.UI.InventoryUI
 
         private CanvasGroup _canvasGroup;
 
-        // 이 칸이 가리키는 인벤토리 위치. Binder가 정해 준다.
+        // 이 칸이 가리키는 인벤토리 위치. View가 정해 준다.
         public InventorySlotType Type { get; private set; }
         public int Index { get; private set; }
-        public ItemInstance Item { get; private set; }
+        public ItemSO Item { get; private set; }
         public Image IconImage => iconImage;
 
         public void Setup(InventorySlotType type, int index)
@@ -26,13 +27,19 @@ namespace _Scripts.UI.InventoryUI
             Index = index;
         }
 
-        public void SetItem(ItemInstance item)
+        public void SetData(InventorySlotData data)
+        {
+            SetLocked(data.Locked);
+            if (!data.Locked) SetItem(data.Item);
+        }
+
+        public void SetItem(ItemSO item)
         {
             Item = item;
-            bool hasItem = item != null && item.Data.Icon != null;
+            bool hasItem = item != null && item.Icon != null;
 
             iconImage.enabled = hasItem;
-            iconImage.sprite = hasItem ? item.Data.Icon : null;
+            iconImage.sprite = hasItem ? item.Icon : null;
             SetDragging(false);
         }
 

@@ -34,6 +34,11 @@ namespace _Scripts.Agent.Enemies.Skills
         // 타격/발사 처리가 끝나면 파생 스킬이 BeginRecovery를 호출합니다.
         public bool IsRecovering => IsUsing && _isRecovering;
         public bool IsHoldingWarning => IsPreparing && _preparationPhase == PreparationPhase.Holding;
+        // 도약처럼 스킬이 직접 이동시키는 구간에만 FSM의 정지 처리를 건너뜁니다.
+        public virtual bool ControlsMovement => false;
+        public virtual bool CompletesAfterTargetLost => false;
+        internal virtual bool FinishesOutsideChaseRange => CompletesAfterTargetLost;
+        public virtual void FixedUpdateAttack() { }
         public float AttackDelay => Mathf.Max(0f, _attackDelay?.Value ?? fallbackAttackDelay);
         public float PostBlinkDelay => Mathf.Max(0f, postBlinkDelay);
         protected EnemyBase Enemy { get; private set; }
@@ -75,7 +80,7 @@ namespace _Scripts.Agent.Enemies.Skills
 
         public override void UpdateSkill()
         {
-            if (!CanContinue)
+            if (!CanContinue && !CompletesAfterTargetLost)
             {
                 StopSkill();
                 return;
@@ -118,6 +123,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (_holdDuration > 0f && preparationWarning != null) preparationWarning.Show();
             _preparationPhase = PreparationPhase.Holding;
             _phaseEndTime = Time.time + _holdDuration;
+            if (_holdDuration <= 0f) ReleaseAttack();
         }
 
         protected virtual void PrepareAttack() { }

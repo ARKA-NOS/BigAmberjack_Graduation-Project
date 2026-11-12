@@ -63,7 +63,7 @@ namespace _Scripts.UI.InventoryUI
 
         private void Refresh()
         {
-            ItemSO item = _hovered.Item?.Data;
+            ItemSO item = _hovered.Item;
             if (item != _shownItem)
             {
                 _shownItem = item;

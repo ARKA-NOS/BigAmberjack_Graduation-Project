@@ -12,12 +12,12 @@ namespace _Scripts._Core.LanguageSystem
         {
             EventBus<LanguageChangeEvent>.Subscribe(HandleLanguageChangeEvent);
         }
-
+        
         private void Start()
         {
             LanguageEvents.RaiseLanguageChangeEvent(currentLanguage);
         }
-
+        
         public override void GameEnd()
         {
             EventBus<LanguageChangeEvent>.UnSubscribe(HandleLanguageChangeEvent);

@@ -27,7 +27,6 @@ namespace _Scripts.Agent.Players.CharacterSystem
 
         public override void GameEnd()
         {
-            base.GameEnd();
             ServiceLocator.Register<ICharacterManager>(new NullCharacterManager());
             SaveCurrentCharacter();
         }

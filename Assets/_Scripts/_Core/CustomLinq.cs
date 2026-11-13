@@ -12,5 +12,14 @@ namespace _Scripts._Core
                 action(item);
             }
         }
+        
+        public static T FirstOrDefault<T>(this IEnumerable<T> source,
+            Func<T, bool> check, T defaultValue)
+        {
+            foreach (var t in source)
+                if(check(t))
+                    return t;
+            return defaultValue;
+        }
     }
 }

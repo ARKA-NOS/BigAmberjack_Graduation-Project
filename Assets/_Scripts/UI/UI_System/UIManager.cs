@@ -21,7 +21,6 @@ namespace _Scripts.UI.UI_System
         
         public override void GameEnd()
         {
-            base.GameEnd();
             EventBus<UIOpenCloseEvent>.UnSubscribe(OpenClose);
             _tickables.Clear();
             ServiceLocator.Register<IUITicker>(new NullUITicker());

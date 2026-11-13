@@ -25,7 +25,6 @@ namespace _Scripts.Currency
 
         public override void GameEnd()
         {
-            base.GameEnd();
             ServiceLocator.Register<ICurrencyManager>(new NullCurrencyManager());
             SaveCurrencies();
         }

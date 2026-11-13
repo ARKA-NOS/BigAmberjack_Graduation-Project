@@ -26,7 +26,6 @@ namespace _Scripts.Upgrade
 
         public override void GameEnd()
         {
-            base.GameEnd();
             SaveUpgradeData();
             ServiceLocator.Register<IUpgradeManager>(new NullUpgradeManager());
         }

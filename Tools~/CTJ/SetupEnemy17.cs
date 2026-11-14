@@ -108,7 +108,7 @@ public static class SetupEnemy17
         var states = controller.layers[0].stateMachine;
         var idleState = AddState("Idle", 0.72f, true, Sequence(idle, 0.12f));
         var moveState = AddState("Move", 0.48f, true, Sequence(walk, 0.08f));
-        AddState("AttackPreparation", 0.45f, false, new[]
+        AddState("AttackPreparation", 0.55f, false, new[]
         {
             (0f, attack[6]), (0.08f, attack[8]), (0.16f, attack[11])
         });
@@ -272,7 +272,7 @@ public static class SetupEnemy17
         Set(bite, "cooldownFromStrike", true);
         Set(bite, "<SkillSo>k__BackingField", CopyAsset(Legacy + "/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset", $"{SkillFolder}/{Name}_Bite.asset"));
         Set(bite, "<BaseCoolTime>k__BackingField", 1.6f);
-        Set(bite, "fallbackAttackDelay", 0.45f);
+        Set(bite, "fallbackAttackDelay", 0.55f);
         Set(bite, "postBlinkDelay", 0f);
         Set(bite, "blinkBeforeAttack", false);
         Set(bite, "attackAnimator", animator);

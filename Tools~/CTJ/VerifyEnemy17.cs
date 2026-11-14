@@ -119,7 +119,7 @@ public static class VerifyEnemy17
             target.transform.position = new Vector3(body.position.x - 0.82f, 0f);
             await Until(() => skill.IsRecovering, 2f, "Missed bite did not recover");
             float strikeAt = skill.CoolTimeStartTime;
-            Check(Mathf.Abs(strikeAt - preparationAt - 0.45f) < 0.075f && facing.localScale.x > 0f &&
+            Check(Mathf.Abs(strikeAt - preparationAt - 0.55f) < 0.075f && facing.localScale.x > 0f &&
                 probe.ReceivedHitCount == 0 && Mathf.Abs(body.linearVelocityX) < 0.01f,
                 "Windup was incorrect or moving behind did not avoid the hit");
             float recoveryAt = Time.time;

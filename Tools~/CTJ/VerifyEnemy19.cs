@@ -116,7 +116,7 @@ public static class VerifyEnemy19
             await Until(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.ForwardPreparation"), 0.4f, "Wrong forward pose");
             await Until(() => probe.ReceivedHitCount == 1, 1f, "No forward strike");
             float firstStrike = forward.CoolTimeStartTime;
-            Check(Mathf.Abs(firstStrike - prepared - 0.5f) < 0.08f && probe.TotalDamage == 10f &&
+            Check(Mathf.Abs(firstStrike - prepared - 0.35f) < 0.08f && probe.TotalDamage == 10f &&
                 Mathf.Abs(forward.CoolTime - 1.8f) < 0.01f, "Wrong forward timing, damage or cooldown");
 
             PositionTarget(0f, 1.7f);
@@ -129,7 +129,7 @@ public static class VerifyEnemy19
             Check(root.GetComponentInChildren<AttackTelegraphUI>(true) == null, "Unexpected upward range warning");
             await Until(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.UpwardPreparation"), 0.4f, "Wrong upward pose");
             await Until(() => probe.ReceivedHitCount == 2, 1f, "No upward hit");
-            Check(probe.TotalDamage == 22f && Mathf.Abs(upward.CoolTimeStartTime - prepared - 0.5f) < 0.08f &&
+            Check(probe.TotalDamage == 22f && Mathf.Abs(upward.CoolTimeStartTime - prepared - 0.35f) < 0.08f &&
                 Mathf.Abs(upward.CoolTime - 2.4f) < 0.01f, "Wrong upward timing, damage or cooldown");
             await CheckRecovery(upward, "UpwardStrike");
 

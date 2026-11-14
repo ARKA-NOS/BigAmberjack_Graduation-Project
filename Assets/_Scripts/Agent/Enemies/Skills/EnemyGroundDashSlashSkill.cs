@@ -6,11 +6,11 @@ namespace _Scripts.Agent.Enemies.Skills
 {
     public sealed class EnemyGroundDashSlashSkill : EnemyAttackSkill
     {
+        public const float AttackDistance = 3.8f;
+
         [SerializeField] private Animator attackAnimator;
-        [SerializeField, Min(0.1f)] private float attackRange = 3.8f;
         [SerializeField, Min(0.1f)] private float dashSpeed = 11f;
         [SerializeField, Min(0f)] private float maximumHeightDifference = 0.55f;
-        [SerializeField, Min(0.1f)] private float slashReach = 1.35f;
         [SerializeField, Min(0.1f)] private float slashHeight = 0.85f;
         [SerializeField, Min(0f)] private float damage = 16f;
         [SerializeField, Min(0f)] private float recoveryTime = 0.85f;
@@ -33,6 +33,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private float _warningOriginX;
         private float _recoveryUntil;
         private int _slashes;
+        private bool _hitApplied;
 
         public override bool ControlsMovement => IsUsing && _phase == Phase.Dashing;
         public override bool CompletesAfterTargetLost => HasReleased;
@@ -46,24 +47,20 @@ namespace _Scripts.Agent.Enemies.Skills
         }
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() &&
-            TryPlan(Enemy.Target, out _, out _);
+            TryPlan(Enemy.Target, out _);
 
-        private bool TryPlan(Transform target, out float direction, out float distance)
+        private bool TryPlan(Transform target, out float direction)
         {
             direction = Enemy.FacingDirection;
-            distance = 0f;
             if (target == null || _movement == null || !_movement.IsGrounded ||
                 Mathf.Abs(_movement.GetTargetHeightDifference(target)) > maximumHeightDifference) return false;
 
             float offsetX = target.position.x - _body.position.x;
-            float targetDistance = Mathf.Abs(offsetX);
-            if (targetDistance > attackRange || !_movement.HasClearPath(_movement.BodyCenter, target.position +
+            if (Mathf.Abs(offsetX) > AttackDistance || !_movement.HasClearPath(_movement.BodyCenter, target.position +
                 Vector3.up * (_movement.BodyCenter.y - _body.position.y))) return false;
 
             if (Mathf.Abs(offsetX) > 0.01f) direction = Mathf.Sign(offsetX);
-            float approach = Mathf.Min(Mathf.Max(0f, attackRange - slashReach), Mathf.Max(0f, targetDistance - slashReach * 0.65f));
-            distance = _movement.GetGroundTravelDistance(direction, approach);
-            return targetDistance <= distance + slashReach;
+            return true;
         }
 
         protected override void OnUseSkill()
@@ -76,7 +73,7 @@ namespace _Scripts.Agent.Enemies.Skills
 
         protected override void PrepareAttack()
         {
-            if (!TryPlan(CastTarget, out _direction, out float distance))
+            if (!TryPlan(CastTarget, out _direction))
             {
                 StopSkill();
                 return;
@@ -84,21 +81,21 @@ namespace _Scripts.Agent.Enemies.Skills
             _movement.Stop();
             Enemy.FaceTarget();
             _warningOriginX = _body.position.x;
-            _dashEndX = _warningOriginX + _direction * distance;
+            _dashEndX = _warningOriginX + _direction * AttackDistance;
             _phase = Phase.Preparing;
             Play(Preparation);
         }
 
         protected override void UpdateTelegraph()
         {
-            float length = Mathf.Abs(_dashEndX - _warningOriginX) + slashReach;
-            Telegraph.SetBounds(new Bounds(new Vector3(_warningOriginX + _direction * length * 0.5f, _movement.BodyCenter.y),
-                new Vector3(length, slashHeight)));
+            Telegraph.SetBounds(new Bounds(new Vector3(_warningOriginX + _direction * AttackDistance * 0.5f, _movement.BodyCenter.y),
+                new Vector3(AttackDistance, slashHeight)));
         }
 
         protected override void OnReleaseAttack()
         {
             Telegraph?.Hide();
+            _hitApplied = false;
             _phase = Phase.Dashing;
             _dashDeadline = Time.time + Mathf.Abs(_dashEndX - _body.position.x) / dashSpeed + 2f * Time.fixedDeltaTime;
             Play(Dash);
@@ -110,33 +107,45 @@ namespace _Scripts.Agent.Enemies.Skills
             float step = _movement.GetGroundTravelDistance(_direction, Mathf.Min(remaining, dashSpeed * Time.fixedDeltaTime));
             if (step > 0.001f && Time.time < _dashDeadline)
             {
-                _body.linearVelocityX = _direction * step / Time.fixedDeltaTime;
+                if (!_hitApplied) StrikeAlongStep(step);
+                if (ControlsMovement) _body.linearVelocityX = _direction * step / Time.fixedDeltaTime;
                 return;
             }
 
             _movement.Stop();
             _phase = Phase.Slashing;
             _slashes++;
-            CoolTimeStartTime = Time.time;
-            if (Play(Slash)) attackAnimator.Update(0f);
-            StrikeTarget();
+            if (!_hitApplied)
+            {
+                CoolTimeStartTime = Time.time;
+                PlaySlash();
+            }
         }
 
-        private void StrikeTarget()
+        private void StrikeAlongStep(float step)
         {
             if (!CanContinue) return;
             Vector2 origin = _movement.BodyCenter;
             Vector2 direction = Vector2.right * _direction;
-            Vector2 center = origin + direction * (slashReach * 0.5f);
-            Physics2D.OverlapBox(center, new Vector2(slashReach, slashHeight), 0f,
+            Vector2 center = origin + direction * (step * 0.5f);
+            Physics2D.OverlapBox(center, new Vector2(step, slashHeight), 0f,
                 new ContactFilter2D { useTriggers = true }, _overlaps);
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
                 Vector2 point = hit.ClosestPoint(center);
-                if (_movement.HasClearPath(origin, point) &&
-                    EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, direction)) break;
+                if (!_movement.HasClearPath(origin, point) ||
+                    !EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, direction)) continue;
+                _hitApplied = true;
+                CoolTimeStartTime = Time.time;
+                if (ControlsMovement) PlaySlash();
+                break;
             }
+        }
+
+        private void PlaySlash()
+        {
+            if (Play(Slash)) attackAnimator.Update(0f);
         }
 
         public override void UpdateSkill()
@@ -151,7 +160,7 @@ namespace _Scripts.Agent.Enemies.Skills
                     if (state.fullPathHash == Slash && state.normalizedTime < 1f) return;
                 }
                 if (_slashes < Mathf.Clamp(maximumConsecutiveDashes, 1, 2) && CanContinue &&
-                    TryPlan(CastTarget, out _, out _))
+                    TryPlan(CastTarget, out _))
                 {
                     BeginPreparation();
                     return;

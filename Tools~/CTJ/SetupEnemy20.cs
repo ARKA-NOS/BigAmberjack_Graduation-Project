@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using _Scripts.Agent.Enemies;
@@ -21,6 +22,46 @@ public static class SetupEnemy20
     private const string Skills = Scripts + "/EnemySkills/Enemy20";
     private const string PrefabPath = Prefabs + "/" + Name + ".prefab";
     private const float PixelsPerUnit = 32f;
+
+    public static object UpdatePreparationShake()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Update the Enemy20 animation clips in Edit Mode.");
+        string path = Animations + "/" + Name + ".controller";
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
+        var clips = controller.animationClips.Distinct().ToArray();
+        foreach (var clip in clips)
+        {
+            SetPreparationOffset(clip, clip.name == Name + "_DashPreparation");
+            AssetDatabase.SaveAssetIfDirty(clip);
+        }
+        return new { clips = clips.Length };
+    }
+
+    private static void SetPreparationOffset(AnimationClip clip, bool shake)
+    {
+        const float duration = 0.60f;
+        const int steps = 20;
+        var keys = new List<Keyframe> { new Keyframe(0f, 0f) };
+        if (shake)
+        {
+            for (int i = 1; i < steps; i++)
+            {
+                float pixels = Mathf.Lerp(0.75f, 2f, i / (float)(steps - 1));
+                float direction = i % 2 == 0 ? -1f : 1f;
+                keys.Add(new Keyframe(i * duration / steps, direction * pixels / PixelsPerUnit));
+            }
+            keys.Add(new Keyframe(duration, 0f));
+        }
+
+        var offset = new AnimationCurve(keys.ToArray());
+        for (int i = 0; i < offset.length; i++)
+        {
+            AnimationUtility.SetKeyLeftTangentMode(offset, i, AnimationUtility.TangentMode.Linear);
+            AnimationUtility.SetKeyRightTangentMode(offset, i, AnimationUtility.TangentMode.Linear);
+        }
+        AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("", typeof(Transform), "m_LocalPosition.x"), offset);
+    }
 
     public static object Create()
     {
@@ -165,6 +206,7 @@ public static class SetupEnemy20
             };
             AnimationUtility.SetObjectReferenceCurve(clip,
                 EditorCurveBinding.PPtrCurve("Sensor", typeof(SpriteRenderer), "m_Sprite"), sensorFrames);
+            SetPreparationOffset(clip, name == "DashPreparation");
             var settings = AnimationUtility.GetAnimationClipSettings(clip);
             settings.loopTime = loop;
             AnimationUtility.SetAnimationClipSettings(clip, settings);

@@ -39,7 +39,8 @@ public static class VerifyEnemy21
         var skill = root.GetComponentInChildren<EnemyGroundDashSlashSkill>();
         var slot = root.GetComponentInChildren<EnemySkillModule>().Skills.Single();
         var settings = new SerializedObject(skill);
-        Check(slot.Skill == skill && slot.MaxRange == 3.8f && skill.AttackDelay == 0.65f && skill.CoolTime == 3.4f &&
+        Check(slot.Skill == skill && slot.MaxRange == 3.8f && EnemyGroundDashSlashSkill.AttackDistance == 3.8f &&
+            skill.AttackDelay == 0.65f && skill.CoolTime == 3.4f &&
             settings.FindProperty("maximumConsecutiveDashes").intValue == 1 &&
             settings.FindProperty("telegraphPrefab").objectReferenceValue is AttackTelegraphUI, "Invalid dash or warning setup");
         Check(dependencies.Any(path => path.EndsWith("/HitMetalFragments.prefab")) &&
@@ -61,8 +62,8 @@ public static class VerifyEnemy21
         var wall = Terrain("Wall", Vector2.zero, new Vector2(0.18f, 2f));
         wall.enabled = false;
         var target = new GameObject("Player probe");
+        target.layer = LayerMask.NameToLayer("Player");
         var collider = target.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
         collider.size = new Vector2(0.42f, 1f);
         collider.offset = Vector2.up * 0.5f;
         var probe = target.AddComponent<EnemyDamageProbe>();
@@ -91,6 +92,8 @@ public static class VerifyEnemy21
 
             PlaceTarget(body.position.x + 2.2f, 0.9f);
             Check(!skills.CanAttackTarget(), "Attack accepted a high target");
+            PlaceTarget(body.position.x + 3.85f, 0f);
+            Check(!skills.CanAttackTarget(), "Attack accepted a target outside 3.8 units");
             PlaceTarget(body.position.x + 2.5f, 0f);
             wall.transform.position = new Vector3(body.position.x + 1.1f, 0.6f);
             wall.enabled = true;
@@ -104,8 +107,7 @@ public static class VerifyEnemy21
             var warningRect = warning.GetComponent<RectTransform>();
             Vector3 warningCenter = warningRect.position;
             float warningWidth = warningRect.sizeDelta.x;
-            Check(warning.IsVisible && warningCenter.x > startX &&
-                warningWidth > 2.3f && warningWidth <= 3.81f, "Wrong warning lane");
+            Check(warning.IsVisible && warningCenter.x > startX && Mathf.Abs(warningWidth - 3.8f) < 0.001f, "Wrong warning lane");
             float originalTargetX = target.transform.position.x;
             PlaceTarget(startX - 0.7f, 0f);
             await Until(() => Time.time >= prepared + 0.2f, 0.6f, "Preparation did not hold");
@@ -116,7 +118,8 @@ public static class VerifyEnemy21
             PlaceTarget(originalTargetX, 1.05f);
             await Until(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Slash"), 1f, "No slash animation");
             float firstEnd = body.position.x;
-            Check(firstEnd > startX + 1f && probe.ReceivedHitCount == 0, "Dash changed direction or hit the jumping target");
+            Check(Mathf.Abs(firstEnd - startX - 3.8f) < 0.03f && probe.ReceivedHitCount == 0,
+                "Dash changed direction or hit the jumping target");
             await Until(() => dash.IsRecovering, 1f, "No recovery");
             float recoveryStart = Time.time;
             await Awaitable.EndOfFrameAsync();
@@ -128,18 +131,24 @@ public static class VerifyEnemy21
             settings.FindProperty("maximumConsecutiveDashes").intValue = 2;
             settings.ApplyModifiedPropertiesWithoutUndo();
             float previousSlash = dash.CoolTimeStartTime;
-            PlaceTarget(body.position.x + 2.5f, 0f);
+            PlaceTarget(body.position.x + 0.9f, 0f);
             await Until(() => dash.IsPreparing, 4.5f, "No combo after cooldown");
             Check(Time.time - previousSlash >= 3.399f, "Cooldown ended too early");
+            startX = body.position.x;
             await Until(() => probe.ReceivedHitCount == 1, 2f, "No first combo strike");
             float firstHitAt = dash.CoolTimeStartTime;
-            PlaceTarget(body.position.x - 2.2f, 0f);
+            Check(dash.ControlsMovement && body.position.x < startX + 1.2f, "No early strike during movement");
+            PlaceTarget(startX + 3.8f - 2.2f, 0f);
             await Until(() => dash.IsPreparing, 1f, "No second warning");
-            Check(warning.IsVisible && warningRect.position.x < body.position.x, "Second warning did not use its new direction");
+            Check(Mathf.Abs(body.position.x - startX - 3.8f) < 0.03f && warning.IsVisible &&
+                Mathf.Abs(warningRect.sizeDelta.x - 3.8f) < 0.001f && warningRect.position.x < body.position.x,
+                "First hit shortened travel or second warning did not use its new direction");
+            float secondStart = body.position.x;
             await Until(() => probe.ReceivedHitCount == 2, 2f, "No second combo strike");
             Check(probe.TotalDamage == 32f && dash.CoolTimeStartTime > firstHitAt, "Wrong combo damage or last strike clock");
             await Until(() => dash.IsRecovering, 1f, "Combo did not end after two strikes");
-            Check(!warning.IsVisible, "Combo left its lane visible");
+            Check(Mathf.Abs(secondStart - body.position.x - 3.8f) < 0.03f && !warning.IsVisible,
+                "Reverse hit shortened travel or left the warning visible");
 
             await Until(() => !dash.IsUsing, 1.2f, "Combo recovery stalled");
             settings.Update();

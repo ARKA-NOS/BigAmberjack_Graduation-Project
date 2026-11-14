@@ -247,7 +247,7 @@ public static class SetupEnemy21
         var skills = new SerializedObject(root.GetComponentInChildren<EnemySkillModule>());
         var slot = skills.FindProperty("skills").GetArrayElementAtIndex(0);
         slot.FindPropertyRelative("skill").objectReferenceValue = dash;
-        slot.FindPropertyRelative("maxRange").floatValue = 3.8f;
+        slot.FindPropertyRelative("maxRange").floatValue = EnemyGroundDashSlashSkill.AttackDistance;
         slot.FindPropertyRelative("useHorizontalRange").boolValue = true;
         slot.FindPropertyRelative("maxHeightDifference").floatValue = 0.55f;
         slot.FindPropertyRelative("requireUsableToEnterAttack").boolValue = true;

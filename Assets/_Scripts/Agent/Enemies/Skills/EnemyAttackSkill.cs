@@ -31,6 +31,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected bool HasReleased { get; private set; }
         protected virtual bool ShouldShowTelegraph => true;
         public bool IsPreparing => IsUsing && !HasReleased;
+        internal virtual bool InterruptibleByHit => IsPreparing;
         // 타격/발사 처리가 끝나면 파생 스킬이 BeginRecovery를 호출합니다.
         public bool IsRecovering => IsUsing && _isRecovering;
         public bool IsHoldingWarning => IsPreparing && _preparationPhase == PreparationPhase.Holding;

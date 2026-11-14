@@ -4,7 +4,7 @@ using UnityEngine;
 namespace _Scripts.Agent.Enemies.Skills
 {
     // 짧은 시간 동안 판정을 유지하되, 플레이어에게는 한 번만 피해를 주는 근접 스킬입니다.
-    public sealed class EnemyTimedMeleeSkill : EnemyAttackSkill
+    public class EnemyTimedMeleeSkill : EnemyAttackSkill
     {
         [SerializeField] private Animator attackAnimator;
         [SerializeField] private BoxCollider2D attackHitbox;

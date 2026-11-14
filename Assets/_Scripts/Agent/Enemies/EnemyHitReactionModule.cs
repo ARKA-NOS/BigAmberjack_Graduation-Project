@@ -116,15 +116,23 @@ namespace _Scripts.Agent.Enemies
             }
         }
 
-        internal void React(DamageData damage, Vector2 hitDirection)
+        internal bool TryStun(float duration)
+        {
+            if (!Ready || duration <= 0f) return false;
+            _stunEnd = Mathf.Max(_stunEnd, Time.time + duration);
+            _reactionDuration = RemainingReactionTime;
+            return true;
+        }
+
+        internal void React(DamageData damage, Vector2 hitDirection, bool suppressHitControl)
         {
             if (!Ready) return;
-            bool protectedFromReaction = _superArmor != null && _superArmor.IsProtected;
-            if (!protectedFromReaction && hitStunDuration > 0f) _stunEnd = Time.time + hitStunDuration;
+            bool protectedFromReaction = suppressHitControl || (_superArmor != null && _superArmor.IsProtected);
+            if (!protectedFromReaction) TryStun(hitStunDuration);
 
             if (!protectedFromReaction && cancelAttackOnHit && _skills != null &&
                 (_skills.ActiveSkill is EnemyMeleeSkill ||
-                 _skills.ActiveSkill is EnemyAttackSkill { IsPreparing: true } ||
+                 _skills.ActiveSkill is EnemyAttackSkill { InterruptibleByHit: true } ||
                  _skills.ActiveSkill is IChargeSkill { IsCharging: true }))
                 _skills.StopAttack();
 

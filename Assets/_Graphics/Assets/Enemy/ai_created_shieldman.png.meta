@@ -427,7 +427,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -441,7 +441,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 86
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -465,7 +465,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -503,2883 +503,639 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ai_created_shieldman_0
+      name: Shieldbearer_Idle_01
       rect:
         serializedVersion: 2
-        x: 90
-        y: 671
-        width: 231
-        height: 331
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 88ee65ddc7c5864b0800000000000000
-      internalID: -5447002057945452920
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_1
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 785
-        width: 267
-        height: 219
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e4bb6ce7f3cf44040800000000000000
-      internalID: 4631103666483805006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_2
-      rect:
-        serializedVersion: 2
-        x: 568
-        y: 895
-        width: 15
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8fda0a587ced31c80800000000000000
-      internalID: -8353087935320379912
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_3
-      rect:
-        serializedVersion: 2
-        x: 584
-        y: 898
-        width: 7
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cddfaaad81c172ba0800000000000000
-      internalID: -6113887076058726948
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_4
-      rect:
-        serializedVersion: 2
-        x: 589
-        y: 894
-        width: 14
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 923c1cbdd0b5f6a90800000000000000
-      internalID: -7318530754374155479
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_5
-      rect:
-        serializedVersion: 2
-        x: 596
-        y: 906
-        width: 11
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ddbd62e6015549240800000000000000
-      internalID: 4797553032112298973
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_6
-      rect:
-        serializedVersion: 2
-        x: 660
-        y: 814
-        width: 233
-        height: 187
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 398eb5b4278dc9440800000000000000
-      internalID: 4944064476348147859
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_7
-      rect:
-        serializedVersion: 2
-        x: 894
-        y: 721
-        width: 277
-        height: 295
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5cf0793df2f27e540800000000000000
-      internalID: 5037046590697050053
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_8
-      rect:
-        serializedVersion: 2
-        x: 1166
-        y: 849
-        width: 63
-        height: 66
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d0a336dfc6601ced0800000000000000
-      internalID: -2395626461607020019
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_9
-      rect:
-        serializedVersion: 2
-        x: 1288
-        y: 785
-        width: 225
-        height: 219
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8deebd5f227787660800000000000000
-      internalID: 7383782581111353048
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_10
-      rect:
-        serializedVersion: 2
-        x: 601
-        y: 895
-        width: 6
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 95bddb575a7cd1bd0800000000000000
-      internalID: -2657748691619816615
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_11
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 806
-        width: 35
-        height: 76
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cad35bbb64536d6a0800000000000000
-      internalID: -6424889240484233812
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_12
-      rect:
-        serializedVersion: 2
-        x: 306
-        y: 879
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ce6357d773fd40c60800000000000000
-      internalID: 7783591485424088812
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_13
-      rect:
-        serializedVersion: 2
-        x: 881
-        y: 866
-        width: 26
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6b7d2bb7ecdcb8380800000000000000
-      internalID: -8967847946255935562
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_14
-      rect:
-        serializedVersion: 2
-        x: 310
-        y: 853
-        width: 23
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4025e9a3725aa57f0800000000000000
-      internalID: -623004010531630588
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_15
-      rect:
-        serializedVersion: 2
-        x: 862
-        y: 829
-        width: 19
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 66a4a7df104b4bad0800000000000000
-      internalID: -2687325156992726426
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_16
-      rect:
-        serializedVersion: 2
-        x: 886
-        y: 833
-        width: 31
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 37ce7dd3eb01d6740800000000000000
-      internalID: 5146788358421736563
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_17
-      rect:
-        serializedVersion: 2
-        x: 926
-        y: 835
-        width: 13
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e3c82d10569616ac0800000000000000
-      internalID: -3863691122763985858
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_18
-      rect:
-        serializedVersion: 2
-        x: 846
+        x: 94
         y: 823
-        width: 16
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 140
+        height: 178
+      alignment: 9
+      pivot: {x: 0.5642857, y: 0.016853932}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cda5e1bc4d11a16e0800000000000000
-      internalID: -1866159489953146148
+      spriteID: b35ad9902de71264a83b408eddd4dfca
+      internalID: 1461138106
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_19
+      name: Shieldbearer_Idle_02
       rect:
         serializedVersion: 2
-        x: 1208
-        y: 834
-        width: 9
-        height: 14
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 96d461271bea0f6a0800000000000000
-      internalID: -6417437391856448151
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_20
-      rect:
-        serializedVersion: 2
-        x: 1214
+        x: 393
         y: 823
-        width: 35
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 140
+        height: 178
+      alignment: 9
+      pivot: {x: 0.5714286, y: 0.016853932}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f08ddc7381228c9a0800000000000000
-      internalID: -6212678198546802673
+      spriteID: 0e9f661b67bf87949b11573deecc905c
+      internalID: -641008107
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_21
+      name: Shieldbearer_Idle_03
       rect:
         serializedVersion: 2
-        x: 540
-        y: 615
-        width: 166
-        height: 187
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 693
+        y: 823
+        width: 141
+        height: 177
+      alignment: 9
+      pivot: {x: 0.5673759, y: 0.016949153}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 886f8269df05f9b80800000000000000
-      internalID: -8385894931064359288
+      spriteID: 6634d00e99fb8154f982f7a6030acd9b
+      internalID: -1220525196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_22
-      rect:
-        serializedVersion: 2
-        x: 822
-        y: 801
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 678928184418c1c50800000000000000
-      internalID: 6637322082067847286
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_23
-      rect:
-        serializedVersion: 2
-        x: 974
-        y: 783
-        width: 17
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3ffefbe59f6eaf9a0800000000000000
-      internalID: -6198387978411184141
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_24
-      rect:
-        serializedVersion: 2
-        x: 990
-        y: 783
-        width: 9
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d206860fe0f201ef0800000000000000
-      internalID: -139559847239065555
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_25
-      rect:
-        serializedVersion: 2
-        x: 77
-        y: 622
-        width: 134
-        height: 171
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0c6d223b900a5a120800000000000000
-      internalID: 2424519937929434816
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_26
-      rect:
-        serializedVersion: 2
-        x: 320
-        y: 599
-        width: 205
-        height: 194
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 00ed2e0359f029c80800000000000000
-      internalID: -8317568428355166720
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_27
-      rect:
-        serializedVersion: 2
-        x: 544
-        y: 787
-        width: 7
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 75f708a274f0a8260800000000000000
-      internalID: 7100504560833167191
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_28
-      rect:
-        serializedVersion: 2
-        x: 720
-        y: 767
-        width: 17
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: afe52ecb513f71f40800000000000000
-      internalID: 5699291128149466874
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_29
-      rect:
-        serializedVersion: 2
-        x: 758
-        y: 753
-        width: 45
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 819f36df982961bd0800000000000000
-      internalID: -2659777408556336872
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_30
-      rect:
-        serializedVersion: 2
-        x: 823
-        y: 619
-        width: 142
-        height: 173
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2ac00a6c7d5163500800000000000000
-      internalID: 375511635426544802
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_31
-      rect:
-        serializedVersion: 2
-        x: 1038
-        y: 766
-        width: 15
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bf05e1caab5ed4d40800000000000000
-      internalID: 5570360904041517307
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_32
-      rect:
-        serializedVersion: 2
-        x: 1074
-        y: 619
-        width: 161
-        height: 173
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f3060972ba0909120800000000000000
-      internalID: 2418592064675536959
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_33
-      rect:
-        serializedVersion: 2
-        x: 1254
-        y: 775
-        width: 13
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1ab863708b24c6cf0800000000000000
-      internalID: -257757720504530015
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_34
-      rect:
-        serializedVersion: 2
-        x: 1292
-        y: 593
-        width: 209
-        height: 199
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ddf318a32917173d0800000000000000
-      internalID: -3210660186477740067
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_35
-      rect:
-        serializedVersion: 2
-        x: 1294
-        y: 767
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: df4fc726bbad1ecb0800000000000000
-      internalID: -4836344026473106179
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_36
-      rect:
-        serializedVersion: 2
-        x: 726
-        y: 735
-        width: 13
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 14309142593fe3170800000000000000
-      internalID: 8160227396723213121
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_37
-      rect:
-        serializedVersion: 2
-        x: 750
-        y: 679
-        width: 48
-        height: 75
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2251cc7a7198b0770800000000000000
-      internalID: 8578100649949664546
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_38
-      rect:
-        serializedVersion: 2
-        x: 776
-        y: 735
-        width: 13
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3db53b884dcab6df0800000000000000
-      internalID: -185864930779243565
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_39
-      rect:
-        serializedVersion: 2
-        x: 984
-        y: 669
-        width: 71
-        height: 75
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 22994d6c7398a2c80800000000000000
-      internalID: -8346708086725764830
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_40
+      name: Shieldbearer_Idle_04
       rect:
         serializedVersion: 2
         x: 994
-        y: 724
-        width: 13
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 823
+        width: 139
+        height: 177
+      alignment: 9
+      pivot: {x: 0.5683453, y: 0.016949153}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 49eac90b940cf1090800000000000000
-      internalID: -8061513385241694572
+      spriteID: 650ae18e64d9cb64298f16bf08fca699
+      internalID: -2083584222
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_41
+      name: Shieldbearer_Idle_05
       rect:
         serializedVersion: 2
-        x: 1268
-        y: 743
-        width: 31
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1293
+        y: 823
+        width: 140
+        height: 177
+      alignment: 9
+      pivot: {x: 0.5714286, y: 0.016949153}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d3952279c26d16530800000000000000
-      internalID: 3846591043753630013
+      spriteID: 79d90355f989c6d4e81f40218d7886f5
+      internalID: -1668381318
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_42
+      name: Shieldbearer_Walk_01
       rect:
         serializedVersion: 2
-        x: 720
-        y: 719
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 23c424d00b0573430800000000000000
-      internalID: 3762564730758253618
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_43
-      rect:
-        serializedVersion: 2
-        x: 1006
-        y: 722
-        width: 17
-        height: 20
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 653d96792c0f80a60800000000000000
-      internalID: 7640621486388663126
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_44
-      rect:
-        serializedVersion: 2
-        x: 1238
-        y: 687
-        width: 59
-        height: 45
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 152bea7e967e29ed0800000000000000
-      internalID: -2408608408645225903
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_45
-      rect:
-        serializedVersion: 2
-        x: 242
-        y: 631
-        width: 31
-        height: 59
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9a95ef902a98f39c0800000000000000
-      internalID: -3945283419507893847
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_46
-      rect:
-        serializedVersion: 2
-        x: 478
-        y: 671
-        width: 17
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 07b2beb89c6bf13f0800000000000000
-      internalID: -927822021462906000
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_47
-      rect:
-        serializedVersion: 2
-        x: 722
-        y: 679
-        width: 23
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a5361e6bfad60a670800000000000000
-      internalID: 8547952694204130138
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_48
-      rect:
-        serializedVersion: 2
-        x: 754
-        y: 689
-        width: 9
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ecb7ed046a36edd10800000000000000
-      internalID: 2152267237633719246
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_49
-      rect:
-        serializedVersion: 2
-        x: 1258
-        y: 687
-        width: 13
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 782d47c8542abf060800000000000000
-      internalID: 6988357666388365959
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_50
-      rect:
-        serializedVersion: 2
-        x: 486
-        y: 633
-        width: 9
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4cbb022005e58edf0800000000000000
-      internalID: -150766889790817340
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_51
-      rect:
-        serializedVersion: 2
-        x: 728
-        y: 595
-        width: 57
-        height: 77
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0c48c7c26d7106e40800000000000000
-      internalID: 5647540141359400128
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_52
-      rect:
-        serializedVersion: 2
-        x: 970
-        y: 649
-        width: 21
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2e7f2827e52053d40800000000000000
-      internalID: 5563355519357482978
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_53
-      rect:
-        serializedVersion: 2
-        x: 990
-        y: 655
-        width: 9
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 315f06d88b7be3840800000000000000
-      internalID: 5205800222560679187
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_54
-      rect:
-        serializedVersion: 2
-        x: 990
-        y: 615
-        width: 35
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 02393235c2a6ad9f0800000000000000
-      internalID: -442924874736626912
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_55
-      rect:
-        serializedVersion: 2
-        x: 1242
-        y: 607
-        width: 35
-        height: 53
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a6c19f3220f8cf730800000000000000
-      internalID: 4034256605573356650
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_56
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 557
-        width: 33
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d248f1776680fd690800000000000000
-      internalID: -7575326812035644371
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_57
-      rect:
-        serializedVersion: 2
-        x: 726
-        y: 638
-        width: 19
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e40b8c40cb321e2e0800000000000000
-      internalID: -2098356660936855474
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_58
-      rect:
-        serializedVersion: 2
-        x: 77
-        y: 429
-        width: 164
+        x: 81
+        y: 622
+        width: 128
         height: 170
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.546875, y: 0.01764706}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 19fa1e25930e10190800000000000000
-      internalID: -7997864926425010287
+      spriteID: bf4e414db964b414ca0a64052db5b3ef
+      internalID: -1523685814
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_59
+      name: Shieldbearer_Walk_02
       rect:
         serializedVersion: 2
-        x: 248
-        y: 599
-        width: 19
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 330
+        y: 622
+        width: 122
+        height: 170
+      alignment: 9
+      pivot: {x: 0.58196723, y: 0.01764706}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e5bcf436dd03ae0c0800000000000000
-      internalID: -4545767146465014946
+      spriteID: ed4bc51c584a37d4cb1c09c464289950
+      internalID: 326044889
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_60
+      name: Shieldbearer_Walk_03
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 622
+        width: 128
+        height: 169
+      alignment: 9
+      pivot: {x: 0.578125, y: 0.01775148}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec9df52f7f96e1047a8f497d5eb3bf6b
+      internalID: 723674951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Walk_04
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 622
+        width: 128
+        height: 169
+      alignment: 9
+      pivot: {x: 0.5703125, y: 0.01775148}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bba50a3aad78a3d49b641717a4ffa99f
+      internalID: 656298674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Walk_05
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 622
+        width: 129
+        height: 169
+      alignment: 9
+      pivot: {x: 0.5503876, y: 0.01775148}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 332e2ab024e96014d8ebc43c532c865c
+      internalID: -705110887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Walk_06
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 622
+        width: 124
+        height: 169
+      alignment: 9
+      pivot: {x: 0.5564516, y: 0.01775148}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 281d6393cad952c49962ccf22c421e5f
+      internalID: -198196039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_01
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 432
+        width: 129
+        height: 165
+      alignment: 9
+      pivot: {x: 0.56589144, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9885762f035e7094e8d750d479db022e
+      internalID: -2123265196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_02
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 432
+        width: 137
+        height: 165
+      alignment: 9
+      pivot: {x: 0.5912409, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2cfd8108bd4b474c96be5697e0c6a07
+      internalID: 977625024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_03
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 432
+        width: 146
+        height: 165
+      alignment: 9
+      pivot: {x: 0.60273975, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26db6a70c2d898f45977b36577fe065d
+      internalID: 528909368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_04
+      rect:
+        serializedVersion: 2
+        x: 829
+        y: 432
+        width: 135
+        height: 165
+      alignment: 9
+      pivot: {x: 0.56296295, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fa7fe586200b6d4bad503419e88a692
+      internalID: 2075517012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_05
+      rect:
+        serializedVersion: 2
+        x: 1084
+        y: 432
+        width: 134
+        height: 165
+      alignment: 9
+      pivot: {x: 0.5298507, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6d9c1a13d08e60419f3f0daa5e3c6a8
+      internalID: 1469427622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Run_06
+      rect:
+        serializedVersion: 2
+        x: 1338
+        y: 432
+        width: 136
+        height: 165
+      alignment: 9
+      pivot: {x: 0.49264705, y: 0.018181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7abfe928373b8814a895c6a700f68940
+      internalID: -189532166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Bash_01
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 234
+        width: 128
+        height: 164
+      alignment: 9
+      pivot: {x: 0.5390625, y: 0.018292682}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b655af3954b098644b6ff215d6b58da1
+      internalID: -1192486029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shieldbearer_Bash_02
       rect:
         serializedVersion: 2
         x: 318
-        y: 609
-        width: 17
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 234
+        width: 140
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5642857, y: 0.018867925}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d2ecb135713451460800000000000000
-      internalID: 7211744145761357357
+      spriteID: f715dfcc3e83f9a4da47c9bc05e7a0e9
+      internalID: 695462025
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_61
+      name: Shieldbearer_Bash_03
       rect:
         serializedVersion: 2
-        x: 350
-        y: 599
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 30218dba052a9d250800000000000000
-      internalID: 5969981248420450819
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_62
-      rect:
-        serializedVersion: 2
-        x: 472
-        y: 547
-        width: 81
-        height: 65
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d54ae3b26ab7cb710800000000000000
-      internalID: 1710377912114259037
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_63
-      rect:
-        serializedVersion: 2
-        x: 534
-        y: 429
-        width: 233
-        height: 177
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1915c0432e7e84550800000000000000
-      internalID: 6145416650268889489
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_64
-      rect:
-        serializedVersion: 2
-        x: 760
-        y: 567
-        width: 27
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d7c36e5082e914ec0800000000000000
-      internalID: -3584409933675348867
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_65
-      rect:
-        serializedVersion: 2
-        x: 794
-        y: 401
-        width: 170
-        height: 203
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: da548ecb05b7b5030800000000000000
-      internalID: 3484514323398149549
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_66
-      rect:
-        serializedVersion: 2
-        x: 1014
-        y: 551
-        width: 43
-        height: 75
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 422fa9eab18227030800000000000000
-      internalID: 3490896760524173860
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_67
-      rect:
-        serializedVersion: 2
-        x: 1258
-        y: 591
-        width: 19
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5712f04ffb2ffc470800000000000000
-      internalID: 8417213134826054005
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_68
-      rect:
-        serializedVersion: 2
-        x: 1328
-        y: 607
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ab8f6bc25b7b14830800000000000000
-      internalID: 4053723128377309370
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_69
-      rect:
-        serializedVersion: 2
-        x: 296
-        y: 429
+        x: 555
+        y: 234
         width: 169
-        height: 169
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5443787, y: 0.018867925}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 79fa6d56b48365250800000000000000
-      internalID: 5932991455589478295
+      spriteID: c3f8826dd18b21940acd1131f46e8d10
+      internalID: -452601834
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_70
+      name: Shieldbearer_Bash_04
       rect:
         serializedVersion: 2
-        x: 472
-        y: 566
-        width: 13
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 805
+        y: 234
+        width: 215
+        height: 156
+      alignment: 9
+      pivot: {x: 0.427907, y: 0.01923077}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 14bdf97ebe6cbb860800000000000000
-      internalID: 7546844317095025473
+      spriteID: b6b799380a5bc3f419bf4e12e4d62890
+      internalID: 1505622692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_71
+      name: Shieldbearer_Bash_05
       rect:
         serializedVersion: 2
-        x: 520
-        y: 549
-        width: 7
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1062
+        y: 234
+        width: 170
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.01923077}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 34644e38a7dc731b0800000000000000
-      internalID: -5676842879194741181
+      spriteID: 6c3bd9c6802342f4e82e9e2980176dae
+      internalID: -1524538936
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_72
+      name: Shieldbearer_Bash_06
       rect:
         serializedVersion: 2
-        x: 1064
-        y: 409
-        width: 155
-        height: 189
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1329
+        y: 234
+        width: 129
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5271318, y: 0.018867925}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 55277d222ff64d8b0800000000000000
-      internalID: -5128350989910838699
+      spriteID: fb0bf18a5bc686e4bb9c83e56c4ded00
+      internalID: -205507657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_73
+      name: Shieldbearer_Death_01
       rect:
         serializedVersion: 2
-        x: 1333
-        y: 431
-        width: 144
-        height: 167
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 70fb23ccc75324c30800000000000000
-      internalID: 4342091800856674055
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_74
-      rect:
-        serializedVersion: 2
-        x: 982
-        y: 453
-        width: 45
-        height: 105
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fb2284eec786b7260800000000000000
-      internalID: 7096380523635286719
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_75
-      rect:
-        serializedVersion: 2
-        x: 1262
-        y: 543
-        width: 17
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 55a5e7a5e0bbe12f0800000000000000
-      internalID: -1000156396907505067
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_76
-      rect:
-        serializedVersion: 2
-        x: 1278
-        y: 543
-        width: 15
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 67a0553f6d7b7f4b0800000000000000
-      internalID: -5406650693801670026
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_77
-      rect:
-        serializedVersion: 2
-        x: 224
-        y: 520
-        width: 7
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 84fa0a2e37c980fc0800000000000000
-      internalID: -3528398286507430072
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_78
-      rect:
-        serializedVersion: 2
-        x: 242
-        y: 461
-        width: 47
-        height: 78
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: eb378df16f46ac310800000000000000
-      internalID: 1426063240275194814
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_79
-      rect:
-        serializedVersion: 2
-        x: 494
-        y: 519
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 80a8ad9b8110e2880800000000000000
-      internalID: -8633962229913712120
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_80
-      rect:
-        serializedVersion: 2
-        x: 504
-        y: 477
-        width: 27
-        height: 57
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6c6e144f9909a2e70800000000000000
-      internalID: 9091237788703123142
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_81
-      rect:
-        serializedVersion: 2
-        x: 526
-        y: 510
-        width: 7
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 20cc6d0597f49c070800000000000000
-      internalID: 8127114385032662018
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_82
-      rect:
-        serializedVersion: 2
-        x: 1240
-        y: 511
-        width: 27
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6d1510c63baa24d70800000000000000
-      internalID: 9025964290791789014
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_83
-      rect:
-        serializedVersion: 2
-        x: 1266
-        y: 485
-        width: 27
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 45d14891476511ed0800000000000000
-      internalID: -2445078066041184940
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_84
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 431
-        width: 5
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 91a1f1678a8722950800000000000000
-      internalID: 6422828683515337241
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_85
-      rect:
-        serializedVersion: 2
-        x: 262
-        y: 449
-        width: 25
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e2bbca9edd911f870800000000000000
-      internalID: 8714775194837498670
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_86
-      rect:
-        serializedVersion: 2
-        x: 486
-        y: 425
-        width: 45
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c55b17e0524091a70800000000000000
-      internalID: 8798067904247608668
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_87
-      rect:
-        serializedVersion: 2
-        x: 1026
-        y: 429
-        width: 45
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e44fa68563933c930800000000000000
-      internalID: 4162233386194891854
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_88
-      rect:
-        serializedVersion: 2
-        x: 1230
-        y: 436
-        width: 61
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d1399491606f0c790800000000000000
-      internalID: -7511733672399498467
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_89
-      rect:
-        serializedVersion: 2
-        x: 1264
-        y: 363
-        width: 37
-        height: 73
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: edb563a4c22367940800000000000000
-      internalID: 5293473577825623006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_90
-      rect:
-        serializedVersion: 2
-        x: 1272
-        y: 439
-        width: 11
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0c7813545e229b170800000000000000
-      internalID: 8194619365081057216
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_91
-      rect:
-        serializedVersion: 2
-        x: 46
-        y: 213
-        width: 177
-        height: 204
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cb04360f6d8da3e30800000000000000
-      internalID: 4484134796668387516
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_92
-      rect:
-        serializedVersion: 2
-        x: 220
-        y: 391
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cd158acbf64dcfac0800000000000000
-      internalID: -3819944807545417252
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_93
-      rect:
-        serializedVersion: 2
-        x: 230
-        y: 359
-        width: 51
-        height: 65
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a77069d3ff7f1b390800000000000000
-      internalID: -7804184003634395270
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_94
-      rect:
-        serializedVersion: 2
-        x: 242
-        y: 405
-        width: 29
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3b62764aaaca449e0800000000000000
-      internalID: -1637994515553376589
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_95
-      rect:
-        serializedVersion: 2
-        x: 270
-        y: 407
-        width: 11
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 430033b39145e2130800000000000000
-      internalID: 3543862424131272756
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_96
-      rect:
-        serializedVersion: 2
-        x: 314
-        y: 213
-        width: 164
-        height: 195
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 424f2ca58dc1adf50800000000000000
-      internalID: 6906864694087316516
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_97
-      rect:
-        serializedVersion: 2
-        x: 534
-        y: 407
-        width: 19
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8985360988d243ae0800000000000000
-      internalID: -1570580305484228456
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_98
-      rect:
-        serializedVersion: 2
-        x: 735
-        y: 397
-        width: 18
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1c491558afb385a00800000000000000
-      internalID: 745411685494396097
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_99
-      rect:
-        serializedVersion: 2
-        x: 216
-        y: 359
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3ac9bf08f393c6740800000000000000
-      internalID: 5146551419087330467
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_100
-      rect:
-        serializedVersion: 2
-        x: 488
-        y: 151
-        width: 307
-        height: 243
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5d1466516d3479db0800000000000000
-      internalID: -4785281492296777259
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_101
-      rect:
-        serializedVersion: 2
-        x: 794
-        y: 145
-        width: 233
-        height: 246
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d70dc787de4b9f500800000000000000
-      internalID: 430574171412287613
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_102
-      rect:
-        serializedVersion: 2
-        x: 1030
-        y: 149
-        width: 205
-        height: 242
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32db8ba6843ae59a0800000000000000
-      internalID: -6242372502065464029
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_103
-      rect:
-        serializedVersion: 2
-        x: 1320
-        y: 109
-        width: 197
-        height: 285
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4104644e98200cf40800000000000000
-      internalID: 5746595915788337172
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_104
-      rect:
-        serializedVersion: 2
-        x: 222
-        y: 311
-        width: 47
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5b6bbff412f67d1e0800000000000000
-      internalID: -2173146106316474699
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_105
-      rect:
-        serializedVersion: 2
-        x: 238
-        y: 215
-        width: 33
-        height: 85
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1451424f7504e40f0800000000000000
-      internalID: -1130895709921077951
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_106
-      rect:
-        serializedVersion: 2
-        x: 498
-        y: 267
-        width: 23
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f552c0030abfd4ef0800000000000000
-      internalID: -122164949449693857
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_107
-      rect:
-        serializedVersion: 2
-        x: 1256
-        y: 261
-        width: 41
-        height: 49
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 91f14e390ee11ff60800000000000000
-      internalID: 8066262357499977497
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_108
-      rect:
-        serializedVersion: 2
-        x: 70
-        y: 21
-        width: 153
-        height: 177
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b95becfc18e3b3950800000000000000
-      internalID: 6429801620259648923
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_109
-      rect:
-        serializedVersion: 2
-        x: 774
-        y: 191
-        width: 33
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 37b6752f48adcda70800000000000000
-      internalID: 8853191232039906163
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_110
-      rect:
-        serializedVersion: 2
-        x: 846
-        y: 197
-        width: 31
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ed6c850af72832c70800000000000000
-      internalID: 8945136769550567134
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_111
-      rect:
-        serializedVersion: 2
-        x: 918
-        y: 174
-        width: 11
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 57954dac703cc43d0800000000000000
-      internalID: -3220985195241645707
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_112
-      rect:
-        serializedVersion: 2
-        x: 1120
-        y: 157
-        width: 35
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 554f795bbc7f38760800000000000000
-      internalID: 7459077862152729685
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_113
-      rect:
-        serializedVersion: 2
-        x: 214
-        y: 158
-        width: 47
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 31317f661995f1e90800000000000000
-      internalID: -7052820010406309101
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_114
-      rect:
-        serializedVersion: 2
-        x: 260
-        y: 163
-        width: 13
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a5f07cc7ddbc25040800000000000000
-      internalID: 4634991118659293018
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_115
-      rect:
-        serializedVersion: 2
-        x: 302
-        y: 23
-        width: 157
-        height: 172
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e059d02638d613d40800000000000000
-      internalID: 5562347425832473870
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_116
-      rect:
-        serializedVersion: 2
-        x: 928
-        y: 173
-        width: 9
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ebb5ce88807718420800000000000000
-      internalID: 2630514535901715390
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_117
-      rect:
-        serializedVersion: 2
-        x: 1110
-        y: 179
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bbde4d64516a94c20800000000000000
-      internalID: 3191264421281590715
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_118
-      rect:
-        serializedVersion: 2
-        x: 246
-        y: 86
-        width: 15
-        height: 90
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6c46bdcb4b17047b0800000000000000
-      internalID: -5242064945182710586
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_119
-      rect:
-        serializedVersion: 2
-        x: 533
+        x: 75
         y: 27
-        width: 190
-        height: 147
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 133
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5413534, y: 0.017857144}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 53dfaa1cbfcf2b3f0800000000000000
-      internalID: -886368018422366923
+      spriteID: b84b301b6d7c5c24ab8247b4454d32ed
+      internalID: -1739842969
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_120
+      name: Shieldbearer_Death_02
       rect:
         serializedVersion: 2
-        x: 1076
-        y: 155
-        width: 11
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 308
+        y: 27
+        width: 147
+        height: 167
+      alignment: 9
+      pivot: {x: 0.60544217, y: 0.017964073}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1bb70e08d1f9ad4b0800000000000000
-      internalID: -5414840652894536783
+      spriteID: 3a8c5830b173751409e1317cdab427df
+      internalID: 692225569
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_121
+      name: Shieldbearer_Death_03
       rect:
         serializedVersion: 2
-        x: 1094
-        y: 129
-        width: 27
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 535
+        y: 27
+        width: 186
+        height: 140
+      alignment: 9
+      pivot: {x: 0.60215056, y: 0.021428572}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 31f842d2aa5821480800000000000000
-      internalID: -8929928145173967085
+      spriteID: 472d74677e4f0244a813c7a813cd0456
+      internalID: -622751240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_122
+      name: Shieldbearer_Death_04
       rect:
         serializedVersion: 2
-        x: 1142
-        y: 153
-        width: 21
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 764
+        y: 27
+        width: 195
+        height: 97
+      alignment: 9
+      pivot: {x: 0.6820513, y: 0.030927835}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c4c82d212ca6ee900800000000000000
-      internalID: 715626772570475596
+      spriteID: 009b75ef0cc512e448d3a7655a66adf3
+      internalID: -878450991
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_123
+      name: Shieldbearer_Death_05
       rect:
         serializedVersion: 2
-        x: 1158
-        y: 154
-        width: 9
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1017
+        y: 27
+        width: 202
+        height: 76
+      alignment: 9
+      pivot: {x: 0.64356434, y: 0.039473683}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 454fd055f407a1990800000000000000
-      internalID: -7414490350480395180
+      spriteID: a21af6955c3154745a7f171d0bbd814e
+      internalID: 821774006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ai_created_shieldman_124
+      name: Shieldbearer_Death_06
       rect:
         serializedVersion: 2
-        x: 1234
-        y: 143
-        width: 51
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1279
+        y: 27
+        width: 204
+        height: 64
+      alignment: 9
+      pivot: {x: 0.57843137, y: 0.046875}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7c2a6169cdc6e89e0800000000000000
-      internalID: -1617235521512758585
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_125
-      rect:
-        serializedVersion: 2
-        x: 478
-        y: 71
-        width: 55
-        height: 59
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 35562e3f1f143d9b0800000000000000
-      internalID: -5056625449172310701
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_126
-      rect:
-        serializedVersion: 2
-        x: 1368
-        y: 129
-        width: 7
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 918b17c7c160bfb20800000000000000
-      internalID: 3169133482201954329
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_127
-      rect:
-        serializedVersion: 2
-        x: 750
-        y: 0
-        width: 243
-        height: 125
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b5604938c4cec0f40800000000000000
-      internalID: 5696187442086020699
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_128
-      rect:
-        serializedVersion: 2
-        x: 1009
-        y: 19
-        width: 214
-        height: 103
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c71d2f31fa22ed510800000000000000
-      internalID: 1575735054975553916
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_129
-      rect:
-        serializedVersion: 2
-        x: 1277
-        y: 20
-        width: 214
-        height: 74
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f2321017d5a5cfda0800000000000000
-      internalID: -5909749253642575057
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ai_created_shieldman_130
-      rect:
-        serializedVersion: 2
-        x: 1504
-        y: 15
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6a76bbee698e67be0800000000000000
-      internalID: -1479739692596631642
+      spriteID: 188fdc22bf4e0ad47b7a1c1fb0e33400
+      internalID: -1471812674
       vertices: []
       indices: 
       edges: []
@@ -3388,7 +1144,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 81d9f867685a3c64aaf77eb0af029998
     internalID: 0
     vertices: []
     indices: 
@@ -3398,137 +1154,35 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ai_created_shieldman_0: -5447002057945452920
-      ai_created_shieldman_1: 4631103666483805006
-      ai_created_shieldman_10: -2657748691619816615
-      ai_created_shieldman_100: -4785281492296777259
-      ai_created_shieldman_101: 430574171412287613
-      ai_created_shieldman_102: -6242372502065464029
-      ai_created_shieldman_103: 5746595915788337172
-      ai_created_shieldman_104: -2173146106316474699
-      ai_created_shieldman_105: -1130895709921077951
-      ai_created_shieldman_106: -122164949449693857
-      ai_created_shieldman_107: 8066262357499977497
-      ai_created_shieldman_108: 6429801620259648923
-      ai_created_shieldman_109: 8853191232039906163
-      ai_created_shieldman_11: -6424889240484233812
-      ai_created_shieldman_110: 8945136769550567134
-      ai_created_shieldman_111: -3220985195241645707
-      ai_created_shieldman_112: 7459077862152729685
-      ai_created_shieldman_113: -7052820010406309101
-      ai_created_shieldman_114: 4634991118659293018
-      ai_created_shieldman_115: 5562347425832473870
-      ai_created_shieldman_116: 2630514535901715390
-      ai_created_shieldman_117: 3191264421281590715
-      ai_created_shieldman_118: -5242064945182710586
-      ai_created_shieldman_119: -886368018422366923
-      ai_created_shieldman_12: 7783591485424088812
-      ai_created_shieldman_120: -5414840652894536783
-      ai_created_shieldman_121: -8929928145173967085
-      ai_created_shieldman_122: 715626772570475596
-      ai_created_shieldman_123: -7414490350480395180
-      ai_created_shieldman_124: -1617235521512758585
-      ai_created_shieldman_125: -5056625449172310701
-      ai_created_shieldman_126: 3169133482201954329
-      ai_created_shieldman_127: 5696187442086020699
-      ai_created_shieldman_128: 1575735054975553916
-      ai_created_shieldman_129: -5909749253642575057
-      ai_created_shieldman_13: -8967847946255935562
-      ai_created_shieldman_130: -1479739692596631642
-      ai_created_shieldman_14: -623004010531630588
-      ai_created_shieldman_15: -2687325156992726426
-      ai_created_shieldman_16: 5146788358421736563
-      ai_created_shieldman_17: -3863691122763985858
-      ai_created_shieldman_18: -1866159489953146148
-      ai_created_shieldman_19: -6417437391856448151
-      ai_created_shieldman_2: -8353087935320379912
-      ai_created_shieldman_20: -6212678198546802673
-      ai_created_shieldman_21: -8385894931064359288
-      ai_created_shieldman_22: 6637322082067847286
-      ai_created_shieldman_23: -6198387978411184141
-      ai_created_shieldman_24: -139559847239065555
-      ai_created_shieldman_25: 2424519937929434816
-      ai_created_shieldman_26: -8317568428355166720
-      ai_created_shieldman_27: 7100504560833167191
-      ai_created_shieldman_28: 5699291128149466874
-      ai_created_shieldman_29: -2659777408556336872
-      ai_created_shieldman_3: -6113887076058726948
-      ai_created_shieldman_30: 375511635426544802
-      ai_created_shieldman_31: 5570360904041517307
-      ai_created_shieldman_32: 2418592064675536959
-      ai_created_shieldman_33: -257757720504530015
-      ai_created_shieldman_34: -3210660186477740067
-      ai_created_shieldman_35: -4836344026473106179
-      ai_created_shieldman_36: 8160227396723213121
-      ai_created_shieldman_37: 8578100649949664546
-      ai_created_shieldman_38: -185864930779243565
-      ai_created_shieldman_39: -8346708086725764830
-      ai_created_shieldman_4: -7318530754374155479
-      ai_created_shieldman_40: -8061513385241694572
-      ai_created_shieldman_41: 3846591043753630013
-      ai_created_shieldman_42: 3762564730758253618
-      ai_created_shieldman_43: 7640621486388663126
-      ai_created_shieldman_44: -2408608408645225903
-      ai_created_shieldman_45: -3945283419507893847
-      ai_created_shieldman_46: -927822021462906000
-      ai_created_shieldman_47: 8547952694204130138
-      ai_created_shieldman_48: 2152267237633719246
-      ai_created_shieldman_49: 6988357666388365959
-      ai_created_shieldman_5: 4797553032112298973
-      ai_created_shieldman_50: -150766889790817340
-      ai_created_shieldman_51: 5647540141359400128
-      ai_created_shieldman_52: 5563355519357482978
-      ai_created_shieldman_53: 5205800222560679187
-      ai_created_shieldman_54: -442924874736626912
-      ai_created_shieldman_55: 4034256605573356650
-      ai_created_shieldman_56: -7575326812035644371
-      ai_created_shieldman_57: -2098356660936855474
-      ai_created_shieldman_58: -7997864926425010287
-      ai_created_shieldman_59: -4545767146465014946
-      ai_created_shieldman_6: 4944064476348147859
-      ai_created_shieldman_60: 7211744145761357357
-      ai_created_shieldman_61: 5969981248420450819
-      ai_created_shieldman_62: 1710377912114259037
-      ai_created_shieldman_63: 6145416650268889489
-      ai_created_shieldman_64: -3584409933675348867
-      ai_created_shieldman_65: 3484514323398149549
-      ai_created_shieldman_66: 3490896760524173860
-      ai_created_shieldman_67: 8417213134826054005
-      ai_created_shieldman_68: 4053723128377309370
-      ai_created_shieldman_69: 5932991455589478295
-      ai_created_shieldman_7: 5037046590697050053
-      ai_created_shieldman_70: 7546844317095025473
-      ai_created_shieldman_71: -5676842879194741181
-      ai_created_shieldman_72: -5128350989910838699
-      ai_created_shieldman_73: 4342091800856674055
-      ai_created_shieldman_74: 7096380523635286719
-      ai_created_shieldman_75: -1000156396907505067
-      ai_created_shieldman_76: -5406650693801670026
-      ai_created_shieldman_77: -3528398286507430072
-      ai_created_shieldman_78: 1426063240275194814
-      ai_created_shieldman_79: -8633962229913712120
-      ai_created_shieldman_8: -2395626461607020019
-      ai_created_shieldman_80: 9091237788703123142
-      ai_created_shieldman_81: 8127114385032662018
-      ai_created_shieldman_82: 9025964290791789014
-      ai_created_shieldman_83: -2445078066041184940
-      ai_created_shieldman_84: 6422828683515337241
-      ai_created_shieldman_85: 8714775194837498670
-      ai_created_shieldman_86: 8798067904247608668
-      ai_created_shieldman_87: 4162233386194891854
-      ai_created_shieldman_88: -7511733672399498467
-      ai_created_shieldman_89: 5293473577825623006
-      ai_created_shieldman_9: 7383782581111353048
-      ai_created_shieldman_90: 8194619365081057216
-      ai_created_shieldman_91: 4484134796668387516
-      ai_created_shieldman_92: -3819944807545417252
-      ai_created_shieldman_93: -7804184003634395270
-      ai_created_shieldman_94: -1637994515553376589
-      ai_created_shieldman_95: 3543862424131272756
-      ai_created_shieldman_96: 6906864694087316516
-      ai_created_shieldman_97: -1570580305484228456
-      ai_created_shieldman_98: 745411685494396097
-      ai_created_shieldman_99: 5146551419087330467
+      Shieldbearer_Bash_01: -1192486029
+      Shieldbearer_Bash_02: 695462025
+      Shieldbearer_Bash_03: -452601834
+      Shieldbearer_Bash_04: 1505622692
+      Shieldbearer_Bash_05: -1524538936
+      Shieldbearer_Bash_06: -205507657
+      Shieldbearer_Death_01: -1739842969
+      Shieldbearer_Death_02: 692225569
+      Shieldbearer_Death_03: -622751240
+      Shieldbearer_Death_04: -878450991
+      Shieldbearer_Death_05: 821774006
+      Shieldbearer_Death_06: -1471812674
+      Shieldbearer_Idle_01: 1461138106
+      Shieldbearer_Idle_02: -641008107
+      Shieldbearer_Idle_03: -1220525196
+      Shieldbearer_Idle_04: -2083584222
+      Shieldbearer_Idle_05: -1668381318
+      Shieldbearer_Run_01: -2123265196
+      Shieldbearer_Run_02: 977625024
+      Shieldbearer_Run_03: 528909368
+      Shieldbearer_Run_04: 2075517012
+      Shieldbearer_Run_05: 1469427622
+      Shieldbearer_Run_06: -189532166
+      Shieldbearer_Walk_01: -1523685814
+      Shieldbearer_Walk_02: 326044889
+      Shieldbearer_Walk_03: 723674951
+      Shieldbearer_Walk_04: 656298674
+      Shieldbearer_Walk_05: -705110887
+      Shieldbearer_Walk_06: -198196039
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

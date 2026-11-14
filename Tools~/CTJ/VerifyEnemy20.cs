@@ -46,6 +46,11 @@ public static class VerifyEnemy20
         Check(clips.Length == 6 && clips.All(clip => AnimationUtility.GetObjectReferenceCurve(clip, bodyBinding)
             .All(frame => frame.value is Sprite)), "Missing animation frames");
         var preparation = clips.Single(clip => clip.name.EndsWith("_DashPreparation", StringComparison.Ordinal));
+        Check(prefab.GetComponentInChildren<EnemySuperArmorModule>() != null &&
+            new SerializedObject(prefab.GetComponentInChildren<EnemyOutlineModule>())
+                .FindProperty("showDuringAttackPreparation").boolValue, "Missing preparation outline or super armor");
+        Check(AnimationUtility.GetObjectReferenceCurve(preparation, bodyBinding)
+            .All(frame => ((Sprite)frame.value).vertices.Length == 4), "Preparation sprites must use Full Rect");
         var sensorFrames = AnimationUtility.GetObjectReferenceCurve(preparation,
             EditorCurveBinding.PPtrCurve("Sensor", typeof(SpriteRenderer), "m_Sprite"));
         Check(sensorFrames.Length == 8 && sensorFrames[0].value is Sprite && sensorFrames[1].value == null,
@@ -87,6 +92,7 @@ public static class VerifyEnemy20
             var animator = root.GetComponentInChildren<Animator>();
             var sensor = animator.transform.Find("Sensor").GetComponent<SpriteRenderer>();
             var reaction = root.GetComponentInChildren<EnemyHitReactionModule>();
+            var armor = root.GetComponentInChildren<EnemySuperArmorModule>();
             var health = root.GetComponentInChildren<NewHealthModule>();
             var dash = root.GetComponentInChildren<EnemyFlightDashSkill>();
             var skills = root.GetComponentInChildren<EnemySkillModule>();
@@ -122,10 +128,24 @@ public static class VerifyEnemy20
             await Until(() => dash.IsPreparing && animator.transform.localPosition.x > 0.04f, 0.55f, "No visible windup shake");
             Check(Vector2.Distance(start, body.position) < 0.06f &&
                 root.GetComponentInChildren<AttackTelegraphUI>(true) == null, "Preparation moved or drew a range warning");
+            var outline = animator.transform.Find("TemporaryOutline").GetComponent<SpriteRenderer>();
+            var outlineProperties = new MaterialPropertyBlock();
+            outline.GetPropertyBlock(outlineProperties);
+            Check(armor.IsProtected && outline.enabled && outline.color.g > 0.7f &&
+                outlineProperties.GetFloat("_OutlineWidth") == 3f && outlineProperties.GetFloat("_OuterOutline") == 1f,
+                "No bright outside outline during protected windup");
+            const float protectedHit = 3f;
+            Hit(enemy, protectedHit);
+            Check(Mathf.Abs(health.CurrentHealth - (55f - 300f / 101f)) < 0.01f && !reaction.IsReacting &&
+                dash.IsPreparing && Mathf.Abs(body.linearVelocityX) < 0.01f, "Preparation hit cancelled or stopped the dash");
             PlaceTarget(start.x - 1.85f, start.y);
             await Until(() => dash.ControlsMovement, 1f, "Dash did not release");
             Check(Mathf.Abs(Time.time - preparingAt - 0.6f) < 0.08f && animator.transform.parent.localScale.x < 0f,
                 "Dash did not use the direction at release");
+            Check(armor.IsProtected, "Armor ended before the dash");
+            Hit(enemy, protectedHit);
+            Check(Mathf.Abs(health.CurrentHealth - (55f - 600f / 101f)) < 0.01f && !reaction.IsReacting &&
+                dash.ControlsMovement, "Dash hit cancelled movement or was immune to damage");
             await Until(() => probe.ReceivedHitCount == 1, 1f, "No dash hit");
             float lastHit = dash.CoolTimeStartTime;
             PlaceTarget(start.x + 0.9f, start.y + 1.0f);
@@ -134,6 +154,7 @@ public static class VerifyEnemy20
                 renderer.sprite.name == "attack-fly_8", 0.8f, "Dash did not play through its last frame");
             Check(Mathf.Abs(animator.transform.localPosition.x) < 0.001f, "Windup offset remained after the dash started");
             await Until(() => dash.IsRecovering, 1f, "No dash recovery");
+            Check(!armor.IsProtected, "Armor lingered into recovery");
             float recoveryStartedAt = Time.time;
             float travel = start.x - body.position.x;
             Check(Mathf.Abs(travel - 2.4f) < 0.06f && Mathf.Abs(body.position.y - start.y) < 0.02f &&
@@ -141,6 +162,7 @@ public static class VerifyEnemy20
             await Awaitable.EndOfFrameAsync();
             Check(animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Recovery"), "No effect-free recovery pose");
             await Until(() => !dash.IsUsing, 1f, "Recovery did not finish");
+            Check(!outline.enabled, "Preparation outline lingered after recovery");
             Check(Mathf.Abs(Time.time - recoveryStartedAt - 0.65f) < 0.08f &&
                 Mathf.Abs(body.position.x - (start.x - travel)) < 0.06f, "Movement interrupted recovery");
             await Until(() => body.linearVelocity.x > 0.1f && body.linearVelocity.y > 0.1f, 1f, "No flight after recovery");
@@ -159,7 +181,7 @@ public static class VerifyEnemy20
             wall.enabled = false;
 
             Hit(enemy, 10f);
-            Check(Mathf.Abs(health.CurrentHealth - (55f - 1000f / 101f)) < 0.01f &&
+            Check(Mathf.Abs(health.CurrentHealth - (55f - 1600f / 101f)) < 0.01f &&
                 reaction.RemainingReactionTime >= 0.199f && Mathf.Abs(Mathf.Abs(body.linearVelocityX) - 2.25f) < 0.02f,
                 "Wrong defense, stagger or knockback");
             var rewards = new SerializedObject(root.GetComponentInChildren<EnemyCurrencyRewardModule>());
@@ -173,7 +195,8 @@ public static class VerifyEnemy20
             Check(dropped >= 5 && dropped <= 8 && counter.GetKillCount() == 1, "Wrong reward or kill count");
             await Until(() => root == null && currency.Data.Count == dropped, 8f, "No death fade or gold collection");
             return new { damage = probe.TotalDamage, travel, keptAltitude = true, sensorBlink = true,
-                wallStoppedDash = true, resumedFlight = true, gold = currency.Data.Count };
+                preparationOutline = true, preparationAndDashArmored = true, wallStoppedDash = true,
+                resumedFlight = true, gold = currency.Data.Count };
 
             void PlaceTarget(float centerX, float centerY)
             {

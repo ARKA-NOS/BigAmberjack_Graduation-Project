@@ -34,6 +34,8 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private Material hitMaterial;
         [Tooltip("피격 표시용 SpriteRenderer만 지정합니다. 비워두면 소유 적의 자식에서 찾습니다.")]
         [SerializeField] private SpriteRenderer[] sprites;
+        [Tooltip("선택 사항. Animator에 Hurt 상태가 있으면 일반 피격 시 재생합니다.")]
+        [SerializeField] private Animator hurtAnimator;
 
         [Header("Scale Pulse")]
         [Tooltip("피격마다 가로/세로를 눌렀다가 복원합니다. 보스 등에서는 별도로 켤 수 있습니다.")]
@@ -64,6 +66,7 @@ namespace _Scripts.Agent.Enemies
         private MaterialPropertyBlock _flashProperties;
         private static readonly int HitBlendId = Shader.PropertyToID("_HitBlend");
         private static readonly int OriginalTintId = Shader.PropertyToID("_OriginalTint");
+        private static readonly int HurtState = Animator.StringToHash("Base Layer.Hurt");
         private Transform[] _scaleTargets;
         private Vector3[] _originalScales;
         private bool _scaling;
@@ -116,17 +119,29 @@ namespace _Scripts.Agent.Enemies
             }
         }
 
-        internal void React(DamageData damage, Vector2 hitDirection)
+        internal bool TryStun(float duration)
+        {
+            if (!Ready || duration <= 0f) return false;
+            _stunEnd = Mathf.Max(_stunEnd, Time.time + duration);
+            _reactionDuration = RemainingReactionTime;
+            return true;
+        }
+
+        internal void React(DamageData damage, Vector2 hitDirection, bool suppressHitControl)
         {
             if (!Ready) return;
-            bool protectedFromReaction = _superArmor != null && _superArmor.IsProtected;
-            if (!protectedFromReaction && hitStunDuration > 0f) _stunEnd = Time.time + hitStunDuration;
+            bool protectedFromReaction = suppressHitControl || (_superArmor != null && _superArmor.IsProtected);
+            if (!protectedFromReaction) TryStun(hitStunDuration);
 
             if (!protectedFromReaction && cancelAttackOnHit && _skills != null &&
                 (_skills.ActiveSkill is EnemyMeleeSkill ||
-                 _skills.ActiveSkill is EnemyAttackSkill { IsPreparing: true } ||
+                 _skills.ActiveSkill is EnemyAttackSkill { InterruptibleByHit: true } ||
                  _skills.ActiveSkill is IChargeSkill { IsCharging: true }))
                 _skills.StopAttack();
+
+            if (!protectedFromReaction && !_enemy.IsDead && !_enemy.IsAttackInProgress &&
+                hurtAnimator != null && hurtAnimator.isActiveAndEnabled && hurtAnimator.HasState(0, HurtState))
+                hurtAnimator.Play(HurtState, 0, 0f);
 
             if (!protectedFromReaction && enableKnockback && knockbackDuration > 0f && knockbackSpeed > 0f && _body != null && _body.simulated)
             {

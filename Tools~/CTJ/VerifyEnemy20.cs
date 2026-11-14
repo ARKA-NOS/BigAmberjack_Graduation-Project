@@ -50,6 +50,12 @@ public static class VerifyEnemy20
             EditorCurveBinding.PPtrCurve("Sensor", typeof(SpriteRenderer), "m_Sprite"));
         Check(sensorFrames.Length == 8 && sensorFrames[0].value is Sprite && sensorFrames[1].value == null,
             "Sensor does not blink");
+        var offsetBinding = EditorCurveBinding.FloatCurve("", typeof(Transform), "m_LocalPosition.x");
+        var shake = AnimationUtility.GetEditorCurve(preparation, offsetBinding);
+        Check(shake != null && shake.keys.Min(key => key.value) < -0.04f && shake.keys.Max(key => key.value) > 0.04f &&
+            shake.Evaluate(0f) == 0f && Mathf.Abs(shake.Evaluate(0.6f)) < 0.001f, "Missing visual windup shake");
+        Check(clips.Where(clip => clip != preparation).All(clip =>
+            AnimationUtility.GetEditorCurve(clip, offsetBinding)?.Evaluate(0f) == 0f), "Other clips do not reset the shake");
         Check(new SerializedObject(dash).FindProperty("telegraphPrefab").objectReferenceValue == null, "Unexpected range UI");
         return new { animations = clips.Length, dependencies = dependencies.Length };
     }
@@ -113,6 +119,7 @@ public static class VerifyEnemy20
             await Until(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.DashPreparation") &&
                 sensor.sprite != null, 0.25f, "Sensor never lit");
             await Until(() => sensor.sprite == null && dash.IsPreparing, 0.35f, "Sensor never blinked");
+            await Until(() => dash.IsPreparing && animator.transform.localPosition.x > 0.04f, 0.55f, "No visible windup shake");
             Check(Vector2.Distance(start, body.position) < 0.06f &&
                 root.GetComponentInChildren<AttackTelegraphUI>(true) == null, "Preparation moved or drew a range warning");
             PlaceTarget(start.x - 1.85f, start.y);
@@ -125,6 +132,7 @@ public static class VerifyEnemy20
             var renderer = animator.GetComponent<SpriteRenderer>();
             await Until(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Dash") &&
                 renderer.sprite.name == "attack-fly_8", 0.8f, "Dash did not play through its last frame");
+            Check(Mathf.Abs(animator.transform.localPosition.x) < 0.001f, "Windup offset remained after the dash started");
             await Until(() => dash.IsRecovering, 1f, "No dash recovery");
             float recoveryStartedAt = Time.time;
             float travel = start.x - body.position.x;

@@ -37,7 +37,6 @@ namespace _Scripts.Agent.Players.Skills
 
         [Header("Combotime")]
         [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
-        [SerializeField] private float moveCombotime = 0.6f; // 무빙콤보가 이어지는 시간
         [SerializeField] private float moveFreezeTime = 0.4f;
 
         private const int CurveAreaSampleCount = 100;
@@ -67,7 +66,6 @@ namespace _Scripts.Agent.Players.Skills
 
         private float _moveAttackLastTime;
 
-        private bool moveComboWindowExhaust => Time.time >= (_moveAttackLastTime + moveCombotime);
         private bool _isLunge;
         private CancellationTokenSource _moveLockCts;
         private INewHealthModule _healthModule;
@@ -75,7 +73,9 @@ namespace _Scripts.Agent.Players.Skills
         private bool _isRecovery;
         private int _freezeStateHash;
 
-        public int ComboCount { get; private set; } = 0;
+        private MeleeComboCounter _comboCounter;
+
+        public int ComboCount => _comboCounter.Current;
 
 
         public override void InitSkill(ModuleOwner owner)
@@ -114,6 +114,8 @@ namespace _Scripts.Agent.Players.Skills
             attackSpeedStat = statModule.GetStat(attackSpeed);
             
             damageCaster.InitCaster(owner);
+
+            _comboCounter = new MeleeComboCounter(comboStates.Length);
 
             _offset = damageCaster.transform.position - owner.transform.position;
         }
@@ -176,21 +178,10 @@ namespace _Scripts.Agent.Players.Skills
 
         protected override void OnUseSkill()
         {
-            float readyTime = CoolTimeStartTime + CoolTime;
             base.OnUseSkill();
             ReleaseEndFreeze();
-            bool comboCounterOver = ComboCount >= comboStates.Length;
-            bool comboWindowExhaust = Time.time >= readyTime + combotime;
-            if (comboCounterOver || comboWindowExhaust)
-            {
-                ComboCount = 0;
-            }
-
-            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
-            {
-                ComboCount = 1;
-            }
-            _playerController.ChangeState((PlayerStateEnum)comboStates[ComboCount].assetIndex);
+            int comboIndex = _comboCounter.Begin(Time.time);
+            _playerController.ChangeState((PlayerStateEnum)comboStates[comboIndex].assetIndex);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
@@ -234,7 +225,7 @@ namespace _Scripts.Agent.Players.Skills
         {
             base.OnEndSkill();
             _freezeStateHash = comboStates[ComboCount].stateParam.HashValue;
-            ComboCount++;
+            _comboCounter.Advance(CoolTimeStartTime + CoolTime + combotime);
             UnsubscribeTrigger();
             if (_isLunge)
             {

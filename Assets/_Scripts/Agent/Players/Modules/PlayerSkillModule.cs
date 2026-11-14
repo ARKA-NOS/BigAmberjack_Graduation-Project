@@ -15,6 +15,11 @@ namespace _Scripts.Agent.Players.Modules
         [SerializeField] private SkillSO skill1;
         [SerializeField] private SkillSO skill2;
 
+        [Header("Input Buffer")]
+        [SerializeField] private float meleeInputBufferTime = 0.2f;
+
+        private SkillInputBuffer _inputBuffer;
+
         private PlayerController _playerController;
         private PlayerInputSo _input;
 
@@ -34,8 +39,19 @@ namespace _Scripts.Agent.Players.Modules
             _input.OnSkill1KeyPressed += Skill1KeyPressed;
             _input.OnSkill2KeyPressed += Skill2KeyPressed;
 
+            _inputBuffer = new SkillInputBuffer(meleeInputBufferTime);
+
             inputActive = true;
-            
+
+        }
+
+        private void Update()
+        {
+            if (!_inputBuffer.TryGet(Time.time, out SkillSO buffered)) return;
+            if (!CanUseSkill(buffered)) return;
+
+            _inputBuffer.Clear();
+            UseSkill(buffered, true);
         }
         
         private void OnDestroy()
@@ -77,25 +93,31 @@ namespace _Scripts.Agent.Players.Modules
             => TryUseSkill(dashSkill, true);
         
         private void AttackKeyPressed(bool pressed)
-            => TryUseSkill(meleeSkill, pressed);
-        
+        {
+            if (TryUseSkill(meleeSkill, pressed) || !pressed || !inputActive) return;
+            if (GetSkill(meleeSkill) is IChargeSkill) return;
+            _inputBuffer.Store(meleeSkill, Time.time);
+        }
+
         private void Skill1KeyPressed(bool pressed)
             => TryUseSkill(skill1, pressed);
         private void Skill2KeyPressed(bool pressed)
             => TryUseSkill(skill2, pressed);
 
-        private void TryUseSkill(SkillSO skillSo,bool pressed)
+        private bool TryUseSkill(SkillSO skillSo,bool pressed)
         {
-            if(!inputActive) return;
-            if (CanUseSkill(skillSo))
-            {
-                UseSkill(skillSo, pressed);
-            }
+            if(!inputActive) return false;
+            if (!CanUseSkill(skillSo)) return false;
+
+            if (pressed) _inputBuffer.Clear();
+            UseSkill(skillSo, pressed);
+            return true;
         }
-        
+
         public void SetActive(bool active)
         {
             inputActive = active;
+            if (!active) _inputBuffer?.Clear();
         }
         
     }

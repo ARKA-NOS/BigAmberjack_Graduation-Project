@@ -14,6 +14,10 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float damage = 12f;
         [SerializeField, Min(0.01f)] private float activeDuration = 0.12f;
         [SerializeField, Min(0f)] private float recoveryTime = 0.8f;
+        [Tooltip("준비 시작 때 방향을 정하고, 타격과 후딜이 끝날 때까지 유지합니다.")]
+        [SerializeField] private bool lockFacingDuringPreparation;
+        [Tooltip("준비가 아닌 타격 시점부터 쿨타임을 계산합니다. 빗나가면 공격이 발동한 시점이 기준입니다.")]
+        [SerializeField] private bool cooldownFromStrike;
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private float _activeUntil;
         private float _recoveryUntil;
@@ -24,15 +28,27 @@ namespace _Scripts.Agent.Enemies.Skills
             attackHitbox != null && attackHitbox.enabled && attackHitbox.isTrigger &&
             attackHitbox.gameObject.activeInHierarchy;
 
+        protected override void OnUseSkill()
+        {
+            float previousCooldownStart = CoolTimeStartTime;
+            base.OnUseSkill();
+            if (cooldownFromStrike) CoolTimeStartTime = previousCooldownStart;
+        }
+
         protected override void PrepareAttack()
         {
             _hitApplied = false;
+            if (lockFacingDuringPreparation)
+            {
+                Enemy.FaceTarget();
+                _direction = Vector2.right * Enemy.FacingDirection;
+            }
             PlayAnimation(preparationStateName);
         }
 
         public override void UpdateSkill()
         {
-            if (IsPreparing && CanContinue) Enemy.FaceTarget();
+            if (!lockFacingDuringPreparation && IsPreparing && CanContinue) Enemy.FaceTarget();
             base.UpdateSkill();
             if (!IsUsing || !HasReleased) return;
             if (Time.time < _activeUntil) TryHit();
@@ -42,8 +58,12 @@ namespace _Scripts.Agent.Enemies.Skills
 
         protected override void OnReleaseAttack()
         {
-            Enemy.FaceTarget();
-            _direction = Vector2.right * Enemy.FacingDirection;
+            if (!lockFacingDuringPreparation)
+            {
+                Enemy.FaceTarget();
+                _direction = Vector2.right * Enemy.FacingDirection;
+            }
+            if (cooldownFromStrike) CoolTimeStartTime = Time.time;
             _activeUntil = Time.time + Mathf.Max(0.01f, activeDuration);
             _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
             PlayAnimation(attackStateName);
@@ -53,7 +73,9 @@ namespace _Scripts.Agent.Enemies.Skills
 
         private void TryHit()
         {
-            if (_hitApplied || attackHitbox == null || !attackHitbox.enabled) return;
+            if (_hitApplied || attackHitbox == null || !attackHitbox.enabled || CastTarget == null) return;
+            if (lockFacingDuringPreparation &&
+                Vector2.Dot((Vector2)(CastTarget.position - Enemy.transform.position), _direction) <= 0f) return;
             Physics2D.SyncTransforms();
             attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
             foreach (Collider2D hit in _overlaps)
@@ -62,6 +84,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
                         hit.ClosestPoint(attackHitbox.bounds.center), _direction)) continue;
                 _hitApplied = true;
+                if (cooldownFromStrike) CoolTimeStartTime = Time.time;
                 break;
             }
         }

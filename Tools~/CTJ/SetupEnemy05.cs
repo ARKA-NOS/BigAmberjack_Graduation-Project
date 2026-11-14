@@ -14,12 +14,12 @@ using Object = UnityEngine.Object;
 
 public static class SetupEnemy05
 {
-    public const string SheetPath = "Assets/_Graphics/Assets/Enemy/ai_created_shieldman.png";
-    public const string PrefabPath = "Assets/_Prefabs/Enemies/Enemy/Enemy05/Enemy05_Shieldbearer.prefab";
-    private const string SourcePrefab = "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
-    private const string StatsPath = "Assets/_Scripts/Agent/Enemies/EnemyStatGroups/Enemy05_Shieldbearer_Stats.asset";
-    private const string SkillFolder = "Assets/_Scripts/Agent/Enemies/EnemySkills/Enemy05";
-    private const string AnimationFolder = "Assets/_Graphics/Animations/Enemy/Enemy05";
+    public const string SheetPath = "Assets/_Graphics/Assets/Enemy/Legacy/ai_created_shieldman.png";
+    public const string PrefabPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy05/Enemy05_Shieldbearer.prefab";
+    private const string SourcePrefab = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
+    private const string StatsPath = "Assets/_Scripts/Agent/Enemies/Legacy/EnemyStatGroups/Enemy05_Shieldbearer_Stats.asset";
+    private const string SkillFolder = "Assets/_Scripts/Agent/Enemies/Legacy/EnemySkills/Enemy05";
+    private const string AnimationFolder = "Assets/_Graphics/Animations/Enemy/Legacy/Enemy05";
     private const string ControllerPath = AnimationFolder + "/Enemy05_Shieldbearer.controller";
 
     public static object Create()
@@ -28,7 +28,7 @@ public static class SetupEnemy05
             throw new InvalidOperationException("Create Enemy05 in Edit Mode when the target prefab does not exist.");
 
         var sprites = SliceSheet();
-        MakeFolder("Assets/_Prefabs/Enemies/Enemy/Enemy05");
+        MakeFolder("Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy05");
         MakeFolder(SkillFolder);
         MakeFolder(AnimationFolder);
         var controller = CreateController(sprites);
@@ -265,7 +265,7 @@ public static class SetupEnemy05
 
     private static Object CreateStats(StatData defense)
     {
-        const string source = "Assets/_Scripts/Agent/Enemies/EnemyStatGroups/Enemy01_TwistedArm_Stats.asset";
+        const string source = "Assets/_Scripts/Agent/Enemies/Legacy/EnemyStatGroups/Enemy01_TwistedArm_Stats.asset";
         var stats = CopyAsset(source, StatsPath);
         var data = new SerializedObject(stats);
         var overrides = data.FindProperty("<Stats>k__BackingField");
@@ -281,7 +281,7 @@ public static class SetupEnemy05
 
     private static void ConfigureSkill(EnemyAttackSkill skill, string name, float cooldown, float preparation, Animator animator)
     {
-        const string source = "Assets/_Scripts/Agent/Enemies/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset";
+        const string source = "Assets/_Scripts/Agent/Enemies/Legacy/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset";
         Set(skill, "<SkillSo>k__BackingField", CopyAsset(source, $"{SkillFolder}/Enemy05_{name}.asset"));
         Set(skill, "<BaseCoolTime>k__BackingField", cooldown);
         Set(skill, "fallbackAttackDelay", preparation);

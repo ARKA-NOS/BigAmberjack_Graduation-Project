@@ -4,7 +4,7 @@
 
 현재 피격 프리팹은 5~8개 조각을 피격 방향으로 방출한다. `Size Range`는 `0.12~0.22`다. 본체는 `Body Color Weights`에 들어 있는 회색 4종과 회갈색 1종 중 조각마다 하나를 고른다. 현재 회색의 가중치는 각각 `5`, 회갈색은 `1`이다. 가중치가 `0`인 색은 추첨에서 제외되고, 목록이 비었거나 유효한 가중치가 하나도 없으면 밝은 회색을 사용한다. 조각마다 25% 확률로 회백색 또는 밝은 회색 부품을 가장자리에 일부 겹친다. 이 부품은 본체와 같은 회전 및 충돌을 공유한다. Ground와 Platform에 부딪힐 때 속도의 일부를 잃으며 튕기고, 1.0~1.5초 뒤 0.25초 동안 페이드아웃한다.
 
-`DeathMetalBurst.prefab`은 `HitMetalFragments`의 프리팹 Variant다. Enemy02와 Enemy04의 `ParticleModule → Death Burst Prefab`에 연결되어 `DeathStarted` 이벤트가 발생한 프레임에 적의 효과 기준점에서 한 번 재생된다. 파편 36~48개가 속도 6.5~9로 360도 방향에 퍼진다. 피격 프리팹에서 색상, 모양, 크기, 중력, 튕김을 변경하면 사망 버스트에도 반영된다. 사망용 프리팹의 `Fragment Count`, `Speed Range`, `Spread Angle`, `Upward Speed`는 사망 효과에서 개별 조절한다.
+`DeathMetalBurst.prefab`은 `HitMetalFragments`의 프리팹 Variant다. Enemy02와 Enemy04의 `ParticleModule → Death Burst Prefab`에 연결되어 `DeathStarted` 이벤트가 발생한 프레임에 적의 효과 기준점에서 한 번 재생된다. 현재 설정의 파편 8~16개가 속도 6.5~9로 360도 방향에 퍼진다. 피격 프리팹에서 색상, 모양, 크기, 중력, 튕김을 변경하면 사망 버스트에도 반영된다. 사망용 프리팹의 `Fragment Count`, `Speed Range`, `Spread Angle`, `Upward Speed`는 사망 효과에서 개별 조절한다.
 
 | 조정할 항목 | `EnemyMetalFragmentParticle`의 Inspector 값 |
 | --- | --- |
@@ -24,7 +24,7 @@
 
 Unity 컴파일과 프리팹 참조 검사에 이어 Play Mode에서 본체 메시 4종과 색상 5종 선택, 높은 가중치의 색이 더 자주 나오고 0인 색은 제외되는 동작, Enemy02와 Enemy04의 피격 이벤트 연결을 확인했다.
 
-별도 Play 씬에서 Enemy02와 Enemy04를 실제로 처치해 마지막 타격 프레임에 각각 금속 버스트 하나가 생성되는 것을 확인했다. 두 버스트는 38개와 37개 파편을 상하좌우로 방출한 뒤 정리됐고, 혈흔 파티클은 생성되지 않았다.
+별도 Play 씬에서 Enemy02와 Enemy04를 실제로 처치해 마지막 타격 프레임에 각각 금속 버스트 하나가 생성되는 것을 확인했다. 파편은 상하좌우로 퍼진 뒤 정리됐다.
 
 사용한 문법과 이유
 

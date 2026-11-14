@@ -17,8 +17,8 @@ using Object = UnityEngine.Object;
 
 public static class VerifyEnemy05
 {
-    private const string SheetPath = "Assets/_Graphics/Assets/Enemy/ai_created_shieldman.png";
-    private const string PrefabPath = "Assets/_Prefabs/Enemies/Enemy/Enemy05/Enemy05_Shieldbearer.prefab";
+    private const string SheetPath = "Assets/_Graphics/Assets/Enemy/Legacy/ai_created_shieldman.png";
+    private const string PrefabPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy05/Enemy05_Shieldbearer.prefab";
 
     private static void Check(bool valid, string message)
     {

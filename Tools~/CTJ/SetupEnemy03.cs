@@ -10,21 +10,21 @@ using Object = UnityEngine.Object;
 // Unity Pipeline run_script 전용. 원본 프리팹과 현재 씬은 저장하지 않습니다.
 public static class SetupEnemy03
 {
-    public const string PrefabPath = "Assets/_Prefabs/Enemies/Enemy/Enemy03/Enemy03_TwistedHuman.prefab";
-    private const string StatsPath = "Assets/_Scripts/Agent/Enemies/EnemyStatGroups/Enemy03_TwistedHuman_Stats.asset";
-    private const string SkillFolder = "Assets/_Scripts/Agent/Enemies/EnemySkills/Enemy03";
-    private const string AnimationFolder = "Assets/_Graphics/Animations/Enemy/Enemy03";
+    public const string PrefabPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy03/Enemy03_TwistedHuman.prefab";
+    private const string StatsPath = "Assets/_Scripts/Agent/Enemies/Legacy/EnemyStatGroups/Enemy03_TwistedHuman_Stats.asset";
+    private const string SkillFolder = "Assets/_Scripts/Agent/Enemies/Legacy/EnemySkills/Enemy03";
+    private const string AnimationFolder = "Assets/_Graphics/Animations/Enemy/Legacy/Enemy03";
 
     public static object Create()
     {
         if (EditorApplication.isPlaying) throw new Exception("Exit play mode first");
         if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null)
             throw new Exception("Enemy03 already exists. Preserve Inspector changes.");
-        Folder("Assets/_Prefabs/Enemies/Enemy/Enemy03");
+        Folder("Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy03");
         Folder(SkillFolder);
         Folder(AnimationFolder);
 
-        var stats = Copy("Assets/_Scripts/Agent/Enemies/EnemyStatGroups/Enemy01_TwistedArm_Stats.asset", StatsPath);
+        var stats = Copy("Assets/_Scripts/Agent/Enemies/Legacy/EnemyStatGroups/Enemy01_TwistedArm_Stats.asset", StatsPath);
         var statData = new SerializedObject(stats);
         var values = statData.FindProperty("<Stats>k__BackingField");
         values.GetArrayElementAtIndex(0).FindPropertyRelative("<BaseValue>k__BackingField").floatValue = 80f;
@@ -32,11 +32,11 @@ public static class SetupEnemy03
         values.GetArrayElementAtIndex(2).FindPropertyRelative("<BaseValue>k__BackingField").floatValue = 8f;
         statData.ApplyModifiedPropertiesWithoutUndo();
         AssetDatabase.SaveAssetIfDirty(stats);
-        var slashSO = Copy("Assets/_Scripts/Agent/Enemies/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset",
+        var slashSO = Copy("Assets/_Scripts/Agent/Enemies/Legacy/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset",
             SkillFolder + "/Enemy03_Slash.asset");
-        var leapSO = Copy("Assets/_Scripts/Agent/Enemies/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset",
+        var leapSO = Copy("Assets/_Scripts/Agent/Enemies/Legacy/EnemySkills/Melee/Enemy01_TwistedArm_Melee.asset",
             SkillFolder + "/Enemy03_Leap.asset");
-        var controller = (AnimatorController)Copy("Assets/_Graphics/Animations/Enemy/Enemy01/Enemy01_Zombie.controller",
+        var controller = (AnimatorController)Copy("Assets/_Graphics/Animations/Enemy/Legacy/Enemy01/Enemy01_Zombie.controller",
             AnimationFolder + "/Enemy03_Zombie.controller");
         var stateMachine = controller.layers[0].stateMachine;
         var attackState = stateMachine.states.Single(s => s.state.name == "Attack").state;
@@ -80,7 +80,7 @@ public static class SetupEnemy03
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssetIfDirty(controller);
 
-        var root = PrefabUtility.LoadPrefabContents("Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab");
+        var root = PrefabUtility.LoadPrefabContents("Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab");
         try
         {
             root.name = "Enemy03_TwistedHuman";

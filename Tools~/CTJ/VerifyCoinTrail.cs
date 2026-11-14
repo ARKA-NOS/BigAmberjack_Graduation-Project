@@ -19,12 +19,12 @@ public static class VerifyCoinTrail
     private const string ChestCoinPath = "Assets/_Prefabs/Chest/ChestRewardCoin.prefab";
     private static readonly string[] EnemyPaths =
     {
-        "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab",
-        "Assets/_Prefabs/Enemies/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab",
-        "Assets/_Prefabs/Enemies/Enemy/Enemy04/Enemy04_MechanicArcher.prefab",
-        "Assets/_Prefabs/Enemies/Test/Catto_Melee.prefab",
-        "Assets/_Prefabs/Enemies/Test/MadGhost_Ranged.prefab",
-        "Assets/_Prefabs/Enemies/Bosses/EyeBoss/RobotEyeBoss.prefab"
+        "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab",
+        "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab",
+        "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy04/Enemy04_MechanicArcher.prefab",
+        "Assets/_Prefabs/Enemies/Legacy/Test/Catto_Melee.prefab",
+        "Assets/_Prefabs/Enemies/Legacy/Test/MadGhost_Ranged.prefab",
+        "Assets/_Prefabs/Enemies/Legacy/Bosses/EyeBoss/RobotEyeBoss.prefab"
     };
     private const string SceneKey = "CTJ.CoinTrail.OriginalScene";
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;

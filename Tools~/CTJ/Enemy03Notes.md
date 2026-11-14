@@ -2,7 +2,7 @@ Enemy03 — 뒤틀린 인간 (`enemy_zombie`)
 
 2026-11-12, [09-03 기획서](https://app.notion.com/p/09-03_-0cc9e7231ca78281b3ac81d89426bb30?source=copy_link)를 읽고 구현했다. 노션과 허용 영역 밖의 파일은 수정하지 않았다.
 
-사용할 프리팹은 `Assets/_Prefabs/Enemies/Enemy/Enemy03/Enemy03_TwistedHuman.prefab`이다. Enemy01의 Zombie 그림과 기존 체력·피격·아웃라인·파티클·데미지 숫자·카메라 흔들림·사망·코인 모듈을 재사용한다. Enemy01 원본 프리팹과 애니메이터는 변경하지 않았다.
+사용할 프리팹은 `Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy03/Enemy03_TwistedHuman.prefab`이다. Enemy01의 Zombie 그림과 기존 체력·피격·아웃라인·파티클·데미지 숫자·카메라 흔들림·사망·코인 모듈을 재사용한다. Enemy01 원본 프리팹과 애니메이터는 변경하지 않았다.
 
 적의 기본값은 HP 80, 이동 속도 3.8, 감지 거리 9, 추적 해제 거리 12, 피격 경직 0.25초, 처치 보상 8골드다. 몸체 높이는 기본 스케일에서 1.8유닛이다. Enemy03 스탯 그룹에서 방어력 항목을 제거했다. 접촉 자체로는 피해를 주지 않는다. 배회 중심은 생성 위치이며 기본 좌우 반경은 3유닛이다.
 

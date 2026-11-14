@@ -13,6 +13,8 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private CurrencySO rewardCurrency;
         [Tooltip("소유 적의 StatModule에서 읽을 보상 수량 스탯. 소수 부분은 버립니다.")]
         [SerializeField] private StatData rewardAmountStat;
+        [Tooltip("기본 보상에 0부터 이 값까지의 무작위 금액을 더합니다.")]
+        [SerializeField, Min(0)] private int maxBonusAmount;
 
         [Header("Coin Drop")]
         [SerializeField] private EnemyRewardCoin coinPrefab;
@@ -62,6 +64,8 @@ namespace _Scripts.Agent.Enemies
             }
             if (value < 1f) return;
             int amount = Mathf.FloorToInt(value);
+            int bonusLimit = Mathf.Clamp(maxBonusAmount, 0, int.MaxValue - amount);
+            if (bonusLimit > 0) amount += Random.Range(0, bonusLimit + 1);
 
             if (coinPrefab == null)
             {

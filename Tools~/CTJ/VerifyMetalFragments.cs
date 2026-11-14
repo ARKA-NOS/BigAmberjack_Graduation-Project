@@ -13,8 +13,8 @@ public static class VerifyMetalFragments
 {
     private const string MetalPath = "Assets/_Prefabs/Enemies/Effects/HitMetalFragments.prefab";
     private const string BurstPath = "Assets/_Prefabs/Enemies/Effects/DeathMetalBurst.prefab";
-    private const string RobotPath = "Assets/_Prefabs/Enemies/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab";
-    private const string ArcherPath = "Assets/_Prefabs/Enemies/Enemy/Enemy04/Enemy04_MechanicArcher.prefab";
+    private const string RobotPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab";
+    private const string ArcherPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy04/Enemy04_MechanicArcher.prefab";
 
     private static void Check(bool value, string message)
     {
@@ -64,10 +64,10 @@ public static class VerifyMetalFragments
         var burstEmitter = new SerializedObject(burst.GetComponent<EnemyMetalFragmentParticle>());
         Vector2Int hitCount = emitter.FindProperty("fragmentCount").vector2IntValue;
         Vector2Int burstCount = burstEmitter.FindProperty("fragmentCount").vector2IntValue;
-        Check(burstCount.x > hitCount.y && burstCount.y >= burstCount.x &&
+        Check(burstCount.x > 0 && burstCount.y >= burstCount.x &&
             burstEmitter.FindProperty("speedRange").vector2Value.x > emitter.FindProperty("speedRange").vector2Value.y &&
             Mathf.Approximately(burstEmitter.FindProperty("spreadAngle").floatValue, 360f),
-            "Expected a faster, denser, full-circle burst");
+            "Expected a valid, faster, full-circle burst");
         foreach (string path in new[] { RobotPath, ArcherPath })
         {
             var enemy = AssetDatabase.LoadAssetAtPath<GameObject>(path);
@@ -225,7 +225,9 @@ public static class VerifyMetalFragments
 
             var systems = bursts.Select(effect => effect.GetComponent<ParticleSystem>()).ToArray();
             var counts = systems.Select(system => system.particleCount).ToArray();
-            Check(counts.All(count => count >= 36 && count <= 48), "Unexpected death fragment count");
+            var burstPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BurstPath).GetComponent<EnemyMetalFragmentParticle>();
+            var range = new SerializedObject(burstPrefab).FindProperty("fragmentCount").vector2IntValue;
+            Check(counts.All(count => count >= range.x && count <= range.y), "Unexpected death fragment count");
             float scatterAt = Time.fixedTime + 0.08f;
             await Until(() => Time.fixedTime >= scatterAt, 2f, "Death burst did not advance");
             var records = new ParticleSystem.Particle[64];

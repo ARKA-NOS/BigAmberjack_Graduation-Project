@@ -37,13 +37,14 @@ namespace _Scripts.Agent.Enemies
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
         private EnemyPatrolModule _patrol;
+        private EnemyTurnDelayModule _turnDelay;
         private EnemyKeepDistanceModule _keepDistance;
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
         private EnemyDeathModule _death;
         private StateMachine<EnemyStateType> _stateMachine;
-        private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? _pendingHit;
+        private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal, bool suppressHitControl)? _pendingHit;
         private bool _deathFinalized;
         private bool _hasDeathAnimation;
         private float _deathStartedAt;
@@ -78,6 +79,7 @@ namespace _Scripts.Agent.Enemies
             _rigidbody = GetComponent<Rigidbody2D>();
             _movement = GetModule<EnemyMovementModule>();
             _patrol = GetModule<EnemyPatrolModule>();
+            _turnDelay = GetModule<EnemyTurnDelayModule>();
             _keepDistance = GetModule<EnemyKeepDistanceModule>();
             _skills = GetModule<EnemySkillModule>();
             _hitReaction = GetModule<EnemyHitReactionModule>();
@@ -102,6 +104,9 @@ namespace _Scripts.Agent.Enemies
 
         private void Update()
         {
+            if (_turnDelay != null && (IsDead || IsHitReacting ||
+                _skills?.ActiveSkill is EnemyAttackSkill { IsPreparing: false }))
+                _turnDelay.ResetTurn();
             if (!IsDead && !IsHitReacting)
                 UpdateAI();
         }
@@ -136,8 +141,11 @@ namespace _Scripts.Agent.Enemies
 
         public virtual void SetTarget(Transform newTarget)
         {
-            if (target != newTarget && _skills != null && !HasCommittedAttack)
-                _skills.StopAttack();
+            if (target != newTarget)
+            {
+                _turnDelay?.ResetTurn();
+                if (_skills != null && !HasCommittedAttack) _skills.StopAttack();
+            }
             target = newTarget;
         }
 
@@ -182,10 +190,17 @@ namespace _Scripts.Agent.Enemies
                 return;
             }
 
+            bool hasTurnDelay = _turnDelay != null && _turnDelay.isActiveAndEnabled;
+            if (hasTurnDelay && !TryFaceTarget())
+            {
+                StopHorizontalMovement();
+                return;
+            }
+
             float direction = _keepDistance != null && _keepDistance.isActiveAndEnabled
                 ? _keepDistance.MoveTowardsTarget(target, moveSpeed)
                 : _movement.MoveTowards(target, moveSpeed);
-            OnMoveDirectionChanged(direction);
+            if (!hasTurnDelay) OnMoveDirectionChanged(direction);
         }
 
         internal void StopHorizontalMovement()
@@ -198,6 +213,7 @@ namespace _Scripts.Agent.Enemies
 
         internal void BeginPatrol()
         {
+            _turnDelay?.ResetTurn();
             StopHorizontalMovement();
             if (_patrol != null) _patrol.BeginPatrol();
         }
@@ -228,9 +244,7 @@ namespace _Scripts.Agent.Enemies
             if (IsDead || IsAttackInProgress || !CanAttackTarget())
                 return;
 
-            if (target != null)
-                OnMoveDirectionChanged(target.position.x - transform.position.x);
-            _skills.TryUseAttack();
+            if (TryFaceTarget()) _skills.TryUseAttack();
         }
 
         protected virtual void OnMoveDirectionChanged(float direction)
@@ -243,9 +257,17 @@ namespace _Scripts.Agent.Enemies
             facingRoot.localScale = scale;
         }
 
-        internal void FaceTarget()
+        internal void FaceTarget() => TryFaceTarget();
+
+        private bool TryFaceTarget()
         {
-            if (target != null) OnMoveDirectionChanged(target.position.x - transform.position.x);
+            if (target == null) return false;
+            float direction = target.position.x - transform.position.x;
+            if (_turnDelay != null && _turnDelay.isActiveAndEnabled &&
+                !_turnDelay.TryResolveFacing(FacingDirection, direction, out direction)) return false;
+
+            OnMoveDirectionChanged(direction);
+            return true;
         }
 
         public void OnAttackWarning() => _skills?.OnAttackWarning();
@@ -264,11 +286,21 @@ namespace _Scripts.Agent.Enemies
                 amount <= 0f || float.IsNaN(amount) || float.IsInfinity(amount))
                 return;
 
+            amount = ModifyIncomingDamage(damageData, hitPoint, hitDirection, out bool suppressHitControl);
+            if (amount <= 0f) return;
+
             var previousHit = _pendingHit;
-            _pendingHit = (damageData, hitPoint, hitDirection, hitNormal);
+            _pendingHit = (damageData, hitPoint, hitDirection, hitNormal, suppressHitControl);
             try { NewHealthModule.ApplyDamage(amount); }
             finally { _pendingHit = previousHit; }
             OnHit?.Invoke();
+        }
+
+        protected virtual float ModifyIncomingDamage(DamageData damage, Vector2 hitPoint, Vector2 hitDirection,
+            out bool suppressHitControl)
+        {
+            suppressHitControl = false;
+            return damage.DamageAmount;
         }
 
         private void HandleHealthChanged(float current, float delta, float max)
@@ -286,14 +318,14 @@ namespace _Scripts.Agent.Enemies
             else if (hit.HasValue)
             {
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
-                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction, hit.Value.suppressHitControl);
             }
             OnHealthChanged(current, delta, max);
         }
 
         protected virtual void OnHealthChanged(float current, float delta, float max) { }
 
-        private void Die((DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)? hit = null)
+        private void Die((DamageData damage, Vector2 point, Vector2 direction, Vector2 normal, bool suppressHitControl)? hit = null)
         {
             if (IsDead)
                 return;
@@ -312,7 +344,7 @@ namespace _Scripts.Agent.Enemies
             {
                 // 파티클은 피격 스케일 변형 전의 그림을 기준으로 접촉점을 보정합니다.
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
-                _hitReaction?.React(hit.Value.damage, hit.Value.direction);
+                _hitReaction?.React(hit.Value.damage, hit.Value.direction, hit.Value.suppressHitControl);
             }
             if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
                 deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))

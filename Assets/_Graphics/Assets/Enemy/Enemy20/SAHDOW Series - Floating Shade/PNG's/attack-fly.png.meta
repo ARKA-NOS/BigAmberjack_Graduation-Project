@@ -70,7 +70,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -84,7 +84,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -108,7 +108,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -149,12 +149,12 @@ TextureImporter:
       name: attack-fly_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 8
-        width: 46
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -171,12 +171,12 @@ TextureImporter:
       name: attack-fly_1
       rect:
         serializedVersion: 2
-        x: 160
-        y: 7
-        width: 45
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 123
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -193,12 +193,12 @@ TextureImporter:
       name: attack-fly_2
       rect:
         serializedVersion: 2
-        x: 283
-        y: 6
-        width: 45
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 246
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -215,12 +215,12 @@ TextureImporter:
       name: attack-fly_3
       rect:
         serializedVersion: 2
-        x: 373
-        y: 0
-        width: 118
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 369
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -237,12 +237,12 @@ TextureImporter:
       name: attack-fly_4
       rect:
         serializedVersion: 2
-        x: 494
-        y: 13
-        width: 17
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 492
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -259,12 +259,12 @@ TextureImporter:
       name: attack-fly_5
       rect:
         serializedVersion: 2
-        x: 510
-        y: 0
-        width: 70
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 615
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -281,12 +281,12 @@ TextureImporter:
       name: attack-fly_6
       rect:
         serializedVersion: 2
-        x: 562
-        y: 11
-        width: 28
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 738
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -303,12 +303,12 @@ TextureImporter:
       name: attack-fly_7
       rect:
         serializedVersion: 2
-        x: 595
-        y: 14
-        width: 35
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 861
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -325,12 +325,12 @@ TextureImporter:
       name: attack-fly_8
       rect:
         serializedVersion: 2
-        x: 633
-        y: 0
-        width: 114
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 984
+        y: 9
+        width: 123
+        height: 55
+      alignment: 9
+      pivot: {x: 0.4796748, y: 0.5090909}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -343,77 +343,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: attack-fly_9
-      rect:
-        serializedVersion: 2
-        x: 775
-        y: 2
-        width: 85
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1813489ff7d3b7a10800000000000000
-      internalID: 1908186486977868161
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack-fly_10
-      rect:
-        serializedVersion: 2
-        x: 895
-        y: 4
-        width: 50
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 734d62781c12cb280800000000000000
-      internalID: -9026302438077443017
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: attack-fly_11
-      rect:
-        serializedVersion: 2
-        x: 1021
-        y: 5
-        width: 45
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d2e4796c3022e69e0800000000000000
-      internalID: -1626325015822119379
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 753bee60055227f4c9637a2de4fe5535
     internalID: 0
     vertices: []
     indices: 
@@ -425,8 +359,6 @@ TextureImporter:
     nameFileIdTable:
       attack-fly_0: 6518412670961305567
       attack-fly_1: -6700722941411574276
-      attack-fly_10: -9026302438077443017
-      attack-fly_11: -1626325015822119379
       attack-fly_2: -960957415344897367
       attack-fly_3: -5121620529574801337
       attack-fly_4: -7013208630691505119
@@ -434,7 +366,6 @@ TextureImporter:
       attack-fly_6: -180752761592300617
       attack-fly_7: -216889542779179571
       attack-fly_8: -4340045061153215425
-      attack-fly_9: 1908186486977868161
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

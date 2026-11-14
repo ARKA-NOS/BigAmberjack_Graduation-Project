@@ -17,6 +17,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private bool _hadTarget;
         public bool IsInvulnerable { get; protected set; }
         protected override bool UsesGroundMovement => false;
+        protected virtual bool UpdatesWithoutCombatTarget => false;
         protected BossFlightModule Flight { get; private set; }
         protected EnemySkillModule Skills { get; private set; }
         public bool HasCombatTarget
@@ -48,14 +49,13 @@ namespace _Scripts.Agent.Enemies.Bosses
                 _hadTarget = false;
             }
             _observedTarget = Target;
-            if (!available) return;
-            _hadTarget = true;
-            UpdateBoss();
+            _hadTarget = available;
+            if (available || UpdatesWithoutCombatTarget) UpdateBoss();
         }
 
         protected sealed override void FixedUpdateAI()
         {
-            if (HasCombatTarget) FixedUpdateBoss();
+            if (HasCombatTarget || UpdatesWithoutCombatTarget) FixedUpdateBoss();
         }
 
         public override void SetTarget(Transform newTarget)

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace _Scripts.Agent.Enemies.Skills
 {
-    // 준비 시작에 착지점을 고정하고, 실제 착지한 위치에서 피해를 판정합니다.
+    // 착지 가능한 도약 경로를 검사하고 실제로 바닥에 닿은 위치에서 피해를 판정합니다.
     public sealed class EnemyLeapSkill : EnemyAttackSkill
     {
         [Header("Condition / Terrain")]
@@ -13,6 +13,8 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private Collider2D bodyCollider;
         [SerializeField] private LayerMask terrainLayers = (1 << 6) | (1 << 10);
         [SerializeField, Min(0f)] private float maximumLandingHeightDifference = 0.5f;
+        [Tooltip("착지 지면을 찾을 때 플레이어의 발 높이를 기준으로 삼습니다.")]
+        [SerializeField] private bool useTargetHeightForLanding;
 
         [Header("Leap Motion")]
         [SerializeField, Min(0.1f)] private float leapHeight = 1.4f;
@@ -24,15 +26,20 @@ namespace _Scripts.Agent.Enemies.Skills
         [Header("Landing Attack")]
         [SerializeField, Min(0f)] private float damage = 18f;
         [SerializeField, Min(0.01f)] private float landingRadius = 1f;
-        [SerializeField, Min(0.01f)] private float activeDuration = 0.15f;
+        [Tooltip("0이면 바닥에 닿는 순간 한 번만 범위를 검사합니다.")]
+        [SerializeField, Min(0f)] private float activeDuration = 0.15f;
         [Tooltip("착지 판정이 끝난 뒤 다음 공격을 기다리는 시간입니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 1f;
+        [Tooltip("실제로 착지한 순간부터 쿨타임이 시작됩니다.")]
+        [SerializeField] private bool cooldownFromLanding;
         [Tooltip("실제 바닥에 닿는 순간 EnemyParticleModule이 재생할 파티클 프리팹입니다.")]
         [SerializeField] private ParticleSystem landingParticlePrefab;
 
         [Header("Landing Warning")]
         [Tooltip("발사 직전 이 시간 동안 착지 피해 범위를 표시합니다.")]
         [SerializeField, Min(0.05f)] private float warningLeadTime = 0.35f;
+        [Tooltip("준비를 시작할 때 경고를 표시하고, 비행 중에도 예상 착지점을 표시합니다.")]
+        [SerializeField] private bool showWarningUntilLanding;
 
         [Header("Prototype Pose")]
         [Tooltip("콜라이더가 없는 그림 전용 부모. 피격 스케일 대상과 별도로 둡니다.")]
@@ -40,7 +47,9 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private Animator attackAnimator;
         [SerializeField] private string preparationStateName = "Base Layer.Leap";
         [SerializeField] private string flightStateName = "Base Layer.Leap";
+        [SerializeField] private string fallStateName;
         [SerializeField] private string landingStateName = "Base Layer.LeapLand";
+        [SerializeField] private string recoveryStateName = "Base Layer.Idle";
         [SerializeField] private string idleStateName = "Base Layer.Idle";
         [SerializeField, Range(0.2f, 1f)] private float crouchScaleY = 0.72f;
         [SerializeField, Min(0f)] private float preparationShake = 0.015f;
@@ -56,6 +65,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private Vector3 _posePosition;
         private Vector3 _poseScale;
         private bool _airborne;
+        private bool _falling;
         private bool _landed;
         private bool _hitApplied;
         private float _launchTime;
@@ -80,6 +90,7 @@ namespace _Scripts.Agent.Enemies.Skills
             private readonly float _horizontalAcceleration;
 
             public int Steps { get; }
+            public int RiseSteps => _riseSteps;
 
             public LeapTrajectory(Vector2 start, Vector2 end, float peakY, int riseSteps, int diveSteps,
                 float horizontalAcceleration)
@@ -111,7 +122,8 @@ namespace _Scripts.Agent.Enemies.Skills
         public override bool ControlsMovement => IsUsing && _airborne;
         public override bool CompletesAfterTargetLost => HasReleased;
         internal override bool FinishesOutsideChaseRange => IsUsing;
-        protected override bool ShouldShowTelegraph => IsPreparing && Time.time >= _warningStartsAt;
+        protected override bool ShouldShowTelegraph => IsPreparing &&
+            (showWarningUntilLanding || Time.time >= _warningStartsAt);
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -130,19 +142,29 @@ namespace _Scripts.Agent.Enemies.Skills
         }
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() &&
-            requiredCoolingSkill != null && requiredCoolingSkill.RemainingCoolTime > 0f &&
-            TryChooseLandingCenter(Enemy.Target.position, out _);
+            (requiredCoolingSkill == null || requiredCoolingSkill.RemainingCoolTime > 0f) &&
+            TryChooseLandingCenter(Enemy.Target, out _, out _);
+
+        protected override void OnUseSkill()
+        {
+            float previousCooldownStart = CoolTimeStartTime;
+            base.OnUseSkill();
+            if (cooldownFromLanding) CoolTimeStartTime = previousCooldownStart;
+        }
 
         protected override void PrepareAttack()
         {
             _airborne = _landed = _hitApplied = false;
-            if (CastTarget == null || !TryChooseLandingCenter(CastTarget.position, out _lockedLandingCenter))
+            if (!TryChooseLandingCenter(CastTarget, out _, out _lockedLandingCenter))
             {
                 StopSkill();
                 return;
             }
             Enemy.FaceTarget();
             _warningStartsAt = Time.time + Mathf.Max(0f, AttackDelay - warningLeadTime);
+            // 경고는 도약하는 적을 따라가지 않도록 월드에 고정합니다.
+            if (showWarningUntilLanding && Telegraph != null)
+                Telegraph.transform.SetParent(null, true);
             PlayAnimation(preparationStateName);
         }
 
@@ -162,7 +184,11 @@ namespace _Scripts.Agent.Enemies.Skills
             // 피격 경직으로 FixedUpdate의 이동 처리가 잠겨도 착지는 확인합니다.
             if (_airborne)
             {
-                if (Enemy.IsHitReacting) StopFollowingTrajectory();
+                if (Enemy.IsHitReacting && _followingTrajectory)
+                {
+                    StopFollowingTrajectory();
+                    Telegraph?.Hide();
+                }
                 CheckLanding();
             }
             if (!IsUsing || !_landed) return;
@@ -170,7 +196,7 @@ namespace _Scripts.Agent.Enemies.Skills
             else if (!IsRecovering)
             {
                 BeginRecovery();
-                PlayAnimation(idleStateName);
+                PlayAnimation(recoveryStateName);
             }
             if (poseRoot != null)
             {
@@ -184,8 +210,9 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnReleaseAttack()
         {
             RestorePose();
-            // 준비 때 정한 착지점의 바닥과 경로가 여전히 유효한지 검사합니다.
-            if (!TryPlanLeap(_lockedLandingCenter.x, out _trajectory, out Vector2 landingCenter) ||
+            float floorReferenceY = useTargetHeightForLanding ? _lockedLandingCenter.y - 0.05f : bodyCollider.bounds.min.y;
+            if (!TryPlanLeap(_lockedLandingCenter.x, floorReferenceY, out _trajectory, out Vector2 landingCenter,
+                    requireLockedFloor: useTargetHeightForLanding) ||
                 Mathf.Abs(landingCenter.y - _lockedLandingCenter.y) > 0.01f)
             {
                 StopSkill();
@@ -198,10 +225,11 @@ namespace _Scripts.Agent.Enemies.Skills
             _followingTrajectory = true;
             _flightStep = 0;
             _airborne = true;
+            _falling = false;
             _launchTime = Time.time;
             _flightDeadline = Time.time + _trajectory.Steps * Time.fixedDeltaTime + 1f;
             PlayAnimation(flightStateName);
-            Telegraph?.Hide();
+            if (!showWarningUntilLanding) Telegraph?.Hide();
         }
 
         public override void FixedUpdateAttack()
@@ -219,6 +247,11 @@ namespace _Scripts.Agent.Enemies.Skills
             Vector2 from = _trajectory.PositionAt(_flightStep);
             Vector2 to = _trajectory.PositionAt(++_flightStep);
             _body.linearVelocity = (to - from) / Time.fixedDeltaTime;
+            if (!_falling && _flightStep > _trajectory.RiseSteps)
+            {
+                _falling = true;
+                PlayAnimation(fallStateName);
+            }
         }
 
         private void StopFollowingTrajectory()
@@ -237,11 +270,13 @@ namespace _Scripts.Agent.Enemies.Skills
             {
                 _airborne = false;
                 _landed = true;
+                Telegraph?.Hide();
                 StopFollowingTrajectory();
                 _body.linearVelocityX = 0f;
                 Bounds bounds = bodyCollider.bounds;
                 _impactCenter = new Vector2(bounds.center.x, bounds.min.y + 0.05f);
-                _activeUntil = Time.time + Mathf.Max(0.01f, activeDuration);
+                if (cooldownFromLanding) CoolTimeStartTime = Time.time;
+                _activeUntil = Time.time + Mathf.Max(0f, activeDuration);
                 _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
                 PlayAnimation(landingStateName);
                 PlayLandingParticle(bounds);
@@ -290,24 +325,31 @@ namespace _Scripts.Agent.Enemies.Skills
             }
         }
 
-        private bool TryChooseLandingCenter(Vector2 targetPosition, out Vector2 landingCenter)
+        private bool TryChooseLandingCenter(Transform target, out LeapTrajectory trajectory, out Vector2 landingCenter)
         {
+            trajectory = default;
             landingCenter = default;
-            return _skills != null && _skills.IsTargetInSkillRange(this, targetPosition) &&
-                TryPlanLeap(targetPosition.x, out _, out landingCenter);
+            if (target == null || bodyCollider == null || _movement == null || _skills == null ||
+                !_skills.IsTargetInSkillRange(this, target.position)) return false;
+            float floorReferenceY = bodyCollider.bounds.min.y;
+            if (useTargetHeightForLanding) floorReferenceY += _movement.GetTargetHeightDifference(target);
+            return TryPlanLeap(target.position.x, floorReferenceY, out trajectory, out landingCenter);
         }
 
-        private bool TryPlanLeap(float landingX, out LeapTrajectory trajectory, out Vector2 landingCenter)
+        private bool TryPlanLeap(float landingX, float floorReferenceY, out LeapTrajectory trajectory,
+            out Vector2 landingCenter, bool requireLockedFloor = false)
         {
             trajectory = default;
             landingCenter = default;
             if (_body == null || !_body.simulated || bodyCollider == null || !bodyCollider.enabled ||
                 _movement == null || !_movement.IsGrounded) return false;
             Bounds bounds = bodyCollider.bounds;
-            if (!TryFindFloor(landingX, bounds.min.y, out float floorY)) return false;
+            float floorTolerance = requireLockedFloor ? 0.1f : maximumLandingHeightDifference;
+            if (!TryFindFloor(landingX, floorReferenceY, floorTolerance, out float floorY) ||
+                Mathf.Abs(floorY - bounds.min.y) > maximumLandingHeightDifference + 0.01f) return false;
             // 몸체 폭 양쪽이 같은 높이의 바닥 위에 있어야 절벽 끝에 반만 걸치지 않습니다.
             for (int side = -1; side <= 1; side += 2)
-                if (!TryFindFloor(landingX + side * bounds.extents.x * 0.8f, bounds.min.y, out float edgeY) ||
+                if (!TryFindFloor(landingX + side * bounds.extents.x * 0.8f, floorReferenceY, floorTolerance, out float edgeY) ||
                     Mathf.Abs(edgeY - floorY) > 0.1f) return false;
             landingCenter = new Vector2(landingX, floorY + 0.05f);
 
@@ -335,16 +377,16 @@ namespace _Scripts.Agent.Enemies.Skills
             return true;
         }
 
-        private bool TryFindFloor(float x, float feetY, out float floorY)
+        private bool TryFindFloor(float x, float feetY, float tolerance, out float floorY)
         {
             floorY = 0f;
-            float range = Mathf.Max(0f, maximumLandingHeightDifference) + 0.1f;
+            float range = Mathf.Max(0f, tolerance) + 0.1f;
             Physics2D.Raycast(new Vector2(x, feetY + range), Vector2.down,
                 _terrainFilter, _terrainHits, range * 2f);
             foreach (RaycastHit2D hit in _terrainHits)
             {
                 if (!IsTerrain(hit) || hit.normal.y <= 0.5f ||
-                    Mathf.Abs(hit.point.y - feetY) > maximumLandingHeightDifference + 0.01f) continue;
+                    Mathf.Abs(hit.point.y - feetY) > tolerance + 0.01f) continue;
                 floorY = hit.point.y;
                 return true;
             }

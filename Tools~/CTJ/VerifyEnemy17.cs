@@ -50,6 +50,13 @@ public static class VerifyEnemy17
         Check(states.Length == 6 && controller.animationClips.All(clip => AnimationUtility.GetObjectReferenceCurve(clip,
             EditorCurveBinding.PPtrCurve("", typeof(SpriteRenderer), "m_Sprite")).All(frame => frame.value is Sprite)),
             "Missing frames or states");
+        var spriteBinding = EditorCurveBinding.PPtrCurve("", typeof(SpriteRenderer), "m_Sprite");
+        var preparation = AnimationUtility.GetObjectReferenceCurve(controller.animationClips
+            .Single(clip => clip.name.EndsWith("_AttackPreparation", StringComparison.Ordinal)), spriteBinding);
+        var strike = AnimationUtility.GetObjectReferenceCurve(controller.animationClips
+            .Single(clip => clip.name.EndsWith("_Attack", StringComparison.Ordinal)), spriteBinding);
+        Check(preparation[preparation.Length - 1].value.name == "attack_11" &&
+            strike[0].time == 0f && strike[0].value.name == "attack_10", "The bite does not open before the strike and close on frame zero");
         var grille = animator.transform.Find("IntakeGrille").GetComponent<SpriteRenderer>();
         Check(grille.sprite != null && grille.sprite.texture != null, "Missing intake grille sprite");
         return new { references, states, dependencies = AssetDatabase.GetDependencies(PrefabPath).Length };
@@ -86,6 +93,7 @@ public static class VerifyEnemy17
             var reaction = root.GetComponentInChildren<EnemyHitReactionModule>();
             var health = root.GetComponentInChildren<NewHealthModule>();
             var animator = root.GetComponentInChildren<Animator>();
+            var sprite = animator.GetComponent<SpriteRenderer>();
             var grille = animator.transform.Find("IntakeGrille").GetComponent<SpriteRenderer>();
             var facing = animator.transform.parent;
             root.GetComponentInChildren<EnemyHitCameraShakeModule>()?.gameObject.SetActive(false);
@@ -119,6 +127,14 @@ public static class VerifyEnemy17
             Check(Mathf.Abs(Time.time - recoveryAt - 0.65f) < 0.08f, "Incorrect recovery duration");
             await Until(() => skill.IsPreparing, 3f, "Bite did not restart after cooldown");
             Check(Time.time - strikeAt >= 1.6f && facing.localScale.x < 0f, "Cooldown or left-facing failed");
+            await Until(() => sprite.sprite.name == "attack_11", 0.4f, "Mouth did not open during windup");
+            Check(skill.IsPreparing && probe.ReceivedHitCount == 0, "The open mouth already dealt damage");
+            // Damage is applied in Update. Read the pose after Mecanim has evaluated that frame.
+            float hitDeadline = Time.realtimeSinceStartup + 1f;
+            do { await Awaitable.EndOfFrameAsync(); }
+            while (probe.ReceivedHitCount == 0 && Time.realtimeSinceStartup < hitDeadline);
+            Check(probe.ReceivedHitCount == 1, "Bite did not deal damage");
+            Check(sprite.sprite.name == "attack_10", $"Mouth did not close on the damage frame ({sprite.sprite.name})");
             await Until(() => skill.IsRecovering, 2f, "Second bite did not recover");
             Check(probe.ReceivedHitCount == 1 && probe.TotalDamage == 8f, "Bite did not hit exactly once for 8 damage");
 

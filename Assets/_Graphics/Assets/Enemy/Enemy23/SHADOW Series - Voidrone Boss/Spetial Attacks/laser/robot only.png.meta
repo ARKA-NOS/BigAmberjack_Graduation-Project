@@ -94,7 +94,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -108,7 +108,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 28
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -129,10 +129,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -173,12 +173,12 @@ TextureImporter:
       name: robot only_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 32
-        width: 57
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 32
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -195,12 +195,12 @@ TextureImporter:
       name: robot only_1
       rect:
         serializedVersion: 2
-        x: 292
-        y: 32
-        width: 57
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 288
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -217,12 +217,12 @@ TextureImporter:
       name: robot only_2
       rect:
         serializedVersion: 2
-        x: 548
-        y: 32
-        width: 57
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 544
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -239,12 +239,12 @@ TextureImporter:
       name: robot only_3
       rect:
         serializedVersion: 2
-        x: 804
-        y: 33
-        width: 59
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 800
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -261,12 +261,12 @@ TextureImporter:
       name: robot only_4
       rect:
         serializedVersion: 2
-        x: 1060
-        y: 34
-        width: 60
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1056
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -283,12 +283,12 @@ TextureImporter:
       name: robot only_5
       rect:
         serializedVersion: 2
-        x: 1316
-        y: 32
-        width: 61
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1312
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -305,12 +305,12 @@ TextureImporter:
       name: robot only_6
       rect:
         serializedVersion: 2
-        x: 1572
-        y: 32
-        width: 62
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1568
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -327,12 +327,12 @@ TextureImporter:
       name: robot only_7
       rect:
         serializedVersion: 2
-        x: 1828
-        y: 33
-        width: 61
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1824
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -349,12 +349,12 @@ TextureImporter:
       name: robot only_8
       rect:
         serializedVersion: 2
-        x: 2084
-        y: 33
-        width: 61
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2080
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -371,12 +371,12 @@ TextureImporter:
       name: robot only_9
       rect:
         serializedVersion: 2
-        x: 2341
-        y: 28
-        width: 56
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2336
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -393,12 +393,12 @@ TextureImporter:
       name: robot only_10
       rect:
         serializedVersion: 2
-        x: 2597
-        y: 27
-        width: 57
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 2592
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -415,12 +415,12 @@ TextureImporter:
       name: robot only_11
       rect:
         serializedVersion: 2
-        x: 2852
+        x: 2848
         y: 26
-        width: 59
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -437,12 +437,12 @@ TextureImporter:
       name: robot only_12
       rect:
         serializedVersion: 2
-        x: 3108
-        y: 30
-        width: 53
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3104
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -459,12 +459,12 @@ TextureImporter:
       name: robot only_13
       rect:
         serializedVersion: 2
-        x: 3365
-        y: 30
-        width: 53
-        height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3360
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -481,12 +481,12 @@ TextureImporter:
       name: robot only_14
       rect:
         serializedVersion: 2
-        x: 3617
-        y: 30
-        width: 56
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3616
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -503,12 +503,12 @@ TextureImporter:
       name: robot only_15
       rect:
         serializedVersion: 2
-        x: 3873
-        y: 30
-        width: 56
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3872
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -525,12 +525,12 @@ TextureImporter:
       name: robot only_16
       rect:
         serializedVersion: 2
-        x: 4129
-        y: 30
-        width: 56
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 4128
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -547,12 +547,12 @@ TextureImporter:
       name: robot only_17
       rect:
         serializedVersion: 2
-        x: 4390
-        y: 32
-        width: 57
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 4384
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -569,12 +569,12 @@ TextureImporter:
       name: robot only_18
       rect:
         serializedVersion: 2
-        x: 4646
-        y: 32
-        width: 57
-        height: 41
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 4640
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -591,12 +591,12 @@ TextureImporter:
       name: robot only_19
       rect:
         serializedVersion: 2
-        x: 4900
-        y: 32
-        width: 57
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 4896
+        y: 26
+        width: 66
+        height: 48
+      alignment: 9
+      pivot: {x: 0.4848485, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -613,7 +613,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e77cd760487b3904880e77db16fa48ac
     internalID: 0
     vertices: []
     indices: 

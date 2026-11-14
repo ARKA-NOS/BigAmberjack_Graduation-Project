@@ -26,6 +26,8 @@ namespace _Scripts.Agent.Enemies
             [Tooltip("거리 확보 모듈이 벽/절벽 때문에 후퇴할 수 없을 때만 최소 사거리 제한을 해제합니다. 시야/높이/최대 사거리 검사는 유지합니다.")]
             [SerializeField] private bool allowCloseAttackWhenRetreatBlocked;
             [SerializeField, Min(0f)] private float maxRange = 1.5f;
+            [Tooltip("거리는 수평으로 재고, 높이 차이는 아래 설정으로 따로 확인합니다.")]
+            [SerializeField] private bool useHorizontalRange;
             [Tooltip("발 높이 차이. 음수면 높이 제한 없음. 근접은 0.5 권장.")]
             [SerializeField] private float maxHeightDifference = 0.5f;
             [SerializeField] private bool requireGrounded = true;
@@ -44,22 +46,35 @@ namespace _Scripts.Agent.Enemies
 
             internal bool IsInRange(EnemyBase enemy, Vector2 targetPosition, EnemyKeepDistanceModule keepDistance)
             {
-                float distance = Vector2.Distance(enemy.transform.position, targetPosition);
+                Vector2 offset = targetPosition - (Vector2)enemy.transform.position;
+                float distance = useHorizontalRange ? Mathf.Abs(offset.x) : offset.magnitude;
                 return distance <= MaxRange && (distance >= Mathf.Max(0f, minRange) ||
                     (allowCloseAttackWhenRetreatBlocked && keepDistance != null && keepDistance.IsRetreatBlocked(enemy.Target)));
             }
 
-            internal bool Matches(EnemyBase enemy, EnemyMovementModule movement, EnemyKeepDistanceModule keepDistance)
+            internal bool Matches(EnemyBase enemy, EnemyMovementModule movement, EnemyFlightModule flight,
+                EnemyKeepDistanceModule keepDistance)
             {
-                if (!Enabled || movement == null || enemy.Target == null ||
-                    !enemy.Target.gameObject.activeInHierarchy || (requireGrounded && !movement.IsGrounded))
+                if (!Enabled || enemy.Target == null || !enemy.Target.gameObject.activeInHierarchy ||
+                    (requireGrounded && (movement == null || !movement.IsGrounded)))
                     return false;
-                if (!IsInRange(enemy, enemy.Target.position, keepDistance) ||
-                    (maxHeightDifference >= 0f && Mathf.Abs(movement.GetTargetHeightDifference(enemy.Target)) > maxHeightDifference))
-                    return false;
+                bool flying = flight != null && flight.isActiveAndEnabled;
+                if (!flying && movement == null) return false;
+                Vector2 targetPosition = flying ? flight.GetTargetCenter(enemy.Target) : (Vector2)enemy.Target.position;
+                if (!IsInRange(enemy, targetPosition, keepDistance)) return false;
+                if (maxHeightDifference >= 0f)
+                {
+                    float heightDifference = flying
+                        ? targetPosition.y - flight.BodyCenter.y
+                        : movement.GetTargetHeightDifference(enemy.Target);
+                    if (Mathf.Abs(heightDifference) > maxHeightDifference) return false;
+                }
+                if (!requireClearPath) return true;
+                if (flying)
+                    return flight.HasClearPath(origin != null ? (Vector2)origin.position : flight.BodyCenter, targetPosition);
                 Collider2D body = enemy.Target.GetComponent<Collider2D>();
                 Vector2 aim = body != null ? (Vector2)body.bounds.center : (Vector2)enemy.Target.position;
-                return !requireClearPath || movement.HasClearPath(origin != null ? (Vector2)origin.position : movement.BodyCenter, aim);
+                return movement.HasClearPath(origin != null ? (Vector2)origin.position : movement.BodyCenter, aim);
             }
         }
 
@@ -68,6 +83,7 @@ namespace _Scripts.Agent.Enemies
         private readonly HashSet<AbstractSkill> _registeredSkills = new HashSet<AbstractSkill>();
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
+        private EnemyFlightModule _flight;
         private EnemyKeepDistanceModule _keepDistance;
         private AbstractSkill _activeSkill;
         private Transform _castTarget;
@@ -95,6 +111,7 @@ namespace _Scripts.Agent.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _movement = owner.GetModule<EnemyMovementModule>();
+            _flight = owner.GetModule<EnemyFlightModule>();
             _keepDistance = owner.GetModule<EnemyKeepDistanceModule>();
             _registeredSkills.Clear();
             // 공용 AfterInit과 같은 탐색 범위/첫 SO만 등록 규칙을 사용합니다.
@@ -112,7 +129,7 @@ namespace _Scripts.Agent.Enemies
         {
             if (!Ready) return false;
             foreach (SkillEntry entry in skills)
-                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _keepDistance) &&
+                if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _flight, _keepDistance) &&
                     (!entry.RequireUsableToEnterAttack || CanUseSkill(entry.Skill.SkillSo))) return true;
             return false;
         }
@@ -122,7 +139,7 @@ namespace _Scripts.Agent.Enemies
             if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
             foreach (SkillEntry entry in skills)
             {
-                if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement, _keepDistance) || !CanUseSkill(entry.Skill.SkillSo)) continue;
+                if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement, _flight, _keepDistance) || !CanUseSkill(entry.Skill.SkillSo)) continue;
                 _activeSkill = entry.Skill;
                 _castTarget = _enemy.Target;
                 _chargeReleaseTime = Time.time + entry.ChargeDuration;

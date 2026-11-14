@@ -32,7 +32,7 @@ public static class SetupEnemy17
         foreach (string path in new[] { AnimationFolder, PrefabFolder, StatsFolder, SkillFolder }) MakeFolder(path);
         var idle = Slice("idle", 6, 53, 89);
         var walk = Slice("walk", 6, 53, 89);
-        // The original attack sheet has a ranged beam starting at cell 12. The bite uses cell 11.
+        // The original attack sheet has a ranged beam starting at cell 12.
         var attack = Slice("attack", 21, 53, 89);
         var hurt = Slice("damaged", 1, 53, 89);
         var death = Slice("death", 8, 44, 94);
@@ -110,9 +110,9 @@ public static class SetupEnemy17
         var moveState = AddState("Move", 0.48f, true, Sequence(walk, 0.08f));
         AddState("AttackPreparation", 0.45f, false, new[]
         {
-            (0f, attack[6]), (0.14f, attack[7]), (0.26f, attack[9]), (0.36f, attack[10])
+            (0f, attack[6]), (0.08f, attack[8]), (0.16f, attack[11])
         });
-        AddState("Attack", 0.73f, false, new[] { (0f, attack[11]), (0.08f, attack[10]), (0.2f, attack[20]) });
+        AddState("Attack", 0.73f, false, new[] { (0f, attack[10]), (0.1f, attack[9]), (0.2f, attack[20]) });
         var hurtState = AddState("Hurt", 0.12f, false, new[] { (0f, hurt) }, null);
         AddState("Death", 0.68f, false, Sequence(death, 0.085f), 0.255f);
         states.defaultState = idleState;

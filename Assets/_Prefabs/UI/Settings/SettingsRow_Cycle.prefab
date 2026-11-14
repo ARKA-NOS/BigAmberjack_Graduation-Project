@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 185339218177293604}
   - component: {fileID: 4902917825783411809}
   - component: {fileID: 4173489185911235209}
+  - component: {fileID: 5971043992325233314}
   m_Layer: 5
   m_Name: SettingsRow_Cycle
   m_TagString: Untagged
@@ -85,6 +86,23 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
+--- !u!114 &5971043992325233314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249427668527670042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c2e8b1abce7a034b941f3c990687a37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.SettingsUI.SettingsCycleRowView
+  viewModel: {fileID: 11400000, guid: a29d156879f206e489cf8b2c3fb40856, type: 2}
+  settingId: 0
+  prevButton: {fileID: 7328312381257915137}
+  nextButton: {fileID: 1355693917101128072}
+  valueText: {fileID: 5028719390310457840}
 --- !u!1 &1130192754395042668
 GameObject:
   m_ObjectHideFlags: 0

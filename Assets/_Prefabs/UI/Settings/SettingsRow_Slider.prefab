@@ -537,6 +537,7 @@ GameObject:
   - component: {fileID: 962944736513104595}
   - component: {fileID: 9189342809653108232}
   - component: {fileID: 5014774946642162140}
+  - component: {fileID: 4374292017688858794}
   m_Layer: 5
   m_Name: SettingsRow_Slider
   m_TagString: Untagged
@@ -611,6 +612,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
+--- !u!114 &4374292017688858794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5849073182100910667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c15ddfb74ce91be438fcb7813f748010, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.SettingsUI.SettingsSliderRowView
+  viewModel: {fileID: 11400000, guid: a29d156879f206e489cf8b2c3fb40856, type: 2}
+  settingId: 0
+  slider: {fileID: 8382924278848618711}
+  percentText: {fileID: 3921959032606244793}
 --- !u!1 &5904286452849876796
 GameObject:
   m_ObjectHideFlags: 0

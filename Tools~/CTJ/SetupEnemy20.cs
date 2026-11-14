@@ -22,6 +22,48 @@ public static class SetupEnemy20
     private const string Skills = Scripts + "/EnemySkills/Enemy20";
     private const string PrefabPath = Prefabs + "/" + Name + ".prefab";
     private const float PixelsPerUnit = 32f;
+    private static readonly Color PreparationOutlineColor = new Color(1f, 0.78f, 0.25f, 1f);
+
+    public static object UpdateAttackReadability()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Update the Enemy20 prefab in Edit Mode.");
+
+        // The outside outline shader expands the four vertices of a Full Rect sprite.
+        var importer = (TextureImporter)AssetImporter.GetAtPath(Sheets + "attack-fly.png");
+        if (UseFullRect(importer)) importer.SaveAndReimport();
+        var root = PrefabUtility.LoadPrefabContents(PrefabPath);
+        try
+        {
+            ConfigureAttackReadability(root);
+            PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool saved);
+            if (!saved) throw new IOException("Could not save " + PrefabPath);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+        return new { prefab = PrefabPath };
+    }
+
+    private static void ConfigureAttackReadability(GameObject root)
+    {
+        var outline = root.GetComponentInChildren<EnemyOutlineModule>();
+        Set(outline, "showDuringAttackPreparation", true);
+        Set(outline, "preparationColor", PreparationOutlineColor);
+        Set(outline, "preparationWidth", 3f);
+        if (root.GetComponentInChildren<EnemySuperArmorModule>() != null) return;
+        var armor = new GameObject("SuperArmorModule") { layer = root.layer };
+        armor.transform.SetParent(root.transform, false);
+        armor.AddComponent<EnemySuperArmorModule>();
+    }
+
+    private static bool UseFullRect(TextureImporter importer)
+    {
+        var settings = new TextureImporterSettings();
+        importer.ReadTextureSettings(settings);
+        if (settings.spriteMeshType == SpriteMeshType.FullRect) return false;
+        settings.spriteMeshType = SpriteMeshType.FullRect;
+        importer.SetTextureSettings(settings);
+        return true;
+    }
 
     public static object UpdatePreparationShake()
     {
@@ -72,7 +114,7 @@ public static class SetupEnemy20
         MakeFolder(Skills);
         var idle = Slice("idle-fly", 7, 35, 84, 5, 60);
         var flight = Slice("side-fly", 4, 35, 84, 7, 56);
-        var attack = Slice("attack-fly", 9, 0, 123, 8, 63);
+        var attack = Slice("attack-fly", 9, 0, 123, 8, 63, fullRect: true);
         var hurt = Slice("hiz-fly", 1, 38, 83, 10, 61);
         var death = Slice("death-fly", 12, 35, 84, 0, 64).Take(7).ToArray();
         var sensor = CreateSensor();
@@ -82,6 +124,7 @@ public static class SetupEnemy20
         try
         {
             Configure(root, controller, idle[0], sensor);
+        ConfigureAttackReadability(root);
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool saved);
             if (!saved) throw new IOException("Could not save " + PrefabPath);
         }
@@ -89,7 +132,7 @@ public static class SetupEnemy20
         return new { prefab = PrefabPath, states = controller.layers[0].stateMachine.states.Length };
     }
 
-    private static Sprite[] Slice(string file, int count, int left, int right, int top, int bottom)
+    private static Sprite[] Slice(string file, int count, int left, int right, int top, int bottom, bool fullRect = false)
     {
         const int cellWidth = 123;
         const int cellHeight = 72;
@@ -126,6 +169,7 @@ public static class SetupEnemy20
         importer.filterMode = FilterMode.Point;
         importer.mipmapEnabled = false;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
+        if (fullRect) UseFullRect(importer);
         importer.SaveAndReimport();
         var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToDictionary(sprite => sprite.name);
         return rects.Select(rect => sprites[rect.name]).ToArray();
@@ -310,6 +354,7 @@ public static class SetupEnemy20
         if (value is int count) field.intValue = count;
         else if (value is float number) field.floatValue = number;
         else if (value is bool flag) field.boolValue = flag;
+        else if (value is Color color) field.colorValue = color;
         else field.objectReferenceValue = (Object)value;
         data.ApplyModifiedPropertiesWithoutUndo();
     }

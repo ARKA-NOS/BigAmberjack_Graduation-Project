@@ -515,6 +515,7 @@ Transform:
   - {fileID: 3146375919116217118}
   - {fileID: 5581499482374014230}
   - {fileID: 1231082886634128007}
+  - {fileID: 7429289157699939900}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1380922992422332455
@@ -695,6 +696,9 @@ MonoBehaviour:
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   hitColor: {r: 0.75, g: 0.18, b: 0.22, a: 1}
   showOnlyWhenHit: 1
+  showDuringAttackPreparation: 1
+  preparationColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  preparationWidth: 3
   width: 2
   outerSilhouetteOnly: 0
   hitDuration: 0.25
@@ -794,6 +798,50 @@ MonoBehaviour:
   maxCoinCount: 12
   deathCoinLaunchMultiplier: 1.45
   spawnOffset: {x: 0, y: 0.35}
+--- !u!1 &5660265559556584963
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7429289157699939900}
+  - component: {fileID: 6780246184932360021}
+  m_Layer: 8
+  m_Name: SuperArmorModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7429289157699939900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5660265559556584963}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5688870116634397305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6780246184932360021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5660265559556584963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790f8879e8463c64b80b43a626b38416, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemySuperArmorModule
 --- !u!1 &8472841595995442701
 GameObject:
   m_ObjectHideFlags: 0

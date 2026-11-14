@@ -215,7 +215,7 @@ public static class SetupEnemy19
             Set(skill, "preparationStateName", $"Base Layer.{name}Preparation");
             Set(skill, "attackStateName", $"Base Layer.{name}Strike");
             Set(skill, "recoveryStateName", "Base Layer.Recovery");
-            Set(skill, "fallbackAttackDelay", 0.35f);
+            Set(skill, "fallbackAttackDelay", 0.30f);
             Set(skill, "postBlinkDelay", 0f);
             Set(skill, "blinkBeforeAttack", false);
             Set(skill, "damage", damage);

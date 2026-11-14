@@ -65,6 +65,23 @@ namespace _Scripts.UI.MVVM.Bindings
             });
         }
 
+        // 정수 값과 Slider를 양방향으로 잇는다. 값이 바뀌면 이벤트 없이 Slider를 옮기고, 사용자가 움직이면 onChanged를 부른다.
+        public static IDisposable BindValue(this IReadOnlyObservable<int> source, Slider target, Action<int> onChanged)
+        {
+            RequireTarget(target, nameof(target));
+            if (onChanged == null) throw new ArgumentNullException(nameof(onChanged));
+
+            IDisposable subscription = source.Subscribe(value => target.SetValueWithoutNotify(value));
+            UnityAction<float> listener = value => onChanged(Mathf.RoundToInt(value));
+            target.onValueChanged.AddListener(listener);
+
+            return Disposable.Create(() =>
+            {
+                subscription.Dispose();
+                if (target != null) target.onValueChanged.RemoveListener(listener);
+            });
+        }
+
         private static void RequireTarget(UnityEngine.Object target, string paramName)
         {
             if (target == null) throw new ArgumentNullException(paramName);

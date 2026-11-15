@@ -19,7 +19,6 @@ namespace _Scripts._Core.DataSystem
             return new Sheet(csvString);
         }
         
-        //sheet를 csv로 변환하고 그걸 텍스트화 하여 반환한다.
         private string GetGoogleSheetData(string url)
         {
             if (!GoogleSheetUrl.TryGetCsvUrl(url, out string csvUrl))

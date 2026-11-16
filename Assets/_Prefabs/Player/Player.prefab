@@ -352,9 +352,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.PlayerUI.HUD_UI.PlayerHudConnector
   healthViewModel: {fileID: 11400000, guid: ef3278e8c90a3444fb0e38df48b7b93d, type: 2}
+  statusRingViewModel: {fileID: 11400000, guid: b99dec4b1be49af42a564dd9372602c0, type: 2}
   skill1ViewModel: {fileID: 11400000, guid: 88442daf05a6db5458533fdcef9f6ed9, type: 2}
   skill2ViewModel: {fileID: 11400000, guid: 607778cb9674d104296755d3af3741b0, type: 2}
   effectViewModel: {fileID: 11400000, guid: ab50900c0c8f2b742a07da6a061e4847, type: 2}
+--- !u!114 &6899805848206338772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282547565697425842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173047381ac7ba548bca93b19ed21286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.InventoryUI.InventoryWindowConnector
+  inventoryViewModel: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
+  statViewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
+--- !u!114 &7247642256895593303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282547565697425842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6565a851508c609499677cd1a5e1546b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.PlayerUI.Title_UI.TitleConnector
+  viewModel: {fileID: 11400000, guid: d7a8d20727f714a46ac897b572279e61, type: 2}
 --- !u!1 &3542726505343172341
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,30 +1103,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8755700177450558743, guid: e4604871cbacd3b44aae68b21ba9492b, type: 3}
   m_PrefabInstance: {fileID: 7670860566630986989}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6899805848206338772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282547565697425842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 173047381ac7ba548bca93b19ed21286, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.InventoryUI.InventoryWindowConnector
-  inventoryViewModel: {fileID: 11400000, guid: 7731d07f6f0d9f94090dddaab991cac7, type: 2}
-  statViewModel: {fileID: 11400000, guid: 10afb9e3f2b69234aa4ba5ca441c8a9d, type: 2}
---- !u!114 &7247642256895593303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3282547565697425842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6565a851508c609499677cd1a5e1546b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.PlayerUI.Title_UI.TitleConnector
-  viewModel: {fileID: 11400000, guid: d7a8d20727f714a46ac897b572279e61, type: 2}

@@ -1,26 +1,50 @@
+using Lean.Pool;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace _Scripts.Agent.Enemies
 {
-    // 한 번 생성된 효과의 수명만 관리합니다. 적이 먼저 제거되어도 재생과 정리가 계속됩니다.
+    // 파티클은 적과 따로 재생하고, 수명이 끝나면 자신이 빌려 온 풀로 돌아갑니다.
     [DisallowMultipleComponent]
     public sealed class EnemyHitParticle : MonoBehaviour
     {
         private ParticleSystem _root;
+        private EnemyParticleModule _owner;
+        private bool _configured;
         private float _startedAt;
         private float _expiresAt;
+
+        internal static EnemyHitParticle Spawn(ParticleSystem prefab, Vector3 position, Quaternion rotation,
+            Scene scene, float scale, float maximumLifetime, EnemyParticleModule owner = null)
+        {
+            ParticleSystem particle = LeanPool.Spawn(prefab, position, rotation);
+            if (particle == null) return null;
+            // 발사나 사망 후에도 재생을 이어가되, 적이나 탄이 있던 씬을 벗어나지 않습니다.
+            if (particle.gameObject.scene != scene) SceneManager.MoveGameObjectToScene(particle.gameObject, scene);
+            particle.transform.localScale = prefab.transform.localScale * scale;
+            if (!particle.TryGetComponent(out EnemyHitParticle lifetime))
+                lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
+
+            lifetime._owner = owner;
+            lifetime.Play(particle, maximumLifetime);
+            return lifetime;
+        }
 
         internal void Play(ParticleSystem root, float maximumLifetime)
         {
             _root = root;
             _root.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            foreach (ParticleSystem particle in GetComponentsInChildren<ParticleSystem>(true))
+            if (!_configured)
             {
-                var main = particle.main;
-                main.loop = false;
-                main.playOnAwake = false;
-                // 루트가 먼저 종료되어 자식 파편까지 제거하는 설정을 방지합니다.
-                main.stopAction = ParticleSystemStopAction.None;
+                foreach (ParticleSystem particle in GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    var main = particle.main;
+                    main.loop = false;
+                    main.playOnAwake = false;
+                    // 루트와 자식의 재생이 끝날 때까지 반환 시점은 이 컴포넌트가 관리합니다.
+                    main.stopAction = ParticleSystemStopAction.None;
+                }
+                _configured = true;
             }
             _startedAt = Time.time;
             _expiresAt = _startedAt + Mathf.Max(0.1f, maximumLifetime);
@@ -31,13 +55,45 @@ namespace _Scripts.Agent.Enemies
                 _expiresAt = _startedAt + Mathf.Max(maximumLifetime, blood.MaximumLifetime);
                 blood.Emit();
             }
+            else if (TryGetComponent(out EnemyMetalFragmentParticle metal))
+            {
+                _expiresAt = _startedAt + Mathf.Max(maximumLifetime, metal.MaximumLifetime);
+                metal.Emit(_root);
+            }
         }
 
         private void Update()
         {
-            if (_root == null || Time.time >= _expiresAt ||
-                (Time.time > _startedAt + 0.05f && !_root.IsAlive(true)))
+            if (_root != null && (Time.time >= _expiresAt ||
+                (Time.time > _startedAt + 0.05f && !_root.IsAlive(true))))
+                Release();
+        }
+
+        internal void Release()
+        {
+            if (_root == null) return;
+            if (LeanPool.Links.TryGetValue(gameObject, out var pool) && pool != null)
+                LeanPool.Despawn(gameObject);
+            else
+            {
+                gameObject.SetActive(false);
                 Destroy(gameObject);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (_root != null) _root.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            _root = null;
+            if (_owner != null) _owner.RemoveActiveEffect(this);
+            _owner = null;
+        }
+
+        private void OnDestroy()
+        {
+            // 가산 로드된 전투 씬이 먼저 닫히면 활성 클론만 풀보다 먼저 제거될 수 있습니다.
+            if (LeanPool.Links.TryGetValue(gameObject, out var pool))
+                LeanPool.Detach(gameObject, pool != null);
         }
     }
 }

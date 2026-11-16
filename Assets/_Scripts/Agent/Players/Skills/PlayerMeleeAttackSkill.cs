@@ -33,6 +33,7 @@ namespace _Scripts.Agent.Players.Skills
 
         [Header("Combotime")]
         [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
+        [SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
 
         private const int CurveAreaSampleCount = 100;
         private const int CurveStepSampleCount = 10;
@@ -58,6 +59,8 @@ namespace _Scripts.Agent.Players.Skills
         private Vector3 _offset;
         private float _currentAnimationNormal;
         private bool _isAttackState;
+
+        private float _moveAttackLastTime;
 
         private bool _isLunge;
 
@@ -124,12 +127,13 @@ namespace _Scripts.Agent.Players.Skills
             base.OnUseSkill();
             bool comboCounterOver = ComboCount >= comboStates.Length;
             bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
             if (comboCounterOver || comboWindowExhaust)
             {
                 ComboCount = 0;
             }
 
-            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0))
+            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
             {
                 ComboCount = 1;
             }
@@ -141,7 +145,7 @@ namespace _Scripts.Agent.Players.Skills
                        && _groundChecker.FixedIsGround;
             if (_isLunge)
             {
-                _movement.MoveXLock(true);
+                //_movement.MoveXLock(true);
                 _attackMoveCurveArea = IntegrateCurve(attackMoveCurve, 0f, 1f, CurveAreaSampleCount);
                 _prevMoveNormal = 0f;
             }
@@ -165,8 +169,8 @@ namespace _Scripts.Agent.Players.Skills
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
             _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
-            GroundStop();
-            AttackMove();
+            //GroundStop();
+            //AttackMove();
             base.UpdateSkill();
             SetAnimationSpeed();
         }
@@ -175,6 +179,7 @@ namespace _Scripts.Agent.Players.Skills
         {
             base.OnEndSkill();
             ComboCount++;
+            _moveAttackLastTime = Time.time;
             SkillEndSetting();
         }
 
@@ -188,7 +193,7 @@ namespace _Scripts.Agent.Players.Skills
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-            _movement.MoveXLock(false);
+            //_movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
         }

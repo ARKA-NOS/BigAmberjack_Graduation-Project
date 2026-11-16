@@ -21,7 +21,7 @@ using Object = UnityEngine.Object;
 
 public static class VerifyEnemy03
 {
-    private const string Path = "Assets/_Prefabs/Enemies/Enemy/Enemy03/Enemy03_TwistedHuman.prefab";
+    private const string Path = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy03/Enemy03_TwistedHuman.prefab";
     private const string OriginalScene = "CTJ.Enemy03.OriginalScene";
     private static void Check(bool valid, string message) { if (!valid) throw new Exception(message); }
     private static void Set(Object obj, string name, float value)

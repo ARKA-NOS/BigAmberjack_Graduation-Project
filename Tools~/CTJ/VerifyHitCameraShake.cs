@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 public static class VerifyHitCameraShake
 {
-    private const string EnemyPath = "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
+    private const string EnemyPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
     private const string CameraPath = "Assets/_Prefabs/Player/PlayerCam.prefab";
     private const string SceneKey = "CTJ.HitCameraShake.OriginalScene";
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;

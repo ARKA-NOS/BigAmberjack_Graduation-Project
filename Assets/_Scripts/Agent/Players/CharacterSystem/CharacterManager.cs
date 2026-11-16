@@ -15,7 +15,7 @@ namespace _Scripts.Agent.Players.CharacterSystem
         [SerializeField] private CharacterData[] characterList;
 
         private CharacterData currentCharacter;
-        
+
         private const string CharacterSaveName = "CharacterSaveData";
         private const string DefaultValue = "Default";
         
@@ -57,13 +57,15 @@ namespace _Scripts.Agent.Players.CharacterSystem
             }
             GameObject go = Instantiate(currentCharacter.Prefab);
 
-            ModuleOwner owner = go.GetComponentInChildren<ModuleOwner>();
+            PlayerController owner = go.GetComponentInChildren<PlayerController>();
 
             if (owner == null)
             {
-                FDebug.LogError("[CharacterManager] ModuleOwner is not found");
+                FDebug.LogError("[CharacterManager] PlayerController is not found");
                 return;
             }
+
+            owner.CharacterData = currentCharacter;
 
             if (currentCharacter.TreeSo == null)
             {

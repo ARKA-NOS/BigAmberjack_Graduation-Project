@@ -20,6 +20,9 @@ namespace _Scripts.Agent.Players
         }
         
         private void CreatePlayer()
-            => ServiceLocator.Get<ICharacterManager>().CreateCharacter(transform.position);
+        {
+            ICharacterManager manager = ServiceLocator.Get<ICharacterManager>();
+            manager.CreateCharacter(transform.position);
+        }
     }
 }

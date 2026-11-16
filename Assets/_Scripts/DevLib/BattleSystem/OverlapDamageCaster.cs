@@ -12,16 +12,18 @@ namespace _Scripts.DevLib.BattleSystem
         [SerializeField] private CastType castType;
         [SerializeField] private float radius; //circle only
         [SerializeField] private Vector2 boxSize; //box only
+        [SerializeField] private Vector2 offSet;
         
         public void SetRadius(float value) => radius = value;
         public void SetBoxSize(Vector2 value) => boxSize = value;
         
         public override bool CastDamage(float damage, Vector2 direction, float kbForce)
         {
+            Vector3 pos = new Vector3(transform.position.x + offSet.x, transform.position.y + offSet.y, transform.position.z);
             int cnt = castType switch
             {
-                CastType.Circle => Physics2D.OverlapCircle(transform.position, radius, contactFilter, _hitResults),
-                CastType.Box => Physics2D.OverlapBox(transform.position, boxSize, 0, contactFilter, _hitResults),
+                CastType.Circle => Physics2D.OverlapCircle(pos, radius, contactFilter, _hitResults),
+                CastType.Box => Physics2D.OverlapBox(pos, boxSize, 0, contactFilter, _hitResults),
                 _ => 0
             };
 
@@ -48,11 +50,12 @@ namespace _Scripts.DevLib.BattleSystem
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
+            Vector3 pos = new Vector3(transform.position.x + offSet.x, transform.position.y + offSet.y, transform.position.z);
             Gizmos.color = Color.red;
             if(castType == CastType.Circle)
-                Gizmos.DrawWireSphere(transform.position, radius);
+                Gizmos.DrawWireSphere(pos, radius);
             else if(castType == CastType.Box)
-                Gizmos.DrawWireCube(transform.position, boxSize);
+                Gizmos.DrawWireCube(pos, boxSize);
         }
 #endif
     }

@@ -16,7 +16,7 @@ public static class VerifyDeathBloodBurst
     private const string DeathPath = "Assets/_Prefabs/Enemies/Effects/DeathBloodBurst.prefab";
     private const string MetalHitPath = "Assets/_Prefabs/Enemies/Effects/HitMetalFragments.prefab";
     private const string MetalBurstPath = "Assets/_Prefabs/Enemies/Effects/DeathMetalBurst.prefab";
-    private const string EnemyPath = "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
+    private const string EnemyPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
     private const string OriginalScene = "CTJ.DeathBloodBurst.OriginalScene";
     private static void Check(bool condition, string message) { if (!condition) throw new Exception(message); }
     private static EnemyBloodParticle[] Bloods() => Object.FindObjectsByType<EnemyBloodParticle>(FindObjectsSortMode.None);

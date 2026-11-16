@@ -1,3 +1,4 @@
+using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -11,6 +12,11 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float minimumDistance = 5f;
         [Tooltip("후퇴 목적지의 여유 거리. 최소 사거리 경계에서 반복 정지하는 것을 방지합니다.")]
         [SerializeField, Min(0.07f)] private float retreatPadding = 0.15f;
+        [Header("Cooldown Retreat")]
+        [Tooltip("이 스킬의 쿨타임 중에는 더 멀리 후퇴합니다. 쿨타임 이후에는 최소 거리를 확보한 뒤 추격합니다.")]
+        [SerializeField] private AbstractCoolTimeSkill retreatDuringCooldownOf;
+        [SerializeField, Min(0f)] private float cooldownRetreatDistance = 8f;
+        [SerializeField, Min(1f)] private float cooldownRetreatSpeedMultiplier = 1.25f;
 
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
@@ -47,6 +53,25 @@ namespace _Scripts.Agent.Enemies
             if (Mathf.Abs(offset.x) > 0.01f) _lastTargetSide = Mathf.Sign(offset.x);
             float distanceSquared = offset.sqrMagnitude;
             float minimum = MinimumDistance;
+            if (retreatDuringCooldownOf != null)
+            {
+                bool isCoolingDown = retreatDuringCooldownOf.RemainingCoolTime > 0f;
+                if (!isCoolingDown && distanceSquared >= minimum * minimum)
+                    return _movement.MoveTowards(target, speed);
+
+                // 목표 거리에서 멈추고, 추격 해제 경계까지 여유를 둡니다.
+                float desiredRadius = isCoolingDown ? cooldownRetreatDistance : minimum + Mathf.Max(0.07f, retreatPadding);
+                float radius = Mathf.Min(desiredRadius, Mathf.Max(0f, _enemy.ChaseReleaseRange - 0.75f));
+                if (distanceSquared >= radius * radius)
+                {
+                    _movement.Stop();
+                    return 0f;
+                }
+
+                float retreatSpeed = speed * Mathf.Max(1f, cooldownRetreatSpeedMultiplier);
+                return _movement.MoveOnGroundTowards(GetRetreatX(target.position.x, offset.y, radius), retreatSpeed, out _);
+            }
+
             float maximum = _enemy.AttackRange;
             if (distanceSquared >= minimum * minimum && distanceSquared <= maximum * maximum)
             {
@@ -61,8 +86,7 @@ namespace _Scripts.Agent.Enemies
             {
                 // 거리 판정은 스킬과 같은 2D 거리. 높이가 달라도 필요한 수평 거리만 확보합니다.
                 float radius = MinimumDistance + Mathf.Max(0.07f, retreatPadding);
-                float horizontalDistance = Mathf.Sqrt(Mathf.Max(0f, radius * radius - offset.y * offset.y));
-                destinationX = target.position.x - _lastTargetSide * horizontalDistance;
+                destinationX = GetRetreatX(target.position.x, offset.y, radius);
             }
 
             // 후퇴/접근 모두 기존 벽·낭떠러지 검사 사용. 막혔다고 플레이어 쪽으로 돌진하지 않습니다.
@@ -72,12 +96,18 @@ namespace _Scripts.Agent.Enemies
             return direction;
         }
 
+        private float GetRetreatX(float targetX, float heightDifference, float radius) =>
+            targetX - _lastTargetSide * Mathf.Sqrt(Mathf.Max(0f, radius * radius - heightDifference * heightDifference));
+
         private void OnDrawGizmosSelected()
         {
             EnemyBase enemy = _enemy != null ? _enemy : GetComponentInParent<EnemyBase>();
             if (enemy == null) return;
             Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(enemy.transform.position, MinimumDistance);
+            float distance = retreatDuringCooldownOf != null
+                ? Mathf.Min(cooldownRetreatDistance, Mathf.Max(0f, enemy.ChaseReleaseRange - 0.75f))
+                : MinimumDistance;
+            Gizmos.DrawWireSphere(enemy.transform.position, distance);
         }
     }
 }

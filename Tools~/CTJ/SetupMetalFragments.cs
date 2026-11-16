@@ -8,8 +8,8 @@ public static class SetupMetalFragments
 {
     private const string BloodPath = "Assets/_Prefabs/Enemies/Effects/HitBloodSpray.prefab";
     private const string MetalPath = "Assets/_Prefabs/Enemies/Effects/HitMetalFragments.prefab";
-    private const string RobotPath = "Assets/_Prefabs/Enemies/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab";
-    private const string ArcherPath = "Assets/_Prefabs/Enemies/Enemy/Enemy04/Enemy04_MechanicArcher.prefab";
+    private const string RobotPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy02/Enemy02_ProjectileRobot.prefab";
+    private const string ArcherPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy04/Enemy04_MechanicArcher.prefab";
     private const string MeshFolder = "Assets/_Graphics/Effects/MetalMesh";
 
     public static object Create()

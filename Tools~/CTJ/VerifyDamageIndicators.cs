@@ -20,7 +20,7 @@ using Object = UnityEngine.Object;
 public static class VerifyDamageIndicators
 {
     private const string Effects = "Assets/_Prefabs/Enemies/Effects/";
-    private const string EnemyPath = "Assets/_Prefabs/Enemies/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
+    private const string EnemyPath = "Assets/_Prefabs/Enemies/Legacy/Enemy/Enemy01/Enemy01_TwistedArm.prefab";
     private const string OriginalScene = "CTJ.DamageIndicators.OriginalScene";
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private static void Check(bool success, string message) { if (!success) throw new Exception(message); }

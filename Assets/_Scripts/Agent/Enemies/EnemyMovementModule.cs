@@ -190,6 +190,28 @@ namespace _Scripts.Agent.Enemies
             return !wall && HasFloorAhead(direction, speed);
         }
 
+        internal float GetGroundTravelDistance(float direction, float distance)
+        {
+            if (!IsGrounded || distance <= 0f) return 0f;
+            Bounds bounds = bodyCollider.bounds;
+            Vector2 travelDirection = Vector2.right * direction;
+            if (CastTerrain(bounds.center, ProbeSize, travelDirection, distance + Skin, out RaycastHit2D hit,
+                    minimumOppositionX: 0.5f))
+                distance = Mathf.Min(distance, Mathf.Max(0f, hit.distance - Skin));
+
+            const float sampleDistance = 0.12f;
+            for (float travelled = 0f; travelled < distance;)
+            {
+                float next = Mathf.Min(distance, travelled + sampleDistance);
+                Vector2 foot = new Vector2(bounds.center.x + direction * (bounds.extents.x + next), bounds.min.y + Skin);
+                if (!CastTerrain(foot, Vector2.one * Skin, Vector2.down,
+                        groundCheckDistance + Skin * 2f, out _, 0.5f))
+                    return travelled;
+                travelled = next;
+            }
+            return distance;
+        }
+
         private bool HasFloorAhead(float direction, float speed)
         {
             Bounds bounds = bodyCollider.bounds;
@@ -290,7 +312,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         private bool CastTerrain(Vector2 origin, Vector2 size, Vector2 direction, float distance,
-            out RaycastHit2D nearest, float minimumNormalY = -1f)
+            out RaycastHit2D nearest, float minimumNormalY = -1f, float minimumOppositionX = -1f)
         {
             nearest = default;
             float nearestDistance = float.PositiveInfinity;
@@ -298,7 +320,8 @@ namespace _Scripts.Agent.Enemies
             foreach (RaycastHit2D hit in _hits)
             {
                 if (hit.collider == null || hit.rigidbody == _body ||
-                    hit.collider.GetComponentInParent<Agent>() != null || hit.normal.y < minimumNormalY)
+                    hit.collider.GetComponentInParent<Agent>() != null || hit.normal.y < minimumNormalY ||
+                    -hit.normal.x * direction.x < minimumOppositionX)
                     continue;
                 if (hit.distance < nearestDistance)
                 {

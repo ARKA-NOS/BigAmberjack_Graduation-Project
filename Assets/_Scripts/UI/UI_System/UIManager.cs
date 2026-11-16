@@ -9,26 +9,35 @@ using UnityEngine;
 
 namespace _Scripts.UI.UI_System
 {
-    public class UIManager : AbstractManager, IUITicker
+    public class UIManager : AbstractManager, IUITicker, IUIWindowState
     {
         [SerializeField] private PlayerInputSo inputSo;
-        
+
         public override void Initialize()
         {
             EventBus<UIOpenCloseEvent>.Subscribe(OpenClose);
             ServiceLocator.Register<IUITicker>(this);
+            ServiceLocator.Register<IUIWindowState>(this);
         }
-        
+
         public override void GameEnd()
         {
             base.GameEnd();
             EventBus<UIOpenCloseEvent>.UnSubscribe(OpenClose);
             _tickables.Clear();
             ServiceLocator.Register<IUITicker>(new NullUITicker());
+            ServiceLocator.Register<IUIWindowState>(new NullUIWindowState());
         }
-        
+
         private IWindow _currentWindow;
-        
+
+        #region Window State
+
+        public bool HasOpenWindow => _currentWindow != null;
+        public int LastCloseFrame { get; private set; } = -1;
+
+        #endregion
+
         private void OpenClose(UIOpenCloseEvent evt)
         {
             IWindow prevWindow = _currentWindow;
@@ -37,6 +46,7 @@ namespace _Scripts.UI.UI_System
                 inputSo.SetPlayerInputActive(true);
                 _currentWindow.Close();
                 _currentWindow = null;
+                LastCloseFrame = Time.frameCount;
             }
             
             if (evt.Window == null || evt.Window == prevWindow) return;

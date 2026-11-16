@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
 namespace _Scripts.Agent.Enemies.Skills
@@ -10,6 +11,8 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private BoxCollider2D attackHitbox;
         [SerializeField] private string preparationStateName = "Base Layer.AttackPreparation";
         [SerializeField] private string attackStateName = "Base Layer.Attack";
+        [Tooltip("타격 판정과 공격 애니메이션이 모두 끝난 뒤 재생할 후딜 상태입니다.")]
+        [SerializeField] private string recoveryStateName;
         [SerializeField] private string idleStateName = "Base Layer.Idle";
         [SerializeField, Min(0f)] private float damage = 12f;
         [SerializeField, Min(0.01f)] private float activeDuration = 0.12f;
@@ -18,15 +21,40 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private bool lockFacingDuringPreparation;
         [Tooltip("준비가 아닌 타격 시점부터 쿨타임을 계산합니다. 빗나가면 공격이 발동한 시점이 기준입니다.")]
         [SerializeField] private bool cooldownFromStrike;
+        [Tooltip("머리 위 판정입니다. 대상의 발 높이와 수평 위치로 사용 가능 여부를 확인합니다.")]
+        [SerializeField] private bool attackUpward;
+        [SerializeField, Min(0f)] private float minimumHeightForUpwardAttack = 0.55f;
+        [Tooltip("공격 준비 후 지형 뒤에 숨은 대상에게 피해를 주지 않습니다.")]
+        [SerializeField] private bool checkTerrainAtHit;
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
+        private EnemyMovementModule _movement;
         private float _activeUntil;
         private float _recoveryUntil;
         private Vector2 _direction;
         private bool _hitApplied;
 
+        public override void InitSkill(ModuleOwner owner)
+        {
+            base.InitSkill(owner);
+            _movement = owner.GetModule<EnemyMovementModule>();
+        }
+
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() &&
             attackHitbox != null && attackHitbox.enabled && attackHitbox.isTrigger &&
-            attackHitbox.gameObject.activeInHierarchy;
+            attackHitbox.gameObject.activeInHierarchy &&
+            (!attackUpward || IsInUpwardRange(Enemy.Target));
+
+        private bool IsInUpwardRange(Transform target)
+        {
+            if (_movement == null) return false;
+            Bounds bounds = attackHitbox.bounds;
+            float height = _movement.GetTargetHeightDifference(target);
+            return height >= minimumHeightForUpwardAttack &&
+                Enemy.transform.position.y + height <= bounds.max.y &&
+                target.position.x >= bounds.min.x && target.position.x <= bounds.max.x;
+        }
+
+        private Vector2 StrikeDirection => attackUpward ? Vector2.up : Vector2.right * Enemy.FacingDirection;
 
         protected override void OnUseSkill()
         {
@@ -41,9 +69,14 @@ namespace _Scripts.Agent.Enemies.Skills
             if (lockFacingDuringPreparation)
             {
                 Enemy.FaceTarget();
-                _direction = Vector2.right * Enemy.FacingDirection;
+                _direction = StrikeDirection;
             }
             PlayAnimation(preparationStateName);
+        }
+
+        protected override void UpdateTelegraph()
+        {
+            if (attackHitbox != null) Telegraph.SetBox(attackHitbox);
         }
 
         public override void UpdateSkill()
@@ -51,9 +84,32 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!lockFacingDuringPreparation && IsPreparing && CanContinue) Enemy.FaceTarget();
             base.UpdateSkill();
             if (!IsUsing || !HasReleased) return;
-            if (Time.time < _activeUntil) TryHit();
-            else if (!IsRecovering) BeginRecovery();
+            if (Time.time < _activeUntil)
+            {
+                TryHit();
+                return;
+            }
+            if (!IsRecovering)
+            {
+                if (IsWaitingForStrikeAnimation()) return;
+                BeginRecovery();
+                if (!string.IsNullOrEmpty(recoveryStateName))
+                {
+                    _recoveryUntil = Time.time + Mathf.Max(0f, recoveryTime);
+                    PlayAnimation(recoveryStateName);
+                }
+            }
             if (Time.time >= _recoveryUntil) EndSkill();
+        }
+
+        private bool IsWaitingForStrikeAnimation()
+        {
+            if (string.IsNullOrEmpty(recoveryStateName) || attackAnimator == null ||
+                !attackAnimator.isActiveAndEnabled || attackAnimator.runtimeAnimatorController == null)
+                return false;
+
+            AnimatorStateInfo state = attackAnimator.GetCurrentAnimatorStateInfo(0);
+            return state.IsName(attackStateName) && state.normalizedTime < 1f;
         }
 
         protected override void OnReleaseAttack()
@@ -61,7 +117,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!lockFacingDuringPreparation)
             {
                 Enemy.FaceTarget();
-                _direction = Vector2.right * Enemy.FacingDirection;
+                _direction = StrikeDirection;
             }
             if (cooldownFromStrike) CoolTimeStartTime = Time.time;
             _activeUntil = Time.time + Mathf.Max(0.01f, activeDuration);
@@ -74,15 +130,17 @@ namespace _Scripts.Agent.Enemies.Skills
         private void TryHit()
         {
             if (_hitApplied || attackHitbox == null || !attackHitbox.enabled || CastTarget == null) return;
-            if (lockFacingDuringPreparation &&
+            if (!attackUpward && lockFacingDuringPreparation &&
                 Vector2.Dot((Vector2)(CastTarget.position - Enemy.transform.position), _direction) <= 0f) return;
             Physics2D.SyncTransforms();
+            if (attackUpward && !IsInUpwardRange(CastTarget)) return;
             attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
-                if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
-                        hit.ClosestPoint(attackHitbox.bounds.center), _direction)) continue;
+                Vector2 point = hit.ClosestPoint(attackHitbox.bounds.center);
+                if (checkTerrainAtHit && (_movement == null || !_movement.HasClearPath(_movement.BodyCenter, point))) continue;
+                if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, _direction)) continue;
                 _hitApplied = true;
                 if (cooldownFromStrike) CoolTimeStartTime = Time.time;
                 break;

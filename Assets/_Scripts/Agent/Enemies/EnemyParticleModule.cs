@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace _Scripts.Agent.Enemies
 {
@@ -64,7 +63,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.01f)] private float deathBurstScale = 1f;
         [Tooltip("적 한 마리의 동시 효과 수. 초과하면 가장 오래된 효과부터 정리합니다.")]
         [SerializeField, Min(1)] private int maxConcurrentEffects = 12;
-        [Tooltip("잘못된 루프/긴 수명 프리팹의 정리 상한(초). 일반 효과는 파티클이 끝나면 먼저 제거됩니다.")]
+        [Tooltip("잘못된 루프/긴 수명 프리팹의 정리 상한(초). 일반 효과는 파티클이 끝나면 먼저 풀로 돌아갑니다.")]
         [SerializeField, Min(0.1f)] private float maxEffectLifetime = 5f;
 
         private EnemyBase _enemy;
@@ -154,25 +153,19 @@ namespace _Scripts.Agent.Enemies
 
         private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale)
         {
-            _activeEffects.RemoveAll(effect => effect == null);
             while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
             {
                 EnemyHitParticle oldest = _activeEffects[0];
-                if (oldest != null) { oldest.gameObject.SetActive(false); Destroy(oldest.gameObject); }
                 _activeEffects.RemoveAt(0);
+                if (oldest != null) oldest.Release();
             }
 
-            ParticleSystem particle = Instantiate(prefab, position, rotation);
-            // 적이 사라져도 흔적은 남기고, 씬을 벗어나면 함께 정리합니다.
-            SceneManager.MoveGameObjectToScene(particle.gameObject, gameObject.scene);
-            particle.transform.localScale *= Mathf.Max(0.01f, effectScale) * scale;
-            particle.gameObject.SetActive(true);
-
-            EnemyHitParticle lifetime = particle.GetComponent<EnemyHitParticle>();
-            if (lifetime == null) lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
-            lifetime.Play(particle, maxEffectLifetime);
-            _activeEffects.Add(lifetime);
+            EnemyHitParticle effect = EnemyHitParticle.Spawn(prefab, position, rotation, gameObject.scene,
+                Mathf.Max(0.01f, effectScale) * scale, maxEffectLifetime, this);
+            if (effect != null) _activeEffects.Add(effect);
         }
+
+        internal void RemoveActiveEffect(EnemyHitParticle effect) => _activeEffects.Remove(effect);
 
         private Vector3 ResolveHitPosition(Vector2 point, Vector3 origin)
         {

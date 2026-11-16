@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -66,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 28
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -90,7 +90,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,12 +131,12 @@ TextureImporter:
       name: transition back_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 34
-        width: 57
-        height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 35
+        y: 31
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -153,12 +153,12 @@ TextureImporter:
       name: transition back_1
       rect:
         serializedVersion: 2
-        x: 164
-        y: 36
-        width: 57
-        height: 40
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 163
+        y: 31
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -175,12 +175,12 @@ TextureImporter:
       name: transition back_2
       rect:
         serializedVersion: 2
-        x: 292
-        y: 32
-        width: 57
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 291
+        y: 31
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -197,12 +197,12 @@ TextureImporter:
       name: transition back_3
       rect:
         serializedVersion: 2
-        x: 420
-        y: 33
-        width: 57
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 419
+        y: 31
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -219,12 +219,12 @@ TextureImporter:
       name: transition back_4
       rect:
         serializedVersion: 2
-        x: 548
+        x: 547
         y: 31
-        width: 57
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -241,12 +241,12 @@ TextureImporter:
       name: transition back_5
       rect:
         serializedVersion: 2
-        x: 676
-        y: 32
-        width: 57
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 675
+        y: 31
+        width: 58
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41304347}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -263,7 +263,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e596d087d82d93d4491584bc19647edb
     internalID: 0
     vertices: []
     indices: 

@@ -36,6 +36,7 @@ namespace _Scripts.Agent.Enemies
 
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
+        private EnemyFlightModule _flight;
         private EnemyPatrolModule _patrol;
         private EnemyTurnDelayModule _turnDelay;
         private EnemyKeepDistanceModule _keepDistance;
@@ -72,12 +73,14 @@ namespace _Scripts.Agent.Enemies
         protected override void Awake()
         {
             // 이동 모듈은 자식에 둘 수 있습니다. 구형 프리팹에 없는 경우에만 수집 전에 보완합니다.
-            if (UsesGroundMovement && GetComponentInChildren<EnemyMovementModule>() == null)
+            if (UsesGroundMovement && GetComponentInChildren<EnemyFlightModule>() == null &&
+                GetComponentInChildren<EnemyMovementModule>() == null)
                 gameObject.AddComponent<EnemyMovementModule>();
             base.Awake();
 
             _rigidbody = GetComponent<Rigidbody2D>();
             _movement = GetModule<EnemyMovementModule>();
+            _flight = GetModule<EnemyFlightModule>();
             _patrol = GetModule<EnemyPatrolModule>();
             _turnDelay = GetModule<EnemyTurnDelayModule>();
             _keepDistance = GetModule<EnemyKeepDistanceModule>();
@@ -184,6 +187,11 @@ namespace _Scripts.Agent.Enemies
 
         internal void MoveTowardsTarget()
         {
+            if (_flight != null && _flight.isActiveAndEnabled && target != null)
+            {
+                OnMoveDirectionChanged(_flight.Chase(target, moveSpeed));
+                return;
+            }
             if (IsDead || target == null || _movement == null)
             {
                 StopHorizontalMovement();
@@ -205,7 +213,9 @@ namespace _Scripts.Agent.Enemies
 
         internal void StopHorizontalMovement()
         {
-            if (_movement != null)
+            if (_flight != null)
+                _flight.Stop();
+            else if (_movement != null)
                 _movement.Stop();
             else
                 _rigidbody.linearVelocityX = 0f;
@@ -215,11 +225,17 @@ namespace _Scripts.Agent.Enemies
         {
             _turnDelay?.ResetTurn();
             StopHorizontalMovement();
-            if (_patrol != null) _patrol.BeginPatrol();
+            if (_flight != null) _flight.BeginPatrol();
+            else if (_patrol != null) _patrol.BeginPatrol();
         }
 
         internal void TickPatrol()
         {
+            if (_flight != null && _flight.isActiveAndEnabled)
+            {
+                OnMoveDirectionChanged(_flight.Patrol(moveSpeed));
+                return;
+            }
             if (_patrol == null || !_patrol.isActiveAndEnabled)
             {
                 StopHorizontalMovement();

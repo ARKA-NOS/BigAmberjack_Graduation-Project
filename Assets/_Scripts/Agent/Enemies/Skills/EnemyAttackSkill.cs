@@ -62,6 +62,11 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             base.OnUseSkill();
             CastTarget = Enemy.Target;
+            BeginPreparation();
+        }
+
+        protected void BeginPreparation()
+        {
             HasReleased = false;
             _isRecovering = false;
             if (Telegraph == null && telegraphPrefab != null)
@@ -134,6 +139,13 @@ namespace _Scripts.Agent.Enemies.Skills
         protected void BeginRecovery()
         {
             if (IsUsing && HasReleased) _isRecovering = true;
+        }
+
+        protected AttackTelegraphUI TakeTelegraph()
+        {
+            AttackTelegraphUI telegraph = Telegraph;
+            Telegraph = null;
+            return telegraph;
         }
 
         private void ReleaseAttack()

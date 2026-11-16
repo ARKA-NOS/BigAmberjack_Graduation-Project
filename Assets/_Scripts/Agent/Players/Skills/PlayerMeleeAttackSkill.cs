@@ -145,7 +145,7 @@ namespace _Scripts.Agent.Players.Skills
                        && _groundChecker.FixedIsGround;
             if (_isLunge)
             {
-                _movement.MoveXLock(true);
+                //_movement.MoveXLock(true);
                 _attackMoveCurveArea = IntegrateCurve(attackMoveCurve, 0f, 1f, CurveAreaSampleCount);
                 _prevMoveNormal = 0f;
             }
@@ -169,8 +169,8 @@ namespace _Scripts.Agent.Players.Skills
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
             _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
-            GroundStop();
-            AttackMove();
+            //GroundStop();
+            //AttackMove();
             base.UpdateSkill();
             SetAnimationSpeed();
         }
@@ -193,7 +193,7 @@ namespace _Scripts.Agent.Players.Skills
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-            _movement.MoveXLock(false);
+            //_movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
         }

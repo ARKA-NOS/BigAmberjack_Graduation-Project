@@ -1,7 +1,7 @@
 ﻿using _Scripts.Agent.Players;
-using _Scripts.Agent.Players.CharacterSystem;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.UI.UI_System;
+using _Scripts.Upgrade.SO;
 
 namespace _Scripts.Interactable.Upgrade
 {
@@ -9,7 +9,7 @@ namespace _Scripts.Interactable.Upgrade
     {
         public override void Interact(ModuleOwner owner)
         {
-            CharacterData data = (owner as PlayerController)?.CharacterData;
+            UpgradeTreeSO data = (owner as PlayerController)?.CharacterData.TreeSo;
             UIManagerEvents.OpenCloseWindow(TargetWindow, data);
         }
     }

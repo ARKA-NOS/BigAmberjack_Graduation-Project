@@ -2810,8 +2810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Home.Upgrade.UpgradeBuilding
   interactUIOffset: {x: 0, y: 0}
-  testUI: {fileID: 1776582384}
-  treeData: {fileID: 11400000, guid: 4416dccf291ea0f40b266619b5028942, type: 2}
+  <TargetWindow>k__BackingField: {fileID: 1776582384}
 --- !u!1 &1129009100
 GameObject:
   m_ObjectHideFlags: 0
@@ -3246,6 +3245,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8628559549933630224, guid: 5de4a43701047a54a930fed46f6b7462, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1903797500}
+    - targetCorrespondingSourceObject: {fileID: 8628559549933630224, guid: 5de4a43701047a54a930fed46f6b7462, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1903797504}
   m_SourcePrefab: {fileID: 100100000, guid: 5de4a43701047a54a930fed46f6b7462, type: 3}
 --- !u!1 &1903797499 stripped
 GameObject:
@@ -3265,7 +3267,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.MapMoveSystem.MoveSceneObject
   interactUIOffset: {x: 0, y: 3}
-  targetScene: {fileID: 11400000, guid: 6397f094fd20a024896180880d1841d8, type: 2}
+  targetScene: {fileID: 11400000, guid: 5f1ccc5dc1bb3cc4e82884a74c4e2876, type: 2}
+--- !u!58 &1903797504
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903797499}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 1
 --- !u!1 &1907010407
 GameObject:
   m_ObjectHideFlags: 0
@@ -3280,7 +3318,7 @@ GameObject:
   - component: {fileID: 1907010409}
   - component: {fileID: 1907010408}
   m_Layer: 0
-  m_Name: Main Camera (1)
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3430,7 +3468,7 @@ Transform:
   m_GameObject: {fileID: 1907010407}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10, y: 10, z: -10}
+  m_LocalPosition: {x: 8, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

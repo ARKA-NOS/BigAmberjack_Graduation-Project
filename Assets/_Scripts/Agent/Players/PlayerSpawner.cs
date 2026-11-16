@@ -7,7 +7,7 @@ namespace _Scripts.Agent.Players
 {
     public class PlayerSpawner : MonoBehaviour
     {
-        private void Awake()
+        private void Start()
         {
             IPlayerPack playerPack = ServiceLocator.Get<IPlayerPack>();
 

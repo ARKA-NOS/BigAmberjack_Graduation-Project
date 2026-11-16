@@ -26,13 +26,13 @@ namespace _Scripts._Core.DataSystem
                 FDebug.LogError($"[GoogleSheet] 구글 시트 주소가 아닙니다: {url}", this);
                 return string.Empty;
             }
-
+            
             if (!GoogleSheetDownloader.TryDownloadCsv(csvUrl, out string csv, out string error))
             {
                 FDebug.LogError($"[GoogleSheet] 시트를 내려받지 못했습니다: {error}\n{csvUrl}", this);
                 return string.Empty;
             }
-
+            
             return csv;
         }
         
@@ -42,7 +42,7 @@ namespace _Scripts._Core.DataSystem
         {
             StringBuilder log = new();
             int rowCount = 0;
-
+            
             foreach (RowData row in GetSheetData())
             {
                 rowCount++;
@@ -50,8 +50,8 @@ namespace _Scripts._Core.DataSystem
                     log.Append($"{cell.Key}={cell.Value}  ");
                 log.AppendLine();
             }
-
-            Debug.Log($"[GoogleSheet] {name}: {rowCount}행\n{log}", this);
+            
+            FDebug.Log($"[GoogleSheet] {name}: {rowCount}행\n{log}", this);
         }
 #endif
     }

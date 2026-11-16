@@ -28,30 +28,30 @@ namespace _Scripts.Agent.Players.CharacterSystem
             currentCharacter = LoadCurrentCharacter();
             ServiceLocator.Register<ICharacterManager>(this);
         }
-
+        
         public override void GameEnd()
         {
             UnbindUpgradeTree();
             ServiceLocator.Register<ICharacterManager>(new NullCharacterManager());
             SaveCurrentCharacter();
         }
-
+        
         private CharacterData LoadCurrentCharacter()
         {
             string loadData = SaveSystem.Load(CharacterSaveName,
                 new CharacterSaveData(DefaultValue)).saveData;
-
+            
             CharacterData data = characterList.FirstOrDefault(x => x.name == loadData, defaultCharacter);
             
             return data;
         }
-
+        
         private void SaveCurrentCharacter()
         {
             SaveSystem.Save(CharacterSaveName,
                 new CharacterSaveData(currentCharacter?.name ?? DefaultValue));
         }
-
+        
         public void CreateCharacter(Vector2 pos)
         {
             if (currentCharacter == null)
@@ -60,17 +60,17 @@ namespace _Scripts.Agent.Players.CharacterSystem
                 return;
             }
             GameObject go = Instantiate(currentCharacter.Prefab);
-
+            
             PlayerController owner = go.GetComponentInChildren<PlayerController>();
-
+            
             if (owner == null)
             {
                 FDebug.LogError("[CharacterManager] PlayerController is not found");
                 return;
             }
-
+            
             owner.CharacterData = currentCharacter;
-
+            
             if (currentCharacter.TreeSo == null)
             {
                 FDebug.LogError("[CharacterManager] currentCharacter.TreeSo is null");
@@ -88,10 +88,10 @@ namespace _Scripts.Agent.Players.CharacterSystem
             {
                 FDebug.LogWarning("[CharacterManager] currentCharacter UpgradeTree is not found");
             }
-
+            
             owner.transform.position = pos;
         }
-
+        
         private void BindUpgradeTree(UpgradeTree tree, ModuleOwner owner)
         {
             UnbindUpgradeTree();
@@ -99,7 +99,7 @@ namespace _Scripts.Agent.Players.CharacterSystem
             _activeOwner = owner;
             _activeTree.OnUpgradeChanged += HandleUpgradeChanged;
         }
-
+        
         private void UnbindUpgradeTree()
         {
             if (_activeTree != null)
@@ -107,7 +107,7 @@ namespace _Scripts.Agent.Players.CharacterSystem
             _activeTree = null;
             _activeOwner = null;
         }
-
+        
         private void HandleUpgradeChanged(UpgradeNodeSO node)
         {
             if (_activeOwner == null)
@@ -115,12 +115,12 @@ namespace _Scripts.Agent.Players.CharacterSystem
                 UnbindUpgradeTree();
                 return;
             }
-
+            
             if (node == null || node.UpgradeData == null) return;
             if (!_activeTree.IsUpgrade(node)) return;
-
+            
             node.UpgradeData.AgentUpgrade(_activeOwner);
         }
-
+        
     }
 }

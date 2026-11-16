@@ -43,7 +43,6 @@ namespace _Scripts.Settings
 
         public override void GameEnd()
         {
-            base.GameEnd();
             Save();
             ServiceLocator.Register<ISettingsManager>(new NullSettingsManager());
         }

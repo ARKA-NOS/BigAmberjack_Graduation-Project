@@ -7,6 +7,6 @@ namespace _Scripts._Core._Manager
         public abstract void Initialize();
         public virtual void AfterInitialize() {}
 
-        public virtual void GameEnd() {}
+        public abstract void GameEnd();
     }
 }

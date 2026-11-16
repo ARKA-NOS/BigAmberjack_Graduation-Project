@@ -31,7 +31,6 @@ namespace _Scripts.Agent.Players.CharacterSystem
 
         public override void GameEnd()
         {
-            base.GameEnd();
             UnbindUpgradeTree();
             ServiceLocator.Register<ICharacterManager>(new NullCharacterManager());
             SaveCurrentCharacter();

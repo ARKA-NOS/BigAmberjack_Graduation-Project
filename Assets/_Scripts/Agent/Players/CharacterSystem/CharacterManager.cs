@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using _Scripts._Core;
 using _Scripts._Core._Debug;
 using _Scripts._Core._Manager;
 using _Scripts._Core._SaveSystem;
@@ -38,11 +38,10 @@ namespace _Scripts.Agent.Players.CharacterSystem
 
         private CharacterData LoadCurrentCharacter()
         {
-            CharacterSaveData loadData = SaveSystem.Load(CharacterSaveName,
-                new CharacterSaveData(DefaultValue));
-            
-            CharacterData data = characterList.FirstOrDefault(x => x.name == loadData.saveData)
-                                 ?? defaultCharacter;
+            string loadData = SaveSystem.Load(CharacterSaveName,
+                new CharacterSaveData(DefaultValue)).saveData;
+
+            CharacterData data = characterList.FirstOrDefault(x => x.name == loadData, defaultCharacter);
             
             return data;
         }

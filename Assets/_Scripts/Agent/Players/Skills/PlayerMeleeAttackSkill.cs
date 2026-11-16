@@ -1,6 +1,5 @@
 ﻿using _Scripts._Core._Debug;
 using _Scripts.Agent.FSM;
-using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.Agent.SkillSystem.NormalSkill;
@@ -8,8 +7,6 @@ using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.AnimatorSystem;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
-using Cysharp.Threading.Tasks;
-using System.Threading;
 using UnityEngine;
 
 namespace _Scripts.Agent.Players.Skills
@@ -23,7 +20,6 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private float maxAnimationSpeedScale = 2f;
         [SerializeField] private StateSo[] comboStates;
         [SerializeField] private int animatorLayer = 0;
         
@@ -37,8 +33,7 @@ namespace _Scripts.Agent.Players.Skills
 
         [Header("Combotime")]
         [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
-        [SerializeField] private float moveCombotime = 0.6f; // 무빙콤보가 이어지는 시간
-        [SerializeField] private float moveFreezeTime = 0.4f;
+        [SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
 
         private const int CurveAreaSampleCount = 100;
         private const int CurveStepSampleCount = 10;
@@ -67,16 +62,9 @@ namespace _Scripts.Agent.Players.Skills
 
         private float _moveAttackLastTime;
 
-        private bool moveComboWindowExhaust => Time.time >= (_moveAttackLastTime + moveCombotime);
         private bool _isLunge;
-        private CancellationTokenSource _moveLockCts;
-        private INewHealthModule _healthModule;
-        private bool _isEndFreeze;
-        private bool _isRecovery;
-        private int _freezeStateHash;
 
         public int ComboCount { get; private set; } = 0;
-
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -103,12 +91,6 @@ namespace _Scripts.Agent.Players.Skills
 
             FDebug.Assert(owner.TryGetModule(out _groundChecker),
                 $"[MeleeAttackSkill : {owner.name}] IGroundChecker is not found");
-
-            FDebug.Assert(owner.TryGetModule(out _healthModule),
-                $"[MeleeAttackSkill : {owner.name}] INewHealthModule is not found");
-
-            _healthModule.OnHealthChanged += HandleHealthChanged;
-            _healthModule.OnDead += ReleaseEndFreeze;
 
             damageStat = statModule.GetStat(physicalDamage);
             attackSpeedStat = statModule.GetStat(attackSpeed);
@@ -137,50 +119,15 @@ namespace _Scripts.Agent.Players.Skills
             Vector3 right = _renderer.GetRight();
             if (right.x < 0) currentPos.x *= -1;
             damageCaster.transform.position = Owner.transform.position + currentPos;
-
-            if (_isEndFreeze || _isRecovery)
-                UpdateEndHold();
-        }
-
-        private void UpdateEndHold()
-        {
-            AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(animatorLayer);
-            if (info.shortNameHash != _freezeStateHash)
-            {
-                ReleaseEndFreeze();
-                _movement.MoveXLock(false);
-                return;
-            }
-
-            if (!_isRecovery || info.length <= 0f) return;
-
-            float nextNormalizedTime = info.normalizedTime + Time.deltaTime * _animator.speed / info.length;
-            if (nextNormalizedTime < 1f) return;
-
-            ReleaseEndFreeze();
-            SkillEndSetting();
-        }
-
-        private void OnDestroy()
-        {
-            if (_healthModule == null) return;
-            _healthModule.OnHealthChanged -= HandleHealthChanged;
-            _healthModule.OnDead -= ReleaseEndFreeze;
-        }
-
-        private void HandleHealthChanged(float newValue, float delta, float max)
-        {
-            if (delta < 0f) ReleaseEndFreeze();
         }
 
 
         protected override void OnUseSkill()
         {
-            float readyTime = CoolTimeStartTime + CoolTime;
             base.OnUseSkill();
-            ReleaseEndFreeze();
             bool comboCounterOver = ComboCount >= comboStates.Length;
-            bool comboWindowExhaust = Time.time >= readyTime + combotime;
+            bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
             if (comboCounterOver || comboWindowExhaust)
             {
                 ComboCount = 0;
@@ -194,13 +141,11 @@ namespace _Scripts.Agent.Players.Skills
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
-            float inputX = _playerController.PlayerInput.MovementKey.x;
-            if (Mathf.Abs(inputX) > 0.1f)
-                _renderer.SetFlip(inputX);
-            _isLunge = Mathf.Abs(inputX) > 0.1f && _groundChecker.FixedIsGround;
+            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f
+                       && _groundChecker.FixedIsGround;
             if (_isLunge)
             {
-                _movement.MoveXLock(true);
+                //_movement.MoveXLock(true);
                 _attackMoveCurveArea = IntegrateCurve(attackMoveCurve, 0f, 1f, CurveAreaSampleCount);
                 _prevMoveNormal = 0f;
             }
@@ -224,8 +169,8 @@ namespace _Scripts.Agent.Players.Skills
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
             _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
-            GroundStop();
-            AttackMove();
+            //GroundStop();
+            //AttackMove();
             base.UpdateSkill();
             SetAnimationSpeed();
         }
@@ -233,79 +178,30 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
-            _freezeStateHash = comboStates[ComboCount].stateParam.HashValue;
             ComboCount++;
-            UnsubscribeTrigger();
-            if (_isLunge)
-            {
-                _moveAttackLastTime = Time.time;
-                MoveLockTime().Forget();
-            }
-            else
-            {
-                _isRecovery = true;
-            }
+            _moveAttackLastTime = Time.time;
+            SkillEndSetting();
         }
 
         protected override void OnStopSkill()
         {
             base.OnStopSkill();
-            UnsubscribeTrigger();
             SkillEndSetting();
         }
-
-        private void UnsubscribeTrigger()
+        
+        private void SkillEndSetting()
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-        }
-
-        private void SkillEndSetting()
-        {
-            _movement.MoveXLock(false);
+            //_movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
-        }
-
-        private void ReleaseEndFreeze()
-        {
-            CancelMoveLockTime();
-            if (!_isEndFreeze && !_isRecovery) return;
-            _isEndFreeze = false;
-            _isRecovery = false;
-            _animator.speed = _prevSpeed;
         }
 
         private void GroundStop()
         {
             if(_groundChecker.FixedIsGround)
                 _movement.MoveXLock(true);
-        }
-
-        private async UniTask MoveLockTime()
-        {
-            CancelMoveLockTime();
-            _moveLockCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-            CancellationToken token = _moveLockCts.Token;
-
-            _isEndFreeze = true;
-            _animator.speed = 0f;
-
-            float remainTime = _moveAttackLastTime + moveFreezeTime - Time.time;
-            bool isCanceled = await UniTask.Delay(System.TimeSpan.FromSeconds(remainTime), cancellationToken: token)
-                .SuppressCancellationThrow();
-            if (isCanceled) return;
-
-            ReleaseEndFreeze();
-            SkillEndSetting();
-        }
-
-        private void CancelMoveLockTime()
-        {
-            if (_moveLockCts == null) return;
-            _moveLockCts.Cancel();
-            _moveLockCts.Dispose();
-            _moveLockCts = null;
         }
 
         private void SetAnimationSpeed()
@@ -315,8 +211,7 @@ namespace _Scripts.Agent.Players.Skills
 
         private float GetAnimationSpeed(float normalizedTime)
         {
-            float attackSpeedScale = Mathf.Min(attackSpeedStat.Value, maxAnimationSpeedScale);
-            return defaultAnimationSpeed * animationSpeedCurve.Evaluate(normalizedTime) * attackSpeedScale;
+            return defaultAnimationSpeed * animationSpeedCurve.Evaluate(normalizedTime) * attackSpeedStat.Value;
         }
         
         private void AttackMove()

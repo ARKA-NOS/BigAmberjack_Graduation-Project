@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using _Scripts.UI.HitFeedback;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace _Scripts.Agent.Enemies
 {
@@ -120,14 +119,8 @@ namespace _Scripts.Agent.Enemies
         private void ApplyImpact(Vector2 center)
         {
             if (impactEffect != null)
-            {
-                ParticleSystem impact = Instantiate(impactEffect, center, Quaternion.Euler(0f, 0f, impactEffectAngle));
-                impact.transform.localScale *= impactEffectScale;
-                SceneManager.MoveGameObjectToScene(impact.gameObject, gameObject.scene);
-                if (!impact.TryGetComponent(out EnemyHitParticle lifetime))
-                    lifetime = impact.gameObject.AddComponent<EnemyHitParticle>();
-                lifetime.Play(impact, 5f);
-            }
+                EnemyHitParticle.Spawn(impactEffect, center, Quaternion.Euler(0f, 0f, impactEffectAngle),
+                    gameObject.scene, impactEffectScale, 5f);
             Physics2D.OverlapCircle(center, _radius, new ContactFilter2D { useTriggers = true }, _overlaps);
             foreach (Collider2D hit in _overlaps)
             {

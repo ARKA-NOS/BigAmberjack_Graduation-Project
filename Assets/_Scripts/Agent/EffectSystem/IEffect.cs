@@ -1,4 +1,6 @@
-﻿namespace _Scripts.Agent.EffectSystem
+﻿using _Scripts.DevLib.ModuleSystem;
+
+namespace _Scripts.Agent.EffectSystem
 {
     public interface IEffect
     {

@@ -34,7 +34,6 @@ namespace _Scripts.TitleCodex
 
         public override void GameEnd()
         {
-            base.GameEnd();
             EventBus<TitleCompletedEvent>.UnSubscribe(HandleTitleCompleted);
             Save();
             ServiceLocator.Register<ITitleRecordManager>(new NullTitleRecordManager());

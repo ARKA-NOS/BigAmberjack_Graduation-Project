@@ -41,6 +41,7 @@ namespace _Scripts.Agent.Enemies
         internal void BeginPatrol()
         {
             if (_enemy == null) return;
+
             _patrolling = true;
             _waiting = false;
             _nextDirection = Random.value < 0.5f ? -1f : 1f;
@@ -53,21 +54,26 @@ namespace _Scripts.Agent.Enemies
         {
             if (!isActiveAndEnabled || _enemy == null || _enemy.IsDead || _movement == null)
                 return 0f;
+
             if (!_patrolling) BeginPatrol();
             if (patrolSpeed <= 0f || (!_returningToSpawn && halfWidth <= 0.06f))
             {
                 _movement.Stop();
                 return 0f;
             }
+
             if (_waiting)
             {
                 _movement.Stop();
                 if (Time.time < _waitUntil) return 0f;
+
                 _waiting = false;
                 ChooseDestination();
             }
+
             if (!_returningToSpawn) _destinationX = Mathf.Clamp(_destinationX, MinX, MaxX);
             float direction = _movement.MoveOnGroundTowards(_destinationX, patrolSpeed, out bool blocked);
+
             if (blocked || Mathf.Abs(_enemy.transform.position.x - _destinationX) <= 0.06f)
             {
                 _returningToSpawn = false;
@@ -76,6 +82,7 @@ namespace _Scripts.Agent.Enemies
                 _waitUntil = Time.time + Mathf.Max(0f, pauseDuration);
                 if (blocked) _nextDirection = _destinationX >= _enemy.transform.position.x ? -1f : 1f;
             }
+
             return direction;
         }
 
@@ -86,6 +93,7 @@ namespace _Scripts.Agent.Enemies
             // 구간 안쪽을 목적지로 정해 실제로 복귀한 뒤 다음 배회 지점을 선택합니다.
             if (x < MinX) { _destinationX = Center.x; _nextDirection = 1f; return; }
             if (x > MaxX) { _destinationX = Center.x; _nextDirection = -1f; return; }
+
             float end = _nextDirection > 0f ? MaxX : MinX;
             _destinationX = Mathf.Lerp(x, end, Random.Range(0.5f, 1f));
             _nextDirection = -_nextDirection;

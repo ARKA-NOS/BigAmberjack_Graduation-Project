@@ -29,7 +29,7 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDama
 - 예: 공격 10, 방어 적용 후 HP 감소 5 → 숫자 `5`.
 - 예: 남은 HP 3인 적에게 공격 100 → 마지막 숫자 `3`.
 - 0·음수·NaN 피해, 회복, HP 감소가 없는 타격에서는 숫자가 생성되지 않는다. 보스가 무적 상태에서 타격을 거부하면 표시 요청도 나오지 않는다.
-- 정수는 정수로, 소수는 최대 한 자리로 표시한다. 아주 작은 양의 피해는 `0`으로 보이지 않도록 최소 `0.1`로 표시한다.
+- 표시할 피해량을 가장 가까운 정수로 반올림한다. `9.8`은 `10`, `8.5`는 `9`, `0.4`는 `0`으로 표시한다.
 
 ## 인스펙터 조절 위치
 
@@ -84,7 +84,7 @@ indicatorModule.ShowDamage(24f, true, worldPosition);
 - `AnimationCurve` / `Keyframe`: 시간 비율에 따라 크기를 조절한다. 타이밍과 강도를 코드 수정 없이 인스펙터에서 바꿀 수 있다.
 - `Mathf.InverseLerp` / `SmoothStep`: 상승·페이드가 지정한 시점부터 부드럽게 진행되도록 한다.
 - `Time.time - _startedAt`: 생성되기 전의 프레임 시간까지 더해 첫 큰 자세를 건너뛰지 않도록, 실제 생성 시점부터 수명을 계산한다. 게임의 Time Scale을 따른다.
-- `CultureInfo.InvariantCulture`와 `"0.#"`: 운영체제 언어에 따라 숫자의 소수점 표시가 달라지지 않게 한다.
+- `Math.Round`와 `MidpointRounding.AwayFromZero`를 사용해 양수의 소수부가 정확히 `0.5`일 때 올림한다. 표시용 문자열은 `ToString("0", CultureInfo.InvariantCulture)`로 만든다.
 - `SceneManager.MoveGameObjectToScene`: 적의 부모에 붙이지 않으면서 같은 씬에서 생성·정리되게 한다.
 
 ## 검증 결과

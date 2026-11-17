@@ -63,13 +63,16 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (Time.time >= _nextShotAt) Fire();
                 return;
             }
+
             if (!IsRecovering)
             {
                 if (!visual.HasFinished(fireState)) return;
+
                 visual.Play("Idle");
                 BeginRecovery();
                 _recoveryUntil = Time.time + recoveryTime;
             }
+
             if (Time.time >= _recoveryUntil) EndSkill();
         }
 
@@ -80,6 +83,7 @@ namespace _Scripts.Agent.Enemies.Skills
             projectile.Speed = projectileSpeed;
             projectile.Lifetime = range / projectileSpeed;
             projectile.Launch(Enemy, CastTarget, damage, _direction);
+            NotifyAttackPerformed(muzzle.position);
             if (!DidFire) visual.Play(fireState);
             DidFire = true;
             CoolTimeStartTime = Time.time;

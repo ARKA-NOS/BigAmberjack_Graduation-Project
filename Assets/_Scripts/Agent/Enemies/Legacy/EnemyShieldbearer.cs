@@ -30,6 +30,7 @@ namespace _Scripts.Agent.Enemies
         private float SourceSide(DamageData damage, Vector2 hitPoint, Vector2 hitDirection)
         {
             float centerX = transform.position.x;
+
             if (damage.Dealer != null)
             {
                 float dealerSide = damage.Dealer.transform.position.x - centerX;

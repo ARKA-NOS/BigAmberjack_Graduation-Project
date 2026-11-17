@@ -75,6 +75,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _health == null) return;
+
             _health.OnHealthChanged += OnHealthChanged;
             _subscribed = true;
         }
@@ -89,10 +90,12 @@ namespace _Scripts.Agent.Enemies
             // 모든 모듈 초기화 뒤 생성해 다른 모듈의 SpriteRenderer 자동 수집에 섞이지 않게 합니다.
             _properties = new MaterialPropertyBlock();
             _views = new View[sprites.Length];
+
             for (int i = 0; i < sprites.Length; i++)
             {
                 SpriteRenderer source = sprites[i];
                 if (source == null) continue;
+
                 GameObject child = new GameObject("TemporaryOutline") { hideFlags = HideFlags.DontSave };
                 child.transform.SetParent(source.transform, false);
                 SpriteRenderer outline = child.AddComponent<SpriteRenderer>();
@@ -104,6 +107,7 @@ namespace _Scripts.Agent.Enemies
         private void LateUpdate()
         {
             if (!_initialized) return;
+
             if (_views == null) CreateViews();
             bool preparing = IsShowingPreparation;
             float outlineWidth = preparing ? preparationWidth : width;
@@ -115,12 +119,15 @@ namespace _Scripts.Agent.Enemies
             if (drawOutside)
                 foreach (View view in _views)
                     if (view?.Source != null) lowestOrder = Mathf.Min(lowestOrder, view.Source.sortingOrder);
+
             foreach (View view in _views)
             {
                 if (view == null || view.Outline == null) continue;
+
                 SpriteRenderer source = view.Source, outline = view.Outline;
                 outline.enabled = visible && source != null && source.enabled && source.gameObject.activeInHierarchy && source.sprite != null;
                 if (!outline.enabled) continue;
+
                 outline.gameObject.layer = source.gameObject.layer;
                 outline.sprite = source.sprite;
                 outline.flipX = source.flipX;
@@ -149,12 +156,15 @@ namespace _Scripts.Agent.Enemies
         private Vector4 GetUVBounds(Sprite sprite)
         {
             if (_uvBounds.TryGetValue(sprite, out Vector4 bounds)) return bounds;
+
             bounds = new Vector4(1f, 1f, 0f, 0f);
+
             foreach (Vector2 uv in sprite.uv)
             {
                 bounds.x = Mathf.Min(bounds.x, uv.x); bounds.y = Mathf.Min(bounds.y, uv.y);
                 bounds.z = Mathf.Max(bounds.z, uv.x); bounds.w = Mathf.Max(bounds.w, uv.y);
             }
+
             _uvBounds.Add(sprite, bounds);
             return bounds;
         }

@@ -47,17 +47,21 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             floorY = 0f;
             if (!detectFloor) return false;
+
             var filter = new ContactFilter2D { useLayerMask = true, layerMask = floorLayers, useTriggers = false };
             int count = Physics2D.Raycast(center, Vector2.down, filter, _floorHits, Mathf.Max(0.1f, floorProbeDistance));
+
             for (int i = 0; i < count; i++)
             {
                 RaycastHit2D hit = _floorHits[i];
                 // 천장/벽의 측면이나 시작점이 콜라이더 내부인 결과는 바닥으로 사용하지 않습니다.
                 if (hit.distance <= 0f || hit.normal.y < 0.5f ||
                     (_owner != null && hit.collider.transform.IsChildOf(_owner.transform))) continue;
+
                 floorY = hit.point.y;
                 return true;
             }
+
             return false;
         }
 
@@ -83,8 +87,10 @@ namespace _Scripts.Agent.Enemies.Bosses
             Camera camera = arenaCamera != null ? arenaCamera : Camera.main;
             Bounds arena = LaserBounds;
             if (camera == null) return arena;
+
             float depth = Vector3.Dot((Vector3)Center - camera.transform.position, camera.transform.forward);
             if (depth <= 0f) return arena;
+
             Bounds view = new Bounds(camera.ViewportToWorldPoint(new Vector3(0f, 0f, depth)), Vector3.zero);
             for (int x = 0; x <= 1; x++)
                 for (int y = 0; y <= 1; y++)
@@ -92,6 +98,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             // 이미 화면과 떨어진 다른 방/테스트 보스를 카메라가 있는 방까지 이동시키지 않습니다.
             if (view.max.x < arena.min.x || view.min.x > arena.max.x || view.max.y < arena.min.y || view.min.y > arena.max.y)
                 return arena;
+
             arena.Encapsulate(view);
             return arena;
         }

@@ -26,6 +26,7 @@ namespace _Scripts.Agent.Enemies.FSM
                 Enemy.ChangeState(EnemyStateType.Attack);
                 return;
             }
+
             Enemy.MoveTowardsTarget();
         }
 

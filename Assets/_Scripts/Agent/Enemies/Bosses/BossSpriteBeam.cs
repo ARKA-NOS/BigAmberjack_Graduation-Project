@@ -57,8 +57,10 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             Cache();
             if (_renderer.sprite == null) return false;
+
             float top = Mathf.Clamp01(hitTopUV.y), bottom = Mathf.Clamp01(hitBottomUV.y);
             if (top <= bottom) return false;
+
             float halfWidth = Mathf.Clamp(hitHalfWidthUV, 0.01f, 0.5f);
             _corePath[0] = LocalPoint(new Vector2(Mathf.Clamp01(hitTopUV.x - halfWidth), top));
             _corePath[1] = LocalPoint(new Vector2(Mathf.Clamp01(hitBottomUV.x - halfWidth), bottom));
@@ -105,6 +107,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void Show(Vector2 origin)
         {
             Place(origin);
+
             if (!_emitting)
             {
                 _emitting = true;
@@ -113,6 +116,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 SetOpacity(fadeInDuration <= 0f ? 1f : 0f);
                 _hitbox.enabled = fadeInDuration <= 0f;
             }
+
             _renderer.enabled = true;
         }
         private void Update()
@@ -133,9 +137,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void FadeOut()
         {
             if (_fadingOut) return;
+
             _emitting = false;
             _hitbox.enabled = false;
             if (!_renderer.enabled || fadeOutDuration <= 0f) { Hide(); return; }
+
             _fadingOut = true;
             _fadeFromAlpha = Opacity;
             _fadeStartedAt = Time.time;
@@ -168,6 +174,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             _points.Clear();
             Vector2 startCenter = CenterAt(start), endCenter = CenterAt(end);
             float floorLocalY = LocalPoint(new Vector2(0.5f, floorContactV)).y;
+
             for (int i = 0; i < _corePath.Length; i++)
             {
                 Vector2 p = _corePath[i];
@@ -178,8 +185,10 @@ namespace _Scripts.Agent.Enemies.Bosses
                 _points.Add(startCenter + offset);
                 _points.Add(endCenter + offset);
             }
+
             _points.Sort((a, b) => a.x == b.x ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
             hull.Clear();
+
             // 이동 전후 중심부 판정의 볼록 껍질. 장식용 바닥 퍼짐은 경고에서도 제외합니다.
             foreach (Vector2 p in _points)
             {
@@ -187,7 +196,9 @@ namespace _Scripts.Agent.Enemies.Bosses
                     hull.RemoveAt(hull.Count - 1);
                 hull.Add(p);
             }
+
             int lowerCount = hull.Count;
+
             for (int i = _points.Count - 2; i >= 0; i--)
             {
                 Vector2 p = _points[i];
@@ -195,6 +206,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                     hull.RemoveAt(hull.Count - 1);
                 hull.Add(p);
             }
+
             if (hull.Count > 1) hull.RemoveAt(hull.Count - 1);
         }
         private static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;

@@ -59,6 +59,7 @@ namespace _Scripts.Agent.Enemies
             }
             // 공격 중의 회전은 스킬만 요청합니다. 마지막 경고/발사 후 회수에는 방향을 유지합니다.
             if (_enemy.IsAttackInProgress) return;
+
             if (_enemy.IsTargetInRange(_enemy.AttackRange))
             {
                 if (_deployment < 1f)
@@ -68,6 +69,7 @@ namespace _Scripts.Agent.Enemies
                     ApplyPose();
                     return;
                 }
+
                 Collider2D body = _enemy.Target.GetComponent<Collider2D>();
                 Vector2 point = body != null && body.enabled ? (Vector2)body.bounds.center : (Vector2)_enemy.Target.position;
                 SetAimDirection(point - AimOrigin);
@@ -78,6 +80,7 @@ namespace _Scripts.Agent.Enemies
                 RotateTowards(StowedAngle);
                 if (IsStowed) MoveDeployment(0f, retractDuration);
             }
+
             ApplyPose();
         }
 
@@ -104,6 +107,7 @@ namespace _Scripts.Agent.Enemies
         {
             // 대기 Update와 스킬 시작이 같은 프레임에 겹쳐도 최대 속도가 두 번 적용되지 않게 합니다.
             if (launcherPivot == null || Time.deltaTime <= 0f || _lastRotationFrame == Time.frameCount) return;
+
             _lastRotationFrame = Time.frameCount;
             float current = launcherPivot.localEulerAngles.z;
             float speed = Mathf.Max(1f, maxRotationSpeed);
@@ -113,11 +117,13 @@ namespace _Scripts.Agent.Enemies
             float step = Mathf.Clamp(Mathf.DeltaAngle(current, next), -maxStep, maxStep);
             // 목표 근처에서 무한히 수렴하지 않도록, 속도 제한 안의 작은 잔여 각도만 마무리합니다.
             float remaining = Mathf.DeltaAngle(current, targetAngle);
+
             if (Mathf.Abs(remaining) <= Mathf.Min(0.1f, maxStep))
             {
                 step = remaining;
                 HoldAim();
             }
+
             launcherPivot.localRotation = Quaternion.Euler(0f, 0f, current + step);
         }
 
@@ -134,6 +140,7 @@ namespace _Scripts.Agent.Enemies
             if (riseRoot != null) riseRoot.localPosition = deployedLocalPosition + Vector3.down * remainingDepth;
             // 출현/퇴장 중 켜고 끄지 않습니다. 아래로 접힌 외형도 지면 마스크 안에서 함께 움직입니다.
             if (launcherVisual != null) launcherVisual.SetActive(true);
+
             if (hurtbox != null && _fullSize.y > 0f)
             {
                 float visibleHeight = Mathf.Max(0.05f, _fullSize.y - remainingDepth);

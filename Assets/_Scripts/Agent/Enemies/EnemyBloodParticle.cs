@@ -53,6 +53,7 @@ namespace _Scripts.Agent.Enemies
         private float _age, _z;
         private ContactFilter2D _filter;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
+
         private Vector2[] _trailPositions;
         private float[] _trailTimes;
         private Mesh _trailMesh;
@@ -70,6 +71,7 @@ namespace _Scripts.Agent.Enemies
             int minimum = Mathf.Clamp(particleCount.x, 1, 64);
             int maximum = Mathf.Clamp(particleCount.y, minimum, 64);
             _count = Random.Range(minimum, maximum + 1);
+
             if (_drops == null || _drops.Length < _count)
             {
                 _drops = new Drop[maximum];
@@ -77,6 +79,7 @@ namespace _Scripts.Agent.Enemies
                 _trailPositions = new Vector2[maximum * TrailSamples];
                 _trailTimes = new float[maximum * TrailSamples];
             }
+
             if (trailOpacity > 0f) EnsureTrailRenderer();
             // 자동 이동/중력 대신 FixedUpdate에서 한 번만 계산합니다.
             var main = _particles.main;
@@ -90,6 +93,7 @@ namespace _Scripts.Agent.Enemies
             _z = transform.position.z;
             float scale = Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.x));
             float aim = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
+
             for (int i = 0; i < _count; i++)
             {
                 // 부채꼴 구간별로 하나씩 뽑아 한쪽에 전부 뭉치는 경우를 줄입니다.
@@ -108,6 +112,7 @@ namespace _Scripts.Agent.Enemies
                 };
                 RecordTrail(ref _drops[i]);
             }
+
             WriteParticles();
             WriteTrails();
         }
@@ -118,8 +123,10 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (_count == 0 || _particles == null) return;
+
             float dt = Time.fixedDeltaTime;
             _age += dt;
+
             for (int i = _count - 1; i >= 0; i--)
             {
                 Drop drop = _drops[i];
@@ -128,8 +135,10 @@ namespace _Scripts.Agent.Enemies
                     _drops[i] = _drops[--_count];
                     continue;
                 }
+
                 bool wasAirborne = drop.State == SurfaceState.Air;
                 Vector2 previousPosition = drop.Position;
+
                 if (drop.State != SurfaceState.Air)
                 {
                     if (drop.Surface == null || !drop.Surface.enabled || !drop.Surface.gameObject.activeInHierarchy)
@@ -147,16 +156,19 @@ namespace _Scripts.Agent.Enemies
                         if (drop.State == SurfaceState.Wall) Slide(ref drop, normal, dt);
                     }
                 }
+
                 if (drop.State == SurfaceState.Air)
                 {
                     drop.Velocity += Physics2D.gravity * gravityScale * dt;
                     drop.Angle += drop.Spin * dt;
                     Move(ref drop, drop.Velocity * dt);
                 }
+
                 if (wasAirborne && (drop.Position - previousPosition).sqrMagnitude > 0.000001f)
                     RecordTrail(ref drop);
                 _drops[i] = drop;
             }
+
             WriteParticles();
             WriteTrails();
         }
@@ -164,6 +176,7 @@ namespace _Scripts.Agent.Enemies
         private void EnsureTrailRenderer()
         {
             if (_trailMesh != null) return;
+
             var trailObject = new GameObject("Blood Trails");
             trailObject.layer = gameObject.layer;
             trailObject.transform.SetParent(transform, false);
@@ -190,13 +203,16 @@ namespace _Scripts.Agent.Enemies
         private void WriteTrails()
         {
             if (_trailMesh == null) return;
+
             _trailVertices.Clear();
             _trailColors.Clear();
             _trailTriangles.Clear();
             float duration = Mathf.Max(0.02f, trailDuration);
+
             for (int i = 0; i < _count; i++)
             {
                 Drop drop = _drops[i];
+
                 for (int j = 1; j < drop.TrailCount; j++)
                 {
                     int previous = drop.TrailSlot * TrailSamples +
@@ -205,10 +221,12 @@ namespace _Scripts.Agent.Enemies
                         (drop.TrailHead - drop.TrailCount + j + TrailSamples) % TrailSamples;
                     float previousAge = (_age - _trailTimes[previous]) / duration;
                     if (previousAge >= 1f) continue;
+
                     Vector2 from = _trailPositions[previous];
                     Vector2 to = _trailPositions[current];
                     Vector2 difference = to - from;
                     if (difference.sqrMagnitude < 0.000001f) continue;
+
                     Vector2 normal = new Vector2(-difference.y, difference.x).normalized;
                     float currentAge = Mathf.Clamp01((_age - _trailTimes[current]) / duration);
                     float previousFade = 1f - Mathf.Clamp01(previousAge);
@@ -229,6 +247,7 @@ namespace _Scripts.Agent.Enemies
                     _trailTriangles.Add(baseVertex + 3);
                 }
             }
+
             _trailMesh.Clear(false);
             _trailMesh.SetVertices(_trailVertices);
             _trailMesh.SetColors(_trailColors);
@@ -252,6 +271,7 @@ namespace _Scripts.Agent.Enemies
                 drop.Position += delta;
                 return;
             }
+
             if (hit.normal.y >= 0.5f || Mathf.Abs(hit.normal.x) >= 0.5f)
                 Attach(ref drop, hit);
             else
@@ -271,6 +291,7 @@ namespace _Scripts.Agent.Enemies
             drop.Angle = Mathf.Atan2(-hit.normal.x, hit.normal.y) * Mathf.Rad2Deg;
             drop.LocalPosition = drop.Surface.transform.InverseTransformPoint(drop.Position);
             drop.LocalNormal = drop.Surface.transform.InverseTransformDirection(hit.normal);
+
             if (!drop.TouchedSurface)
             {
                 drop.TouchedSurface = true;
@@ -284,6 +305,7 @@ namespace _Scripts.Agent.Enemies
             Vector2 delta = tangent.normalized * wallSlideSpeed * dt;
             Move(ref drop, delta);
             if (drop.State == SurfaceState.Floor) return;
+
             // 벽 끝을 지나면 공중에서 흘러내리는 대신 중력 낙하로 돌아갑니다.
             if (FindTerrain(drop.Position, Radius(drop), -normal, 0.08f, out RaycastHit2D support) &&
                 Mathf.Abs(support.normal.x) >= 0.5f)
@@ -305,15 +327,18 @@ namespace _Scripts.Agent.Enemies
             nearest = default;
             Physics2D.CircleCast(origin, radius, direction, _filter, _hits, distance);
             float closest = float.PositiveInfinity;
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (hit.collider == null || hit.distance >= closest ||
                     hit.collider.GetComponentInParent<Agent>() != null || Vector2.Dot(direction, hit.normal) >= -0.0001f) continue;
                 if (hit.collider.usedByEffector && hit.collider.TryGetComponent(out PlatformEffector2D platform) &&
                     platform.useOneWay && (direction.y > 0f || hit.normal.y < 0.5f || origin.y < hit.point.y)) continue;
+
                 closest = hit.distance;
                 nearest = hit;
             }
+
             return nearest.collider != null;
         }
 
@@ -326,6 +351,7 @@ namespace _Scripts.Agent.Enemies
                 if (_trailMesh != null) _trailMesh.Clear(false);
                 return;
             }
+
             for (int i = 0; i < _count; i++)
             {
                 Drop drop = _drops[i];
@@ -340,6 +366,7 @@ namespace _Scripts.Agent.Enemies
                     startColor = color, startLifetime = 1f, remainingLifetime = 1f, randomSeed = drop.Seed
                 };
             }
+
             _particles.SetParticles(_renderParticles, _count);
         }
 

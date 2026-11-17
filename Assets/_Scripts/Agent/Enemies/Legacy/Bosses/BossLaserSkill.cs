@@ -55,6 +55,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (damageStat != null && owner.TryGetModule(out IStatModule stats)) _damage = stats.GetStat(damageStat);
             spriteBeam?.Hide();
             BossArenaModule arena = owner.GetModule<BossArenaModule>();
+
             if (arena != null)
             {
                 MatchArenaHeight(arena);
@@ -65,6 +66,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void MatchArenaHeight(BossArenaModule arena)
         {
             if (spriteBeam == null || !spriteBeam.Configure(true)) return;
+
             // 맵의 Tilemap/CompositeCollider가 준비된 뒤에도 발사 단계 진입 시 다시 맞춥니다.
             arena.RefreshFloor();
             float offsetY = Enemy != null ? Origin.y - Enemy.transform.position.y : 0f;
@@ -79,6 +81,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             _configured = spriteBeam != null && spriteBeam.Configure(_travelsRight) && danger.size.x > 0f && danger.size.y > 0f;
             _dangerPolygon.Clear();
             if (!_configured) return;
+
             Vector2 muzzleOffset = Enemy != null ? Origin - (Vector2)Enemy.transform.position : Vector2.zero;
             start += muzzleOffset;
             end += muzzleOffset;
@@ -94,17 +97,20 @@ namespace _Scripts.Agent.Enemies.Bosses
             Vector2 firingStart = new Vector2(_fireStartX, start.y);
             // 방이 너무 좁으면 발사 없이 횡단만 끝냅니다. 안전 공간을 줄여 억지로 공격하지 않습니다.
             if (safeWidth >= danger.size.x || (_travelsRight ? _fireStartX >= end.x : _fireStartX <= end.x)) return;
+
             spriteBeam.GetSweptHull(firingStart, end, _sweptHull);
             Vector2 min = danger.min, max = danger.max;
             _dangerPolygon.Add(min);
             _dangerPolygon.Add(new Vector2(min.x, max.y));
             _dangerPolygon.Add(max);
             _dangerPolygon.Add(new Vector2(max.x, min.y));
+
             for (int i = 0; i < _sweptHull.Count && _dangerPolygon.Count > 0; i++)
             {
                 Vector2 edge = _sweptHull[(i + 1) % _sweptHull.Count] - _sweptHull[i];
                 ClipWarning(_sweptHull[i], new Vector2(-edge.y, edge.x));
             }
+
             if (_dangerPolygon.Count > 0)
                 ClipWarning(new Vector2(_safeBoundaryX, 0f), _travelsRight ? Vector2.right : Vector2.left);
         }
@@ -114,6 +120,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             _clipBuffer.Clear();
             Vector2 previous = _dangerPolygon[_dangerPolygon.Count - 1];
             float previousSide = Vector2.Dot(previous - edgePoint, inwardNormal);
+
             foreach (Vector2 current in _dangerPolygon)
             {
                 float side = Vector2.Dot(current - edgePoint, inwardNormal);
@@ -123,6 +130,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 previous = current;
                 previousSide = side;
             }
+
             _dangerPolygon.Clear();
             _dangerPolygon.AddRange(_clipBuffer);
         }
@@ -146,6 +154,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void TickBeam()
         {
             if (!IsTraversalReady || !CanContinue) return;
+
             Vector2 origin = Origin;
             bool beyondSafeSpace = _travelsRight ? origin.x >= _fireStartX : origin.x <= _fireStartX;
             if (!beyondSafeSpace || _dangerPolygon.Count == 0)
@@ -156,6 +165,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 _previousOrigin = origin;
                 return;
             }
+
             if (!_beamStarted)
             {
                 _beamStarted = true;
@@ -164,21 +174,26 @@ namespace _Scripts.Agent.Enemies.Bosses
                 _previousOrigin = origin;
                 cameraShake?.StartShake(_dangerBounds);
             }
+
             spriteBeam.Show(origin);
             cameraShake?.SetTraversalProgress(Mathf.InverseLerp(_emissionStartX, _traversalEndX, origin.x));
             // 충분히 보이기 전에는 피해를 주지 않고, 페이드 중 지나온 경로도 소급해서 때리지 않습니다.
             if (!spriteBeam.CanDamage) { _previousOrigin = origin; return; }
+
             if (!_hitTargetThisTraversal)
             {
                 float step = Mathf.Max(0.05f, spriteBeam.WorldSize.x * 0.1f);
                 int steps = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(_previousOrigin, origin) / step));
+
                 for (int i = 0; i <= steps && !_hitTargetThisTraversal; i++)
                 {
                     spriteBeam.OverlapAt(Vector2.Lerp(_previousOrigin, origin, (float)i / steps), _overlaps);
                     CheckDamage();
                 }
+
                 spriteBeam.Place(origin);
             }
+
             _previousOrigin = origin;
         }
 
@@ -187,10 +202,12 @@ namespace _Scripts.Agent.Enemies.Bosses
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget) || hit.GetComponentInParent<IDamageable>() == null) continue;
+
                 Vector2 point = hit.ClosestPoint(_dangerBounds.center);
                 if (point.x < _dangerBounds.min.x || point.x > _dangerBounds.max.x ||
                     point.y < _dangerBounds.min.y || point.y > _dangerBounds.max.y) continue;
                 if (_travelsRight ? hit.bounds.max.x <= _safeBoundaryX : hit.bounds.min.x >= _safeBoundaryX) continue;
+
                 _hitTargetThisTraversal = true;
                 EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, Mathf.Max(0f, _damage?.Value ?? 30f),
                     hit.ClosestPoint(BeamCenter), BeamDirection);

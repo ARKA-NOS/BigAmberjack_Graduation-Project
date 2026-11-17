@@ -58,10 +58,13 @@ namespace _Scripts.Agent.Enemies
                 if (!Enabled || enemy.Target == null || !enemy.Target.gameObject.activeInHierarchy ||
                     (requireGrounded && (movement == null || !movement.IsGrounded)))
                     return false;
+
                 bool flying = flight != null && flight.isActiveAndEnabled;
                 if (!flying && movement == null) return false;
+
                 Vector2 targetPosition = flying ? flight.GetTargetCenter(enemy.Target) : (Vector2)enemy.Target.position;
                 if (!IsInRange(enemy, targetPosition, keepDistance)) return false;
+
                 if (maxHeightDifference >= 0f)
                 {
                     float heightDifference = flying
@@ -69,9 +72,11 @@ namespace _Scripts.Agent.Enemies
                         : movement.GetTargetHeightDifference(enemy.Target);
                     if (Mathf.Abs(heightDifference) > maxHeightDifference) return false;
                 }
+
                 if (!requireClearPath) return true;
                 if (flying)
                     return flight.HasClearPath(origin != null ? (Vector2)origin.position : flight.BodyCenter, targetPosition);
+
                 Collider2D body = enemy.Target.GetComponent<Collider2D>();
                 Vector2 aim = body != null ? (Vector2)body.bounds.center : (Vector2)enemy.Target.position;
                 return movement.HasClearPath(origin != null ? (Vector2)origin.position : movement.BodyCenter, aim);
@@ -85,6 +90,7 @@ namespace _Scripts.Agent.Enemies
         private EnemyMovementModule _movement;
         private EnemyFlightModule _flight;
         private EnemyKeepDistanceModule _keepDistance;
+
         private AbstractSkill _activeSkill;
         private Transform _castTarget;
         private float _chargeReleaseTime;
@@ -128,6 +134,7 @@ namespace _Scripts.Agent.Enemies
         public bool CanAttackTarget()
         {
             if (!Ready) return false;
+
             foreach (SkillEntry entry in skills)
                 if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _flight, _keepDistance) &&
                     (!entry.RequireUsableToEnterAttack || CanUseSkill(entry.Skill.SkillSo))) return true;
@@ -137,15 +144,18 @@ namespace _Scripts.Agent.Enemies
         public bool TryUseAttack()
         {
             if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
+
             foreach (SkillEntry entry in skills)
             {
                 if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement, _flight, _keepDistance) || !CanUseSkill(entry.Skill.SkillSo)) continue;
+
                 _activeSkill = entry.Skill;
                 _castTarget = _enemy.Target;
                 _chargeReleaseTime = Time.time + entry.ChargeDuration;
                 UseSkill(_activeSkill.SkillSo, true);
                 return true;
             }
+
             return false;
         }
 
@@ -157,6 +167,7 @@ namespace _Scripts.Agent.Enemies
                 !TryGetEnabledEntry(skill, out SkillEntry entry) ||
                 _enemy.Target == null || !_enemy.Target.gameObject.activeInHierarchy || !CanUseSkill(skill.SkillSo))
                 return false;
+
             _activeSkill = skill;
             _castTarget = _enemy.Target;
             _chargeReleaseTime = Time.time + entry.ChargeDuration;
@@ -181,6 +192,7 @@ namespace _Scripts.Agent.Enemies
                     return true;
                 }
             }
+
             entry = null;
             return false;
         }
@@ -197,6 +209,7 @@ namespace _Scripts.Agent.Enemies
                 StopAttack();
                 return;
             }
+
             if (_activeSkill is IChargeSkill { IsCharging: true } && Time.time >= _chargeReleaseTime)
                 UseSkill(_activeSkill.SkillSo, false);
         }

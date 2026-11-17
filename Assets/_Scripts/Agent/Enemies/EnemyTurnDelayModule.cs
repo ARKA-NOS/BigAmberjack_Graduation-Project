@@ -29,6 +29,7 @@ namespace _Scripts.Agent.Enemies
                 _requestedDirection = requestedDirection;
                 _turnAt = Time.time + turnDelay;
             }
+
             if (Time.time < _turnAt) return false;
 
             direction = requestedDirection;

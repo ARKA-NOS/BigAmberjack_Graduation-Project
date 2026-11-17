@@ -4213,6 +4213,7 @@ GameObject:
   - component: {fileID: 8961333855442405301}
   - component: {fileID: 242686640342659914}
   - component: {fileID: 4179079926491796904}
+  - component: {fileID: 4041043030680077886}
   m_Layer: 5
   m_Name: SettingsWindow
   m_TagString: Untagged
@@ -4384,6 +4385,19 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
     m_Priority: 0
+--- !u!114 &4041043030680077886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6549224848546229562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b4d186562d4a440bbc58eb07b5de92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Audio.UiClickSound
+  _cue: {fileID: 11400000, guid: b6f7ca27aa5844b4cae912bfd674c2e3, type: 2}
 --- !u!1 &7082881355991731193
 GameObject:
   m_ObjectHideFlags: 0

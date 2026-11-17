@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: d948ab6bdf25c8d4c8e6552bc5e07b58, type: 2}
 --- !u!225 &2151875538884622094
 CanvasGroup:
@@ -592,6 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 503e3ee9e33c9db4d93957b9b6e845df, type: 2}
 --- !u!225 &8122218564872846960
 CanvasGroup:
@@ -740,6 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 9b185769f7d49f84da9aced1100936b4, type: 2}
 --- !u!225 &7117735165418215612
 CanvasGroup:
@@ -1428,6 +1431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 052f906ad3c58b94a94fffcb163e9e26, type: 2}
 --- !u!225 &5199104420766456182
 CanvasGroup:
@@ -1559,6 +1563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a02a382f2dbeaa42b029b22eea72eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeInfoPanel
+  viewModel: {fileID: 0}
   iconImage: {fileID: 4342955582400709631}
   descriptionText: {fileID: 1146931856698632656}
 --- !u!1 &3026366554705948726
@@ -1833,6 +1838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 9c856fc19557e19428de16f543e938a9, type: 2}
 --- !u!225 &64052536387697784
 CanvasGroup:
@@ -1862,6 +1868,7 @@ GameObject:
   - component: {fileID: 532476536493705113}
   - component: {fileID: 713797213040862702}
   - component: {fileID: 1615525537271213681}
+  - component: {fileID: 8468786455218752975}
   m_Layer: 0
   m_Name: UpgradeUI
   m_TagString: Untagged
@@ -2013,8 +2020,21 @@ MonoBehaviour:
   startSetting: 0
   canvasGroup: {fileID: 5250594208050788212}
   fadeSpeed: 3
-  infoPanel: {fileID: 211101985599396352}
-  lineDrawer: {fileID: 1487323141756697129}
+  infoView: {fileID: 211101985599396352}
+  lineView: {fileID: 1487323141756697129}
+--- !u!114 &8468786455218752975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3293602887273826289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b4d186562d4a440bbc58eb07b5de92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Audio.UiClickSound
+  _cue: {fileID: 11400000, guid: b6f7ca27aa5844b4cae912bfd674c2e3, type: 2}
 --- !u!1 &3381038496276082839
 GameObject:
   m_ObjectHideFlags: 0
@@ -2150,6 +2170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: fb8f418a34725bf479a700e49fc53f13, type: 2}
 --- !u!225 &1513959003976920371
 CanvasGroup:
@@ -2945,6 +2966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6386dfcbe2e4d0649901f1d0ccec3b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeLineDrawer
+  viewModel: {fileID: 0}
   lineRoot: {fileID: 6207388531673733988}
   thickness: 8
   gap: 4
@@ -3395,6 +3417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 74983ef03b929354783bb3d59a3aca29, type: 2}
 --- !u!225 &964293747051702762
 CanvasGroup:
@@ -3891,6 +3914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 943e78e988785a745860ef7844d21931, type: 2}
 --- !u!225 &953360338027934284
 CanvasGroup:
@@ -4176,6 +4200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: a6c543a804505a043beddaf53ab7364d, type: 2}
 --- !u!225 &2879167792322086824
 CanvasGroup:
@@ -4498,6 +4523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 94a6e1c78aac2944e83129c05763f3cd, type: 2}
 --- !u!225 &2910695117057923454
 CanvasGroup:
@@ -4783,6 +4809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: cbb902aa3403e6844aec0753fe9d3d88, type: 2}
 --- !u!225 &9085964243326431625
 CanvasGroup:
@@ -5164,6 +5191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: bdba8959dcc7ca448b0d658926b9a9a0, type: 2}
 --- !u!225 &2631855929831609554
 CanvasGroup:
@@ -5477,6 +5505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 6dccee17c3a614d4a8ead3238d225c40, type: 2}
 --- !u!225 &7478969627997882741
 CanvasGroup:
@@ -5762,6 +5791,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec856ed9a2644d5918e6094597ae997, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
+  viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 09168409fdf27be4f885dfd57ab21559, type: 2}
 --- !u!225 &4676019378595691019
 CanvasGroup:

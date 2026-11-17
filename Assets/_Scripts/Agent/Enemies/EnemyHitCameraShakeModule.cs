@@ -53,6 +53,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DamageReceived += OnDamageReceived;
             _subscribed = true;
         }
@@ -66,6 +67,7 @@ namespace _Scripts.Agent.Enemies
         private void OnDamageReceived(DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)
         {
             if (damage.DamageAmount <= 0f || !IsFinite(damage.DamageAmount)) return;
+
             if (!HasDirection(direction) && damage.Dealer != null)
                 direction = _enemy.transform.position - damage.Dealer.transform.position;
             if (!HasDirection(direction)) direction = -normal;
@@ -77,15 +79,19 @@ namespace _Scripts.Agent.Enemies
         public void PlayShake(bool isCritical, Vector2 direction, bool isLethal = false)
         {
             if (!isActiveAndEnabled || _impulseChannel == 0) return;
+
             float strength = isCritical ? _criticalStrength : _normalStrength;
             float duration = isCritical ? _criticalDuration : _normalDuration;
+
             if (isLethal)
             {
                 strength *= Mathf.Max(1f, _lethalStrengthMultiplier);
                 duration *= Mathf.Max(1f, _lethalDurationMultiplier);
             }
+
             strength *= EnemyHitCameraShakeManager.Intensity;
             if (!IsFinite(strength) || strength <= 0f || !IsFinite(duration) || duration <= 0f) return;
+
             if (!_useHitDirection || !HasDirection(direction)) direction = _fallbackDirection;
             if (!HasDirection(direction)) direction = Vector2.right;
             Vector2 shakeDirection = direction.normalized;
@@ -106,6 +112,7 @@ namespace _Scripts.Agent.Enemies
             Vector3 position = _enemy != null ? _enemy.transform.position : transform.position;
             var impulse = definition.CreateAndReturnEvent(position, (Vector3)shakeDirection * strength);
             if (impulse == null) return;
+
             impulse.Radius = Mathf.Max(0f, _fullStrengthRadius);
             impulse.CustomDissipation = -1f;
             impulse.DissipationMode = CinemachineImpulseManager.ImpulseEvent.DissipationModes.SoftDecay;

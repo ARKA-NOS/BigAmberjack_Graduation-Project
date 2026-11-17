@@ -47,6 +47,8 @@ Transform:
   - {fileID: 6291074182653970727}
   - {fileID: 6339809969032028041}
   - {fileID: 3448916354331153319}
+  - {fileID: 1344587563851182596}
+  - {fileID: 7152790261327181609}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3004791077127761188
@@ -1108,8 +1110,7 @@ MonoBehaviour:
   hitStunDuration: 0.25
   cancelAttackOnHit: 1
   enableBlink: 1
-  blinkDuration: 0.35
-  blinkInterval: 0.05
+  blinkDuration: 0.08
   hitColor: {r: 1, g: 0.32, b: 0.36, a: 1}
   hitColorBlend: 0.65
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
@@ -1315,3 +1316,74 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3105458934391978782, guid: d3a96503a12ef1a4682592b482675adc, type: 3}
   m_PrefabInstance: {fileID: 8952507898584770794}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2803835163420621751
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4797783499107182713}
+    m_Modifications:
+    - target: {fileID: 3765526583950870963, guid: 58737ab66d32a2a47af4238311a79958, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 58737ab66d32a2a47af4238311a79958, type: 3}
+--- !u!224 &1344587563851182596 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3765526583950870963, guid: 58737ab66d32a2a47af4238311a79958, type: 3}
+  m_PrefabInstance: {fileID: 2803835163420621751}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5420315613640678690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7152790261327181609}
+  - component: {fileID: 8849678718522915549}
+  m_Layer: 0
+  m_Name: SoundModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7152790261327181609
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5420315613640678690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4797783499107182713}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8849678718522915549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5420315613640678690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb260aacdbc9d346848f5b4670d4752, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemySoundModule
+  hitCue: {fileID: 11400000, guid: 19cbb4313e1cf5b40afe821c80083072, type: 2}
+  deathCue: {fileID: 11400000, guid: b218e72222478984c828620016a47d3c, type: 2}
+  attackSounds:
+  - skill: {fileID: 9133424580794789231}
+    cue: {fileID: 11400000, guid: 26709db675e9f474f822dfd566cf4603, type: 2}

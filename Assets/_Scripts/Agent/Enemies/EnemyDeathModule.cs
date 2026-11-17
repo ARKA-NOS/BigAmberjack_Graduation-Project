@@ -20,6 +20,7 @@ namespace _Scripts.Agent.Enemies
         internal void ReportDeath()
         {
             if (_reported || !isActiveAndEnabled || _enemy == null || !_enemy.IsDead) return;
+
             _reported = true;
 
             // 적 생성 뒤 매니저가 생성되어도 사망 시점에 조회할 수 있습니다.
@@ -29,6 +30,7 @@ namespace _Scripts.Agent.Enemies
                 Debug.LogWarning($"{_enemy.name}: 활성 EnemyKillCountManager가 없어 처치 수를 집계하지 못했습니다.", this);
                 return;
             }
+
             manager.RegisterDeath();
         }
     }

@@ -191,7 +191,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -4}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8034629173694824847
@@ -224,8 +224,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC774\uB984"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 14b901055a686454281558f9c6f622cb, type: 2}
-  m_sharedMaterial: {fileID: 3758493450258777016, guid: 14b901055a686454281558f9c6f622cb, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
+  m_sharedMaterial: {fileID: -3068029881454497041, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -361,8 +361,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uB300\uC0AC"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 14b901055a686454281558f9c6f622cb, type: 2}
-  m_sharedMaterial: {fileID: 3758493450258777016, guid: 14b901055a686454281558f9c6f622cb, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
+  m_sharedMaterial: {fileID: -3068029881454497041, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -445,13 +445,14 @@ GameObject:
   - component: {fileID: 4832603031206108559}
   - component: {fileID: 8165911688568809015}
   - component: {fileID: 1027869058369182175}
+  - component: {fileID: 6250961876895229643}
   m_Layer: 0
   m_Name: ChoiceButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7312710648395614134
 RectTransform:
   m_ObjectHideFlags: 0
@@ -467,10 +468,10 @@ RectTransform:
   - {fileID: 5431662601514043815}
   m_Father: {fileID: 1754188178700460024}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6162764411250534768
 CanvasRenderer:
@@ -589,6 +590,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6250961876895229643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2946464646263512041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b4d186562d4a440bbc58eb07b5de92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Audio.UiClickSound
+  _cue: {fileID: 11400000, guid: b6f7ca27aa5844b4cae912bfd674c2e3, type: 2}
 --- !u!1 &3042034517815953530
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,8 +762,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC120\uD0DD\uC9C0"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 14b901055a686454281558f9c6f622cb, type: 2}
-  m_sharedMaterial: {fileID: 3758493450258777016, guid: 14b901055a686454281558f9c6f622cb, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
+  m_sharedMaterial: {fileID: -3068029881454497041, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -768,7 +782,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -815,7 +829,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &6996783364746091940
@@ -832,6 +846,7 @@ GameObject:
   - component: {fileID: 9038480519222183050}
   - component: {fileID: 8009150812393212804}
   - component: {fileID: 2875920700846243275}
+  - component: {fileID: 5730686930185048114}
   m_Layer: 0
   m_Name: DialogueCanvas
   m_TagString: Untagged
@@ -953,3 +968,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.Dialogue.DialogueConnector
   viewModel: {fileID: 11400000, guid: 32f9d2a2e0ef8294b9dcb79ca8bb70dc, type: 2}
+--- !u!114 &5730686930185048114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6996783364746091940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b4d186562d4a440bbc58eb07b5de92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Audio.UiClickSound
+  _cue: {fileID: 11400000, guid: b6f7ca27aa5844b4cae912bfd674c2e3, type: 2}

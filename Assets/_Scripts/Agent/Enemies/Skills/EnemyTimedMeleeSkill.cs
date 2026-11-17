@@ -14,9 +14,11 @@ namespace _Scripts.Agent.Enemies.Skills
         [Tooltip("타격 판정과 공격 애니메이션이 모두 끝난 뒤 재생할 후딜 상태입니다.")]
         [SerializeField] private string recoveryStateName;
         [SerializeField] private string idleStateName = "Base Layer.Idle";
+
         [SerializeField, Min(0f)] private float damage = 12f;
         [SerializeField, Min(0.01f)] private float activeDuration = 0.12f;
         [SerializeField, Min(0f)] private float recoveryTime = 0.8f;
+
         [Tooltip("준비 시작 때 방향을 정하고, 타격과 후딜이 끝날 때까지 유지합니다.")]
         [SerializeField] private bool lockFacingDuringPreparation;
         [Tooltip("준비가 아닌 타격 시점부터 쿨타임을 계산합니다. 빗나가면 공격이 발동한 시점이 기준입니다.")]
@@ -26,6 +28,7 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float minimumHeightForUpwardAttack = 0.55f;
         [Tooltip("공격 준비 후 지형 뒤에 숨은 대상에게 피해를 주지 않습니다.")]
         [SerializeField] private bool checkTerrainAtHit;
+
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private EnemyMovementModule _movement;
         private float _activeUntil;
@@ -47,6 +50,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool IsInUpwardRange(Transform target)
         {
             if (_movement == null) return false;
+
             Bounds bounds = attackHitbox.bounds;
             float height = _movement.GetTargetHeightDifference(target);
             return height >= minimumHeightForUpwardAttack &&
@@ -66,11 +70,13 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void PrepareAttack()
         {
             _hitApplied = false;
+
             if (lockFacingDuringPreparation)
             {
                 Enemy.FaceTarget();
                 _direction = StrikeDirection;
             }
+
             PlayAnimation(preparationStateName);
         }
 
@@ -89,16 +95,20 @@ namespace _Scripts.Agent.Enemies.Skills
                 TryHit();
                 return;
             }
+
             if (!IsRecovering)
             {
                 if (IsWaitingForStrikeAnimation()) return;
+
                 BeginRecovery();
+
                 if (!string.IsNullOrEmpty(recoveryStateName))
                 {
                     _recoveryUntil = Time.time + Mathf.Max(0f, recoveryTime);
                     PlayAnimation(recoveryStateName);
                 }
             }
+
             if (Time.time >= _recoveryUntil) EndSkill();
         }
 
@@ -119,11 +129,13 @@ namespace _Scripts.Agent.Enemies.Skills
                 Enemy.FaceTarget();
                 _direction = StrikeDirection;
             }
+
             if (cooldownFromStrike) CoolTimeStartTime = Time.time;
             _activeUntil = Time.time + Mathf.Max(0.01f, activeDuration);
             _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
             PlayAnimation(attackStateName);
             Telegraph?.Hide();
+            NotifyAttackPerformed(attackHitbox != null ? attackHitbox.bounds.center : Enemy.transform.position);
             TryHit();
         }
 
@@ -132,15 +144,20 @@ namespace _Scripts.Agent.Enemies.Skills
             if (_hitApplied || attackHitbox == null || !attackHitbox.enabled || CastTarget == null) return;
             if (!attackUpward && lockFacingDuringPreparation &&
                 Vector2.Dot((Vector2)(CastTarget.position - Enemy.transform.position), _direction) <= 0f) return;
+
             Physics2D.SyncTransforms();
             if (attackUpward && !IsInUpwardRange(CastTarget)) return;
+
             attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
+
                 Vector2 point = hit.ClosestPoint(attackHitbox.bounds.center);
                 if (checkTerrainAtHit && (_movement == null || !_movement.HasClearPath(_movement.BodyCenter, point))) continue;
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, _direction)) continue;
+
                 _hitApplied = true;
                 if (cooldownFromStrike) CoolTimeStartTime = Time.time;
                 break;
@@ -167,8 +184,10 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (attackAnimator == null || !attackAnimator.isActiveAndEnabled ||
                 attackAnimator.runtimeAnimatorController == null || string.IsNullOrEmpty(stateName)) return;
+
             int hash = Animator.StringToHash(stateName);
             if (!attackAnimator.HasState(0, hash)) return;
+
             attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             attackAnimator.Play(hash, 0, 0f);
         }

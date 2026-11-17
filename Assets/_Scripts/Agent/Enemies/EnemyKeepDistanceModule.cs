@@ -35,8 +35,10 @@ namespace _Scripts.Agent.Enemies
         {
             if (!isActiveAndEnabled || _enemy == null || _movement == null || target == null ||
                 !_movement.IsGrounded) return false;
+
             Vector2 offset = target.position - _enemy.transform.position;
             if (offset.sqrMagnitude >= MinimumDistance * MinimumDistance) return false;
+
             float side = Mathf.Abs(offset.x) > 0.01f ? Mathf.Sign(offset.x) : _lastTargetSide;
             return !_movement.CanMoveOnGround(-side, _enemy.MoveSpeed);
         }
@@ -81,7 +83,9 @@ namespace _Scripts.Agent.Enemies
                 _enemy.FaceTarget();
                 return 0f;
             }
+
             float destinationX = target.position.x;
+
             if (distanceSquared < minimum * minimum)
             {
                 // 거리 판정은 스킬과 같은 2D 거리. 높이가 달라도 필요한 수평 거리만 확보합니다.
@@ -103,6 +107,7 @@ namespace _Scripts.Agent.Enemies
         {
             EnemyBase enemy = _enemy != null ? _enemy : GetComponentInParent<EnemyBase>();
             if (enemy == null) return;
+
             Gizmos.color = Color.magenta;
             float distance = retreatDuringCooldownOf != null
                 ? Mathf.Min(cooldownRetreatDistance, Mathf.Max(0f, enemy.ChaseReleaseRange - 0.75f))

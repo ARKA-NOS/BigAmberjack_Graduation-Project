@@ -30,6 +30,9 @@ namespace _Scripts.UI.InventoryUI
 
         private void HandleToggle(InputAction.CallbackContext context)
         {
+            // 검색창 등에 글을 쓰는 중이면 V는 글자 입력으로 둔다.
+            if (UIInputFocus.IsTyping) return;
+
             UIManagerEvents.OpenCloseWindow(window);
         }
 

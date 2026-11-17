@@ -30,12 +30,14 @@ namespace _Scripts.Agent.Enemies.Skills
             landing = default;
             if (bombPrefab == null || Enemy is not ProductionControlDrone drone ||
                 Mathf.Abs(target.position.x - origin.x) > range) return false;
+
             var terrain = new ContactFilter2D { useTriggers = false };
             terrain.SetLayerMask(drone.TerrainLayers);
             float targetX = drone.ClampX(target.position.x);
             Vector2 floorProbe = new Vector2(targetX, drone.FloorY + 0.20f);
             var floor = EnemyLobProjectile.FindSurface(floorProbe, Vector2.down, 0.4f, terrain, _terrainHits);
             if (floor.collider == null || floor.normal.y < 0.5f) return false;
+
             landing = floor.point;
             return bombPrefab.HasClearArc(origin, landing, terrain, _terrainHits);
         }
@@ -54,6 +56,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             if (preview != null) preview.enabled = true;
             visual.Play("BombCharge");
         }
@@ -68,6 +71,7 @@ namespace _Scripts.Agent.Enemies.Skills
             var bomb = Instantiate(bombPrefab, muzzle.position, Quaternion.identity);
             SceneManager.MoveGameObjectToScene(bomb.gameObject, Enemy.gameObject.scene);
             bomb.Launch(Enemy, CastTarget, _landingPoint, damage, radius, drone.TerrainLayers, TakeTelegraph());
+            NotifyAttackPerformed(muzzle.position);
             CoolTimeStartTime = Time.time;
             visual.Play("Bomb");
         }

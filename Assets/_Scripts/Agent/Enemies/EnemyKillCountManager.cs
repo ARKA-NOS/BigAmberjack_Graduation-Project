@@ -15,6 +15,7 @@ namespace _Scripts.Agent.Enemies
         public override void Initialize()
         {
             if (!isActiveAndEnabled) return;
+
             EnemyKillCountManager current = ServiceLocator.Get<EnemyKillCountManager>();
             if (current != null && current != this && current.isActiveAndEnabled)
             {

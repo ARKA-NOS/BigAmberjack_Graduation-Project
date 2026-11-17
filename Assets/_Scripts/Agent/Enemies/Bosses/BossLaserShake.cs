@@ -24,6 +24,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             StopShake();
             if (!isActiveAndEnabled || amplitude <= 0f) return;
+
             CinemachineImpulseManager manager = CinemachineImpulseManager.Instance;
             _signal = new LaserSignal(amplitude, frequency);
             _impulse = manager.NewImpulseEvent();
@@ -48,6 +49,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             if (_signal == null || _fadingOut) return;
             if (fadeOutDuration <= 0f) { StopShake(); return; }
+
             _fadingOut = true;
             _fadeStartedAt = Time.time;
             _fadeFromStrength = Strength;
@@ -56,6 +58,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void Update()
         {
             if (!_fadingOut || _signal == null) return;
+
             float t = Mathf.Clamp01((Time.time - _fadeStartedAt) / fadeOutDuration);
             _signal.Strength = _fadeFromStrength * (1f - Mathf.SmoothStep(0f, 1f, t));
             if (t >= 1f) StopShake();
@@ -72,6 +75,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 // 무음인 최소 수명을 남겨 이벤트 풀로 정상 회수되도록 합니다.
                 if (_impulse.Envelope.Duration <= 0f) _impulse.Envelope.DecayTime = 0.001f;
             }
+
             _impulse = null;
             _signal = null;
             _fadingOut = false;

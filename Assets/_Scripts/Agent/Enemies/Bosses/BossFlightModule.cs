@@ -68,9 +68,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void Tick()
         {
             if (!isActiveAndEnabled || _body == null || !IsMoving) return;
+
             _elapsed = Mathf.Min(_duration, _elapsed + Time.fixedDeltaTime);
             float travelled;
             float acceleration = _peakSpeed / _rampTime;
+
             if (_elapsed < _rampTime)
                 travelled = 0.5f * acceleration * _elapsed * _elapsed;
             else if (_elapsed < _rampTime + _cruiseTime)
@@ -83,6 +85,7 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             // 매 틱 현재 위치를 Lerp하지 않고 출발점 기준 누적 거리를 사용해, 유한 시간 안에 정확히 도착합니다.
             SetPosition(Vector2.Lerp(_start, _destination, travelled / _distance));
+
             if (_elapsed >= _duration)
             {
                 SetPosition(_destination);
@@ -103,6 +106,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             IsMoving = false;
             _elapsed = 0f;
             if (_body == null) return;
+
             _body.linearVelocity = Vector2.zero;
             _destination = _body.position;
         }

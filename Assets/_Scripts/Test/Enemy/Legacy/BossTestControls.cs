@@ -22,13 +22,16 @@ namespace _Scripts.Testing.Enemy
         private void FixedUpdate()
         {
             if (targetBody == null) return;
+
             Keyboard keyboard = Keyboard.current;
             float direction = 0f;
+
             if (keyboard != null)
             {
                 if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) direction--;
                 if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) direction++;
             }
+
             targetBody.linearVelocityX = direction * 7f;
             if (_jumpRequested && Physics2D.Raycast(targetBody.position, Vector2.down, 0.7f, 1 << LayerMask.NameToLayer("Ground")))
                 targetBody.linearVelocityY = 10f;
@@ -41,6 +44,7 @@ namespace _Scripts.Testing.Enemy
             GUILayout.Label("CTJ Robot Eye - pattern test (dummy target)");
             GUILayout.Label("A/D or arrows: move | Space: jump | Restart: stop/play");
             GUILayout.Label($"Target hits: {probe?.ReceivedHitCount ?? 0} / damage: {probe?.TotalDamage ?? 0}");
+
             if (boss != null)
             {
                 GUILayout.Label($"Boss HP: {boss.GetModule<INewHealthModule>()?.CurrentHealth} / 2500 | {boss.CurrentState}");
@@ -50,6 +54,7 @@ namespace _Scripts.Testing.Enemy
                 if (GUILayout.Button("Deal 3000 damage (ignored during invulnerability)")) Hit(3000f);
             }
             else GUILayout.Label("Boss destroyed. Stop/play to restart.");
+
             GUILayout.EndArea();
         }
 

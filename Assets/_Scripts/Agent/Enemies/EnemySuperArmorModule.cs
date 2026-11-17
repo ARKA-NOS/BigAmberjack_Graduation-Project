@@ -25,6 +25,7 @@ namespace _Scripts.Agent.Enemies
             {
                 if (!isActiveAndEnabled || _enemy == null || !_enemy.isActiveAndEnabled || _enemy.IsDead ||
                     _skills == null || !_skills.isActiveAndEnabled) return false;
+
                 var skill = _skills.ActiveSkill;
                 if (skill == null || !skill.isActiveAndEnabled) return false;
                 // 준비/공격 구간은 보호하고, 후딜/쿨타임 대기에는 보호하지 않습니다.

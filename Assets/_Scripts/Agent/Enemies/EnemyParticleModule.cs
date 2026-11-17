@@ -30,14 +30,18 @@ namespace _Scripts.Agent.Enemies
             {
                 int count = 0;
                 ParticleSystem fallback = prefab;
+
                 if (randomPrefabs != null)
                     foreach (ParticleSystem candidate in randomPrefabs)
                     {
                         if (candidate == null) continue;
+
                         fallback = candidate;
                         if (candidate != _lastPrefab) count++;
                     }
+
                 if (count == 0) return _lastPrefab = fallback;
+
                 int choice = UnityEngine.Random.Range(0, count);
                 foreach (ParticleSystem candidate in randomPrefabs)
                     if (candidate != null && candidate != _lastPrefab && choice-- == 0)
@@ -85,6 +89,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DamageReceived += PlayHit;
             _enemy.DeathStarted += PlayDeathBurst;
             _subscribed = true;
@@ -97,6 +102,7 @@ namespace _Scripts.Agent.Enemies
                 _enemy.DamageReceived -= PlayHit;
                 _enemy.DeathStarted -= PlayDeathBurst;
             }
+
             _subscribed = false;
         }
 
@@ -124,6 +130,7 @@ namespace _Scripts.Agent.Enemies
                 if (selectedPrefab == null) continue;
 
                 float effectAngle = angle;
+
                 if (damage.Dealer != null && (selectedPrefab.TryGetComponent<EnemyBloodParticle>(out _) ||
                     selectedPrefab.TryGetComponent<EnemyMetalFragmentParticle>(out _)))
                 {
@@ -140,6 +147,7 @@ namespace _Scripts.Agent.Enemies
         private void PlayDeathBurst()
         {
             if (!isActiveAndEnabled || deathBurstPrefab == null || deathBurstScale <= 0f) return;
+
             Vector3 position = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
             // 사망 분사는 타격 방향에 관계없이 전방위로 뻗는 전용 프리팹을 사용합니다.
             SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale);
@@ -175,19 +183,23 @@ namespace _Scripts.Agent.Enemies
             Vector2 position = point;
             Vector2 center = origin;
             float nearest = float.PositiveInfinity;
+
             if (hitSprites != null)
                 foreach (SpriteRenderer sprite in hitSprites)
                 {
                     if (sprite == null || sprite.sprite == null || !sprite.enabled ||
                         !sprite.gameObject.activeInHierarchy || sprite.color.a <= 0f) continue;
+
                     Bounds bounds = sprite.bounds;
                     Vector2 candidate = bounds.ClosestPoint(new Vector3(point.x, point.y, bounds.center.z));
                     float distance = (candidate - point).sqrMagnitude;
                     if (distance >= nearest) continue;
+
                     nearest = distance;
                     position = candidate;
                     center = bounds.center;
                 }
+
             position = Vector2.MoveTowards(position, center, Mathf.Max(0f, hitPointInset));
             return new Vector3(position.x, position.y, origin.z);
         }

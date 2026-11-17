@@ -57,26 +57,32 @@ namespace _Scripts.Agent.Enemies.Skills
         private readonly List<RaycastHit2D> _terrainHits = new List<RaycastHit2D>();
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private readonly List<ContactPoint2D> _landingContacts = new List<ContactPoint2D>();
+
         private Rigidbody2D _body;
         private EnemyMovementModule _movement;
         private EnemySkillModule _skills;
         private EnemyParticleModule _particles;
         private ContactFilter2D _terrainFilter;
+
         private Vector3 _posePosition;
         private Vector3 _poseScale;
+
         private bool _airborne;
         private bool _falling;
         private bool _landed;
         private bool _hitApplied;
+
         private float _launchTime;
         private float _flightDeadline;
         private float _activeUntil;
         private float _recoveryUntil;
+
         private float _direction;
         private Vector2 _lockedLandingCenter;
         private Vector2 _impactCenter;
         private float _warningStartsAt;
         private LeapTrajectory _trajectory;
+
         private int _flightStep;
         private float _originalGravityScale;
         private bool _followingTrajectory;
@@ -134,6 +140,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _particles = owner.GetModule<EnemyParticleModule>();
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
+
             if (poseRoot != null)
             {
                 _posePosition = poseRoot.localPosition;
@@ -160,6 +167,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             Enemy.FaceTarget();
             _warningStartsAt = Time.time + Mathf.Max(0f, AttackDelay - warningLeadTime);
             // 경고는 도약하는 적을 따라가지 않도록 월드에 고정합니다.
@@ -179,8 +187,10 @@ namespace _Scripts.Agent.Enemies.Skills
                 poseRoot.localPosition = _posePosition + Vector3.right *
                     (Mathf.Sin(Time.time * 90f) * preparationShake);
             }
+
             base.UpdateSkill();
             if (!IsUsing || !HasReleased) return;
+
             // 피격 경직으로 FixedUpdate의 이동 처리가 잠겨도 착지는 확인합니다.
             if (_airborne)
             {
@@ -189,21 +199,26 @@ namespace _Scripts.Agent.Enemies.Skills
                     StopFollowingTrajectory();
                     Telegraph?.Hide();
                 }
+
                 CheckLanding();
             }
+
             if (!IsUsing || !_landed) return;
+
             if (Time.time < _activeUntil) TryLandingHit();
             else if (!IsRecovering)
             {
                 BeginRecovery();
                 PlayAnimation(recoveryStateName);
             }
+
             if (poseRoot != null)
             {
                 float progress = Mathf.Clamp01((Time.time - (_activeUntil - activeDuration)) / 0.2f);
                 poseRoot.localScale = Vector3.Scale(_poseScale,
                     Vector3.Lerp(new Vector3(1.15f, 0.8f, 1f), Vector3.one, progress));
             }
+
             if (Time.time >= _recoveryUntil) EndSkill();
         }
 
@@ -218,6 +233,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             Enemy.StopHorizontalMovement();
             _direction = Enemy.FacingDirection;
             _originalGravityScale = _body.gravityScale;
@@ -247,6 +263,7 @@ namespace _Scripts.Agent.Enemies.Skills
             Vector2 from = _trajectory.PositionAt(_flightStep);
             Vector2 to = _trajectory.PositionAt(++_flightStep);
             _body.linearVelocity = (to - from) / Time.fixedDeltaTime;
+
             if (!_falling && _flightStep > _trajectory.RiseSteps)
             {
                 _falling = true;
@@ -257,6 +274,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void StopFollowingTrajectory()
         {
             if (!_followingTrajectory) return;
+
             _followingTrajectory = false;
             if (_body != null) _body.gravityScale = _originalGravityScale;
         }
@@ -264,6 +282,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void CheckLanding()
         {
             if (!_airborne || _body == null || _movement == null) return;
+
             // 이동용 GroundCheck는 바닥 직전에도 참입니다. 착지 피해는 실제 접촉 후에만 냅니다.
             if (Time.time > _launchTime + 0.08f && _body.linearVelocityY <= 0.1f &&
                 _movement.IsGrounded && bodyCollider.IsTouching(_terrainFilter))
@@ -279,6 +298,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 _activeUntil = Time.time + Mathf.Max(0f, activeDuration);
                 _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
                 PlayAnimation(landingStateName);
+                NotifyAttackPerformed(new Vector3(bounds.center.x, bounds.min.y, bounds.center.z));
                 PlayLandingParticle(bounds);
                 TryLandingHit();
             }
@@ -297,12 +317,15 @@ namespace _Scripts.Agent.Enemies.Skills
             bodyCollider.GetContacts(_terrainFilter, _landingContacts);
             Vector2 contactSum = Vector2.zero;
             int contactCount = 0;
+
             foreach (ContactPoint2D contact in _landingContacts)
             {
                 if (contact.normal.y <= 0.5f) continue;
+
                 contactSum += contact.point;
                 contactCount++;
             }
+
             Vector2 point = contactCount > 0
                 ? contactSum / contactCount
                 : new Vector2(bounds.center.x, bounds.min.y);
@@ -312,14 +335,17 @@ namespace _Scripts.Agent.Enemies.Skills
         private void TryLandingHit()
         {
             if (_hitApplied || !CanContinue) return;
+
             Physics2D.SyncTransforms();
             Physics2D.OverlapCircle(_impactCenter, landingRadius,
                 new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
                         hit.ClosestPoint(_impactCenter), Vector2.right * _direction)) continue;
+
                 _hitApplied = true;
                 break;
             }
@@ -331,6 +357,7 @@ namespace _Scripts.Agent.Enemies.Skills
             landingCenter = default;
             if (target == null || bodyCollider == null || _movement == null || _skills == null ||
                 !_skills.IsTargetInSkillRange(this, target.position)) return false;
+
             float floorReferenceY = bodyCollider.bounds.min.y;
             if (useTargetHeightForLanding) floorReferenceY += _movement.GetTargetHeightDifference(target);
             return TryPlanLeap(target.position.x, floorReferenceY, out trajectory, out landingCenter);
@@ -343,10 +370,12 @@ namespace _Scripts.Agent.Enemies.Skills
             landingCenter = default;
             if (_body == null || !_body.simulated || bodyCollider == null || !bodyCollider.enabled ||
                 _movement == null || !_movement.IsGrounded) return false;
+
             Bounds bounds = bodyCollider.bounds;
             float floorTolerance = requireLockedFloor ? 0.1f : maximumLandingHeightDifference;
             if (!TryFindFloor(landingX, floorReferenceY, floorTolerance, out float floorY) ||
                 Mathf.Abs(floorY - bounds.min.y) > maximumLandingHeightDifference + 0.01f) return false;
+
             // 몸체 폭 양쪽이 같은 높이의 바닥 위에 있어야 절벽 끝에 반만 걸치지 않습니다.
             for (int side = -1; side <= 1; side += 2)
                 if (!TryFindFloor(landingX + side * bounds.extents.x * 0.8f, floorReferenceY, floorTolerance, out float edgeY) ||
@@ -360,20 +389,24 @@ namespace _Scripts.Agent.Enemies.Skills
                 peakY, riseSteps, diveSteps, Mathf.Clamp01(horizontalAcceleration));
             Vector2 previous = bounds.center;
             Vector2 probeSize = Vector2.Max((Vector2)bounds.size - Vector2.one * 0.06f, Vector2.one * 0.04f);
+
             // 경로 검사와 비행에 같은 스텝 좌표를 사용합니다.
             for (int i = 1; i <= trajectory.Steps; i++)
             {
                 Vector2 next = trajectory.PositionAt(i);
                 Vector2 delta = next - previous;
                 Physics2D.BoxCast(previous, probeSize, 0f, delta.normalized, _terrainFilter, _terrainHits, delta.magnitude);
+
                 foreach (RaycastHit2D hit in _terrainHits)
                 {
                     if (!IsTerrain(hit)) continue;
                     if (i == trajectory.Steps && hit.normal.y > 0.5f && Mathf.Abs(hit.point.y - floorY) < 0.1f) continue;
                     return false;
                 }
+
                 previous = next;
             }
+
             return true;
         }
 
@@ -383,13 +416,16 @@ namespace _Scripts.Agent.Enemies.Skills
             float range = Mathf.Max(0f, tolerance) + 0.1f;
             Physics2D.Raycast(new Vector2(x, feetY + range), Vector2.down,
                 _terrainFilter, _terrainHits, range * 2f);
+
             foreach (RaycastHit2D hit in _terrainHits)
             {
                 if (!IsTerrain(hit) || hit.normal.y <= 0.5f ||
                     Mathf.Abs(hit.point.y - feetY) > tolerance + 0.01f) continue;
+
                 floorY = hit.point.y;
                 return true;
             }
+
             return false;
         }
 
@@ -414,6 +450,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void RestorePose()
         {
             if (poseRoot == null) return;
+
             poseRoot.localPosition = _posePosition;
             poseRoot.localScale = _poseScale;
         }
@@ -422,6 +459,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (attackAnimator == null || !attackAnimator.isActiveAndEnabled ||
                 attackAnimator.runtimeAnimatorController == null || string.IsNullOrEmpty(stateName)) return;
+
             int hash = Animator.StringToHash(stateName);
             if (attackAnimator.HasState(0, hash)) attackAnimator.Play(hash, 0, 0f);
         }

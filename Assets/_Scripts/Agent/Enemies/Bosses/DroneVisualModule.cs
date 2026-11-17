@@ -21,6 +21,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         internal void Play(string state)
         {
             if (_drone == null || _drone.IsDead || animator == null || !animator.isActiveAndEnabled) return;
+
             int hash = Animator.StringToHash("Base Layer." + state);
             if (animator.HasState(0, hash)) animator.Play(hash, 0, 0f);
         }
@@ -32,6 +33,7 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             int hash = Animator.StringToHash("Base Layer." + state);
             if (!animator.HasState(0, hash)) return true;
+
             AnimatorStateInfo current = animator.GetCurrentAnimatorStateInfo(0);
             // Play가 이번 프레임의 Animator 평가에 아직 반영되지 않았으면 기다립니다.
             return current.fullPathHash == hash && current.normalizedTime >= 1f;
@@ -45,14 +47,17 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void LateUpdate()
         {
             if (_drone == null) return;
+
             bool alive = !_drone.IsDead;
             if (alarmLamp != null)
                 alarmLamp.enabled = alive && (!_drone.IsAirPhase || Time.time % 0.55f < 0.29f);
+
             if (processNumber != null)
             {
                 processNumber.enabled = alive;
                 processNumber.flipX = _drone.FacingDirection < 0f;
             }
+
             if (shadow != null)
             {
                 shadow.enabled = alive;

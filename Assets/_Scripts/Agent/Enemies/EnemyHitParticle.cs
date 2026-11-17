@@ -19,6 +19,7 @@ namespace _Scripts.Agent.Enemies
         {
             ParticleSystem particle = LeanPool.Spawn(prefab, position, rotation);
             if (particle == null) return null;
+
             // 발사나 사망 후에도 재생을 이어가되, 적이나 탄이 있던 씬을 벗어나지 않습니다.
             if (particle.gameObject.scene != scene) SceneManager.MoveGameObjectToScene(particle.gameObject, scene);
             particle.transform.localScale = prefab.transform.localScale * scale;
@@ -34,6 +35,7 @@ namespace _Scripts.Agent.Enemies
         {
             _root = root;
             _root.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
             if (!_configured)
             {
                 foreach (ParticleSystem particle in GetComponentsInChildren<ParticleSystem>(true))
@@ -44,11 +46,14 @@ namespace _Scripts.Agent.Enemies
                     // 루트와 자식의 재생이 끝날 때까지 반환 시점은 이 컴포넌트가 관리합니다.
                     main.stopAction = ParticleSystemStopAction.None;
                 }
+
                 _configured = true;
             }
+
             _startedAt = Time.time;
             _expiresAt = _startedAt + Mathf.Max(0.1f, maximumLifetime);
             _root.Play(true);
+
             if (TryGetComponent(out EnemyBloodParticle blood))
             {
                 // 흔적 유지 시간은 방출이 아닌 표면 접촉부터 세므로 일반 효과보다 수명이 깁니다.
@@ -72,6 +77,7 @@ namespace _Scripts.Agent.Enemies
         internal void Release()
         {
             if (_root == null) return;
+
             if (LeanPool.Links.TryGetValue(gameObject, out var pool) && pool != null)
                 LeanPool.Despawn(gameObject);
             else

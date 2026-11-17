@@ -69,6 +69,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _moving = true;
             CoolTimeStartTime = Time.time;
             Play(Strike);
+            NotifyAttackPerformed(_flight.BodyCenter);
         }
 
         public override void FixedUpdateAttack()
@@ -91,14 +92,17 @@ namespace _Scripts.Agent.Enemies.Skills
             Vector2 center = _flight.BodyCenter;
             Physics2D.BoxCast(center, hitboxSize, 0f, _direction,
                 new ContactFilter2D { useTriggers = true }, _hits, step);
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit.collider, CastTarget)) continue;
                 if (Vector2.Dot(_flight.GetTargetCenter(CastTarget) - center, _direction) < 0f) continue;
+
                 Vector2 point = hit.collider.ClosestPoint(center);
                 if (!_flight.HasClearPath(center, point) ||
                     !EnemyDamageUtility.TryApply(hit.collider, CastTarget, Enemy, damage, point, _direction))
                     continue;
+
                 _hit = true;
                 CoolTimeStartTime = Time.time;
                 break;
@@ -109,6 +113,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             base.UpdateSkill();
             if (!IsUsing || !HasReleased || _moving) return;
+
             if (!IsRecovering)
             {
                 if (attackAnimator != null && attackAnimator.isActiveAndEnabled)
@@ -116,10 +121,12 @@ namespace _Scripts.Agent.Enemies.Skills
                     AnimatorStateInfo state = attackAnimator.GetCurrentAnimatorStateInfo(0);
                     if (state.fullPathHash == Strike && state.normalizedTime < 1f) return;
                 }
+
                 BeginRecovery();
                 _recoverUntil = Time.time + recoveryTime;
                 Play(Recovery);
             }
+
             if (Time.time >= _recoverUntil) EndSkill();
         }
 
@@ -145,6 +152,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void ResetDash()
         {
             _moving = false;
+
             if (_flight != null && Enemy != null && !Enemy.IsDead)
             {
                 _flight.Stop();

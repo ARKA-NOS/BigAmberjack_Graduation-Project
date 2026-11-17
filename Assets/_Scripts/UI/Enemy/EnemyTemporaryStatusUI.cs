@@ -10,16 +10,14 @@ namespace _Scripts.UI.Enemy
     public sealed class EnemyTemporaryStatusUI : MonoBehaviour
     {
         [SerializeField] private Image healthFill;
-        [SerializeField] private Image reactionFill;
 
         [Tooltip("적 루트에서 UI까지의 월드 좌표 오프셋. 상하 반전 시 Y만 반전하며 바 자체는 뒤집지 않습니다.")]
         [SerializeField] private Vector2 worldOffset = new Vector2(0f, 1.5f);
-        [Tooltip("Canvas 1픽셀에 해당하는 월드 크기. 기본 폭 160픽셀 × 0.01 = 1.6 유닛입니다.")]
+        [Tooltip("Canvas 1픽셀에 해당하는 월드 크기. 체력바 폭은 이 오브젝트의 RectTransform Width에서 설정합니다.")]
         [SerializeField, Min(0.001f)] private float worldUnitsPerPixel = 0.01f;
 
         private EnemyBase _enemy;
         private INewHealthModule _health;
-        private EnemyHitReactionModule _reaction;
         private EnemyVerticalFlipModule _verticalFlip;
 
         private Canvas _canvas;
@@ -55,7 +53,6 @@ namespace _Scripts.UI.Enemy
             if (_enemy == null) return;
 
             _health = _enemy.GetModule<INewHealthModule>();
-            _reaction = _enemy.GetModule<EnemyHitReactionModule>();
             _verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
 
             if (_health != null)
@@ -77,9 +74,6 @@ namespace _Scripts.UI.Enemy
 
         private void Refresh()
         {
-            if (reactionFill != null)
-                reactionFill.fillAmount = _reaction != null ? _reaction.ReactionRemainingNormalized : 0f;
-
             bool visible = _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&
                 _health != null && !_health.IsDead && _health.CurrentHealth > 0f;
             _canvas.enabled = visible;
@@ -103,7 +97,6 @@ namespace _Scripts.UI.Enemy
         {
             if (_health != null) _health.OnHealthChanged -= OnHealthChanged;
             _health = null;
-            _reaction = null;
         }
 
         private void OnDisable()

@@ -15,6 +15,7 @@ namespace _Scripts.UI.HitFeedback
         [SerializeField] private AnimationCurve _normalScale = new AnimationCurve(
             new Keyframe(0f, 1.45f), new Keyframe(0.12f, 0.8f),
             new Keyframe(0.26f, 1.12f), new Keyframe(0.45f, 1f), new Keyframe(1f, 1f));
+
         [Header("Critical Display Only")]
         [SerializeField] private Color _criticalColor = new Color(1f, 0.84f, 0.12f, 1f);
         [SerializeField, Min(1f)] private float _criticalSizeMultiplier = 1.25f;
@@ -22,6 +23,7 @@ namespace _Scripts.UI.HitFeedback
         [SerializeField] private AnimationCurve _criticalScale = new AnimationCurve(
             new Keyframe(0f, 1.8f), new Keyframe(0.12f, 0.65f),
             new Keyframe(0.26f, 1.4f), new Keyframe(0.45f, 1f), new Keyframe(1f, 1f));
+
         [Header("Rise / Fade (World Units)")]
         [SerializeField, Min(0f)] private float _riseDistance = 1.1f;
         [SerializeField, Min(1f)] private float _criticalRiseMultiplier = 1.2f;
@@ -56,13 +58,15 @@ namespace _Scripts.UI.HitFeedback
                 Destroy(gameObject);
                 return;
             }
+
             _critical = data.IsCritical;
             _lifetime = Mathf.Max(0.05f, _duration * (_critical ? _criticalDurationMultiplier : 1f));
             _origin = data.Position + Vector3.right * Random.Range(-_horizontalSpread, _horizontalSpread);
             _drift = Random.Range(-_horizontalDrift, _horizontalDrift);
             _age = 0f;
             _startedAt = Time.time;
-            _label.text = Mathf.Max(0.1f, data.Damage).ToString("0.#", CultureInfo.InvariantCulture);
+            double roundedDamage = System.Math.Round(data.Damage, System.MidpointRounding.AwayFromZero);
+            _label.text = roundedDamage.ToString("0", CultureInfo.InvariantCulture);
             _label.color = _critical ? _criticalColor : _normalColor;
             _playing = true;
             ApplyFrame(0f); // 첫 화면부터 크게 표시하도록 다음 Update까지 기다리지 않습니다.
@@ -71,6 +75,7 @@ namespace _Scripts.UI.HitFeedback
         private void Update()
         {
             if (!_playing) return;
+
             // 생성된 프레임 전체의 deltaTime을 더하면 첫 큰 자세가 즉시 건너뛰어질 수 있습니다.
             _age = Time.time - _startedAt;
             float t = Mathf.Clamp01(_age / _lifetime);

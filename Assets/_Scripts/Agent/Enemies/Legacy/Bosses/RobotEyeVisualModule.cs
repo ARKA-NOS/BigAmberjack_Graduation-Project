@@ -39,6 +39,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 enabled = false;
                 return;
             }
+
             iris.sprite = normalIris;
             redIris.sprite = afterLaserIris;
             RedBlend = 0f;
@@ -56,6 +57,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             Vector2 center = globe.sprite.bounds.center;
             Vector2 destination = center;
             bool firingLaser = _laser.IsFiring;
+
             if (firingLaser)
             {
                 Vector2 direction = globe.transform.InverseTransformVector(_laser.BeamDirection);
@@ -87,6 +89,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 float progress = Mathf.InverseLerp(visibleY, _arena.Center.y, _boss.transform.position.y);
                 RedBlend = Mathf.Max(RedBlend, Mathf.SmoothStep(0f, 1f, progress));
             }
+
             Color color = redIris.color;
             color.a = RedBlend;
             redIris.color = color;

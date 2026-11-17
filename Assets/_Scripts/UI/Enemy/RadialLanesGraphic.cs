@@ -16,6 +16,7 @@ namespace _Scripts.UI.Enemy
             distance = Mathf.Max(0f, distance);
             width = Mathf.Max(0.01f, width);
             if (_count == count && _distance == distance && _width == width) return;
+
             _count = count; _distance = distance; _width = width;
             SetVerticesDirty();
         }
@@ -23,6 +24,7 @@ namespace _Scripts.UI.Enemy
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
+
             for (int i = 0; i < _count; i++)
             {
                 float angle = 2f * Mathf.PI * i / _count;

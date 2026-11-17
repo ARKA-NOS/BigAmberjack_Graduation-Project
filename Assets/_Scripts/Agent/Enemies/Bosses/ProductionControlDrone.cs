@@ -23,11 +23,13 @@ namespace _Scripts.Agent.Enemies.Bosses
         private BossArenaModule _arena;
         private State _state;
         private EnemyAttackSkill _airSkill;
+
         private bool _nextRapid;
         private bool _nextBomb;
         private float _nextSalvoAt;
         private float _recoverUntil;
         private float _nextNavigationAt;
+
         private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[1];
 
         protected override bool UpdatesWithoutCombatTarget => true;
@@ -45,13 +47,16 @@ namespace _Scripts.Agent.Enemies.Bosses
                 enabled = false;
                 return;
             }
+
             Flight.Place(Home);
         }
 
         protected override void UpdateBoss()
         {
             if (_arena == null || Flight == null || Skills == null) return;
+
             bool canPursue = HasCombatTarget && IsTargetInRange(ChaseReleaseRange);
+
             switch (_state)
             {
                 case State.Dormant:
@@ -65,13 +70,16 @@ namespace _Scripts.Agent.Enemies.Bosses
                     if (!Skills.IsBusy)
                     {
                         var salvo = _nextRapid ? rapidSalvo : regularSalvo;
+
                         if (salvo != null && salvo.DidFire)
                         {
                             _nextSalvoAt = salvo.CoolTimeStartTime + salvo.CoolTime;
                             _nextRapid = !_nextRapid;
                         }
+
                         Change(canPursue ? State.Engage : State.Return);
                     }
+
                     break;
                 case State.Ascend:
                     if (!canPursue) Change(State.Return);
@@ -82,6 +90,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                         else
                             Change(State.Descend);
                     }
+
                     break;
                 case State.AirAttack:
                     if (!Skills.IsBusy)
@@ -89,6 +98,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                         _nextBomb = _airSkill == laser;
                         Change(State.Descend);
                     }
+
                     break;
                 case State.Descend:
                     if (Flight.HasArrived && visual.HasFinished("Descend")) Change(State.Recover);
@@ -117,6 +127,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                     Change(State.GroundAttack);
                     return;
                 }
+
                 Reposition(salvo != null ? salvo.Range : 8f, horizontalDistance);
                 return;
             }
@@ -130,16 +141,20 @@ namespace _Scripts.Agent.Enemies.Bosses
         private bool TryAscend(EnemyAttackSkill skill)
         {
             if (skill == null || !Skills.IsSkillEnabled(skill) || skill.RemainingCoolTime > 0f) return false;
+
             float x = skill == laser ? ClampX(Target.position.x) : transform.position.x;
             if (skill == bomb && Mathf.Abs(Target.position.x - x) > bomb.Range) return false;
+
             Vector2 highPoint = new Vector2(x, FloorY + highAltitude);
             if (skill == bomb && !bomb.CanPlanFrom(highPoint, Target)) return false;
+
             Vector2 from = transform.position;
             Vector2 offset = highPoint - from;
             var filter = new ContactFilter2D { useTriggers = false };
             filter.SetLayerMask(terrainLayers);
             if (Physics2D.CircleCast(from, 0.4f, offset.normalized, filter, _terrainHits, offset.magnitude) > 0)
                 return false;
+
             Flight.MoveTo(highPoint, MoveSpeed);
             _airSkill = skill;
             Change(State.Ascend);
@@ -155,6 +170,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 return;
             }
             if (Flight.IsMoving || Time.time < _nextNavigationAt) return;
+
             float direction = Mathf.Sign(Target.position.x - transform.position.x);
             Vector2 point = new Vector2(ClampX(Target.position.x - direction * range * 0.72f), Home.y);
             _nextNavigationAt = Time.time + 0.15f;
@@ -171,6 +187,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void Change(State state)
         {
             _state = state;
+
             switch (state)
             {
                 case State.GroundAttack:

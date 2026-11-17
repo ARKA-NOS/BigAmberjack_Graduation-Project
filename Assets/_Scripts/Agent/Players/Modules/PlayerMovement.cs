@@ -47,6 +47,8 @@ namespace _Scripts.Agent.Players.Modules
             _isMoveLock = value;
             if(value) _playerRb.linearVelocityX = 0;
         }
+
+        public void SetVelocityX(float velocityX) => _playerRb.linearVelocityX = velocityX;
         
         private void FixedUpdate()
         {

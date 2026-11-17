@@ -1,18 +1,31 @@
 using System.Collections.Generic;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players;
+using _Scripts.Audio;
 using _Scripts.Currency;
 using UnityEngine;
 
 namespace _Scripts.Agent.Enemies
 {
-    // 적과 분리된 연출 객체. 분산 낙하 → 큰 바운스 → 플레이어 중심 추적 → 소멸/지급.
+    // 적과 분리된 연출 객체. 위쪽 분산 → 큰 바운스 → 플레이어 중심 추적 → 소멸/지급.
     [DisallowMultipleComponent, RequireComponent(typeof(SpriteRenderer))]
     public sealed class EnemyRewardCoin : MonoBehaviour
     {
-        [Header("Scatter (World Units)")]
+        [Header("Upward Scatter (World Units/Second)")]
+        [InspectorName("Launch Speed A (Legacy Horizontal)")]
+        [Tooltip("기존 상자 프리팹의 값을 보존합니다. 아래 B 범위의 중간값과 평균하여 모든 방향에 같은 발사 속도를 적용합니다.")]
         [SerializeField, Min(0f)] private float horizontalSpeed = 1.8f;
+        [InspectorName("Launch Speed B Range (Legacy Vertical)")]
+        [Tooltip("기존 프리팹의 두 값을 보존합니다. 코인마다 무작위로 뽑지 않고 중간값만 발사 속도 계산에 사용합니다.")]
         [SerializeField] private Vector2 upwardSpeedRange = new Vector2(2.8f, 4.2f);
+        [Tooltip("발사 방향 전체에 곱하는 세기입니다.")]
+        [SerializeField, Min(0f)] private float scatterForceMultiplier = 1f;
+        [Tooltip("발사 방향에 추가하는 위쪽 속도입니다. 0이어도 발사 각도는 위쪽 반원으로 제한됩니다.")]
+        [SerializeField] private float scatterUpwardBias = 0.5f;
+        [Tooltip("수평에서 이 각도만큼 위로 띄워 발사합니다. 바닥을 향한 초기 발사를 막습니다.")]
+        [SerializeField, Range(0f, 89f)] private float minimumLaunchElevation = 20f;
+        [Tooltip("발사 직후 중력을 잠시 적용하지 않는 시간(초)입니다. 첫 낙하에만 적용합니다.")]
+        [SerializeField, Min(0f)] private float launchGravityPause = 0.12f;
         [SerializeField, Min(0.01f)] private float gravityScale = 1.5f;
         [Tooltip("바닥/벽 레이어만 선택하세요. 기본값은 Ground입니다. 트리거는 무시합니다.")]
         [SerializeField] private LayerMask terrainLayers = 1 << 6;
@@ -36,11 +49,18 @@ namespace _Scripts.Agent.Enemies
         [Tooltip("플레이어가 없으면 재탐색하며 기다립니다. 끝까지 없을 때만 현재 위치에서 소멸/정산합니다.")]
         [SerializeField, Min(0.1f)] private float targetWaitTimeout = 5f;
 
+        [Header("Lifetime")]
+        [Tooltip("이 시간 안에 회수되지 못한 코인은 제거하고 보유 금액을 즉시 지급합니다.")]
+        [SerializeField, Min(0.1f)] private float coinDeathTime = 6f;
+
         [Header("Sprite Animation")]
         [SerializeField] private Sprite[] spinFrames;
         [SerializeField, Min(1f)] private float spinFramesPerSecond = 12f;
         [SerializeField] private Sprite[] collectFrames;
         [SerializeField, Min(1f)] private float collectFramesPerSecond = 12f;
+
+        [Header("Pickup Sound")]
+        [SerializeField] private SoundCueSO collectCue;
 
         [Header("Collect Scale Pulse")]
         [SerializeField] private bool enableCollectScalePulse = true;
@@ -61,15 +81,22 @@ namespace _Scripts.Agent.Enemies
         private float _animationTime;
         private bool _launched;
         private bool _completed;
+        private bool _collectedByPlayer;
         private bool _quitting;
+
         private enum CoinPhase { Scatter, Bounce, Homing, Collect }
+
         private CoinPhase _phase;
+
         private Transform _collector;
         private Collider2D _collectorBody;
         private SpriteRenderer _collectorSprite;
         private float _nextTargetSearch;
+
         private float _homingSpeed;
         private float _missingTargetTime;
+        private float _aliveTime;
+        private float _scatterGravityMultiplier = 1f;
         private Vector3 _originalScale;
 
         public int Amount { get; private set; }
@@ -81,6 +108,7 @@ namespace _Scripts.Agent.Enemies
         {
             PlayerController player = collector != null ? collector.GetComponentInParent<PlayerController>() : null;
             if (player != null) collector = player.transform;
+
             _collector = collector;
             _collectorBody = collector != null ? collector.GetComponent<Collider2D>() : null;
             _collectorSprite = collector != null ? collector.GetComponentInChildren<SpriteRenderer>() : null;
@@ -98,10 +126,13 @@ namespace _Scripts.Agent.Enemies
                 if (player == null || !player.gameObject.activeInHierarchy) player = FindFirstObjectByType<PlayerController>();
                 SetCollector(player != null ? player.transform : null);
             }
+
             center = transform.position;
             height = fallbackPlayerHeight;
             if (_collector == null || !_collector.gameObject.activeInHierarchy) return false;
+
             center = _collector.position;
+
             if (_collectorBody != null && _collectorBody.enabled && _collectorBody.gameObject.activeInHierarchy)
             {
                 center = _collectorBody.bounds.center;
@@ -112,25 +143,44 @@ namespace _Scripts.Agent.Enemies
                 center = _collectorSprite.bounds.center;
                 height = _collectorSprite.bounds.size.y;
             }
+
             if (height <= 0f) height = fallbackPlayerHeight;
             return true;
         }
 
-        internal void Launch(CurrencyData currency, int amount, float spread)
+        internal void Launch(CurrencyData currency, int amount, float spread, float launchSpeedMultiplier = 1f)
         {
             if (_launched) return;
+
             _launched = true;
             _currency = currency;
             Amount = amount;
+            _aliveTime = 0f;
+
             _visual = GetComponent<SpriteRenderer>();
             _trail = GetComponent<EnemyCoinTrail>();
-            if (_trail != null) _trail.BeginTrail(_visual);
             _originalScale = transform.localScale;
+
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
+
             float low = Mathf.Max(0f, Mathf.Min(upwardSpeedRange.x, upwardSpeedRange.y));
             float high = Mathf.Max(low, Mathf.Max(upwardSpeedRange.x, upwardSpeedRange.y));
-            _velocity = new Vector2(Mathf.Lerp(-horizontalSpeed, horizontalSpeed, spread), Random.Range(low, high));
+            // 위쪽 반원만 네 구간으로 나누고, 각 코인의 발사 각도만 무작위로 고릅니다.
+            int sector = Mathf.FloorToInt(Mathf.Repeat(spread, 1f) * 4f);
+            float minAngle = Mathf.Clamp(minimumLaunchElevation, 0f, 89f);
+            float angle = Mathf.Lerp(minAngle, 180f - minAngle, (sector + Random.value) * 0.25f) * Mathf.Deg2Rad;
+            Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+
+            // 기존 적/상자 프리팹의 두 속도 설정을 유지하되, 방향별 힘 차이는 만들지 않습니다.
+            float launchSpeed = (Mathf.Max(0f, horizontalSpeed) + (low + high) * 0.5f) * 0.5f *
+                Mathf.Max(0f, scatterForceMultiplier);
+            float boost = Mathf.Max(1f, launchSpeedMultiplier);
+            _velocity = (direction * launchSpeed + Vector2.up * scatterUpwardBias) * boost;
+
+            // 발사 속도의 제곱만큼 첫 낙하 중력을 키워 전체 비행 범위는 비슷하게 유지합니다.
+            _scatterGravityMultiplier = boost * boost;
+
             if (spinFrames != null && spinFrames.Length > 0)
             {
                 // 같은 순간에 생성된 코인도 회전 자세가 조금씩 다르게 시작합니다.
@@ -142,13 +192,19 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (!_launched || _completed || IsCollecting) return;
+
             float dt = Time.fixedDeltaTime;
             if (IsHoming) { TickHoming(dt); return; }
+
             _airTime += dt;
-            Vector2 gravity = Physics2D.gravity * gravityScale;
+            Vector2 gravity = _phase == CoinPhase.Scatter && _airTime <= launchGravityPause
+                ? Vector2.zero : Physics2D.gravity * gravityScale *
+                    (_phase == CoinPhase.Scatter ? _scatterGravityMultiplier : 1f);
             Vector2 delta = _velocity * dt + gravity * (0.5f * dt * dt);
             _velocity += gravity * dt;
+
             float distance = delta.magnitude;
+
             if (distance > 0f && FindTerrain(delta / distance, distance + Skin, out RaycastHit2D hit))
             {
                 // 이동 방향이 아닌 표면 법선 방향으로 틈을 둡니다. 비스듬히 부딪혀도
@@ -170,6 +226,10 @@ namespace _Scripts.Agent.Enemies
                 transform.position += (Vector3)delta;
             }
 
+            if (_phase == CoinPhase.Bounce && _trail != null &&
+                TryGetCollectorBounds(out Vector2 collectorCenter, out _))
+                _trail.SetCollectorDistance(Vector2.Distance(transform.position, collectorCenter));
+
             // 꼭대기까지 먼저 올라간 다음에만 자석 이동을 시작합니다.
             if ((_phase == CoinPhase.Bounce && _velocity.y <= 0f) || _airTime >= maxAirTime) BeginHoming();
         }
@@ -179,6 +239,7 @@ namespace _Scripts.Agent.Enemies
             nearest = default;
             Physics2D.CircleCast(transform.position, collisionRadius, direction, _terrainFilter, _hits, distance);
             float closest = float.PositiveInfinity;
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (hit.collider == null || hit.distance >= closest || hit.collider.GetComponentInParent<Agent>() != null) continue;
@@ -187,9 +248,11 @@ namespace _Scripts.Agent.Enemies
                 if (hit.collider.usedByEffector && hit.collider.TryGetComponent(out PlatformEffector2D platform) &&
                     platform.useOneWay && (_velocity.y > 0f || hit.normal.y < 0.5f ||
                     transform.position.y < hit.point.y)) continue;
+
                 closest = hit.distance;
                 nearest = hit;
             }
+
             return nearest.collider != null;
         }
 
@@ -200,13 +263,21 @@ namespace _Scripts.Agent.Enemies
                 BeginHoming();
                 return;
             }
-            TryGetCollectorBounds(out _, out float playerHeight);
+
+            bool hasCollector = TryGetCollectorBounds(out Vector2 collectorCenter, out float playerHeight);
             float height = Mathf.Max(minimumBounceHeight, playerHeight * Mathf.Max(0.5f, bounceHeightRatio));
             float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
             _velocity = new Vector2(_velocity.x * horizontalRetention, Mathf.Sqrt(2f * gravity * height));
             BounceCount++;
             _phase = CoinPhase.Bounce;
             _airTime = 0f;
+
+            if (_trail != null)
+            {
+                _trail.BeginTrail(_visual);
+                if (hasCollector)
+                    _trail.SetCollectorDistance(Vector2.Distance(transform.position, collectorCenter));
+            }
         }
 
         private void BeginHoming()
@@ -215,6 +286,12 @@ namespace _Scripts.Agent.Enemies
             _velocity = Vector2.zero;
             _homingSpeed = Mathf.Max(0.1f, initialHomingSpeed);
             _missingTargetTime = 0f;
+
+            if (_trail != null)
+            {
+                // 지형을 찾지 못한 코인도 회수 단계에서는 잔상을 보입니다.
+                if (BounceCount == 0) _trail.BeginTrail(_visual);
+            }
         }
 
         private void TickHoming(float dt)
@@ -222,26 +299,30 @@ namespace _Scripts.Agent.Enemies
             if (!TryGetCollectorBounds(out Vector2 center, out _))
             {
                 _missingTargetTime += dt;
-                if (_missingTargetTime >= targetWaitTimeout) BeginCollect();
+                if (_missingTargetTime >= targetWaitTimeout) BeginCollect(collectedByPlayer: false);
                 return;
             }
+
             _missingTargetTime = 0f;
             _homingSpeed = Mathf.MoveTowards(_homingSpeed, Mathf.Max(initialHomingSpeed, maxHomingSpeed), homingAcceleration * dt);
             float distance = Vector2.Distance(transform.position, center);
+            if (_trail != null) _trail.SetCollectorDistance(distance);
             if (distance <= Mathf.Max(collectDistance, _homingSpeed * dt))
             {
                 SetPosition(center);
-                BeginCollect();
+                BeginCollect(collectedByPlayer: true);
                 return;
             }
+
             // 보상 회수 단계는 지형에 막히지 않습니다. 움직이는 플레이어 중심을 매번 다시 읽습니다.
             SetPosition(Vector2.MoveTowards(transform.position, center, _homingSpeed * dt));
         }
 
         private void SetPosition(Vector2 position) => transform.position = new Vector3(position.x, position.y, transform.position.z);
 
-        private void BeginCollect()
+        private void BeginCollect(bool collectedByPlayer)
         {
+            _collectedByPlayer = collectedByPlayer;
             _phase = CoinPhase.Collect;
             if (_trail != null) _trail.StopTrail();
             _velocity = Vector2.zero;
@@ -252,12 +333,21 @@ namespace _Scripts.Agent.Enemies
                 CompleteReward();
                 return;
             }
+
             _visual.sprite = collectFrames[0];
         }
 
         private void Update()
         {
             if (!_launched || _completed) return;
+
+            _aliveTime += Time.deltaTime;
+            if (!IsCollecting && _aliveTime >= Mathf.Max(0.1f, coinDeathTime))
+            {
+                CompleteReward();
+                return;
+            }
+
             _animationTime += Time.deltaTime;
             if (!IsCollecting)
             {
@@ -277,12 +367,14 @@ namespace _Scripts.Agent.Enemies
         {
             float t = Mathf.Clamp01(_animationTime / Mathf.Max(0.01f, collectScaleDuration));
             float scale = 1f;
+
             if (enableCollectScalePulse && t < 1f)
             {
                 if (t < 0.3f) scale = Mathf.Lerp(1f, collectScalePeak, Mathf.SmoothStep(0f, 1f, t / 0.3f));
                 else if (t < 0.75f) scale = Mathf.Lerp(collectScalePeak, collectScaleDip, Mathf.SmoothStep(0f, 1f, (t - 0.3f) / 0.45f));
                 else scale = Mathf.Lerp(collectScaleDip, 1f, Mathf.SmoothStep(0f, 1f, (t - 0.75f) / 0.25f));
             }
+
             // 원래 배율에서 계산하므로 프레임마다 크기가 누적되지 않습니다.
             transform.localScale = _originalScale * scale;
         }
@@ -290,6 +382,7 @@ namespace _Scripts.Agent.Enemies
         private void UpdateSpinSprite()
         {
             if (spinFrames == null || spinFrames.Length == 0) return;
+
             int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, spinFramesPerSecond)) % spinFrames.Length;
             _visual.sprite = spinFrames[frame];
         }
@@ -297,9 +390,13 @@ namespace _Scripts.Agent.Enemies
         private void CompleteReward()
         {
             if (_completed) return;
+
+            if (_trail != null) _trail.StopTrail();
             _visual.enabled = false;
+            Vector3 pickupPosition = transform.position;
             Destroy(gameObject);
             PayReward();
+            if (_collectedByPlayer) EnemySoundModule.PlayCue(collectCue, pickupPosition);
         }
 
         private void OnApplicationQuit() => _quitting = true;
@@ -314,6 +411,7 @@ namespace _Scripts.Agent.Enemies
         private void PayReward()
         {
             if (_completed) return;
+
             _completed = true; // Add의 변경 이벤트에서 재진입해도 한 번만 지급합니다.
             if (_currency == null || Amount <= 0) return;
             // 연출 중 다른 보상도 들어올 수 있으므로 지급 시점에 다시 한도를 검사합니다.
@@ -322,6 +420,7 @@ namespace _Scripts.Agent.Enemies
                 Debug.LogWarning("코인 보상이 재화 보유량 한도를 초과하여 지급하지 않았습니다.", this);
                 return;
             }
+
             _currency.Add(Amount);
         }
     }

@@ -12,6 +12,8 @@ namespace _Scripts.Agent.SkillSystem.NormalSkill
 
         protected ModuleOwner Owner { get; private set; }
 
+        protected float _lastUsingTime;
+
         public virtual void InitSkill(ModuleOwner owner)
         {
             Owner = owner;
@@ -39,6 +41,7 @@ namespace _Scripts.Agent.SkillSystem.NormalSkill
         /// </summary>
         public void StopSkill()
         {
+            _lastUsingTime = Time.time;
             IsUsing = false;
             OnStopSkill();
         }
@@ -48,6 +51,7 @@ namespace _Scripts.Agent.SkillSystem.NormalSkill
         /// </summary>
         protected void EndSkill()
         {
+            _lastUsingTime = Time.time;
             IsUsing = false;
             OnEndSkill();
         }

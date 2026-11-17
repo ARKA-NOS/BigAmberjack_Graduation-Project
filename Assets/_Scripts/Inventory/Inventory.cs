@@ -7,7 +7,7 @@ namespace _Scripts.Inventory
     // 장착 칸(효과 적용, 최대 9칸까지 늘어남)과 보관 칸(효과 없음, 20칸)을 가진다.
     public class Inventory
     {
-        public const int EquipmentMaxCapacity = 9;
+        public const int EquipmentMaxCapacity = 8;
         public const int StorageCapacity = 20;
 
         // 통합 칸 번호 기준의 최대 칸 수(장착 최대 + 보관).

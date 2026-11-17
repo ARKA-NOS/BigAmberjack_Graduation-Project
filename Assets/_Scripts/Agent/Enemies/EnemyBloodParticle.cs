@@ -26,7 +26,13 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.01f)] private float fadeDuration = 0.55f;
         [SerializeField, Min(0f)] private float wallSlideSpeed = 0.22f;
 
+        [Header("Air Trails")]
+        [SerializeField, Range(0f, 0.3f)] private float trailOpacity = 0.08f;
+        [SerializeField, Min(0.02f)] private float trailDuration = 0.14f;
+        [SerializeField, Range(0.05f, 0.5f)] private float trailWidth = 0.2f;
+
         private const float Skin = 0.005f;
+        private const int TrailSamples = 12;
         private enum SurfaceState { Air, Floor, Wall }
         private struct Drop
         {
@@ -37,6 +43,7 @@ namespace _Scripts.Agent.Enemies
             public SurfaceState State;
             public bool TouchedSurface;
             public uint Seed;
+            public int TrailSlot, TrailHead, TrailCount;
         }
 
         private ParticleSystem _particles;
@@ -46,6 +53,13 @@ namespace _Scripts.Agent.Enemies
         private float _age, _z;
         private ContactFilter2D _filter;
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
+
+        private Vector2[] _trailPositions;
+        private float[] _trailTimes;
+        private Mesh _trailMesh;
+        private readonly List<Vector3> _trailVertices = new List<Vector3>(512);
+        private readonly List<Color> _trailColors = new List<Color>(512);
+        private readonly List<int> _trailTriangles = new List<int>(768);
 
         internal float MaximumLifetime => Mathf.Max(0.1f, maxAirTime) +
             // 공중 페이드 도중 늦게 착지하는 경우까지 포함합니다.
@@ -57,11 +71,16 @@ namespace _Scripts.Agent.Enemies
             int minimum = Mathf.Clamp(particleCount.x, 1, 64);
             int maximum = Mathf.Clamp(particleCount.y, minimum, 64);
             _count = Random.Range(minimum, maximum + 1);
+
             if (_drops == null || _drops.Length < _count)
             {
                 _drops = new Drop[maximum];
                 _renderParticles = new ParticleSystem.Particle[maximum];
+                _trailPositions = new Vector2[maximum * TrailSamples];
+                _trailTimes = new float[maximum * TrailSamples];
             }
+
+            if (trailOpacity > 0f) EnsureTrailRenderer();
             // 자동 이동/중력 대신 FixedUpdate에서 한 번만 계산합니다.
             var main = _particles.main;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
@@ -74,6 +93,7 @@ namespace _Scripts.Agent.Enemies
             _z = transform.position.z;
             float scale = Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.x));
             float aim = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
+
             for (int i = 0; i < _count; i++)
             {
                 // 부채꼴 구간별로 하나씩 뽑아 한쪽에 전부 뭉치는 경우를 줄입니다.
@@ -87,10 +107,14 @@ namespace _Scripts.Agent.Enemies
                     Size = RandomBetween(sizeRange, 0.01f) * scale,
                     Angle = Random.Range(0f, 360f), Spin = Random.Range(-220f, 220f),
                     Color = Color.Lerp(darkColor, brightColor, Random.value),
-                    FadeAt = Mathf.Max(0.1f, maxAirTime), Seed = (uint)Random.Range(1, int.MaxValue)
+                    FadeAt = Mathf.Max(0.1f, maxAirTime), Seed = (uint)Random.Range(1, int.MaxValue),
+                    TrailSlot = i
                 };
+                RecordTrail(ref _drops[i]);
             }
+
             WriteParticles();
+            WriteTrails();
         }
 
         private static float RandomBetween(Vector2 range, float minimum) =>
@@ -99,8 +123,10 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (_count == 0 || _particles == null) return;
+
             float dt = Time.fixedDeltaTime;
             _age += dt;
+
             for (int i = _count - 1; i >= 0; i--)
             {
                 Drop drop = _drops[i];
@@ -109,6 +135,10 @@ namespace _Scripts.Agent.Enemies
                     _drops[i] = _drops[--_count];
                     continue;
                 }
+
+                bool wasAirborne = drop.State == SurfaceState.Air;
+                Vector2 previousPosition = drop.Position;
+
                 if (drop.State != SurfaceState.Air)
                 {
                     if (drop.Surface == null || !drop.Surface.enabled || !drop.Surface.gameObject.activeInHierarchy)
@@ -126,15 +156,110 @@ namespace _Scripts.Agent.Enemies
                         if (drop.State == SurfaceState.Wall) Slide(ref drop, normal, dt);
                     }
                 }
+
                 if (drop.State == SurfaceState.Air)
                 {
                     drop.Velocity += Physics2D.gravity * gravityScale * dt;
                     drop.Angle += drop.Spin * dt;
                     Move(ref drop, drop.Velocity * dt);
                 }
+
+                if (wasAirborne && (drop.Position - previousPosition).sqrMagnitude > 0.000001f)
+                    RecordTrail(ref drop);
                 _drops[i] = drop;
             }
+
             WriteParticles();
+            WriteTrails();
+        }
+
+        private void EnsureTrailRenderer()
+        {
+            if (_trailMesh != null) return;
+
+            var trailObject = new GameObject("Blood Trails");
+            trailObject.layer = gameObject.layer;
+            trailObject.transform.SetParent(transform, false);
+            var filter = trailObject.AddComponent<MeshFilter>();
+            var renderer = trailObject.AddComponent<MeshRenderer>();
+            var particleRenderer = GetComponent<ParticleSystemRenderer>();
+            renderer.sharedMaterial = particleRenderer.sharedMaterial;
+            renderer.sortingLayerID = particleRenderer.sortingLayerID;
+            renderer.sortingOrder = particleRenderer.sortingOrder - 1;
+            _trailMesh = new Mesh { name = "Blood Trails" };
+            _trailMesh.MarkDynamic();
+            filter.sharedMesh = _trailMesh;
+        }
+
+        private void RecordTrail(ref Drop drop)
+        {
+            int index = drop.TrailSlot * TrailSamples + drop.TrailHead;
+            _trailPositions[index] = drop.Position;
+            _trailTimes[index] = _age;
+            drop.TrailHead = (drop.TrailHead + 1) % TrailSamples;
+            drop.TrailCount = Mathf.Min(drop.TrailCount + 1, TrailSamples);
+        }
+
+        private void WriteTrails()
+        {
+            if (_trailMesh == null) return;
+
+            _trailVertices.Clear();
+            _trailColors.Clear();
+            _trailTriangles.Clear();
+            float duration = Mathf.Max(0.02f, trailDuration);
+
+            for (int i = 0; i < _count; i++)
+            {
+                Drop drop = _drops[i];
+
+                for (int j = 1; j < drop.TrailCount; j++)
+                {
+                    int previous = drop.TrailSlot * TrailSamples +
+                        (drop.TrailHead - drop.TrailCount + j - 1 + TrailSamples) % TrailSamples;
+                    int current = drop.TrailSlot * TrailSamples +
+                        (drop.TrailHead - drop.TrailCount + j + TrailSamples) % TrailSamples;
+                    float previousAge = (_age - _trailTimes[previous]) / duration;
+                    if (previousAge >= 1f) continue;
+
+                    Vector2 from = _trailPositions[previous];
+                    Vector2 to = _trailPositions[current];
+                    Vector2 difference = to - from;
+                    if (difference.sqrMagnitude < 0.000001f) continue;
+
+                    Vector2 normal = new Vector2(-difference.y, difference.x).normalized;
+                    float currentAge = Mathf.Clamp01((_age - _trailTimes[current]) / duration);
+                    float previousFade = 1f - Mathf.Clamp01(previousAge);
+                    float currentFade = 1f - currentAge;
+                    float halfWidth = drop.Size * trailWidth * 0.5f;
+                    Vector2 fromOffset = normal * halfWidth * previousFade;
+                    Vector2 toOffset = normal * halfWidth * currentFade;
+                    int baseVertex = _trailVertices.Count;
+                    AddTrailVertex(from - fromOffset, drop.Color, previousFade);
+                    AddTrailVertex(from + fromOffset, drop.Color, previousFade);
+                    AddTrailVertex(to - toOffset, drop.Color, currentFade);
+                    AddTrailVertex(to + toOffset, drop.Color, currentFade);
+                    _trailTriangles.Add(baseVertex);
+                    _trailTriangles.Add(baseVertex + 2);
+                    _trailTriangles.Add(baseVertex + 1);
+                    _trailTriangles.Add(baseVertex + 1);
+                    _trailTriangles.Add(baseVertex + 2);
+                    _trailTriangles.Add(baseVertex + 3);
+                }
+            }
+
+            _trailMesh.Clear(false);
+            _trailMesh.SetVertices(_trailVertices);
+            _trailMesh.SetColors(_trailColors);
+            _trailMesh.SetTriangles(_trailTriangles, 0);
+            _trailMesh.RecalculateBounds();
+        }
+
+        private void AddTrailVertex(Vector2 worldPosition, Color color, float fade)
+        {
+            _trailVertices.Add(transform.InverseTransformPoint(new Vector3(worldPosition.x, worldPosition.y, _z)));
+            color.a *= trailOpacity * fade * fade;
+            _trailColors.Add(color);
         }
 
         private void Move(ref Drop drop, Vector2 delta)
@@ -146,6 +271,7 @@ namespace _Scripts.Agent.Enemies
                 drop.Position += delta;
                 return;
             }
+
             if (hit.normal.y >= 0.5f || Mathf.Abs(hit.normal.x) >= 0.5f)
                 Attach(ref drop, hit);
             else
@@ -165,6 +291,7 @@ namespace _Scripts.Agent.Enemies
             drop.Angle = Mathf.Atan2(-hit.normal.x, hit.normal.y) * Mathf.Rad2Deg;
             drop.LocalPosition = drop.Surface.transform.InverseTransformPoint(drop.Position);
             drop.LocalNormal = drop.Surface.transform.InverseTransformDirection(hit.normal);
+
             if (!drop.TouchedSurface)
             {
                 drop.TouchedSurface = true;
@@ -178,6 +305,7 @@ namespace _Scripts.Agent.Enemies
             Vector2 delta = tangent.normalized * wallSlideSpeed * dt;
             Move(ref drop, delta);
             if (drop.State == SurfaceState.Floor) return;
+
             // 벽 끝을 지나면 공중에서 흘러내리는 대신 중력 낙하로 돌아갑니다.
             if (FindTerrain(drop.Position, Radius(drop), -normal, 0.08f, out RaycastHit2D support) &&
                 Mathf.Abs(support.normal.x) >= 0.5f)
@@ -199,15 +327,18 @@ namespace _Scripts.Agent.Enemies
             nearest = default;
             Physics2D.CircleCast(origin, radius, direction, _filter, _hits, distance);
             float closest = float.PositiveInfinity;
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (hit.collider == null || hit.distance >= closest ||
                     hit.collider.GetComponentInParent<Agent>() != null || Vector2.Dot(direction, hit.normal) >= -0.0001f) continue;
                 if (hit.collider.usedByEffector && hit.collider.TryGetComponent(out PlatformEffector2D platform) &&
                     platform.useOneWay && (direction.y > 0f || hit.normal.y < 0.5f || origin.y < hit.point.y)) continue;
+
                 closest = hit.distance;
                 nearest = hit;
             }
+
             return nearest.collider != null;
         }
 
@@ -217,8 +348,10 @@ namespace _Scripts.Agent.Enemies
             {
                 // simulationSpeed가 0이면 시스템 시간도 멈춥니다. 입자가 끝났음을 명시합니다.
                 _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                if (_trailMesh != null) _trailMesh.Clear(false);
                 return;
             }
+
             for (int i = 0; i < _count; i++)
             {
                 Drop drop = _drops[i];
@@ -233,6 +366,7 @@ namespace _Scripts.Agent.Enemies
                     startColor = color, startLifetime = 1f, remainingLifetime = 1f, randomSeed = drop.Seed
                 };
             }
+
             _particles.SetParticles(_renderParticles, _count);
         }
 
@@ -240,6 +374,12 @@ namespace _Scripts.Agent.Enemies
         {
             _count = 0;
             if (_particles != null) _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            if (_trailMesh != null) _trailMesh.Clear(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (_trailMesh != null) Destroy(_trailMesh);
         }
     }
 }

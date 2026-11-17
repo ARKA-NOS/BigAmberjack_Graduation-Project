@@ -36,6 +36,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void OnEnable()
         {
             EventBus<RunEndedEvent>.Subscribe(HandleRunEnded);
+
             if (_started)
             {
                 SubscribeHealth();
@@ -47,8 +48,10 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             UnsubscribeHealth();
             if (_boss == null) return;
+
             _health = _boss.GetModule<INewHealthModule>();
             if (_health == null) return;
+
             _health.OnDead += CloseView;
             if (_health.IsDead || _health.CurrentHealth <= 0f) CloseView();
         }
@@ -67,6 +70,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 Debug.LogWarning($"{name}: Boss Health Bar Prefab을 연결하세요.", this);
                 return;
             }
+
             // Overlay Canvas는 씬 루트에 두어 보스의 이동/스케일을 물려받지 않게 합니다.
             _view = Instantiate(healthBarPrefab);
             _view.name = _boss.name + " HealthBar";
@@ -87,6 +91,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void ReleaseView()
         {
             if (_view == null) return;
+
             _view.gameObject.SetActive(false);
             Destroy(_view.gameObject);
             _view = null;

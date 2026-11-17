@@ -1,4 +1,5 @@
 ﻿using _Scripts._Core._Debug;
+using _Scripts.Agent.FSM;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.Agent.SkillSystem.NormalSkill;
@@ -19,7 +20,7 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private HashDataSO animHash;
+        [SerializeField] private StateSo[] comboStates;
         [SerializeField] private int animatorLayer = 0;
         
         [Header("DamageCast Setting")]
@@ -28,7 +29,16 @@ namespace _Scripts.Agent.Players.Skills
         
         [Header("AttackMove")]
         [SerializeField] private AnimationCurve attackMoveCurve;
-        [SerializeField] private float moveSpeed = 1f;
+        [SerializeField] private float lungeDistance = 1f;
+
+        [Header("Combotime")]
+        [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
+        [SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
+
+        private const int CurveAreaSampleCount = 100;
+        private const int CurveStepSampleCount = 10;
+        private float _attackMoveCurveArea;
+        private float _prevMoveNormal;
 
         private IRenderer _renderer;
         private IAnimationTrigger _trigger;
@@ -36,7 +46,7 @@ namespace _Scripts.Agent.Players.Skills
 
         private IGroundChecker _groundChecker;
         private IControlMovement _movement;
-        
+
         private Stat damageStat;
         private Stat attackSpeedStat;
         
@@ -48,8 +58,13 @@ namespace _Scripts.Agent.Players.Skills
 
         private Vector3 _offset;
         private float _currentAnimationNormal;
+        private bool _isAttackState;
+
+        private float _moveAttackLastTime;
 
         private bool _isLunge;
+
+        public int ComboCount { get; private set; } = 0;
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -85,6 +100,18 @@ namespace _Scripts.Agent.Players.Skills
             _offset = damageCaster.transform.position - owner.transform.position;
         }
 
+        private static float IntegrateCurve(AnimationCurve curve, float from, float to, int sampleCount)
+        {
+            float step = (to - from) / sampleCount;
+            float area = 0f;
+            for (int i = 0; i < sampleCount; i++)
+            {
+                float t = from + (i + 0.5f) * step;
+                area += curve.Evaluate(t) * step;
+            }
+            return area;
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -98,11 +125,30 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
+            bool comboCounterOver = ComboCount >= comboStates.Length;
+            bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
+            if (comboCounterOver || comboWindowExhaust)
+            {
+                ComboCount = 0;
+            }
+
+            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
+            {
+                ComboCount = 1;
+            }
+            _playerController.ChangeState((PlayerStateEnum)comboStates[ComboCount].assetIndex);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
-            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f;
+            _isLunge = Mathf.Abs(_playerController.PlayerInput.MovementKey.x) > 0.1f
+                       && _groundChecker.FixedIsGround;
+            if (_isLunge)
+            {
+                //_movement.MoveXLock(true);
+                _attackMoveCurveArea = IntegrateCurve(attackMoveCurve, 0f, 1f, CurveAreaSampleCount);
+                _prevMoveNormal = 0f;
+            }
             SetAnimationSpeed();
             PlayerSkillEvents.RaiseMeleeAttackUsed(Owner);
         }
@@ -118,10 +164,13 @@ namespace _Scripts.Agent.Players.Skills
 
         public override void UpdateSkill()
         {
-            AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(animatorLayer);
+            AnimatorStateInfo info = _animator.IsInTransition(animatorLayer)
+                ? _animator.GetNextAnimatorStateInfo(animatorLayer)
+                : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            GroundStop();
-            AttackMove();
+            _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
+            //GroundStop();
+            //AttackMove();
             base.UpdateSkill();
             SetAnimationSpeed();
         }
@@ -129,6 +178,8 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
+            ComboCount++;
+            _moveAttackLastTime = Time.time;
             SkillEndSetting();
         }
 
@@ -142,7 +193,7 @@ namespace _Scripts.Agent.Players.Skills
         {
             _trigger.OnAttackTrigger -= OnTrigger;
             _trigger.OnAnimationEnd -= EndSkill;
-            _movement.MoveXLock(false);
+            //_movement.MoveXLock(false);
             _animator.speed = _prevSpeed;
             _playerController.ChangeState(PlayerStateEnum.IDLE);
         }
@@ -165,11 +216,22 @@ namespace _Scripts.Agent.Players.Skills
         
         private void AttackMove()
         {
-            if (!_isLunge)
+            if (!_isLunge || _attackMoveCurveArea <= 0f || !_isAttackState)
                 return;
 
-            Vector2 dir = _renderer.GetRight();
-            Owner.transform.Translate(dir * (moveSpeed * attackMoveCurve.Evaluate(_currentAnimationNormal) * Time.deltaTime));
+            float current = Mathf.Clamp01(_currentAnimationNormal);
+            float prev = _prevMoveNormal;
+            _prevMoveNormal = Mathf.Max(prev, current);
+
+            if (current <= prev || Time.deltaTime <= 0f)
+            {
+                _movement.SetVelocityX(0f);
+                return;
+            }
+
+            float stepArea = IntegrateCurve(attackMoveCurve, prev, current, CurveStepSampleCount);
+            float distance = lungeDistance * stepArea / _attackMoveCurveArea;
+            _movement.SetVelocityX(_renderer.GetRight().x * distance / Time.deltaTime);
         }
         
     }

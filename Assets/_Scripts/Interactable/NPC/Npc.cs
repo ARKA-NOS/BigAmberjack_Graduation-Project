@@ -12,7 +12,7 @@ namespace _Scripts.Interactable.NPC
     // 특수 NPC. 플레이어의 InteractModule이 이 오브젝트를 찾아 상호작용 키를 누르면 대화창을 연다.
     // InteractModule은 MapObject 레이어의 콜라이더에서 이 컴포넌트를 찾으므로, 콜라이더와 같은 오브젝트에 두어야 한다.
     // InteractionLock이 붙어 있으면 주변에 살아 있는 적이 있는 동안 콜라이더를 꺼서 상호작용을 막는다.
-    // 대화창은 직접 참조하지 않고 DialogueViewModel에 대화 내용을 Bind만 한다. (화면 표시는 씬의 DialogueUIBinder 담당)
+    // 대화창은 직접 참조하지 않고 DialogueEvents로 대화 내용을 보내기만 한다. (화면 표시는 씬의 대화창 UI 담당)
     public class Npc : AbstractInteractObject, ICanInteract
     {
         [SerializeField] private NpcDataSO data;
@@ -21,7 +21,6 @@ namespace _Scripts.Interactable.NPC
 
         // 베이스의 Position 대신 UI 기준점 오프셋을 적용한다. (ICanInteract를 다시 구현해서 인터페이스 조회에도 이 값이 쓰인다)
         public new Vector2 Position => (Vector2)transform.position + uiAnchorOffset;
-        [SerializeField] private DialogueViewModel dialogueViewModel;
         [Tooltip("취소 대사를 보여준 뒤 대화창을 닫기까지의 시간")]
         [SerializeField] private float closeDelay = 1.5f;
 
@@ -46,7 +45,6 @@ namespace _Scripts.Interactable.NPC
             _spriteRenderer = GetComponent<SpriteRenderer>();
 
             Debug.Assert(_col != null, "NPC 콜라이더가 없습니다.");
-            Debug.Assert(dialogueViewModel != null, $"{name} : DialogueViewModel이 없습니다.");
 
             if (data != null && data.Sprite != null && _spriteRenderer != null)
                 _spriteRenderer.sprite = data.Sprite;
@@ -111,7 +109,7 @@ namespace _Scripts.Interactable.NPC
             _isOpen = true;
 
             string[] choiceTexts = data.Choices.Select(choice => choice.ChoiceText).ToArray();
-            BindDialogue(new DialogueData(data.NpcName, data.FirstDialogue, choiceTexts, OnChoiceSelected));
+            DialogueEvents.Show(new DialogueData(data.NpcName, data.FirstDialogue, choiceTexts, OnChoiceSelected));
         }
 
         private void Close()
@@ -127,7 +125,7 @@ namespace _Scripts.Interactable.NPC
                 return;
 
             _isOpen = false;
-            BindDialogue(null);
+            DialogueEvents.Hide();
         }
 
         private void OnChoiceSelected(int index)
@@ -140,7 +138,7 @@ namespace _Scripts.Interactable.NPC
             if (choice.IsCancel)
             {
                 // 선택지 없이 취소 대사만 보여준다.
-                BindDialogue(new DialogueData(data.NpcName, data.CancelDialogue));
+                DialogueEvents.Show(new DialogueData(data.NpcName, data.CancelDialogue));
                 _closeRoutine = StartCoroutine(CloseAfterDelay());
                 return;
             }
@@ -161,12 +159,6 @@ namespace _Scripts.Interactable.NPC
             // 재이용 불가 NPC는 첫 번째 이용 후 사라진다.
             if (!data.Reusable)
                 SetVisible(false);
-        }
-
-        private void BindDialogue(DialogueData dialogue)
-        {
-            if (dialogueViewModel != null)
-                dialogueViewModel.Bind(dialogue);
         }
 
         private IEnumerator CloseAfterDelay()

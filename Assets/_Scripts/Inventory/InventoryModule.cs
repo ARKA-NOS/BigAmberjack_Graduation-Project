@@ -1,14 +1,12 @@
 using System;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Item;
-using _Scripts.UI.InventoryUI;
 using UnityEngine;
 
 namespace _Scripts.Inventory
 {
     public class InventoryModule : Module, IInventoryModule
     {
-        [SerializeField] private InventoryViewModel viewModel;
         [SerializeField, Range(1, Inventory.EquipmentMaxCapacity)] private int startEquipmentCapacity = Inventory.EquipmentMaxCapacity;
 
         [Header("Debug")]
@@ -24,7 +22,6 @@ namespace _Scripts.Inventory
         {
             base.Initialize(owner);
             Inventory = new Inventory(startEquipmentCapacity);
-            BindViewModel();
         }
 
         public bool TryAddItem(ItemSO item)
@@ -112,20 +109,12 @@ namespace _Scripts.Inventory
             if (IsLocked || amount <= 0 || Inventory.Equipment.Expand(amount) == 0) return false;
 
             OnEquipmentCapacityChanged?.Invoke(Inventory.Equipment.Capacity);
-            BindViewModel();
             return true;
         }
 
         private void NotifySlotChanged(InventorySlotType type, int slot)
         {
             OnSlotChanged?.Invoke(type, slot);
-            BindViewModel();
-        }
-
-        private void BindViewModel()
-        {
-            if (viewModel != null)
-                viewModel.Bind(Inventory);
         }
 
         [ContextMenu("Debug/Add Debug Item")]

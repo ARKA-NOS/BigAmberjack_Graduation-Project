@@ -2,7 +2,7 @@ namespace _Scripts._Core
 {
     public static class CodeFormat
     {
-        public static string EnumFormat = 
+        public const string EnumFormat = 
 @"
 namespace {0} 
 {{

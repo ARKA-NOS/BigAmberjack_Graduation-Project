@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using _Scripts._Core;
 using _Scripts._Core._Debug;
 using _Scripts._Core._Manager;
 using _Scripts._Core._SaveSystem;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Upgrade;
+using _Scripts.Upgrade.SO;
 using UnityEngine;
 
 namespace _Scripts.Agent.Players.CharacterSystem
@@ -15,7 +16,10 @@ namespace _Scripts.Agent.Players.CharacterSystem
         [SerializeField] private CharacterData[] characterList;
 
         private CharacterData currentCharacter;
-        
+
+        private UpgradeTree _activeTree;
+        private ModuleOwner _activeOwner;
+
         private const string CharacterSaveName = "CharacterSaveData";
         private const string DefaultValue = "Default";
         
@@ -24,31 +28,30 @@ namespace _Scripts.Agent.Players.CharacterSystem
             currentCharacter = LoadCurrentCharacter();
             ServiceLocator.Register<ICharacterManager>(this);
         }
-
+        
         public override void GameEnd()
         {
-            base.GameEnd();
+            UnbindUpgradeTree();
             ServiceLocator.Register<ICharacterManager>(new NullCharacterManager());
             SaveCurrentCharacter();
         }
-
+        
         private CharacterData LoadCurrentCharacter()
         {
-            CharacterSaveData loadData = SaveSystem.Load(CharacterSaveName,
-                new CharacterSaveData(DefaultValue));
+            string loadData = SaveSystem.Load(CharacterSaveName,
+                new CharacterSaveData(DefaultValue)).saveData;
             
-            CharacterData data = characterList.FirstOrDefault(x => x.name == loadData.saveData)
-                                 ?? defaultCharacter;
+            CharacterData data = characterList.FirstOrDefault(x => x.name == loadData, defaultCharacter);
             
             return data;
         }
-
+        
         private void SaveCurrentCharacter()
         {
             SaveSystem.Save(CharacterSaveName,
                 new CharacterSaveData(currentCharacter?.name ?? DefaultValue));
         }
-
+        
         public void CreateCharacter(Vector2 pos)
         {
             if (currentCharacter == null)
@@ -57,15 +60,17 @@ namespace _Scripts.Agent.Players.CharacterSystem
                 return;
             }
             GameObject go = Instantiate(currentCharacter.Prefab);
-
-            ModuleOwner owner = go.GetComponentInChildren<ModuleOwner>();
-
+            
+            PlayerController owner = go.GetComponentInChildren<PlayerController>();
+            
             if (owner == null)
             {
-                FDebug.LogError("[CharacterManager] ModuleOwner is not found");
+                FDebug.LogError("[CharacterManager] PlayerController is not found");
                 return;
             }
-
+            
+            owner.CharacterData = currentCharacter;
+            
             if (currentCharacter.TreeSo == null)
             {
                 FDebug.LogError("[CharacterManager] currentCharacter.TreeSo is null");
@@ -77,6 +82,7 @@ namespace _Scripts.Agent.Players.CharacterSystem
             if (tree != null)
             {
                 tree.UpgradeOwner(owner);
+                BindUpgradeTree(tree, owner);
             }
             else
             {
@@ -84,6 +90,36 @@ namespace _Scripts.Agent.Players.CharacterSystem
             }
             
             owner.transform.position = pos;
+        }
+        
+        private void BindUpgradeTree(UpgradeTree tree, ModuleOwner owner)
+        {
+            UnbindUpgradeTree();
+            _activeTree = tree;
+            _activeOwner = owner;
+            _activeTree.OnUpgradeChanged += HandleUpgradeChanged;
+        }
+        
+        private void UnbindUpgradeTree()
+        {
+            if (_activeTree != null)
+                _activeTree.OnUpgradeChanged -= HandleUpgradeChanged;
+            _activeTree = null;
+            _activeOwner = null;
+        }
+        
+        private void HandleUpgradeChanged(UpgradeNodeSO node)
+        {
+            if (_activeOwner == null)
+            {
+                UnbindUpgradeTree();
+                return;
+            }
+            
+            if (node == null || node.UpgradeData == null) return;
+            if (!_activeTree.IsUpgrade(node)) return;
+            
+            node.UpgradeData.AgentUpgrade(_activeOwner);
         }
         
     }

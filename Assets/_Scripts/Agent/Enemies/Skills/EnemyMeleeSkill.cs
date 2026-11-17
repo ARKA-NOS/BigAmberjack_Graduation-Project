@@ -27,6 +27,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void PrepareAttack()
         {
             _hitEventConsumed = false;
+
             if (!string.IsNullOrEmpty(preparationStateName))
             {
                 attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
@@ -50,6 +51,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             _endDeadline = Time.time + Mathf.Max(0.1f, attackTimeout);
             attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             attackAnimator.Play(Animator.StringToHash(attackStateName), 0, 0f);
@@ -58,18 +60,22 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void OnAttackHit()
         {
             if (!IsUsing || !HasReleased || !CanContinue || _hitEventConsumed) return;
+
             _hitEventConsumed = true; // 빗나가도 소모하여 중복 이벤트의 재타격을 막습니다.
             Telegraph?.Hide();
+
             if (attackHitbox != null && attackHitbox.enabled && attackHitbox.gameObject.activeInHierarchy)
             {
                 Physics2D.SyncTransforms();
                 attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
                 Vector2 direction = CastTarget.position - Enemy.transform.position;
+
                 foreach (Collider2D hit in _overlaps)
                     if (EnemyDamageUtility.IsTargetCollider(hit, CastTarget) &&
                         EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage,
                             hit.ClosestPoint(attackHitbox.bounds.center), direction)) break;
             }
+
             BeginRecovery(); // 빗나간 공격도 타격 판정 이후에는 빈틈이 생깁니다.
         }
 
@@ -82,6 +88,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 return;
             }
             if (!IsUsing || !HasReleased || Time.time < _endDeadline) return;
+
             EndSkill();
             Debug.LogWarning($"{name}: OnAttackFinished 이벤트가 없어 근접 스킬을 종료했습니다.", this);
         }
@@ -102,6 +109,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (Enemy == null || Enemy.IsDead || attackAnimator == null || !attackAnimator.isActiveAndEnabled ||
                 attackAnimator.runtimeAnimatorController == null || string.IsNullOrEmpty(idleStateName)) return;
+
             int idleHash = Animator.StringToHash(idleStateName);
             if (attackAnimator.HasState(0, idleHash)) attackAnimator.Play(idleHash, 0, 0f);
         }

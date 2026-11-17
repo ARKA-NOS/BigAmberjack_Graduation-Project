@@ -1,3 +1,4 @@
+using System;
 using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.ModuleSystem;
@@ -31,13 +32,23 @@ namespace _Scripts.Agent.Enemies.Skills
         protected bool HasReleased { get; private set; }
         protected virtual bool ShouldShowTelegraph => true;
         public bool IsPreparing => IsUsing && !HasReleased;
+        internal virtual bool InterruptibleByHit => IsPreparing;
         // 타격/발사 처리가 끝나면 파생 스킬이 BeginRecovery를 호출합니다.
         public bool IsRecovering => IsUsing && _isRecovering;
         public bool IsHoldingWarning => IsPreparing && _preparationPhase == PreparationPhase.Holding;
+        // 도약처럼 스킬이 직접 이동시키는 구간에만 FSM의 정지 처리를 건너뜁니다.
+        public virtual bool ControlsMovement => false;
+        public virtual bool CompletesAfterTargetLost => false;
+        internal virtual bool FinishesOutsideChaseRange => CompletesAfterTargetLost;
+        public virtual void FixedUpdateAttack() { }
         public float AttackDelay => Mathf.Max(0f, _attackDelay?.Value ?? fallbackAttackDelay);
         public float PostBlinkDelay => Mathf.Max(0f, postBlinkDelay);
         protected EnemyBase Enemy { get; private set; }
         protected Transform CastTarget { get; private set; }
+        internal event Action<EnemyAttackSkill, Vector3> AttackPerformed;
+
+        protected void NotifyAttackPerformed(Vector3 position) => AttackPerformed?.Invoke(this, position);
+
         protected bool CanContinue => isActiveAndEnabled && Enemy != null && Enemy.isActiveAndEnabled &&
             !Enemy.IsDead && CastTarget != null && CastTarget.gameObject.activeInHierarchy && Enemy.Target == CastTarget;
 
@@ -56,6 +67,11 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             base.OnUseSkill();
             CastTarget = Enemy.Target;
+            BeginPreparation();
+        }
+
+        protected void BeginPreparation()
+        {
             HasReleased = false;
             _isRecovering = false;
             if (Telegraph == null && telegraphPrefab != null)
@@ -66,6 +82,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _preparationPhase = PreparationPhase.Waiting;
             _phaseEndTime = Time.time + Mathf.Max(0f, AttackDelay - _blinkDuration);
             PrepareAttack();
+
             if (IsUsing && Telegraph != null && ShouldShowTelegraph)
             {
                 Telegraph.Show(telegraphOpacity);
@@ -75,11 +92,12 @@ namespace _Scripts.Agent.Enemies.Skills
 
         public override void UpdateSkill()
         {
-            if (!CanContinue)
+            if (!CanContinue && !CompletesAfterTargetLost)
             {
                 StopSkill();
                 return;
             }
+
             if (IsPreparing && Telegraph != null)
             {
                 if (!ShouldShowTelegraph) Telegraph.Hide();
@@ -89,8 +107,10 @@ namespace _Scripts.Agent.Enemies.Skills
                     if (_preparationPhase == PreparationPhase.Blinking) Telegraph.BeginBlink();
                 }
             }
+
             if (Telegraph != null && Telegraph.IsVisible) UpdateTelegraph();
             if (!IsPreparing || Time.time < _phaseEndTime) return;
+
             switch (_preparationPhase)
             {
                 case PreparationPhase.Waiting:
@@ -99,6 +119,7 @@ namespace _Scripts.Agent.Enemies.Skills
                         BeginHold();
                         break;
                     }
+
                     Telegraph?.BeginBlink();
                     _preparationPhase = PreparationPhase.Blinking;
                     _phaseEndTime = Time.time + _blinkDuration;
@@ -118,6 +139,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (_holdDuration > 0f && preparationWarning != null) preparationWarning.Show();
             _preparationPhase = PreparationPhase.Holding;
             _phaseEndTime = Time.time + _holdDuration;
+            if (_holdDuration <= 0f) ReleaseAttack();
         }
 
         protected virtual void PrepareAttack() { }
@@ -129,9 +151,17 @@ namespace _Scripts.Agent.Enemies.Skills
             if (IsUsing && HasReleased) _isRecovering = true;
         }
 
+        protected AttackTelegraphUI TakeTelegraph()
+        {
+            AttackTelegraphUI telegraph = Telegraph;
+            Telegraph = null;
+            return telegraph;
+        }
+
         private void ReleaseAttack()
         {
             if (!IsUsing || !CanContinue || HasReleased) return;
+
             HasReleased = true;
             if (preparationWarning != null) preparationWarning.Hide();
             OnReleaseAttack();

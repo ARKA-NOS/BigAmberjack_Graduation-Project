@@ -31,7 +31,6 @@ namespace _Scripts.UI.PlayerUI.HUD_UI.Effect_UI_System.Effect_UI
             EffectImageUpdate();
             EffectTimeUpdate();
         }
-
         private void EffectImageUpdate()
         {
             effectImage.sprite = effectData.EffectIcon;

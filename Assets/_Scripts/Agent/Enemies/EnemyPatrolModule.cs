@@ -12,6 +12,8 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private float centerOffsetX;
         [SerializeField, Min(0f)] private float patrolSpeed = 2f;
         [SerializeField, Min(0f)] private float pauseDuration = 0.6f;
+        [Tooltip("추격을 해제하면 배회 범위 안에 있더라도 먼저 스폰 위치로 돌아갑니다.")]
+        [SerializeField] private bool returnToSpawnBeforePatrol;
 
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
@@ -20,6 +22,7 @@ namespace _Scripts.Agent.Enemies
         private float _waitUntil;
         private bool _patrolling;
         private bool _waiting;
+        private bool _returningToSpawn;
         private float _nextDirection;
 
         public Vector2 Center => _spawnPosition + Vector2.right * centerOffsetX;
@@ -38,38 +41,48 @@ namespace _Scripts.Agent.Enemies
         internal void BeginPatrol()
         {
             if (_enemy == null) return;
+
             _patrolling = true;
             _waiting = false;
             _nextDirection = Random.value < 0.5f ? -1f : 1f;
-            ChooseDestination();
+            _returningToSpawn = returnToSpawnBeforePatrol && Mathf.Abs(_enemy.transform.position.x - _spawnPosition.x) > 0.06f;
+            if (_returningToSpawn) _destinationX = _spawnPosition.x;
+            else ChooseDestination();
         }
 
         internal float TickPatrol()
         {
             if (!isActiveAndEnabled || _enemy == null || _enemy.IsDead || _movement == null)
                 return 0f;
+
             if (!_patrolling) BeginPatrol();
-            if (halfWidth <= 0.06f || patrolSpeed <= 0f)
+            if (patrolSpeed <= 0f || (!_returningToSpawn && halfWidth <= 0.06f))
             {
                 _movement.Stop();
                 return 0f;
             }
+
             if (_waiting)
             {
                 _movement.Stop();
                 if (Time.time < _waitUntil) return 0f;
+
                 _waiting = false;
                 ChooseDestination();
             }
-            _destinationX = Mathf.Clamp(_destinationX, MinX, MaxX);
+
+            if (!_returningToSpawn) _destinationX = Mathf.Clamp(_destinationX, MinX, MaxX);
             float direction = _movement.MoveOnGroundTowards(_destinationX, patrolSpeed, out bool blocked);
+
             if (blocked || Mathf.Abs(_enemy.transform.position.x - _destinationX) <= 0.06f)
             {
+                _returningToSpawn = false;
                 _movement.Stop();
                 _waiting = true;
                 _waitUntil = Time.time + Mathf.Max(0f, pauseDuration);
                 if (blocked) _nextDirection = _destinationX >= _enemy.transform.position.x ? -1f : 1f;
             }
+
             return direction;
         }
 
@@ -80,6 +93,7 @@ namespace _Scripts.Agent.Enemies
             // 구간 안쪽을 목적지로 정해 실제로 복귀한 뒤 다음 배회 지점을 선택합니다.
             if (x < MinX) { _destinationX = Center.x; _nextDirection = 1f; return; }
             if (x > MaxX) { _destinationX = Center.x; _nextDirection = -1f; return; }
+
             float end = _nextDirection > 0f ? MaxX : MinX;
             _destinationX = Mathf.Lerp(x, end, Random.Range(0.5f, 1f));
             _nextDirection = -_nextDirection;

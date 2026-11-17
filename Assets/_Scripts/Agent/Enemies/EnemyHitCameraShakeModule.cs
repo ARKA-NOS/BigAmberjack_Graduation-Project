@@ -10,17 +10,17 @@ namespace _Scripts.Agent.Enemies
     public sealed class EnemyHitCameraShakeModule : Module
     {
         [Header("Normal Hit")]
-        [Tooltip("흔들림 신호의 월드 유닛 배율. 카메라 Listener의 Gain이 최종 강도에 곱해집니다. 0이면 끕니다.")]
-        [SerializeField, Min(0f)] private float _normalStrength = 0.12f;
+        [Tooltip("흔들림 신호의 월드 유닛 배율. 공통 매니저 Intensity와 카메라 Listener Gain이 곱해집니다. 0이면 끕니다.")]
+        [SerializeField, Min(0f)] private float _normalStrength = 0.08f;
         [SerializeField, Min(0.01f)] private float _normalDuration = 0.2f;
 
         [Header("Critical Hit")]
-        [SerializeField, Min(0f)] private float _criticalStrength = 0.24f;
+        [SerializeField, Min(0f)] private float _criticalStrength = 0.18f;
         [SerializeField, Min(0.01f)] private float _criticalDuration = 0.26f;
 
         [Header("Lethal Hit")]
         [Tooltip("마지막 타격의 흔들림 강도를 일반/크리티컬 설정에 곱합니다.")]
-        [SerializeField, Min(1f)] private float _lethalStrengthMultiplier = 2f;
+        [SerializeField, Min(1f)] private float _lethalStrengthMultiplier = 3.2f;
         [Tooltip("마지막 타격의 지속 시간을 일반/크리티컬 설정에 곱합니다.")]
         [SerializeField, Min(1f)] private float _lethalDurationMultiplier = 1.7f;
 
@@ -53,6 +53,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DamageReceived += OnDamageReceived;
             _subscribed = true;
         }
@@ -66,6 +67,7 @@ namespace _Scripts.Agent.Enemies
         private void OnDamageReceived(DamageData damage, Vector2 point, Vector2 direction, Vector2 normal)
         {
             if (damage.DamageAmount <= 0f || !IsFinite(damage.DamageAmount)) return;
+
             if (!HasDirection(direction) && damage.Dealer != null)
                 direction = _enemy.transform.position - damage.Dealer.transform.position;
             if (!HasDirection(direction)) direction = -normal;
@@ -77,14 +79,19 @@ namespace _Scripts.Agent.Enemies
         public void PlayShake(bool isCritical, Vector2 direction, bool isLethal = false)
         {
             if (!isActiveAndEnabled || _impulseChannel == 0) return;
+
             float strength = isCritical ? _criticalStrength : _normalStrength;
             float duration = isCritical ? _criticalDuration : _normalDuration;
+
             if (isLethal)
             {
                 strength *= Mathf.Max(1f, _lethalStrengthMultiplier);
                 duration *= Mathf.Max(1f, _lethalDurationMultiplier);
             }
+
+            strength *= EnemyHitCameraShakeManager.Intensity;
             if (!IsFinite(strength) || strength <= 0f || !IsFinite(duration) || duration <= 0f) return;
+
             if (!_useHitDirection || !HasDirection(direction)) direction = _fallbackDirection;
             if (!HasDirection(direction)) direction = Vector2.right;
             Vector2 shakeDirection = direction.normalized;
@@ -105,6 +112,7 @@ namespace _Scripts.Agent.Enemies
             Vector3 position = _enemy != null ? _enemy.transform.position : transform.position;
             var impulse = definition.CreateAndReturnEvent(position, (Vector3)shakeDirection * strength);
             if (impulse == null) return;
+
             impulse.Radius = Mathf.Max(0f, _fullStrengthRadius);
             impulse.CustomDissipation = -1f;
             impulse.DissipationMode = CinemachineImpulseManager.ImpulseEvent.DissipationModes.SoftDecay;

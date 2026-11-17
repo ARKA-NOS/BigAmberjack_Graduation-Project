@@ -11,7 +11,7 @@ namespace _Scripts.Item
 {
     // 바닥에 떨어진 아이템. 상호작용 키(F)를 짧게 누르면 줍고, 꾹 누르고 있으면 파괴한다.
     // InteractModule은 누른 순간에만 Interact를 부르므로, 뗐는지/누르고 있는지는 holdKey로 따로 읽는다.
-    // 상호작용 대상이 되면 툴팁 ViewModel에 자신을 넘긴다.
+    // 상호작용 대상이 되거나 벗어나면 ItemTooltipEvents로 알린다. (툴팁 UI는 모른다)
     public class ItemPickup : AbstractInteractObject, IItemTooltipSource
     {
         private const float FocusTolerance = 0.01f;
@@ -21,7 +21,6 @@ namespace _Scripts.Item
         [SerializeField] private SpriteRenderer iconRenderer;
 
         [Header("Tooltip")]
-        [SerializeField] private ItemTooltipViewModel tooltipViewModel;
         [SerializeField] private Vector2 tooltipOffset = new(0f, 0.5f);
 
         [Header("Input")]
@@ -146,12 +145,10 @@ namespace _Scripts.Item
             if (_isFocused == focused) return;
             _isFocused = focused;
 
-            if (tooltipViewModel == null) return;
-
             if (focused)
-                tooltipViewModel.Bind(this);
-            else if (ReferenceEquals(tooltipViewModel.BindData, this))
-                tooltipViewModel.Bind(null);
+                ItemTooltipEvents.Focus(this);
+            else
+                ItemTooltipEvents.Unfocus(this);
         }
     }
 }

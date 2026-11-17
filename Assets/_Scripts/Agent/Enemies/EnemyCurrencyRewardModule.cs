@@ -13,12 +13,16 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private CurrencySO rewardCurrency;
         [Tooltip("소유 적의 StatModule에서 읽을 보상 수량 스탯. 소수 부분은 버립니다.")]
         [SerializeField] private StatData rewardAmountStat;
+        [Tooltip("기본 보상에 0부터 이 값까지의 무작위 금액을 더합니다.")]
+        [SerializeField, Min(0)] private int maxBonusAmount;
 
         [Header("Coin Drop")]
         [SerializeField] private EnemyRewardCoin coinPrefab;
         [Tooltip("코인 하나가 나타내는 기준 금액. 3이면 1~3골드: 1개, 4~6골드: 2개입니다.")]
         [SerializeField, Min(1)] private int currencyPerCoin = 3;
         [SerializeField, Min(1)] private int maxCoinCount = 12;
+        [Tooltip("적 처치 코인의 초기 발사 속도 배율입니다. 첫 낙하 중력도 함께 조정하여 비행 범위를 비슷하게 유지합니다.")]
+        [SerializeField, Min(1f)] private float deathCoinLaunchMultiplier = 1.45f;
         [Tooltip("적 루트의 월드 위치에 더할 생성 오프셋입니다. 상하 반전 모듈이 켜지면 Y 방향도 반전합니다.")]
         [SerializeField] private Vector2 spawnOffset = new Vector2(0f, 0.35f);
 
@@ -59,7 +63,10 @@ namespace _Scripts.Agent.Enemies
                 return;
             }
             if (value < 1f) return;
+
             int amount = Mathf.FloorToInt(value);
+            int bonusLimit = Mathf.Clamp(maxBonusAmount, 0, int.MaxValue - amount);
+            if (bonusLimit > 0) amount += Random.Range(0, bonusLimit + 1);
 
             if (coinPrefab == null)
             {
@@ -87,6 +94,7 @@ namespace _Scripts.Agent.Enemies
             EnemyVerticalFlipModule verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
             if (verticalFlip != null && verticalFlip.IsFlipped) offset.y = -offset.y;
             Vector3 position = _enemy.transform.position + (Vector3)offset;
+
             for (int i = 0; i < count; i++)
             {
                 // 부모를 지정하지 않아 적의 사망 연출/제거와 코인의 수명이 독립적입니다.
@@ -95,7 +103,8 @@ namespace _Scripts.Agent.Enemies
                 // 구간을 나누어 같은 방향에 모두 겹쳐 날아가는 것을 줄입니다.
                 float spread = (i + Random.Range(0.1f, 0.9f)) / count;
                 coin.SetCollector(_enemy.Target);
-                coin.Launch(currency, baseAmount + (i < remainder ? 1 : 0), spread);
+                coin.Launch(currency, baseAmount + (i < remainder ? 1 : 0), spread,
+                    Mathf.Max(1f, deathCoinLaunchMultiplier));
             }
         }
     }

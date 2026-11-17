@@ -45,12 +45,15 @@ namespace _Scripts.Agent.Enemies
         internal void SuspendForHit()
         {
             if (!_applied) return;
+
             for (int i = 0; i < sprites.Length; i++)
             {
                 if (sprites[i] == null) continue;
+
                 sprites[i].color = _colors[i];
                 sprites[i].sharedMaterial = _materials[i];
             }
+
             _applied = false;
         }
 
@@ -61,6 +64,7 @@ namespace _Scripts.Agent.Enemies
                 Hide();
                 return;
             }
+
             ApplyWarning();
         }
 
@@ -68,9 +72,11 @@ namespace _Scripts.Agent.Enemies
         {
             if (_applied || !isActiveAndEnabled || _enemy == null || !_enemy.isActiveAndEnabled || _enemy.IsDead ||
                 warningMaterial == null || (_hitReaction != null && _hitReaction.IsBlinking)) return;
+
             for (int i = 0; i < sprites.Length; i++)
             {
                 if (sprites[i] == null) continue;
+
                 _colors[i] = sprites[i].color;
                 _materials[i] = sprites[i].sharedMaterial;
                 Color color = warningColor;
@@ -78,6 +84,7 @@ namespace _Scripts.Agent.Enemies
                 sprites[i].sharedMaterial = warningMaterial;
                 sprites[i].color = color;
             }
+
             _applied = true;
         }
 

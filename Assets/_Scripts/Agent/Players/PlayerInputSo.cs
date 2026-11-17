@@ -25,6 +25,7 @@ namespace _Scripts.Agent.Players
         public event Action OnInteractKeyPressed;
         public event Action OnInventoryKeyPressed;
         public event Action OnTitleKeyPressed;
+        public event Action OnCancelKeyPressed;
         
         private Controls _controls;
         
@@ -118,6 +119,12 @@ namespace _Scripts.Agent.Players
         {
             if(context.started)
                 OnInventoryKeyPressed?.Invoke();
+        }
+
+        public void OnCancel(InputAction.CallbackContext context)
+        {
+            if(context.started)
+                OnCancelKeyPressed?.Invoke();
         }
 
         public void OnMouse(InputAction.CallbackContext context)

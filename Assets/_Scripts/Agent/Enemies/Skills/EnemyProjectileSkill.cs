@@ -69,12 +69,15 @@ namespace _Scripts.Agent.Enemies.Skills
                 _desiredAimDirection = Vector2.right * side;
                 return;
             }
+
             Vector2 targetPoint = CastTarget.position;
+
             if (aimAtTargetCenter)
             {
                 Collider2D targetBody = CastTarget.GetComponent<Collider2D>();
                 if (targetBody != null && targetBody.enabled) targetPoint = targetBody.bounds.center;
             }
+
             Vector2 origin = turret != null ? turret.AimOrigin : (Vector2)firePoint.position;
             _desiredAimDirection = targetPoint - origin;
             if (_desiredAimDirection.sqrMagnitude < 0.0001f) _desiredAimDirection = Vector2.right;
@@ -102,6 +105,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             Telegraph?.Hide();
             if (projectilePrefab == null || firePoint == null || (turret != null && !turret.IsDeployed)) { StopSkill(); return; }
+
             EnemyProjectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
             // 프리팹 원본이 아닌 이번 탄에 적용합니다. 수명 종료 시각을 계산하는 Launch보다 먼저 설정합니다.
             projectile.Speed = ProjectileSpeed;
@@ -116,6 +120,7 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             if (turret != null && !turret.isActiveAndEnabled) { StopSkill(); return; }
+
             if (IsPreparing && CanContinue && !_aimLocked)
             {
                 if (faceTargetDuringPreparation) Enemy.FaceTarget();
@@ -123,12 +128,15 @@ namespace _Scripts.Agent.Enemies.Skills
                 else if (turret == null) _aimLocked = true;
                 RotateAim();
             }
+
             base.UpdateSkill();
+
             if (IsHoldingWarning)
             {
                 _aimLocked = true;
                 if (turret != null) turret.HoldAim();
             }
+
             if (IsUsing && HasReleased && Time.time >= _endTime) EndSkill();
         }
 
@@ -136,8 +144,10 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (Enemy == null || Enemy.IsDead || string.IsNullOrEmpty(stateName) || attackAnimator == null ||
                 !attackAnimator.isActiveAndEnabled || attackAnimator.runtimeAnimatorController == null) return;
+
             int stateHash = Animator.StringToHash(stateName);
             if (!attackAnimator.HasState(0, stateHash)) return;
+
             attackAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             attackAnimator.Play(stateHash, 0, 0f);
         }

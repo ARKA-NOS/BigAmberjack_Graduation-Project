@@ -15,6 +15,7 @@
 
         public override void Exit()
         {
+            base.Exit();
             ControlMovement.MoveXLock(false);
         }
     }

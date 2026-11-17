@@ -87,7 +87,6 @@ GameObject:
   - component: {fileID: 851924180559924909}
   - component: {fileID: 3191274559437647069}
   - component: {fileID: 7678079156634821345}
-  - component: {fileID: 5025329906287304425}
   m_Layer: 0
   m_Name: healthBarUI
   m_TagString: Untagged
@@ -170,23 +169,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
---- !u!114 &5025329906287304425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5085791894528617766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a25ff8851c4d43e38ae5bee80bd08f12, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.PlayerUI.HDU_UI.HP_UI.PlayerHealthUIBinder
-  bindData: {fileID: 11400000, guid: 34f49b0aa51c7c544b0aa536a95f73aa, type: 2}
-  currentBar: {fileID: 2681427946501165472}
-  lagBar: {fileID: 8499483001215807455}
-  lagSpeed: 0.1
-  healthText: {fileID: 5773268409664966024}
 --- !u!1 &5830079234820421671
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,8 +243,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

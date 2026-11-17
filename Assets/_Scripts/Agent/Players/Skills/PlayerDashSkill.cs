@@ -134,6 +134,8 @@ namespace _Scripts.Agent.Players.Skills
                 .OnComplete(EndSkill);
             
             if (!_groundChecker.FixedIsGround) _currentAirDashCount++;
+
+            PlayerSkillEvents.RaiseDashUsedEvent(Owner);
         }
 
         protected override void OnEndSkill()

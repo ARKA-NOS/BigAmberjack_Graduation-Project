@@ -81,6 +81,7 @@ namespace _Scripts.Agent.Enemies
 
             ContactFilter2D filter = new ContactFilter2D { useTriggers = true };
             _collider.Overlap(filter, _overlaps);
+
             // 발사 위치가 벽 안이면 타깃보다 벽을 우선합니다.
             foreach (Collider2D overlap in _overlaps)
             {
@@ -90,6 +91,7 @@ namespace _Scripts.Agent.Enemies
                     return;
                 }
             }
+
             foreach (Collider2D overlap in _overlaps)
             {
                 if (EnemyDamageUtility.IsTargetCollider(overlap, _target) && !IsIgnored(overlap))
@@ -103,6 +105,7 @@ namespace _Scripts.Agent.Enemies
             _collider.Cast(_direction, filter, _castHits, distance);
             RaycastHit2D nearestHit = default;
             float nearestDistance = float.PositiveInfinity;
+
             foreach (RaycastHit2D hit in _castHits)
             {
                 if (IsIgnored(hit.collider) ||

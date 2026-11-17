@@ -10,6 +10,8 @@ namespace _Scripts.Agent.Players.TitleSystem
         public readonly AbstractTitleSo TitleSo;
         private readonly List<Quest> quests;
         public event Action<Title> OnComplete;
+        // 퀘스트 진행도가 바뀌었을 때.
+        public event Action<Title> OnProgressChanged;
 
         public bool IsComplete { get; private set; }
         public bool IsActive { get; private set; } = true;
@@ -40,7 +42,7 @@ namespace _Scripts.Agent.Players.TitleSystem
 
         private void QuestValueChanged()
         {
-            
+            OnProgressChanged?.Invoke(this);
         }
         
         private void QuestComplete()
@@ -67,6 +69,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             }
             quests.Clear();
             OnComplete = null;
+            OnProgressChanged = null;
         }
         
         public IReadOnlyList<Quest> GetQuests() => quests;

@@ -11,7 +11,8 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
     {
         [field:SerializeField] public Room RoomPrefab { get; private set; }
         [field:SerializeField] public float Priority { get; private set; }
-        
+        [field: SerializeField] public RoomRole Role { get; private set; } = RoomRole.Combat;
+
         private void OnValidate()
         {
             if (RoomPrefab == null)

@@ -27,15 +27,29 @@ namespace _Scripts.Agent.Players.Skills
         }
     }
 
+    public class DashUsedEvent : IEvent
+    {
+        public ModuleOwner Owner { get; private set; }
+
+        public DashUsedEvent Init(ModuleOwner owner)
+        {
+            Owner = owner;
+            return this;
+        }
+    }
+
     public static class PlayerSkillEvents
     {
         private static readonly MeleeAttackUsedEvent MeleeAttackUsed = new();
         private static readonly MeleeAttackHitEvent MeleeAttackHit = new();
+        private static readonly DashUsedEvent DashUsedevent = new();
 
         public static void RaiseMeleeAttackUsed(ModuleOwner owner)
             => EventBus<MeleeAttackUsedEvent>.Raise(owner, MeleeAttackUsed.Init(owner));
 
         public static void RaiseMeleeAttackHit(ModuleOwner owner)
             => EventBus<MeleeAttackHitEvent>.Raise(owner, MeleeAttackHit.Init(owner));
+        public static void RaiseDashUsedEvent(ModuleOwner owner)
+            => EventBus<DashUsedEvent>.Raise(owner, DashUsedevent.Init(owner));
     }
 }

@@ -30,6 +30,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DamageReceived += OnDamageReceived;
             _subscribed = true;
         }

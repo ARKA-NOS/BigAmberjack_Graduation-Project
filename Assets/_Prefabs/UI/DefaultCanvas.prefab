@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8679943982691979190}
   - component: {fileID: 4947664417778189638}
   - component: {fileID: 3133710109701791451}
+  - component: {fileID: 1190690280238408495}
   m_Layer: 5
   m_Name: DefaultCanvas
   m_TagString: Untagged
@@ -102,6 +103,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &1190690280238408495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3762054262714701205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54384dd848e548248eb03542c31b183f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI._DefaultUI.DefaultUI
 --- !u!1001 &3077039130656616766
 PrefabInstance:
   m_ObjectHideFlags: 0

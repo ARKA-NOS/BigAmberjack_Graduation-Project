@@ -1,0 +1,27 @@
+namespace _Scripts.Agent.Enemies.FSM
+{
+    internal sealed class EnemyIdleState : EnemyState
+    {
+        public EnemyIdleState(EnemyBase enemy) : base(enemy)
+        {
+        }
+
+        public override void Enter()
+        {
+            Enemy.BeginPatrol();
+        }
+
+        public override void StateUpdate()
+        {
+            if (Enemy.IsTargetInRange(Enemy.DetectionRange))
+                Enemy.ChangeState(EnemyStateType.Chase);
+        }
+
+        public override void StateFixedUpdate()
+        {
+            Enemy.TickPatrol();
+        }
+
+        public override void Exit() => Enemy.EndPatrol();
+    }
+}

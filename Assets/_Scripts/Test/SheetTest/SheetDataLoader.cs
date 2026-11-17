@@ -18,9 +18,8 @@ namespace _Scripts.Test.SheetTest
         {
             FDebug.Log("모든 칭호명 로드", this);
             Sheet sheet = googleSheet.GetSheetData();
-            
             StringBuilder sb = new();
-            sheet.Where(x => x.HasKey(key)).Select(x => x[key]).Foreach(x => sb.AppendLine(x));
+            sheet.Where(x => x.ContainsKey(key)).Select(x => x[key]).Foreach(x => sb.AppendLine(x));
             FDebug.Log(sb, this);
         }
     }

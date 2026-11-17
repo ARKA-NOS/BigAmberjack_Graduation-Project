@@ -31,7 +31,6 @@ namespace _Scripts.Agent.Players.CharacterSystem
 
         public override void GameEnd()
         {
-            base.GameEnd();
             UnbindUpgradeTree();
             ServiceLocator.Register<ICharacterManager>(new NullCharacterManager());
             SaveCurrentCharacter();
@@ -63,13 +62,15 @@ namespace _Scripts.Agent.Players.CharacterSystem
             }
             GameObject go = Instantiate(currentCharacter.Prefab);
 
-            ModuleOwner owner = go.GetComponentInChildren<ModuleOwner>();
+            PlayerController owner = go.GetComponentInChildren<PlayerController>();
 
             if (owner == null)
             {
-                FDebug.LogError("[CharacterManager] ModuleOwner is not found");
+                FDebug.LogError("[CharacterManager] PlayerController is not found");
                 return;
             }
+
+            owner.CharacterData = currentCharacter;
 
             if (currentCharacter.TreeSo == null)
             {

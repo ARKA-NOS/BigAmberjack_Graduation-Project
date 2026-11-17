@@ -2,6 +2,7 @@
 using _Scripts._Core._Debug;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.FSM;
+using _Scripts.Agent.Players.CharacterSystem;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.FSM;
 using _Scripts.Agent.Players.Modules;
@@ -15,6 +16,8 @@ namespace _Scripts.Agent.Players
     {
         [field: SerializeField] public PlayerInputSo PlayerInput { get; private set; }
         [SerializeField] private StateListSo playerStates;
+        
+        public CharacterData CharacterData { get; set; }
 
         [SerializeField] private float InvincibilityTime = 1f;
         private AgentStateMachine agentStateMachine;
@@ -39,13 +42,13 @@ namespace _Scripts.Agent.Players
             
             ServiceLocator.Register<IPlayerController>(this);
         }
-
+        
         protected override void Start()
         {
             base.Start();
             PlayerInput.EnableInput();
         }
-
+        
         private void OnDestroy()
         {
             agentStateMachine.StateExit();
@@ -53,7 +56,6 @@ namespace _Scripts.Agent.Players
             ServiceLocator.Register<IPlayerController>(new NullPlayerController());
         }
         
-
         private void Update()
         {
             agentStateMachine.UpdateMachine();
@@ -72,14 +74,14 @@ namespace _Scripts.Agent.Players
             base.ApplyDamage(damageData, hitPoint, hitDirection, hitNormal);
             StartCoroutine(HitInvincibilityTime());
         }
-    
+        
         private IEnumerator HitInvincibilityTime()
         {
             SetInvincibility(this, true);
             yield return new WaitForSeconds(InvincibilityTime);
             SetInvincibility(this, false);
         }
-
+        
         public void SetInputActive(bool active)
         {
             foreach (ICanInputOnOff canInputOnOff in _canInputOnOffs)

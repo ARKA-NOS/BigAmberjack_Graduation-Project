@@ -14,6 +14,7 @@ namespace _Scripts.Maps.New_Map
      * 생성 파이프라인
      * 언로드 → 로드 → 배치(MapDeployment, 스레드풀) → 프리팹 생성 → 연결 지점 마감 → 벽 채우기 → 완료 이벤트 → End
      * 실패하면 프리팹 생성 대신 기본 맵(FallbackMapPrefab)을 만들고, 그 경우에도 벽 채우기와 완료 이벤트는 한 번씩 한다.
+     * 시작부터 End까지는 LoadingScope로 묶여 로딩창이 떠 있다.
      */
     public partial class MapGenerator : MonoBehaviour
     {
@@ -77,6 +78,10 @@ namespace _Scripts.Maps.New_Map
 
         private async UniTaskVoid GenerateMapUniTask(MapGenerateSetting mapSetting, int seed, CancellationToken ct)
         {
+            // 생성이 끝나거나(완료 이벤트 처리 포함) 취소·실패할 때까지 로딩창을 띄운다.
+            // Awake에서 시작하므로 씬 이동 로딩(SceneLoader)이 끝나기 전에 잡혀, 로딩창이 끊기지 않고 이어진다.
+            using LoadingScope loading = LoadingEvents.BeginLoading();
+
             // 오류가 난 맵을 같은 시드로 다시 확인할 수 있도록 시드를 먼저 남긴다.
             FDebug.Log($"[MapGenerator] Seed={seed}");
 

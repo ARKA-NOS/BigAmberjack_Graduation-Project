@@ -22,6 +22,7 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem.Healths
                 "[RangeHealth] owner is not found IStatModule");
 
             _maxHealthStat = statModule.GetStat(maxStatData);
+            _maxHealthStat.OnValueChanged += HandleMaxHealthChanged;
 
             CurrentColor = color;
             
@@ -43,6 +44,11 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem.Healths
         {
             base.SetHp(Mathf.Clamp(hp, 0f, MaxHealthValue));
         }
-        
+
+        private void HandleMaxHealthChanged(float newValue, float delta)
+        {
+            SetHp(HP + Mathf.Max(delta, 0f));
+        }
+
     }
 }

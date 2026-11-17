@@ -1,0 +1,10 @@
+﻿using UnityEngine;
+
+namespace _Scripts.DevLib.BattleSystem
+{
+    public interface IDamageable
+    {
+        void ApplyDamage(DamageData damageData, Vector2 hitPoint, Vector2 hitDirection, Vector2 hitNormal);
+        void SetInvincibility(object obj, bool value);
+    }
+}

@@ -1,0 +1,7 @@
+﻿namespace _Scripts.Currency
+{
+    public interface ICurrencyManager
+    {
+        CurrencyData GetCurrency(CurrencySO currencySo);
+    }
+}

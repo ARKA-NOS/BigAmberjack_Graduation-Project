@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 755cd7c1521b3e149a478adca96b3e5b, type: 3}
+  m_Name: Map1_Encounter_First
+  m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.Encounter.EncounterSO
+  waves:
+  - startDelay: 0
+    enemies:
+    - enemyPrefab: {fileID: 8598447652042282882, guid: 8a82f5eb106c7534aa2e88398b5b3962, type: 3}
+      count: 2
+  - startDelay: 0
+    enemies:
+    - enemyPrefab: {fileID: 8707413878230465636, guid: abc1fbdf521f9804a8219ac97241795d, type: 3}
+      count: 2
+  sameSpawnPointSpacing: 1.5

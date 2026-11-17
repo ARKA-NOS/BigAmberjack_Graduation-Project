@@ -1,0 +1,35 @@
+﻿using _Scripts.Agent.Players.Enum;
+
+namespace _Scripts.Agent.Players.FSM
+{
+    public class PlayerHitState : AbstractPlayerState
+    {
+        public PlayerHitState(Agent agent, int stateClipHash, int layerIndex) : base(agent, stateClipHash, layerIndex)
+        {
+            _animationTrigger = agent.GetModule<IAnimationTrigger>();
+        }
+        
+        private IAnimationTrigger _animationTrigger;
+        
+        public override void Enter()
+        {
+            base.Enter();
+            ControlMovement.MoveXLock(true);
+            _animationTrigger.OnAnimationEnd += OnOnAnimationEnd;
+        }
+
+        private void OnOnAnimationEnd()
+        {
+            Player.ChangeState(PlayerStateEnum.IDLE);
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+            ControlMovement.MoveXLock(false);
+            _animationTrigger.OnAnimationEnd -= OnOnAnimationEnd;
+        }
+        
+        
+    }
+}

@@ -24,8 +24,8 @@ namespace _Scripts.Agent.Enemies
 
         [Header("Blink")]
         [SerializeField] private bool enableBlink = true;
-        [SerializeField, Min(0f)] private float blinkDuration = 0.35f;
-        [SerializeField, Min(0.01f)] private float blinkInterval = 0.05f;
+        [Tooltip("한 번의 피격 색이 유지되는 시간입니다.")]
+        [SerializeField, Min(0f)] private float blinkDuration = 0.08f;
         [Tooltip("원본 그림 위에 섞을 피격 색. 스프라이트 자체의 투명도는 유지합니다.")]
         [SerializeField, ColorUsage(false)] private Color hitColor = new Color(1f, 0.32f, 0.36f, 1f);
         [Tooltip("0: 원본 그림, 1: 피격 색으로 완전히 덮기. 중간 값은 무늬가 보이는 점멸입니다.")]
@@ -61,7 +61,6 @@ namespace _Scripts.Agent.Enemies
         private float _reactionDuration;
 
         private bool _blinking;
-        private float _blinkStart;
         private float _blinkEnd;
         private Color[] _originalColors;
         private Material[] _originalMaterials;
@@ -186,7 +185,6 @@ namespace _Scripts.Agent.Enemies
                     }
 
                 _blinking = true;
-                _blinkStart = Time.time;
                 _blinkEnd = Time.time + blinkDuration;
                 SetBlinkColor(true);
             }
@@ -238,13 +236,7 @@ namespace _Scripts.Agent.Enemies
             TickScalePulse(); // 점멸을 꺼도 스케일 연출은 독립적으로 재생/복원됩니다.
             if (!_blinking) return;
             if (!Ready || !enableBlink || hitMaterial == null || Time.time >= _blinkEnd)
-            {
                 RestoreColor();
-                return;
-            }
-
-            bool flash = Mathf.FloorToInt((Time.time - _blinkStart) / Mathf.Max(0.01f, blinkInterval)) % 2 == 0;
-            SetBlinkColor(flash);
         }
 
         private void StartScalePulse()

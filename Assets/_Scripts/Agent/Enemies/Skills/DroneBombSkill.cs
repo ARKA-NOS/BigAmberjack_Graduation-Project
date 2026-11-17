@@ -71,6 +71,7 @@ namespace _Scripts.Agent.Enemies.Skills
             var bomb = Instantiate(bombPrefab, muzzle.position, Quaternion.identity);
             SceneManager.MoveGameObjectToScene(bomb.gameObject, Enemy.gameObject.scene);
             bomb.Launch(Enemy, CastTarget, _landingPoint, damage, radius, drone.TerrainLayers, TakeTelegraph());
+            NotifyAttackPerformed(muzzle.position);
             CoolTimeStartTime = Time.time;
             visual.Play("Bomb");
         }

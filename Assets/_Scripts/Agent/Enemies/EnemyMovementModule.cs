@@ -47,6 +47,7 @@ namespace _Scripts.Agent.Enemies
                 groundCheckDistance + Skin, out _, 0.5f);
         public bool IsDetouring => _approachingLedge || _risingPastLedge;
         public Vector2 BodyCenter => Ready ? (Vector2)bodyCollider.bounds.center : (Vector2)transform.position;
+        internal LayerMask TerrainLayers => terrainLayers;
         private Vector2 ProbeSize => Vector2.Max((Vector2)bodyCollider.bounds.size - Vector2.one * Skin,
             Vector2.one * Skin);
         private bool Ready => _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&

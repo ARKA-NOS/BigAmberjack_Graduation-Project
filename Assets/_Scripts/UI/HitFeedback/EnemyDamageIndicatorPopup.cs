@@ -65,7 +65,8 @@ namespace _Scripts.UI.HitFeedback
             _drift = Random.Range(-_horizontalDrift, _horizontalDrift);
             _age = 0f;
             _startedAt = Time.time;
-            _label.text = Mathf.Max(0.1f, data.Damage).ToString("0.#", CultureInfo.InvariantCulture);
+            double roundedDamage = System.Math.Round(data.Damage, System.MidpointRounding.AwayFromZero);
+            _label.text = roundedDamage.ToString("0", CultureInfo.InvariantCulture);
             _label.color = _critical ? _criticalColor : _normalColor;
             _playing = true;
             ApplyFrame(0f); // 첫 화면부터 크게 표시하도록 다음 Update까지 기다리지 않습니다.

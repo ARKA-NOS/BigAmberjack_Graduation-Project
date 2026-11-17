@@ -298,6 +298,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 _activeUntil = Time.time + Mathf.Max(0f, activeDuration);
                 _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
                 PlayAnimation(landingStateName);
+                NotifyAttackPerformed(new Vector3(bounds.center.x, bounds.min.y, bounds.center.z));
                 PlayLandingParticle(bounds);
                 TryLandingHit();
             }

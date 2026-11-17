@@ -1,16 +1,22 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using _Scripts.Audio;
 using _Scripts.UI.HitFeedback;
 using UnityEngine;
 
 namespace _Scripts.Agent.Enemies
 {
-    // 투척 후에는 스킬과 별개로 이동하며 지면 접촉 한 번에만 피해를 판정합니다.
+    // 투척 후에는 스킬과 별개로 이동하며 첫 착탄을 한 번만 처리합니다.
     public sealed class EnemyLobProjectile : MonoBehaviour
     {
         [SerializeField] private Transform visual;
         [SerializeField, Min(0.1f)] private float flightDuration = 0.72f;
         [SerializeField, Min(0.05f)] private float arcHeight = 1.05f;
         [SerializeField] private float spinSpeed = 570f;
+        [Tooltip("비행 중 직접 피격 반경입니다. 0이면 지정한 지면 착탄 지점에서만 피해를 줍니다.")]
+        [SerializeField, Min(0f)] private float flightHitRadius;
+        [SerializeField] private SoundCueSO impactCue;
         [SerializeField] private ParticleSystem impactEffect;
         [SerializeField] private float impactEffectAngle = 90f;
         [SerializeField, Min(0.01f)] private float impactEffectScale = 0.75f;
@@ -20,6 +26,7 @@ namespace _Scripts.Agent.Enemies
 
         private readonly List<Collider2D> _overlaps = new();
         private readonly RaycastHit2D[] _surfaceHit = new RaycastHit2D[1];
+        private List<RaycastHit2D> _flightHits;
         private ContactFilter2D _terrain;
         private AttackTelegraphUI _warning;
         private EnemyBase _dealer;
@@ -77,16 +84,18 @@ namespace _Scripts.Agent.Enemies
 
             Vector2 next = ArcPoint(transform.position, _landingPoint, ++_step, _steps);
             RaycastHit2D hit = CastSegment(_position, next, _terrain, _surfaceHit);
+            if (TryHitInFlight(next, hit, out Vector2 directImpact))
+            {
+                FinishFlight(directImpact);
+                return;
+            }
+
             if (hit.collider == null && _step == _steps)
                 hit = ProbeLanding(_landingPoint, _terrain, _surfaceHit);
             if (hit.collider != null || _step >= _steps)
             {
-                _launched = false;
-                _warning?.Hide();
                 bool landed = IsLanding(hit, _landingPoint);
-                if (landed)
-                    ApplyImpact(hit.point);
-                if (!landed || !PlayImpactAnimation(hit.point)) Destroy(gameObject);
+                FinishFlight(landed ? hit.point : (Vector2?)null, splashDamage: landed);
                 return;
             }
 
@@ -99,36 +108,82 @@ namespace _Scripts.Agent.Enemies
             }
         }
 
+        private bool TryHitInFlight(Vector2 next, RaycastHit2D terrainHit, out Vector2 impact)
+        {
+            impact = default;
+            if (flightHitRadius <= 0f || _target == null) return false;
+
+            Vector2 travel = next - _position;
+            float distance = travel.magnitude;
+            if (distance <= 0f) return false;
+
+            _flightHits ??= new List<RaycastHit2D>(4);
+            Physics2D.CircleCast(_position, flightHitRadius, travel / distance,
+                new ContactFilter2D { useTriggers = true }, _flightHits, distance);
+            float closestDistance = terrainHit.collider != null ? terrainHit.distance : float.PositiveInfinity;
+            RaycastHit2D targetHit = default;
+            foreach (RaycastHit2D candidate in _flightHits)
+            {
+                if (candidate.distance >= closestDistance || !EnemyDamageUtility.IsTargetCollider(candidate.collider, _target))
+                    continue;
+
+                targetHit = candidate;
+                closestDistance = candidate.distance;
+            }
+
+            if (targetHit.collider == null || CastSegment(_position, targetHit.point, _terrain, _surfaceHit).collider != null)
+                return false;
+
+            impact = targetHit.point;
+            return EnemyDamageUtility.TryApply(targetHit.collider, _target, _dealer, _damage, impact, travel);
+        }
+
+        private void FinishFlight(Vector2? impact, bool splashDamage = false)
+        {
+            _launched = false;
+            _warning?.Hide();
+            if (impact is Vector2 point)
+            {
+                EnemySoundModule.PlayCue(impactCue, new Vector3(point.x, point.y, transform.position.z));
+                if (impactEffect != null)
+                    EnemyHitParticle.Spawn(impactEffect, point, Quaternion.Euler(0f, 0f, impactEffectAngle),
+                        gameObject.scene, impactEffectScale, 5f);
+
+                if (splashDamage) ApplySplashDamage(point);
+                if (PlayImpactAnimation(point)) return;
+            }
+
+            Destroy(gameObject);
+        }
+
         private bool PlayImpactAnimation(Vector2 point)
         {
             if (impactFrames == null || impactFrames.Length == 0 || visual == null ||
                 !visual.TryGetComponent(out SpriteRenderer spriteRenderer)) return false;
 
             visual.SetPositionAndRotation(new Vector3(point.x, point.y, transform.position.z), Quaternion.identity);
-            StartCoroutine(AnimateImpact(spriteRenderer));
+            AnimateImpactAsync(spriteRenderer, destroyCancellationToken).Forget();
             return true;
         }
 
-        private System.Collections.IEnumerator AnimateImpact(SpriteRenderer spriteRenderer)
+        private async UniTaskVoid AnimateImpactAsync(SpriteRenderer spriteRenderer, CancellationToken cancellationToken)
         {
             float startedAt = Time.time;
             int index = 0;
 
-            while (index < impactFrames.Length)
+            while (index < impactFrames.Length && spriteRenderer != null)
             {
                 spriteRenderer.sprite = impactFrames[index];
-                yield return null;
+                await UniTask.NextFrame(cancellationToken);
+                if (!gameObject.activeInHierarchy) return;
                 index = Mathf.FloorToInt((Time.time - startedAt) * impactFramesPerSecond);
             }
 
             Destroy(gameObject);
         }
 
-        private void ApplyImpact(Vector2 center)
+        private void ApplySplashDamage(Vector2 center)
         {
-            if (impactEffect != null)
-                EnemyHitParticle.Spawn(impactEffect, center, Quaternion.Euler(0f, 0f, impactEffectAngle),
-                    gameObject.scene, impactEffectScale, 5f);
             Physics2D.OverlapCircle(center, _radius, new ContactFilter2D { useTriggers = true }, _overlaps);
 
             foreach (Collider2D hit in _overlaps)

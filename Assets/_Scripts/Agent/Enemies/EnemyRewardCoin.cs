@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players;
+using _Scripts.Audio;
 using _Scripts.Currency;
 using UnityEngine;
 
@@ -58,6 +59,9 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private Sprite[] collectFrames;
         [SerializeField, Min(1f)] private float collectFramesPerSecond = 12f;
 
+        [Header("Pickup Sound")]
+        [SerializeField] private SoundCueSO collectCue;
+
         [Header("Collect Scale Pulse")]
         [SerializeField] private bool enableCollectScalePulse = true;
         [Tooltip("도착 직후 원래 크기 대비 최대 배율입니다.")]
@@ -77,6 +81,7 @@ namespace _Scripts.Agent.Enemies
         private float _animationTime;
         private bool _launched;
         private bool _completed;
+        private bool _collectedByPlayer;
         private bool _quitting;
 
         private enum CoinPhase { Scatter, Bounce, Homing, Collect }
@@ -294,7 +299,7 @@ namespace _Scripts.Agent.Enemies
             if (!TryGetCollectorBounds(out Vector2 center, out _))
             {
                 _missingTargetTime += dt;
-                if (_missingTargetTime >= targetWaitTimeout) BeginCollect();
+                if (_missingTargetTime >= targetWaitTimeout) BeginCollect(collectedByPlayer: false);
                 return;
             }
 
@@ -305,7 +310,7 @@ namespace _Scripts.Agent.Enemies
             if (distance <= Mathf.Max(collectDistance, _homingSpeed * dt))
             {
                 SetPosition(center);
-                BeginCollect();
+                BeginCollect(collectedByPlayer: true);
                 return;
             }
 
@@ -315,8 +320,9 @@ namespace _Scripts.Agent.Enemies
 
         private void SetPosition(Vector2 position) => transform.position = new Vector3(position.x, position.y, transform.position.z);
 
-        private void BeginCollect()
+        private void BeginCollect(bool collectedByPlayer)
         {
+            _collectedByPlayer = collectedByPlayer;
             _phase = CoinPhase.Collect;
             if (_trail != null) _trail.StopTrail();
             _velocity = Vector2.zero;
@@ -387,8 +393,10 @@ namespace _Scripts.Agent.Enemies
 
             if (_trail != null) _trail.StopTrail();
             _visual.enabled = false;
+            Vector3 pickupPosition = transform.position;
             Destroy(gameObject);
             PayReward();
+            if (_collectedByPlayer) EnemySoundModule.PlayCue(collectCue, pickupPosition);
         }
 
         private void OnApplicationQuit() => _quitting = true;

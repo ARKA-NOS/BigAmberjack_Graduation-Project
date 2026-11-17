@@ -83,6 +83,7 @@ namespace _Scripts.Agent.Enemies.Skills
             projectile.Speed = projectileSpeed;
             projectile.Lifetime = range / projectileSpeed;
             projectile.Launch(Enemy, CastTarget, damage, _direction);
+            NotifyAttackPerformed(muzzle.position);
             if (!DidFire) visual.Play(fireState);
             DidFire = true;
             CoolTimeStartTime = Time.time;

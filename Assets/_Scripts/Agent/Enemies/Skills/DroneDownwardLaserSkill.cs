@@ -54,6 +54,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 _area.size.y / beam.sprite.bounds.size.y, 1f);
             beam.enabled = true;
             UpdateBeam(0f);
+            NotifyAttackPerformed(muzzle.position);
             TryHit();
         }
 

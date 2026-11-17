@@ -152,6 +152,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void PlaySlash()
         {
             if (Play(Slash)) attackAnimator.Update(0f);
+            NotifyAttackPerformed(_movement.BodyCenter);
         }
 
         public override void UpdateSkill()

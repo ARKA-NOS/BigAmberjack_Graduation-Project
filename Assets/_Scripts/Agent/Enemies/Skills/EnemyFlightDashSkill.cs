@@ -69,6 +69,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _moving = true;
             CoolTimeStartTime = Time.time;
             Play(Strike);
+            NotifyAttackPerformed(_flight.BodyCenter);
         }
 
         public override void FixedUpdateAttack()

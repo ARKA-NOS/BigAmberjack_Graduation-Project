@@ -1,3 +1,4 @@
+using System;
 using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.ModuleSystem;
@@ -44,6 +45,10 @@ namespace _Scripts.Agent.Enemies.Skills
         public float PostBlinkDelay => Mathf.Max(0f, postBlinkDelay);
         protected EnemyBase Enemy { get; private set; }
         protected Transform CastTarget { get; private set; }
+        internal event Action<EnemyAttackSkill, Vector3> AttackPerformed;
+
+        protected void NotifyAttackPerformed(Vector3 position) => AttackPerformed?.Invoke(this, position);
+
         protected bool CanContinue => isActiveAndEnabled && Enemy != null && Enemy.isActiveAndEnabled &&
             !Enemy.IsDead && CastTarget != null && CastTarget.gameObject.activeInHierarchy && Enemy.Target == CastTarget;
 

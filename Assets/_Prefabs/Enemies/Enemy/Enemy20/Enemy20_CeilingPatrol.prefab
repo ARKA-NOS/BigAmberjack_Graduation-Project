@@ -457,8 +457,7 @@ MonoBehaviour:
   hitStunDuration: 0.2
   cancelAttackOnHit: 1
   enableBlink: 1
-  blinkDuration: 0.35
-  blinkInterval: 0.05
+  blinkDuration: 0.08
   hitColor: {r: 1, g: 0.32, b: 0.36, a: 1}
   hitColorBlend: 0.65
   hitMaterial: {fileID: 2100000, guid: 52a46ab9adef4853a59fd20c80724d7b, type: 2}
@@ -517,6 +516,7 @@ Transform:
   - {fileID: 1231082886634128007}
   - {fileID: 7429289157699939900}
   - {fileID: 576478010420115079}
+  - {fileID: 1571470936509046672}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1380922992422332455
@@ -1226,3 +1226,52 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3765526583950870963, guid: 58737ab66d32a2a47af4238311a79958, type: 3}
   m_PrefabInstance: {fileID: 4341990968967610164}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4484688662701579027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1571470936509046672}
+  - component: {fileID: 8761818377632379719}
+  m_Layer: 0
+  m_Name: SoundModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1571470936509046672
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484688662701579027}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5688870116634397305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8761818377632379719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484688662701579027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb260aacdbc9d346848f5b4670d4752, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemySoundModule
+  hitCue: {fileID: 11400000, guid: 19cbb4313e1cf5b40afe821c80083072, type: 2}
+  deathCue: {fileID: 11400000, guid: b218e72222478984c828620016a47d3c, type: 2}
+  attackSounds:
+  - skill: {fileID: 1614437594355341458}
+    cue: {fileID: 11400000, guid: d161e94cfd6b6024aa520ee2d10d6a3b, type: 2}

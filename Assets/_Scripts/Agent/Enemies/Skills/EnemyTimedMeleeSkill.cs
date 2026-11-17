@@ -135,6 +135,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
             PlayAnimation(attackStateName);
             Telegraph?.Hide();
+            NotifyAttackPerformed(attackHitbox != null ? attackHitbox.bounds.center : Enemy.transform.position);
             TryHit();
         }
 

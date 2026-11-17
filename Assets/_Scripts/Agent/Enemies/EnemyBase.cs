@@ -1,5 +1,7 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using _Scripts._Core._FSM;
 using _Scripts.Agent.Enemies.FSM;
 using _Scripts.Agent.Enemies.Skills;
@@ -13,6 +15,8 @@ namespace _Scripts.Agent.Enemies
     public abstract class EnemyBase : Agent, IDamageable
     {
         private const float TargetSearchInterval = 0.2f;
+        private const float DeathLandingTimeout = 3f;
+        private const float DeathFallGravityScale = 3f;
         private static readonly int DeathStateHash = Animator.StringToHash("Base Layer.Death");
 
         [Header("Target")]
@@ -52,6 +56,8 @@ namespace _Scripts.Agent.Enemies
         private bool _deathFinalized;
         private bool _hasDeathAnimation;
         private float _deathStartedAt;
+        private ContactFilter2D _deathGroundFilter;
+        private List<ContactPoint2D> _deathGroundContacts;
 
         public Transform Target => target;
         public float DetectionRange => detectionRange;
@@ -65,11 +71,12 @@ namespace _Scripts.Agent.Enemies
 
         public bool IsDead { get; private set; }
         public bool IsPlayingDeathReaction { get; private set; }
+        public bool IsWaitingForDeathLanding { get; private set; }
 
         // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
         // 사망 타격도 포함하며 크리티컬 여부와 피격 위치/방향을 보존합니다.
         public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
-        // HP가 0 이하가 된 프레임에 사망 애니메이션과 함께 한 번 전달합니다.
+        // 사망 애니메이션 시작과 함께 한 번 전달합니다. 공중에서 죽으면 착지를 기다립니다.
         public event Action DeathStarted;
 
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
@@ -111,7 +118,7 @@ namespace _Scripts.Agent.Enemies
             base.Start();
 
             if (!IsDead && target == null)
-                StartCoroutine(FindTargetRoutine());
+                FindTargetAsync(destroyCancellationToken).Forget();
         }
 
         private void Update()
@@ -163,20 +170,20 @@ namespace _Scripts.Agent.Enemies
             target = newTarget;
         }
 
-        private IEnumerator FindTargetRoutine()
+        private async UniTaskVoid FindTargetAsync(CancellationToken cancellationToken)
         {
-            WaitForSeconds searchDelay = new WaitForSeconds(TargetSearchInterval);
+            TimeSpan searchDelay = TimeSpan.FromSeconds(TargetSearchInterval);
 
-            while (target == null)
+            while (!IsDead && gameObject.activeInHierarchy && target == null)
             {
                 PlayerController player = FindFirstObjectByType<PlayerController>();
                 if (player != null)
                 {
                     SetTarget(player.transform);
-                    yield break;
+                    return;
                 }
 
-                yield return searchDelay;
+                await UniTask.Delay(searchDelay, cancellationToken: cancellationToken);
             }
         }
 
@@ -369,11 +376,19 @@ namespace _Scripts.Agent.Enemies
             _deathStartedAt = Time.time;
 
             _skills?.StopAttack();
-            StopAllCoroutines();
             StopHorizontalMovement();
+
             // 지면용 물리 콜라이더는 마지막 넉백이 끝날 때까지 유지합니다.
+            bool hasSolidBody = false;
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
-                if (collider.isTrigger) collider.enabled = false;
+            {
+                if (collider.isTrigger)
+                    collider.enabled = false;
+                else if (collider.attachedRigidbody == _rigidbody && collider.isActiveAndEnabled)
+                    hasSolidBody = true;
+            }
+
+            IsWaitingForDeathLanding = ShouldWaitForDeathLanding(hasSolidBody);
 
             if (hit.HasValue)
             {
@@ -381,6 +396,49 @@ namespace _Scripts.Agent.Enemies
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
                 _hitReaction?.React(hit.Value.damage, hit.Value.direction, hit.Value.suppressHitControl);
             }
+
+            if (_deathFinalized) return;
+
+            if (!IsWaitingForDeathLanding) BeginDeathPresentation();
+            if (isActiveAndEnabled) FinishDeathAfterReactionAsync(destroyCancellationToken).Forget();
+            else FinishDeath();
+        }
+
+        private bool ShouldWaitForDeathLanding(bool hasSolidBody)
+        {
+            if (!isActiveAndEnabled || !hasSolidBody || !_rigidbody.simulated ||
+                _rigidbody.bodyType != RigidbodyType2D.Dynamic ||
+                (_rigidbody.constraints & RigidbodyConstraints2D.FreezePositionY) != 0)
+                return false;
+
+            LayerMask terrainLayers = _flight != null ? _flight.TerrainLayers :
+                _movement != null ? _movement.TerrainLayers : LayerMask.GetMask("Ground", "Platform");
+            _deathGroundFilter = new ContactFilter2D { useTriggers = false };
+            _deathGroundFilter.SetLayerMask(terrainLayers);
+            _deathGroundContacts ??= new List<ContactPoint2D>(4);
+            if (HasDeathGroundContact()) return false;
+
+            if (_rigidbody.gravityScale <= 0f)
+                _rigidbody.gravityScale = DeathFallGravityScale;
+
+            return true;
+        }
+
+        private bool HasDeathGroundContact()
+        {
+            if (_rigidbody.linearVelocityY > 0.1f) return false;
+
+            _rigidbody.GetContacts(_deathGroundFilter, _deathGroundContacts);
+            foreach (ContactPoint2D contact in _deathGroundContacts)
+                if (contact.enabled && contact.normal.y >= 0.5f) return true;
+
+            return false;
+        }
+
+        private void BeginDeathPresentation()
+        {
+            IsWaitingForDeathLanding = false;
+            _deathStartedAt = Time.time;
 
             if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
                 deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
@@ -393,14 +451,24 @@ namespace _Scripts.Agent.Enemies
             }
 
             DeathStarted?.Invoke();
-            if (isActiveAndEnabled) StartCoroutine(FinishDeathAfterReaction());
-            else FinishDeath();
         }
 
-        private IEnumerator FinishDeathAfterReaction()
+        private async UniTaskVoid FinishDeathAfterReactionAsync(CancellationToken cancellationToken)
         {
-            while (_hitReaction != null && _hitReaction.RemainingFeedbackTime > 0f)
-                yield return null;
+            if (IsWaitingForDeathLanding)
+            {
+                // 바닥이 없는 낭떠러지에서도 적과 처치 처리가 남지 않도록 대기를 끝냅니다.
+                float deadline = Time.time + DeathLandingTimeout;
+                while (!_deathFinalized && Time.time < deadline && !HasDeathGroundContact())
+                    await UniTask.NextFrame(cancellationToken);
+
+                if (_deathFinalized) return;
+                BeginDeathPresentation();
+            }
+
+            while (!_deathFinalized && _hitReaction != null && _hitReaction.RemainingFeedbackTime > 0f)
+                await UniTask.NextFrame(cancellationToken);
+
             FinishDeath();
         }
 
@@ -409,6 +477,7 @@ namespace _Scripts.Agent.Enemies
             if (_deathFinalized) return;
 
             _deathFinalized = true;
+            IsWaitingForDeathLanding = false;
             IsPlayingDeathReaction = false;
             if (_hitReaction != null) _hitReaction.ClearReaction();
             _rigidbody.linearVelocity = Vector2.zero;
@@ -419,12 +488,12 @@ namespace _Scripts.Agent.Enemies
             if (_death != null) _death.ReportDeath();
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
             if (_currencyReward != null) _currencyReward.GrantDeathReward();
-            // 사망 중에는 AI가 이미 IsDead로 멈춰 있습니다. 컴포넌트를 켜 둬 페이드 코루틴을 실행합니다.
-            if (isActiveAndEnabled) StartCoroutine(FadeAndDespawn());
+            // 사망 중에는 AI가 IsDead로 멈추며, 비주얼은 페이드가 끝날 때까지 유지합니다.
+            if (isActiveAndEnabled) FadeAndDespawnAsync(destroyCancellationToken).Forget();
             else Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
         }
 
-        private IEnumerator FadeAndDespawn()
+        private async UniTaskVoid FadeAndDespawnAsync(CancellationToken cancellationToken)
         {
             if (_hasDeathAnimation && deathAnimator != null && deathAnimator.isActiveAndEnabled)
             {
@@ -432,7 +501,8 @@ namespace _Scripts.Agent.Enemies
 
                 while (state.fullPathHash == DeathStateHash && state.normalizedTime < 1f)
                 {
-                    yield return null;
+                    await UniTask.NextFrame(cancellationToken);
+                    if (!gameObject.activeInHierarchy) return;
                     if (deathAnimator == null || !deathAnimator.isActiveAndEnabled ||
                         deathAnimator.runtimeAnimatorController == null) break;
                     state = deathAnimator.GetCurrentAnimatorStateInfo(0);
@@ -450,7 +520,11 @@ namespace _Scripts.Agent.Enemies
             else
             {
                 float remaining = deathDespawnDelay - (Time.time - _deathStartedAt);
-                if (remaining > 0f) yield return new WaitForSeconds(remaining);
+                if (remaining > 0f)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(remaining), cancellationToken: cancellationToken);
+                    if (!gameObject.activeInHierarchy) return;
+                }
             }
 
             SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
@@ -475,7 +549,8 @@ namespace _Scripts.Agent.Enemies
                     sprites[i].color = color;
                 }
 
-                yield return null;
+                await UniTask.NextFrame(cancellationToken);
+                if (!gameObject.activeInHierarchy) return;
             }
 
             Destroy(gameObject);

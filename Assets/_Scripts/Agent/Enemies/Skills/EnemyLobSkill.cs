@@ -80,6 +80,7 @@ namespace _Scripts.Agent.Enemies.Skills
             projectile.Launch(Enemy, CastTarget, _landingPoint, damage, impactRadius, terrainLayers, TakeTelegraph());
             CoolTimeStartTime = Time.time;
             Play(ThrowState);
+            NotifyAttackPerformed(throwPoint.position);
         }
 
         public override void UpdateSkill()

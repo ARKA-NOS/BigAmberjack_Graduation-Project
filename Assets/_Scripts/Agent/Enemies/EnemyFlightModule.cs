@@ -23,6 +23,7 @@ namespace _Scripts.Agent.Enemies
         private Collider2D _targetCollider;
 
         public Vector2 BodyCenter => bodyCollider != null ? (Vector2)bodyCollider.bounds.center : _body.position;
+        internal LayerMask TerrainLayers => terrainLayers;
 
         public override void Initialize(ModuleOwner owner)
         {

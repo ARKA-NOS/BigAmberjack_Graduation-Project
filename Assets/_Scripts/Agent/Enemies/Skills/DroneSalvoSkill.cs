@@ -63,13 +63,16 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (Time.time >= _nextShotAt) Fire();
                 return;
             }
+
             if (!IsRecovering)
             {
                 if (!visual.HasFinished(fireState)) return;
+
                 visual.Play("Idle");
                 BeginRecovery();
                 _recoveryUntil = Time.time + recoveryTime;
             }
+
             if (Time.time >= _recoveryUntil) EndSkill();
         }
 

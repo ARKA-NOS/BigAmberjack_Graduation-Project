@@ -38,6 +38,7 @@ namespace _Scripts.Agent.Enemies
         {
             int steps = FlightSteps;
             Vector2 from = origin;
+
             for (int i = 1; i <= steps; i++)
             {
                 Vector2 to = ArcPoint(origin, landingPoint, i, steps);
@@ -45,6 +46,7 @@ namespace _Scripts.Agent.Enemies
                 if (hit.collider != null) return IsLanding(hit, landingPoint);
                 from = to;
             }
+
             return IsLanding(ProbeLanding(landingPoint, terrain, hits), landingPoint);
         }
 
@@ -72,6 +74,7 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (!_launched) return;
+
             Vector2 next = ArcPoint(transform.position, _landingPoint, ++_step, _steps);
             RaycastHit2D hit = CastSegment(_position, next, _terrain, _surfaceHit);
             if (hit.collider == null && _step == _steps)
@@ -86,7 +89,9 @@ namespace _Scripts.Agent.Enemies
                 if (!landed || !PlayImpactAnimation(hit.point)) Destroy(gameObject);
                 return;
             }
+
             _position = next;
+
             if (visual != null)
             {
                 visual.position = new Vector3(next.x, next.y, transform.position.z);
@@ -98,6 +103,7 @@ namespace _Scripts.Agent.Enemies
         {
             if (impactFrames == null || impactFrames.Length == 0 || visual == null ||
                 !visual.TryGetComponent(out SpriteRenderer spriteRenderer)) return false;
+
             visual.SetPositionAndRotation(new Vector3(point.x, point.y, transform.position.z), Quaternion.identity);
             StartCoroutine(AnimateImpact(spriteRenderer));
             return true;
@@ -107,12 +113,14 @@ namespace _Scripts.Agent.Enemies
         {
             float startedAt = Time.time;
             int index = 0;
+
             while (index < impactFrames.Length)
             {
                 spriteRenderer.sprite = impactFrames[index];
                 yield return null;
                 index = Mathf.FloorToInt((Time.time - startedAt) * impactFramesPerSecond);
             }
+
             Destroy(gameObject);
         }
 
@@ -122,13 +130,16 @@ namespace _Scripts.Agent.Enemies
                 EnemyHitParticle.Spawn(impactEffect, center, Quaternion.Euler(0f, 0f, impactEffectAngle),
                     gameObject.scene, impactEffectScale, 5f);
             Physics2D.OverlapCircle(center, _radius, new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, _target)) continue;
+
                 Vector2 closest = hit.ClosestPoint(center);
                 Vector2 occlusionOrigin = center + Vector2.up * SurfaceTolerance;
                 if (CastSegment(occlusionOrigin, closest + Vector2.up * SurfaceTolerance, _terrain, _surfaceHit).collider != null)
                     continue;
+
                 Vector2 direction = (Vector2)hit.bounds.center - center;
                 if (EnemyDamageUtility.TryApply(hit, _target, _dealer, _damage, closest, direction)) break;
             }

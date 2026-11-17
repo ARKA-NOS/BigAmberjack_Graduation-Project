@@ -70,6 +70,7 @@ namespace _Scripts.Agent.Enemies
             Vector2 move = Vector2.ClampMagnitude(delta, step);
             Vector2 direction = move.normalized;
             float safeDistance = LimitTravel(direction, move.magnitude);
+
             if (safeDistance + 0.001f < move.magnitude)
             {
                 // 막힌 축을 제외한 한 축으로만 움직여 모서리에서 옆으로 미끄러집니다.
@@ -79,6 +80,7 @@ namespace _Scripts.Agent.Enemies
                 float y = LimitTravel(vertical, Mathf.Min(Mathf.Abs(delta.y), step));
                 move = x >= y ? horizontal * x : vertical * y;
             }
+
             _body.linearVelocity = move / Time.fixedDeltaTime;
             return Mathf.Abs(move.x) > 0.001f ? Mathf.Sign(move.x) : 0f;
         }
@@ -86,15 +88,18 @@ namespace _Scripts.Agent.Enemies
         internal float LimitTravel(Vector2 direction, float distance)
         {
             if (distance <= 0f || bodyCollider == null || !_body.simulated) return 0f;
+
             Bounds bounds = bodyCollider.bounds;
             Vector2 size = Vector2.Max((Vector2)bounds.size - Vector2.one * Clearance, Vector2.one * Clearance);
             Physics2D.BoxCast(bounds.center, size, 0f, direction, _terrain, _hits, distance + Clearance);
             float allowed = distance;
+
             foreach (var hit in _hits)
             {
                 if (!IsTerrain(hit) || Vector2.Dot(hit.normal, direction) >= -0.001f) continue;
                 allowed = Mathf.Min(allowed, Mathf.Max(0f, hit.distance - Clearance));
             }
+
             return allowed;
         }
 
@@ -102,6 +107,7 @@ namespace _Scripts.Agent.Enemies
         {
             Vector2 offset = destination - origin;
             if (offset.sqrMagnitude < 0.0001f) return true;
+
             Physics2D.Raycast(origin, offset.normalized, _terrain, _hits, offset.magnitude);
             foreach (var hit in _hits)
                 if (IsTerrain(hit)) return false;
@@ -116,6 +122,7 @@ namespace _Scripts.Agent.Enemies
                 _targetCollider = target.GetComponent<Collider2D>();
                 if (_targetCollider == null) _targetCollider = target.GetComponentInChildren<Collider2D>();
             }
+
             return _targetCollider != null && _targetCollider.enabled && _targetCollider.gameObject.activeInHierarchy
                 ? (Vector2)_targetCollider.bounds.center : (Vector2)target.position;
         }

@@ -11,6 +11,7 @@ namespace _Scripts.UI.Enemy
     {
         [SerializeField] private Image healthFill;
         [SerializeField] private Image reactionFill;
+
         [Tooltip("적 루트에서 UI까지의 월드 좌표 오프셋. 상하 반전 시 Y만 반전하며 바 자체는 뒤집지 않습니다.")]
         [SerializeField] private Vector2 worldOffset = new Vector2(0f, 1.5f);
         [Tooltip("Canvas 1픽셀에 해당하는 월드 크기. 기본 폭 160픽셀 × 0.01 = 1.6 유닛입니다.")]
@@ -20,6 +21,7 @@ namespace _Scripts.UI.Enemy
         private INewHealthModule _health;
         private EnemyHitReactionModule _reaction;
         private EnemyVerticalFlipModule _verticalFlip;
+
         private Canvas _canvas;
         private RectTransform _rect;
         private bool _started;
@@ -29,6 +31,7 @@ namespace _Scripts.UI.Enemy
             _enemy = GetComponentInParent<EnemyBase>();
             _canvas = GetComponent<Canvas>();
             _rect = GetComponent<RectTransform>();
+
             _canvas.renderMode = RenderMode.WorldSpace;
             _canvas.enabled = false;
             foreach (Graphic graphic in GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
@@ -50,14 +53,17 @@ namespace _Scripts.UI.Enemy
         {
             Unbind();
             if (_enemy == null) return;
+
             _health = _enemy.GetModule<INewHealthModule>();
             _reaction = _enemy.GetModule<EnemyHitReactionModule>();
             _verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
+
             if (_health != null)
             {
                 _health.OnHealthChanged += OnHealthChanged;
                 OnHealthChanged(_health.CurrentHealth, 0f, _health.MaxHealth);
             }
+
             Refresh();
         }
 
@@ -73,6 +79,7 @@ namespace _Scripts.UI.Enemy
         {
             if (reactionFill != null)
                 reactionFill.fillAmount = _reaction != null ? _reaction.ReactionRemainingNormalized : 0f;
+
             bool visible = _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&
                 _health != null && !_health.IsDead && _health.CurrentHealth > 0f;
             _canvas.enabled = visible;
@@ -81,6 +88,7 @@ namespace _Scripts.UI.Enemy
             Vector2 offset = worldOffset;
             if (_verticalFlip != null && _verticalFlip.IsFlipped) offset.y = -offset.y;
             _rect.SetPositionAndRotation(_enemy.transform.position + (Vector3)offset, Quaternion.identity);
+
             Vector3 parentScale = _rect.parent != null ? _rect.parent.lossyScale : Vector3.one;
             float size = Mathf.Max(0.001f, worldUnitsPerPixel);
             // 루트 스케일/좌우 반전과 무관하게 바의 크기와 감소 방향을 유지합니다.

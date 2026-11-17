@@ -22,6 +22,7 @@ namespace _Scripts.Agent.Enemies
                 Debug.LogWarning("EnemyVerticalFlipModule은 EnemyBase의 자식 모듈로 배치하세요.", this);
                 return;
             }
+
             _root = owner.transform;
             _normalScaleY = _root.localScale.y;
             _skills = owner.GetModule<EnemySkillModule>();
@@ -42,6 +43,7 @@ namespace _Scripts.Agent.Enemies
         private void ApplyFlip(bool flipped)
         {
             if (!_initialized || _root == null || IsFlipped == flipped) return;
+
             // 반전 직전 고정한 조준 방향을 새 발사 위치에서 사용하지 않도록 정리합니다.
             if (_skills != null) _skills.StopAttack();
             Vector3 scale = _root.localScale;

@@ -40,11 +40,14 @@ namespace _Scripts.Agent.Enemies
         private EnemyPatrolModule _patrol;
         private EnemyTurnDelayModule _turnDelay;
         private EnemyKeepDistanceModule _keepDistance;
+
         private EnemySkillModule _skills;
         private EnemyHitReactionModule _hitReaction;
         private EnemyCurrencyRewardModule _currencyReward;
         private EnemyDeathModule _death;
+
         private StateMachine<EnemyStateType> _stateMachine;
+
         private (DamageData damage, Vector2 point, Vector2 direction, Vector2 normal, bool suppressHitControl)? _pendingHit;
         private bool _deathFinalized;
         private bool _hasDeathAnimation;
@@ -53,18 +56,22 @@ namespace _Scripts.Agent.Enemies
         public Transform Target => target;
         public float DetectionRange => detectionRange;
         public float ChaseReleaseRange => Mathf.Max(detectionRange, chaseReleaseRange);
+
         public float AttackRange => _skills != null ? _skills.MaximumRange : 0f;
         public virtual bool IsAttackInProgress => _skills != null && _skills.IsBusy;
         internal bool HasCommittedAttack => _skills != null && _skills.HasCommittedAttack;
         internal bool FinishesAttackOutsideChaseRange =>
             _skills?.ActiveSkill is EnemyAttackSkill { FinishesOutsideChaseRange: true };
+
         public bool IsDead { get; private set; }
         public bool IsPlayingDeathReaction { get; private set; }
+
         // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
         // 사망 타격도 포함하며 크리티컬 여부와 피격 위치/방향을 보존합니다.
         public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
         // HP가 0 이하가 된 프레임에 사망 애니메이션과 함께 한 번 전달합니다.
         public event Action DeathStarted;
+
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
         internal float MoveSpeed => moveSpeed;
@@ -88,7 +95,9 @@ namespace _Scripts.Agent.Enemies
             _hitReaction = GetModule<EnemyHitReactionModule>();
             _currencyReward = GetModule<EnemyCurrencyRewardModule>();
             _death = GetModule<EnemyDeathModule>();
+
             InitializeAI();
+
             if (NewHealthModule != null)
             {
                 NewHealthModule.OnHealthChanged += HandleHealthChanged;
@@ -127,6 +136,7 @@ namespace _Scripts.Agent.Enemies
                 attack.FixedUpdateAttack();
                 return;
             }
+
             FixedUpdateAI();
         }
 
@@ -149,6 +159,7 @@ namespace _Scripts.Agent.Enemies
                 _turnDelay?.ResetTurn();
                 if (_skills != null && !HasCommittedAttack) _skills.StopAttack();
             }
+
             target = newTarget;
         }
 
@@ -241,6 +252,7 @@ namespace _Scripts.Agent.Enemies
                 StopHorizontalMovement();
                 return;
             }
+
             OnMoveDirectionChanged(_patrol.TickPatrol());
         }
 
@@ -278,6 +290,7 @@ namespace _Scripts.Agent.Enemies
         private bool TryFaceTarget()
         {
             if (target == null) return false;
+
             float direction = target.position.x - transform.position.x;
             if (_turnDelay != null && _turnDelay.isActiveAndEnabled &&
                 !_turnDelay.TryResolveFacing(FacingDirection, direction, out direction)) return false;
@@ -306,6 +319,7 @@ namespace _Scripts.Agent.Enemies
             if (amount <= 0f) return;
 
             var previousHit = _pendingHit;
+
             _pendingHit = (damageData, hitPoint, hitDirection, hitNormal, suppressHitControl);
             try { NewHealthModule.ApplyDamage(amount); }
             finally { _pendingHit = previousHit; }
@@ -322,6 +336,7 @@ namespace _Scripts.Agent.Enemies
         private void HandleHealthChanged(float current, float delta, float max)
         {
             var hit = delta < 0f ? _pendingHit : null;
+
             if (hit.HasValue)
             {
                 _pendingHit = null;
@@ -329,6 +344,7 @@ namespace _Scripts.Agent.Enemies
                 appliedHit.damage.DamageAmount = -delta;
                 hit = appliedHit;
             }
+
             if (current <= 0f)
                 Die(hit);
             else if (hit.HasValue)
@@ -336,6 +352,7 @@ namespace _Scripts.Agent.Enemies
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
                 _hitReaction?.React(hit.Value.damage, hit.Value.direction, hit.Value.suppressHitControl);
             }
+
             OnHealthChanged(current, delta, max);
         }
 
@@ -350,18 +367,21 @@ namespace _Scripts.Agent.Enemies
             IsDead = true;
             IsPlayingDeathReaction = true;
             _deathStartedAt = Time.time;
+
             _skills?.StopAttack();
             StopAllCoroutines();
             StopHorizontalMovement();
             // 지면용 물리 콜라이더는 마지막 넉백이 끝날 때까지 유지합니다.
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
                 if (collider.isTrigger) collider.enabled = false;
+
             if (hit.HasValue)
             {
                 // 파티클은 피격 스케일 변형 전의 그림을 기준으로 접촉점을 보정합니다.
                 DamageReceived?.Invoke(hit.Value.damage, hit.Value.point, hit.Value.direction, hit.Value.normal);
                 _hitReaction?.React(hit.Value.damage, hit.Value.direction, hit.Value.suppressHitControl);
             }
+
             if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
                 deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
             {
@@ -371,6 +391,7 @@ namespace _Scripts.Agent.Enemies
                 // 타격이 Animator 평가 뒤에 들어온 프레임에도 사망 첫 장면을 즉시 보여줍니다.
                 deathAnimator.Update(0f);
             }
+
             DeathStarted?.Invoke();
             if (isActiveAndEnabled) StartCoroutine(FinishDeathAfterReaction());
             else FinishDeath();
@@ -386,6 +407,7 @@ namespace _Scripts.Agent.Enemies
         private void FinishDeath()
         {
             if (_deathFinalized) return;
+
             _deathFinalized = true;
             IsPlayingDeathReaction = false;
             if (_hitReaction != null) _hitReaction.ClearReaction();
@@ -407,6 +429,7 @@ namespace _Scripts.Agent.Enemies
             if (_hasDeathAnimation && deathAnimator != null && deathAnimator.isActiveAndEnabled)
             {
                 AnimatorStateInfo state = deathAnimator.GetCurrentAnimatorStateInfo(0);
+
                 while (state.fullPathHash == DeathStateHash && state.normalizedTime < 1f)
                 {
                     yield return null;
@@ -414,6 +437,7 @@ namespace _Scripts.Agent.Enemies
                         deathAnimator.runtimeAnimatorController == null) break;
                     state = deathAnimator.GetCurrentAnimatorStateInfo(0);
                 }
+
                 if (deathAnimator != null && deathAnimator.isActiveAndEnabled &&
                     deathAnimator.runtimeAnimatorController != null && deathAnimator.HasState(0, DeathStateHash))
                 {
@@ -436,19 +460,24 @@ namespace _Scripts.Agent.Enemies
 
             float duration = Mathf.Max(0.01f, deathFadeDuration);
             float elapsed = 0f;
+
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 float alpha = 1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+
                 for (int i = 0; i < sprites.Length; i++)
                 {
                     if (sprites[i] == null) continue;
+
                     Color color = sprites[i].color;
                     color.a = originalAlphas[i] * alpha;
                     sprites[i].color = color;
                 }
+
                 yield return null;
             }
+
             Destroy(gameObject);
         }
 
@@ -463,6 +492,7 @@ namespace _Scripts.Agent.Enemies
             // 연출 중 컴포넌트를 꺼도 대기 상태로 남지 않도록 정리합니다.
             if (IsPlayingDeathReaction) FinishDeath();
             if (_hitReaction != null) _hitReaction.ClearReaction();
+
             _skills?.StopAttack();
             if (_rigidbody != null) StopHorizontalMovement();
         }

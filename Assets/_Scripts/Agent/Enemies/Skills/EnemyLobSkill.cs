@@ -45,6 +45,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             Play(PreparationState);
         }
 
@@ -52,6 +53,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             landingPoint = default;
             if (projectilePrefab == null || throwPoint == null) return false;
+
             var terrain = new ContactFilter2D { useTriggers = false };
             terrain.SetLayerMask(terrainLayers);
             RaycastHit2D floor = EnemyLobProjectile.FindSurface(
@@ -86,6 +88,7 @@ namespace _Scripts.Agent.Enemies.Skills
             bool wasReleased = HasReleased;
             base.UpdateSkill();
             if (!IsUsing || !wasReleased || !HasReleased) return;
+
             if (!IsRecovering)
             {
                 if (attackAnimator != null && attackAnimator.isActiveAndEnabled)
@@ -94,10 +97,12 @@ namespace _Scripts.Agent.Enemies.Skills
                     if (state.fullPathHash == ThrowState && state.normalizedTime < 1f)
                         return;
                 }
+
                 BeginRecovery();
                 Play(RecoveryState);
                 _recoveryEnd = Time.time + recoveryTime;
             }
+
             if (Time.time >= _recoveryEnd) EndSkill();
         }
 

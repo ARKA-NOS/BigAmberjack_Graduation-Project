@@ -26,6 +26,7 @@ namespace _Scripts.Agent.Enemies
         {
             Sprite[] frames = IsImpactPlaying ? impactFrames : flightFrames;
             if (visual == null || frames == null || frames.Length == 0) return;
+
             float rate = IsImpactPlaying ? _impactRate : Mathf.Max(1f, flightFramesPerSecond);
             int frame = Mathf.FloorToInt((Time.time - _startedAt) * rate);
             frame = IsImpactPlaying ? Mathf.Min(frame, frames.Length - 1) : frame % frames.Length;
@@ -35,6 +36,7 @@ namespace _Scripts.Agent.Enemies
         internal float PlayImpact(Vector2 point)
         {
             if (IsImpactPlaying || visual == null || impactFrames == null || impactFrames.Length == 0) return 0f;
+
             IsImpactPlaying = true;
             _startedAt = Time.time;
             _impactRate = Mathf.Max(1f, impactFramesPerSecond);

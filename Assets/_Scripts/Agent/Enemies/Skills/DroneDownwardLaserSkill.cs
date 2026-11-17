@@ -61,6 +61,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             base.UpdateSkill();
             if (!IsUsing || !HasReleased) return;
+
             float elapsed = Time.time - _beamStartedAt;
             if (elapsed >= activeDuration)
             {
@@ -68,6 +69,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (visual.HasFinished("Laser")) EndSkill();
                 return;
             }
+
             UpdateBeam(elapsed);
             TryHit();
         }
@@ -83,12 +85,15 @@ namespace _Scripts.Agent.Enemies.Skills
         private void TryHit()
         {
             if (_didHit) return;
+
             Physics2D.OverlapBox(_area.center, _area.size, 0f, new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (var hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, hit.ClosestPoint(_area.center), Vector2.down))
                     continue;
+
                 _didHit = true;
                 break;
             }

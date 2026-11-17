@@ -77,6 +77,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _preparationPhase = PreparationPhase.Waiting;
             _phaseEndTime = Time.time + Mathf.Max(0f, AttackDelay - _blinkDuration);
             PrepareAttack();
+
             if (IsUsing && Telegraph != null && ShouldShowTelegraph)
             {
                 Telegraph.Show(telegraphOpacity);
@@ -91,6 +92,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             if (IsPreparing && Telegraph != null)
             {
                 if (!ShouldShowTelegraph) Telegraph.Hide();
@@ -100,8 +102,10 @@ namespace _Scripts.Agent.Enemies.Skills
                     if (_preparationPhase == PreparationPhase.Blinking) Telegraph.BeginBlink();
                 }
             }
+
             if (Telegraph != null && Telegraph.IsVisible) UpdateTelegraph();
             if (!IsPreparing || Time.time < _phaseEndTime) return;
+
             switch (_preparationPhase)
             {
                 case PreparationPhase.Waiting:
@@ -110,6 +114,7 @@ namespace _Scripts.Agent.Enemies.Skills
                         BeginHold();
                         break;
                     }
+
                     Telegraph?.BeginBlink();
                     _preparationPhase = PreparationPhase.Blinking;
                     _phaseEndTime = Time.time + _blinkDuration;
@@ -151,6 +156,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void ReleaseAttack()
         {
             if (!IsUsing || !CanContinue || HasReleased) return;
+
             HasReleased = true;
             if (preparationWarning != null) preparationWarning.Hide();
             OnReleaseAttack();

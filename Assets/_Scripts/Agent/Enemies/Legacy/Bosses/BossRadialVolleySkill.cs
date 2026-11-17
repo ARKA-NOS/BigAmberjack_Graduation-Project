@@ -49,6 +49,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             Telegraph?.Hide();
             BossBase boss = (BossBase)Enemy;
             int count = _castCount;
+
             for (int i = 0; i < count; i++)
             {
                 float angle = 2f * Mathf.PI * i / count;
@@ -59,6 +60,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 boss.TrackProjectile(projectile);
                 projectile.Launch(boss, CastTarget, Mathf.Max(0f, _damage?.Value ?? 30f), direction);
             }
+
             DidFire = true;
             _endsAt = Time.time + Mathf.Max(0f, recoveryTime);
             BeginRecovery();

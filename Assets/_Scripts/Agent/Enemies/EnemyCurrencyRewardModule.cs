@@ -63,6 +63,7 @@ namespace _Scripts.Agent.Enemies
                 return;
             }
             if (value < 1f) return;
+
             int amount = Mathf.FloorToInt(value);
             int bonusLimit = Mathf.Clamp(maxBonusAmount, 0, int.MaxValue - amount);
             if (bonusLimit > 0) amount += Random.Range(0, bonusLimit + 1);
@@ -93,6 +94,7 @@ namespace _Scripts.Agent.Enemies
             EnemyVerticalFlipModule verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
             if (verticalFlip != null && verticalFlip.IsFlipped) offset.y = -offset.y;
             Vector3 position = _enemy.transform.position + (Vector3)offset;
+
             for (int i = 0; i < count; i++)
             {
                 // 부모를 지정하지 않아 적의 사망 연출/제거와 코인의 수명이 독립적입니다.

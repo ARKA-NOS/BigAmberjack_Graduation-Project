@@ -56,7 +56,7 @@ namespace _Scripts.Maps.New_Map
                 return;
             }
 
-            GenerateMap(mapSetting, mapSetting.Seed);
+            GenerateMap(mapSetting, Random.Range(1,1000000));
         }
 
         public void GenerateMap(MapGenerateSetting mapSetting, int seed)

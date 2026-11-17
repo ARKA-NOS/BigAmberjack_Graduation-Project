@@ -20,23 +20,23 @@ namespace _Scripts._Core.DataSystem.SheetSystem
         {
             if (string.IsNullOrEmpty(csvData))
                 return;
-
+            
             List<List<string>> rows = ParseCsv(csvData);
-
+            
             int headerIndex = rows.FindIndex(fields => !IsEmptyRow(fields));
             if (headerIndex < 0)
                 return;
-
+            
             List<string> headers = new();
             foreach (string header in rows[headerIndex])
                 headers.Add(header.Trim());
-
+            
             for (int i = headerIndex + 1; i < rows.Count; i++)
             {
                 List<string> fields = rows[i];
                 if (IsEmptyRow(fields))
                     continue;
-
+                
                 _sheetData.Add(CreateRow(fields, headers));
             }
         }
@@ -45,13 +45,12 @@ namespace _Scripts._Core.DataSystem.SheetSystem
         {
             RowData row = new RowData();
             
-            // 헤더보다 많은 필드는 버리고, 모자란 필드는 RowData가 빈 문자열을 돌려준다.
             int columnCount = Math.Min(headers.Count, fields.Count);
             for (int column = 0; column < columnCount; column++)
             {
                 string header = headers[column];
                 if (string.IsNullOrEmpty(header))
-                    continue; // 이름 없는 열은 무시한다.
+                    continue;
 
                 row[header] = fields[column];
             }
@@ -112,7 +111,7 @@ namespace _Scripts._Core.DataSystem.SheetSystem
                         break;
                     case '\r':
                         if (i + 1 < csv.Length && csv[i + 1] == '\n')
-                            i++; // CRLF는 줄바꿈 하나로 본다.
+                            i++;
                         EndRow(ref fields, field, rows);
                         break;
                     case '\n':
@@ -123,8 +122,7 @@ namespace _Scripts._Core.DataSystem.SheetSystem
                         break;
                 }
             }
-
-            // 마지막 줄 끝에 줄바꿈이 없으면 남은 행을 마저 넣는다.
+            
             if (field.Length > 0 || fields.Count > 0)
                 EndRow(ref fields, field, rows);
 

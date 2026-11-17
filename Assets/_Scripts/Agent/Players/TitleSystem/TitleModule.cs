@@ -176,6 +176,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             UnlockWaitingTitles(title.TitleSo);
 
             SendAlarm(title);
+            TitleEvents.RaiseTitleCompleted(title.TitleSo);
             OnTitlesChanged?.Invoke();
         }
         

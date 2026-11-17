@@ -31,7 +31,7 @@ namespace _Scripts._Core._Manager
             }
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             if (_instance == this)
                 _instance = null;

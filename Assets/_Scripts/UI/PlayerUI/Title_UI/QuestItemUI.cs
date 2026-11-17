@@ -31,16 +31,21 @@ namespace _Scripts.UI.PlayerUI.Title_UI
             QuestItemStyle style = viewData.IsCompleted ? doneStyle : normalStyle;
             Gauge gauge = viewData.QuestGauge;
 
-            checkImage.sprite = style.CheckSprite;
+            // 체크 아이콘·채움 스프라이트는 비워 두면 건너뛴다.
+            if (checkImage != null)
+            {
+                checkImage.sprite = style.CheckSprite;
+                checkImage.enabled = style.CheckSprite != null;
+            }
             nameText.text = viewData.QuestName;
             nameText.color = style.NameColor;
-            fillImage.sprite = style.FillSprite;
+            if (style.FillSprite != null) fillImage.sprite = style.FillSprite;
             fillImage.fillAmount = gauge.Normalized;
             valueText.text = GetValueText(gauge);
             valueText.color = style.ValueColor;
         }
 
         private static string GetValueText(Gauge gauge)
-            => $"{Mathf.FloorToInt(gauge.CurrentValue)}/{Mathf.FloorToInt(gauge.MaxValue)}";
+            => $"{Mathf.FloorToInt(gauge.CurrentValue)} / {Mathf.FloorToInt(gauge.MaxValue)}";
     }
 }

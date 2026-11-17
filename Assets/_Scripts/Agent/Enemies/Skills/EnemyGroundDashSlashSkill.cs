@@ -78,6 +78,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 StopSkill();
                 return;
             }
+
             _movement.Stop();
             Enemy.FaceTarget();
             _warningOriginX = _body.position.x;
@@ -115,6 +116,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _movement.Stop();
             _phase = Phase.Slashing;
             _slashes++;
+
             if (!_hitApplied)
             {
                 CoolTimeStartTime = Time.time;
@@ -125,17 +127,21 @@ namespace _Scripts.Agent.Enemies.Skills
         private void StrikeAlongStep(float step)
         {
             if (!CanContinue) return;
+
             Vector2 origin = _movement.BodyCenter;
             Vector2 direction = Vector2.right * _direction;
             Vector2 center = origin + direction * (step * 0.5f);
             Physics2D.OverlapBox(center, new Vector2(step, slashHeight), 0f,
                 new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (Collider2D hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
+
                 Vector2 point = hit.ClosestPoint(center);
                 if (!_movement.HasClearPath(origin, point) ||
                     !EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, direction)) continue;
+
                 _hitApplied = true;
                 CoolTimeStartTime = Time.time;
                 if (ControlsMovement) PlaySlash();
@@ -146,12 +152,14 @@ namespace _Scripts.Agent.Enemies.Skills
         private void PlaySlash()
         {
             if (Play(Slash)) attackAnimator.Update(0f);
+            NotifyAttackPerformed(_movement.BodyCenter);
         }
 
         public override void UpdateSkill()
         {
             base.UpdateSkill();
             if (!IsUsing || !HasReleased) return;
+
             if (_phase == Phase.Slashing)
             {
                 if (attackAnimator != null && attackAnimator.isActiveAndEnabled)
@@ -159,17 +167,20 @@ namespace _Scripts.Agent.Enemies.Skills
                     var state = attackAnimator.GetCurrentAnimatorStateInfo(0);
                     if (state.fullPathHash == Slash && state.normalizedTime < 1f) return;
                 }
+
                 if (_slashes < Mathf.Clamp(maximumConsecutiveDashes, 1, 2) && CanContinue &&
                     TryPlan(CastTarget, out _))
                 {
                     BeginPreparation();
                     return;
                 }
+
                 _phase = Phase.Recovering;
                 BeginRecovery();
                 _recoveryUntil = Time.time + recoveryTime;
                 Play(Recovery);
             }
+
             if (_phase == Phase.Recovering && Time.time >= _recoveryUntil) EndSkill();
         }
 
@@ -196,6 +207,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (attackAnimator == null || !attackAnimator.isActiveAndEnabled ||
                 attackAnimator.runtimeAnimatorController == null || !attackAnimator.HasState(0, state)) return false;
+
             attackAnimator.Play(state, 0, 0f);
             return true;
         }

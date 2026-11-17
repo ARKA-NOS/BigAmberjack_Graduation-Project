@@ -25,6 +25,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             get
             {
                 if (Target == null || !Target.gameObject.activeInHierarchy) return false;
+
                 Agent agent = Target.GetComponentInParent<Agent>();
                 return agent == null || agent.GetModule<INewHealthModule>()?.IsDead != true;
             }
@@ -42,12 +43,14 @@ namespace _Scripts.Agent.Enemies.Bosses
         protected sealed override void UpdateAI()
         {
             bool available = HasCombatTarget;
+
             if (_observedTarget != Target || (_hadTarget && !available))
             {
                 InterruptPattern();
                 OnCombatInterrupted();
                 _hadTarget = false;
             }
+
             _observedTarget = Target;
             _hadTarget = available;
             if (available || UpdatesWithoutCombatTarget) UpdateBoss();
@@ -65,6 +68,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 InterruptPattern();
                 OnCombatInterrupted();
             }
+
             base.SetTarget(newTarget);
             _observedTarget = newTarget;
             _hadTarget = HasCombatTarget;
@@ -86,9 +90,11 @@ namespace _Scripts.Agent.Enemies.Bosses
             foreach (EnemyProjectile projectile in _ownedProjectiles)
             {
                 if (projectile == null) continue;
+
                 projectile.gameObject.SetActive(false); // Destroy가 반영되기 전에도 피해를 막습니다.
                 Destroy(projectile.gameObject);
             }
+
             _ownedProjectiles.Clear();
         }
 

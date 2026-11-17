@@ -36,11 +36,13 @@ namespace _Scripts.UI.Enemy
         {
             Unsubscribe();
             if (_boss != null) _health = _boss.GetModule<INewHealthModule>();
+
             if (_health != null)
             {
                 _health.OnHealthChanged += OnHealthChanged;
                 OnHealthChanged(_health.CurrentHealth, 0f, _health.MaxHealth);
             }
+
             Refresh();
         }
 
@@ -58,6 +60,7 @@ namespace _Scripts.UI.Enemy
                 _health != null && !_health.IsDead && _health.CurrentHealth > 0f;
             _canvas.enabled = visible;
             if (!visible) return;
+
             if (nameLabel != null && nameLabel.text != _boss.DisplayName) nameLabel.text = _boss.DisplayName;
             // 무적은 HP 변화 없이도 바뀌므로 보스의 실제 상태를 별도로 읽습니다.
             bool invulnerable = _boss.IsInvulnerable;

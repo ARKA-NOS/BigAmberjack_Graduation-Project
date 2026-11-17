@@ -70,6 +70,7 @@ namespace _Scripts.Agent.Enemies
             _trail.receiveShadows = false;
             _trail.lightProbeUsage = LightProbeUsage.Off;
             _trail.reflectionProbeUsage = ReflectionProbeUsage.Off;
+
             if (_visual != null)
             {
                 _trail.sortingLayerID = _visual.sortingLayerID;
@@ -89,9 +90,11 @@ namespace _Scripts.Agent.Enemies
         public void SetCollectorDistance(float distance)
         {
             if (!isActiveAndEnabled || !_following || _trail == null) return;
+
             float near = Mathf.Max(0f, hideDistance);
             float far = Mathf.Max(near + 0.01f, fadeStartDistance);
             _proximityOpacity = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(near, far, distance));
+
             if (_proximityOpacity <= 0.001f)
             {
                 if (_trail.emitting)
@@ -104,6 +107,7 @@ namespace _Scripts.Agent.Enemies
             {
                 _trail.emitting = true;
             }
+
             SetOpacity(_proximityOpacity);
         }
 
@@ -111,8 +115,10 @@ namespace _Scripts.Agent.Enemies
         {
             _following = false;
             if (_trail == null) return;
+
             _trail.emitting = false; // 도착 후 플레이어를 따라 새 꼬리를 만들지 않습니다.
             if (_fading) return;
+
             _fadeElapsed = 0f;
             _fading = true;
         }
@@ -120,10 +126,12 @@ namespace _Scripts.Agent.Enemies
         private void LateUpdate()
         {
             if (!_fading || _trail == null) return;
+
             _fadeElapsed += Time.deltaTime;
             float t = Mathf.Clamp01(_fadeElapsed / Mathf.Max(0.01f, collectFadeDuration));
             SetOpacity(_proximityOpacity * (1f - Mathf.SmoothStep(0f, 1f, t)));
             if (t < 1f) return;
+
             _fading = false;
             _trail.Clear();
             _trail.enabled = false;
@@ -145,6 +153,7 @@ namespace _Scripts.Agent.Enemies
         {
             _fading = false;
             if (_trail == null) return;
+
             _trail.emitting = false;
             _trail.Clear();
             _trail.enabled = false;

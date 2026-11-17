@@ -14,9 +14,11 @@ namespace _Scripts.UI.Enemy
             Rect rect = rectTransform.rect;
             float radius = Mathf.Min(rect.width, rect.height) * 0.5f;
             if (radius <= 0f) return;
+
             Vector2 center = rect.center;
             Color32 tint = color;
             vh.AddVert(center, tint, Vector2.zero);
+
             for (int i = 0; i <= Segments; i++)
             {
                 float angle = i * Mathf.PI * 2f / Segments;

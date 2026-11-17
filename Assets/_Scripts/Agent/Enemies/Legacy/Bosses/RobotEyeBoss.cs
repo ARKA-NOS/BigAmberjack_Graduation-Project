@@ -59,6 +59,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 enabled = false;
                 return;
             }
+
             laser.MatchArenaHeight(_arena);
             Flight.Place(_arena.IntroPosition);
             Change(RobotEyeBossState.Dormant);
@@ -83,6 +84,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (IsDead || HasUsedLaserPhase || NewHealthModule == null || NewHealthModule.CurrentHealth > laserHealthThreshold ||
                 !Skills.IsSkillEnabled(laser))
                 return false;
+
             laser.MatchArenaHeight(_arena);
             HasUsedLaserPhase = true; // 취소/재진입/추가 피격보다 먼저 1회 사용을 확정합니다.
             _introFinished = true;
@@ -186,6 +188,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                         if (radialVolley.DidFire) Change(RobotEyeBossState.MoveToTarget);
                         else Rest();
                     }
+
                     break;
                 case RobotEyeBossState.MoveToTarget:
                     if (Flight.HasArrived) Rest();
@@ -206,6 +209,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                         Flight.MoveTo(_arena.GetOutsidePoint(_sweepDestination.x >= _arena.Center.x, BodyRadius,
                             Flight.GetBrakingDistance(laserSweepSpeed, laserMoveEaseDuration)), laserSweepSpeed, laserMoveEaseDuration);
                     }
+
                     break;
                 case RobotEyeBossState.LaserExiting:
                     if (Flight.HasArrived) Change(RobotEyeBossState.LaserHidden);
@@ -227,6 +231,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                         IsInvulnerable = false;
                         Rest();
                     }
+
                     break;
             }
         }
@@ -235,11 +240,14 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             Flight.Tick();
             if (state != RobotEyeBossState.LaserSweep || !laser.IsTraversalReady) return;
+
             laser.TickBeam();
             if (!_sweepMoving) return;
+
             bool crossedWall = _sweepDestination.x >= _arena.Center.x
                 ? transform.position.x >= _sweepDestination.x : transform.position.x <= _sweepDestination.x;
             if (!crossedWall) return;
+
             // 이동은 그대로 이어가고, 벽 통과 시 공격과 횡단 집계만 끝냅니다.
             laser.FinishTraversal();
             CompletedTraversals++;

@@ -43,6 +43,7 @@ namespace _Scripts.UI.HitFeedback
         public void BeginBlink()
         {
             if (!IsVisible || IsBlinking || BlinkDuration <= 0f) return;
+
             IsBlinking = true;
             _blinkStartedAt = Time.time;
         }
@@ -50,6 +51,7 @@ namespace _Scripts.UI.HitFeedback
         public void EndBlink()
         {
             if (!IsVisible) return;
+
             IsBlinking = false;
             if (areaImage != null) areaImage.color = _displayColor;
         }
@@ -64,6 +66,7 @@ namespace _Scripts.UI.HitFeedback
         private void Update()
         {
             if (!IsVisible || areaImage == null) return;
+
             Color color = _displayColor;
             if (IsBlinking && Mathf.FloorToInt((Time.time - _blinkStartedAt) / Mathf.Max(0.01f, blinkInterval)) % 2 == 0)
                 color.a = 0f;
@@ -108,11 +111,13 @@ namespace _Scripts.UI.HitFeedback
             // 원하는 월드 축을 부모 공간으로 옮겨 회전과 부호 있는 크기를 함께 구합니다.
             Vector3 right = rotation * Vector3.right;
             Vector3 up = rotation * Vector3.up;
+
             if (parent != null)
             {
                 right = parent.InverseTransformVector(right);
                 up = parent.InverseTransformVector(up);
             }
+
             _rect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg);
             float heightScale = Vector3.Dot(Vector3.Cross(Vector3.forward, right.normalized), up);
             _rect.localScale = new Vector3(right.magnitude, heightScale,

@@ -84,6 +84,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (!InterruptibleByHit || Enemy == null || Enemy.IsDead || _reaction == null ||
                 !_reaction.TryStun(parryStunDuration)) return false;
+
             Enemy.CancelAttack();
             return true;
         }
@@ -94,14 +95,18 @@ namespace _Scripts.Agent.Enemies.Skills
 
             Vector2 center = _movement.BodyCenter + _direction * hitboxForwardOffset;
             Physics2D.BoxCast(center, hitboxSize, 0f, _direction, new ContactFilter2D { useTriggers = true }, _hits, step);
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit.collider, CastTarget)) continue;
+
                 Vector2 point = hit.collider.ClosestPoint(center);
                 if (!_movement.HasClearPath(_movement.BodyCenter, point)) continue;
+
                 EnemyDamageUtility.TryApply(hit.collider, CastTarget, Enemy, damage, point, _direction);
                 return true;
             }
+
             return false;
         }
 
@@ -130,6 +135,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void ResetCharge()
         {
             if (Enemy == null || Enemy.IsDead) return;
+
             if (_movement != null) _movement.Stop();
             PlayAnimation("Base Layer.Idle");
         }

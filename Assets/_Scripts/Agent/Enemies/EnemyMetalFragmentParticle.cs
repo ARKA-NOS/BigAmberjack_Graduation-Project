@@ -100,6 +100,7 @@ namespace _Scripts.Agent.Enemies
                 particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 return;
             }
+
             var vertices = new Vector3[meshCount][];
             for (int i = 0; i < meshCount; i++) vertices[i] = meshes[i].vertices;
             int attachmentMeshCount = attachmentParticles != null && attachmentParticles != particles
@@ -110,11 +111,13 @@ namespace _Scripts.Agent.Enemies
             int minimum = Mathf.Clamp(fragmentCount.x, 1, 64);
             int maximum = Mathf.Clamp(fragmentCount.y, minimum, 64);
             _count = Random.Range(minimum, maximum + 1);
+
             if (_fragments == null || _fragments.Length < maximum)
             {
                 _fragments = new Fragment[maximum];
                 _renderParticles = new ParticleSystem.Particle[maximum * 2];
             }
+
             if (_attachmentSystem != null)
             {
                 if (_renderAttachments == null || _renderAttachments.Length < maximum)
@@ -131,6 +134,7 @@ namespace _Scripts.Agent.Enemies
             float scale = Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.x));
             float aim = Mathf.Atan2(transform.right.y, transform.right.x);
             double totalBodyColorWeight = PrepareBodyColorWeights();
+
             for (int i = 0; i < _count; i++)
             {
                 float angle = aim + spreadAngle * Mathf.Deg2Rad * ((i + Random.value) / _count - 0.5f);
@@ -153,6 +157,7 @@ namespace _Scripts.Agent.Enemies
                     AddAttachment(ref fragment, vertices[fragment.MeshIndex], meshCount, attachmentMeshCount);
                 _fragments[i] = fragment;
             }
+
             WriteParticles();
         }
 
@@ -171,14 +176,17 @@ namespace _Scripts.Agent.Enemies
             Vector2 side = Random.insideUnitCircle.normalized;
             Vector2 anchor = Vector2.zero;
             float furthest = float.NegativeInfinity;
+
             foreach (Vector3 vertex in vertices)
             {
                 Vector2 point = Vector2.Scale(vertex, fragment.Size);
                 float projection = Vector2.Dot(point, side);
                 if (projection <= furthest) continue;
+
                 furthest = projection;
                 anchor = point;
             }
+
             fragment.AttachmentOffset = anchor * 0.85f;
             fragment.AttachmentScale = Random.Range(0.42f, 0.62f);
             fragment.AttachmentAngle = Random.Range(-65f, 65f);
@@ -192,9 +200,11 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (_count == 0 || _particles == null) return;
+
             float dt = Time.fixedDeltaTime;
             _age += dt;
             float fade = Mathf.Max(0.01f, fadeDuration);
+
             for (int i = _count - 1; i >= 0; i--)
             {
                 Fragment fragment = _fragments[i];
@@ -203,11 +213,13 @@ namespace _Scripts.Agent.Enemies
                     _fragments[i] = _fragments[--_count];
                     continue;
                 }
+
                 fragment.Velocity += Physics2D.gravity * (gravityScale * dt);
                 fragment.Angle += fragment.Spin * dt;
                 Move(ref fragment, dt);
                 _fragments[i] = fragment;
             }
+
             WriteParticles();
         }
 
@@ -217,6 +229,7 @@ namespace _Scripts.Agent.Enemies
             {
                 float speed = fragment.Velocity.magnitude;
                 if (speed <= 0.0001f) return;
+
                 Vector2 direction = fragment.Velocity / speed;
                 float distance = speed * timeLeft;
                 if (!TryFindContact(fragment.Position, fragment.Radius, direction, distance,
@@ -241,28 +254,35 @@ namespace _Scripts.Agent.Enemies
             center = normal = Vector2.zero;
             traveled = float.PositiveInfinity;
             Physics2D.CircleCast(origin, radius, direction, _filter, _hits, distance);
+
             foreach (RaycastHit2D hit in _hits)
             {
                 Collider2D surface = hit.collider;
                 if (surface == null || hit.distance >= traveled || surface.GetComponentInParent<Agent>() != null) continue;
+
                 Vector2 candidateCenter = hit.centroid;
                 Vector2 candidateNormal = hit.normal;
+
                 if (hit.distance <= 0.0001f)
                 {
                     // 접촉 상태에서 출발한 캐스트는 실제 표면 법선 대신 캐스트 반대 방향을 줍니다.
                     Vector2 closest = surface.ClosestPoint(origin);
                     Vector2 separation = origin - closest;
                     if (separation.sqrMagnitude <= 0.0000001f) continue;
+
                     candidateNormal = separation.normalized;
                     candidateCenter = closest + candidateNormal * radius;
                 }
+
                 if (Vector2.Dot(direction, candidateNormal) >= -0.0001f) continue;
                 if (surface.usedByEffector && surface.TryGetComponent(out PlatformEffector2D platform) &&
                     platform.useOneWay && (direction.y > 0f || candidateNormal.y < 0.5f || origin.y < hit.point.y)) continue;
+
                 center = candidateCenter;
                 normal = candidateNormal;
                 traveled = hit.distance;
             }
+
             return !float.IsPositiveInfinity(traveled);
         }
 
@@ -273,9 +293,11 @@ namespace _Scripts.Agent.Enemies
                 _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 return;
             }
+
             int visible = 0;
             int visibleAttachments = 0;
             float fade = Mathf.Max(0.01f, fadeDuration);
+
             for (int i = 0; i < _count; i++)
             {
                 Fragment fragment = _fragments[i];
@@ -283,6 +305,7 @@ namespace _Scripts.Agent.Enemies
                 _renderParticles[visible++] = RenderParticle(fragment.Position, fragment.Size,
                     fragment.Angle, fragment.Tint, opacity, fragment.MeshIndex, _z);
                 if (fragment.AttachmentMeshIndex < 0) continue;
+
                 Vector2 offset = Quaternion.Euler(0f, 0f, fragment.Angle) * fragment.AttachmentOffset;
                 var attachment = RenderParticle(fragment.Position + offset,
                     fragment.Size * fragment.AttachmentScale, fragment.Angle + fragment.AttachmentAngle,
@@ -290,6 +313,7 @@ namespace _Scripts.Agent.Enemies
                 if (_attachmentSystem != null) _renderAttachments[visibleAttachments++] = attachment;
                 else _renderParticles[visible++] = attachment;
             }
+
             _particles.SetParticles(_renderParticles, visible);
             if (_attachmentSystem != null) _attachmentSystem.SetParticles(_renderAttachments, visibleAttachments);
         }
@@ -339,13 +363,16 @@ namespace _Scripts.Agent.Enemies
 
             double roll = Random.value * totalWeight;
             Color lastColor = FallbackMetalColor;
+
             foreach (var entry in _weightByBodyColor)
             {
                 if (entry.Value <= 0f) continue;
+
                 lastColor = entry.Key;
                 roll -= entry.Value;
                 if (roll < 0d) return lastColor;
             }
+
             return lastColor;
         }
 

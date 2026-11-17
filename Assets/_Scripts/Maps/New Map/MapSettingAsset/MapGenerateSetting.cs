@@ -7,8 +7,6 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
     [CreateAssetMenu(fileName = "Map Create Setting", menuName = "MapSystem/Map Create Setting", order = 0)]
     public class MapGenerateSetting : ScriptableObject
     {
-        [field: SerializeField] public int Seed { get; private set; }
-
         [field: Header("Room Settings")]
         // Start 역할 방이 없을 때 쓰는 시작방
         [field: SerializeField] public RoomSO DefaultRoom { get; private set; }

@@ -28,6 +28,7 @@ namespace _Scripts.Agent.Enemies
         private Rigidbody2D _body;
         private EnemyBase _enemy;
         private ContactFilter2D _terrainFilter;
+
         private float _nextJumpTime;
         private bool _approachingLedge;
         private bool _risingPastLedge;
@@ -36,6 +37,7 @@ namespace _Scripts.Agent.Enemies
         private Vector2 _plannedTarget;
         private Transform _routeTarget;
         private float _nextPlanTime;
+
         private Transform _cachedTarget;
         private Collider2D _targetBody;
         private float _lastGroundedFeetY;
@@ -45,6 +47,7 @@ namespace _Scripts.Agent.Enemies
                 groundCheckDistance + Skin, out _, 0.5f);
         public bool IsDetouring => _approachingLedge || _risingPastLedge;
         public Vector2 BodyCenter => Ready ? (Vector2)bodyCollider.bounds.center : (Vector2)transform.position;
+        internal LayerMask TerrainLayers => terrainLayers;
         private Vector2 ProbeSize => Vector2.Max((Vector2)bodyCollider.bounds.size - Vector2.one * Skin,
             Vector2.one * Skin);
         private bool Ready => _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead &&
@@ -55,12 +58,14 @@ namespace _Scripts.Agent.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _body = owner.GetComponent<Rigidbody2D>();
+
             if (bodyCollider == null)
             {
                 foreach (Collider2D candidate in owner.GetComponentsInChildren<Collider2D>())
                 {
                     if (candidate.isTrigger || candidate.attachedRigidbody != _body)
                         continue;
+
                     bodyCollider = candidate;
                     break;
                 }
@@ -103,12 +108,14 @@ namespace _Scripts.Agent.Enemies
             if (_approachingLedge)
             {
                 float direction = SetHorizontal(_approachX, speed);
+
                 if (Mathf.Abs(_body.position.x - _approachX) <= horizontalTolerance &&
                     TryJump(grounded, gravity))
                 {
                     _approachingLedge = false;
                     _risingPastLedge = true;
                 }
+
                 return direction;
             }
 
@@ -125,6 +132,7 @@ namespace _Scripts.Agent.Enemies
                     _nextPlanTime = Time.time + 0.3f;
                     TryPlanLedge(target, bounds);
                 }
+
                 if (_approachingLedge)
                     return SetHorizontal(_approachX, speed);
                 return chaseDirection;
@@ -163,12 +171,14 @@ namespace _Scripts.Agent.Enemies
                 Stop();
                 return 0f;
             }
+
             float difference = destinationX - _body.position.x;
             if (Mathf.Abs(difference) <= horizontalTolerance)
             {
                 Stop();
                 return 0f;
             }
+
             float direction = Mathf.Sign(difference);
             if (!CanMoveOnGround(direction, speed))
             {
@@ -176,6 +186,7 @@ namespace _Scripts.Agent.Enemies
                 Stop();
                 return 0f;
             }
+
             return SetHorizontal(destinationX, speed);
         }
 
@@ -183,6 +194,7 @@ namespace _Scripts.Agent.Enemies
         public bool CanMoveOnGround(float direction, float speed)
         {
             if (!Ready || !IsGrounded || Mathf.Approximately(direction, 0f)) return false;
+
             direction = Mathf.Sign(direction);
             float lookAhead = Mathf.Max(obstacleCheckDistance, Mathf.Max(0f, speed) * Time.fixedDeltaTime + Skin);
             bool wall = CastTerrain(bodyCollider.bounds.center, ProbeSize, Vector2.right * direction,
@@ -193,6 +205,7 @@ namespace _Scripts.Agent.Enemies
         internal float GetGroundTravelDistance(float direction, float distance)
         {
             if (!IsGrounded || distance <= 0f) return 0f;
+
             Bounds bounds = bodyCollider.bounds;
             Vector2 travelDirection = Vector2.right * direction;
             if (CastTerrain(bounds.center, ProbeSize, travelDirection, distance + Skin, out RaycastHit2D hit,
@@ -200,6 +213,7 @@ namespace _Scripts.Agent.Enemies
                 distance = Mathf.Min(distance, Mathf.Max(0f, hit.distance - Skin));
 
             const float sampleDistance = 0.12f;
+
             for (float travelled = 0f; travelled < distance;)
             {
                 float next = Mathf.Min(distance, travelled + sampleDistance);
@@ -209,6 +223,7 @@ namespace _Scripts.Agent.Enemies
                     return travelled;
                 travelled = next;
             }
+
             return distance;
         }
 
@@ -235,6 +250,7 @@ namespace _Scripts.Agent.Enemies
 
             float firstSide = targetFeet.x < _body.position.x ? -1f : 1f;
             const float step = 0.25f;
+
             for (float distance = step; distance <= maxLedgeDetour; distance += step)
             {
                 for (int side = 0; side < 2; side++)
@@ -257,6 +273,7 @@ namespace _Scripts.Agent.Enemies
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -272,6 +289,7 @@ namespace _Scripts.Agent.Enemies
                 _body.linearVelocityX = 0f;
                 return 0f;
             }
+
             _body.linearVelocityX = velocity;
             return direction;
         }
@@ -280,6 +298,7 @@ namespace _Scripts.Agent.Enemies
         {
             if (!Ready)
                 return false;
+
             Vector2 offset = destination - origin;
             return offset.sqrMagnitude < 0.0001f ||
                    !CastTerrain(origin, Vector2.one * Skin, offset.normalized, offset.magnitude, out _);
@@ -296,10 +315,12 @@ namespace _Scripts.Agent.Enemies
             {
                 _cachedTarget = target;
                 _targetBody = null;
+
                 foreach (Collider2D candidate in target.GetComponentsInChildren<Collider2D>())
                 {
                     if (!candidate.enabled)
                         continue;
+
                     // 실제 몸체 우선. 몸체가 없는 Probe 타깃은 Trigger도 사용할 수 있습니다.
                     if (_targetBody == null || !candidate.isTrigger)
                         _targetBody = candidate;
@@ -307,6 +328,7 @@ namespace _Scripts.Agent.Enemies
                         break;
                 }
             }
+
             return _targetBody != null && _targetBody.enabled && _targetBody.gameObject.activeInHierarchy
                 ? new Vector2(target.position.x, _targetBody.bounds.min.y) : (Vector2)target.position;
         }
@@ -317,18 +339,21 @@ namespace _Scripts.Agent.Enemies
             nearest = default;
             float nearestDistance = float.PositiveInfinity;
             Physics2D.BoxCast(origin, size, 0f, direction, _terrainFilter, _hits, distance);
+
             foreach (RaycastHit2D hit in _hits)
             {
                 if (hit.collider == null || hit.rigidbody == _body ||
                     hit.collider.GetComponentInParent<Agent>() != null || hit.normal.y < minimumNormalY ||
                     -hit.normal.x * direction.x < minimumOppositionX)
                     continue;
+
                 if (hit.distance < nearestDistance)
                 {
                     nearest = hit;
                     nearestDistance = hit.distance;
                 }
             }
+
             return nearest.collider != null;
         }
 

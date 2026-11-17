@@ -49,6 +49,8 @@ MonoBehaviour:
   flightDuration: 0.72
   arcHeight: 1.05
   spinSpeed: 570
+  flightHitRadius: 0.18
+  impactCue: {fileID: 11400000, guid: 138d5cae37dd0334db76fe48c8cfc906, type: 2}
   impactEffect: {fileID: 6293476830590490486, guid: 76321f2ec945cdb4d99611668995b590, type: 3}
 --- !u!1 &8568642329605915405
 GameObject:

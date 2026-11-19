@@ -112,6 +112,22 @@ namespace _Scripts.Inventory
             return true;
         }
 
+        public void Clear()
+        {
+            foreach (InventorySlotType type in new[] { InventorySlotType.Equipment, InventorySlotType.Storage })
+            {
+                ItemContainer container = Inventory.Get(type);
+                for (int i = 0; i < container.Capacity; i++)
+                {
+                    if (container[i] == null) continue;
+
+                    ItemInstance prev = container.Set(i, null);
+                    if (type == InventorySlotType.Equipment) prev.RemoveEffects(_owner);
+                    NotifySlotChanged(type, i);
+                }
+            }
+        }
+
         private void NotifySlotChanged(InventorySlotType type, int slot)
         {
             OnSlotChanged?.Invoke(type, slot);
@@ -138,12 +154,7 @@ namespace _Scripts.Inventory
         [ContextMenu("Debug/Remove All Items")]
         private void DebugRemoveAll()
         {
-            foreach (InventorySlotType type in new[] { InventorySlotType.Equipment, InventorySlotType.Storage })
-            {
-                for (int i = 0; i < Inventory.Get(type).Capacity; i++)
-                    TryRemoveItem(type, i);
-            }
-
+            Clear();
             DebugLogSlots();
         }
 

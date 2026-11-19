@@ -16,7 +16,7 @@ namespace _Scripts.Agent.Players.FSM
         {
             base.Enter();
             ControlJumper.Jump();
-            Player.PlayerInput.OnJumpKeyReleased += HandleJumpReleased;
+            //Player.PlayerInput.OnJumpKeyReleased += HandleJumpReleased;
         }
 
         public override void Update()
@@ -28,7 +28,7 @@ namespace _Scripts.Agent.Players.FSM
         public override void Exit()
         {
             base.Exit();
-            Player.PlayerInput.OnJumpKeyReleased -= HandleJumpReleased;
+            //Player.PlayerInput.OnJumpKeyReleased -= HandleJumpReleased;
         }
 
         private void HandleJumpReleased()

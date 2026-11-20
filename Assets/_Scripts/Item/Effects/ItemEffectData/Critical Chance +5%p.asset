@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497655b067d7f7341abe1b12a7a5932c, type: 3}
+  m_Name: Critical Chance +5%p
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Item.Effects.StatItemEffect
+  targetStat: {fileID: 11400000, guid: fc3e0d6dfa4fc0f44b9a5f5a537f26d4, type: 2}
+  priority: 0
+  value: 0.05
+  modifyType: 0

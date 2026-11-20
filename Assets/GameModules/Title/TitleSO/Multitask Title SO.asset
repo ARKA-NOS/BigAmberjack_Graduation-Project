@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c48f3652db24d984ea60aec07b781d2d, type: 3}
+  m_Name: Multitask Title SO
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Players.TitleSystem.Titles.MultitaskTitleSo
+  <TitleName>k__BackingField: "\uBA40\uD2F0\uD14C\uC2A4\uD0B9"
+  <TitleDescription>k__BackingField: "\uC774\uAC83\uB3C4 \uD558\uACE0 \uC800\uAC83\uB3C4
+    \uD558\uACE0\u3161."
+  <UpgradeDescription>k__BackingField: "\uB300\uC26C \uD6C4 \uCCAB \uACF5\uACA9\uC758
+    \uD53C\uD574\uB7C9\uC774 35% \uC99D\uAC00\uD55C\uB2E4. \uACF5\uACA9\uC744 2\uD68C
+    \uC801\uC911\uC2DC\uD0A4\uBA74 \uADF8 \uB2E4\uC74C \uB300\uC26C \uAC70\uB9AC\uC640
+    \uBB34\uC801 \uC2DC\uAC04\uC774 1.5\uBC30\uB85C \uC99D\uAC00\uD55C\uB2E4(\uCD5C\uB300
+    1\uD68C)"
+  <TitleIcon>k__BackingField: {fileID: 0}
+  <RequiredTitles>k__BackingField: []
+  <Quests>k__BackingField:
+  - {fileID: 11400000, guid: 93b24190bb957ee47b4b7c6ce606d57c, type: 2}
+  damageStat: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+  dashRangeStat: {fileID: 11400000, guid: adec61426d70758478f627cdfc4a5ab9, type: 2}
+  firstAttackBonus: 0.35
+  dashRangeBonus: 0.5
+  boostedInvincibleTime: 0.225
+  requiredHits: 2

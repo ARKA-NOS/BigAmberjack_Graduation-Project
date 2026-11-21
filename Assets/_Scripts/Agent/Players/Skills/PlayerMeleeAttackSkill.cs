@@ -20,7 +20,7 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private StateSo[] comboStates;
+        [SerializeField] private StateSo comboStates;
         [SerializeField] private int animatorLayer = 0;
         
         [Header("DamageCast Setting")]
@@ -125,19 +125,19 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            bool comboCounterOver = ComboCount >= comboStates.Length;
-            bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
-            bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
-            if (comboCounterOver || comboWindowExhaust)
-            {
-                ComboCount = 0;
-            }
+            //bool comboCounterOver = ComboCount >= comboStates.Length;
+            //bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            //bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
+            //if (comboCounterOver || comboWindowExhaust)
+            //{
+            //    ComboCount = 0;
+            //}
 
-            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
-            {
-                ComboCount = 1;
-            }
-            _playerController.ChangeState((PlayerStateEnum)comboStates[ComboCount].assetIndex);
+            //if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
+            //{
+            //    ComboCount = 1;
+            //}
+            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
@@ -168,7 +168,7 @@ namespace _Scripts.Agent.Players.Skills
                 ? _animator.GetNextAnimatorStateInfo(animatorLayer)
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
+            _isAttackState = info.shortNameHash == comboStates.stateParam.HashValue;
             //GroundStop();
             //AttackMove();
             base.UpdateSkill();
@@ -178,8 +178,8 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
-            ComboCount++;
-            _moveAttackLastTime = Time.time;
+            //ComboCount++;
+            //_moveAttackLastTime = Time.time;
             SkillEndSetting();
         }
 

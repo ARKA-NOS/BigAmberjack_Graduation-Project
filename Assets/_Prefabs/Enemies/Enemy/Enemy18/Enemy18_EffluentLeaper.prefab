@@ -50,6 +50,7 @@ Transform:
   - {fileID: 1344587563851182596}
   - {fileID: 7152790261327181609}
   - {fileID: 1800000000000000019}
+  - {fileID: 6800000000000000002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3004791077127761188
@@ -1435,3 +1436,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790f8879e8463c64b80b43a626b38416, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemySuperArmorModule
+--- !u!1001 &6800000000000000001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4797783499107182713}
+    m_Modifications: []
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7a5b2637411c01e4db0239c3663d61b9, type: 3}
+--- !u!4 &6800000000000000002 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2547433973611120816, guid: 7a5b2637411c01e4db0239c3663d61b9, type: 3}
+  m_PrefabInstance: {fileID: 6800000000000000001}
+  m_PrefabAsset: {fileID: 0}

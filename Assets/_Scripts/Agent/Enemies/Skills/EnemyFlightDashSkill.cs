@@ -56,14 +56,15 @@ namespace _Scripts.Agent.Enemies.Skills
 
         protected override void PrepareAttack()
         {
+            Enemy.FaceTarget();
+            // 저지 불가 준비에 들어간 순간의 방향으로 끝까지 돌진합니다.
+            _direction = Vector2.right * Enemy.FacingDirection;
             _flight.Stop();
             Play(Prepare);
         }
 
         protected override void OnReleaseAttack()
         {
-            Enemy.FaceTarget();
-            _direction = Vector2.right * Enemy.FacingDirection;
             _startX = _body.position.x;
             _hit = false;
             _moving = true;

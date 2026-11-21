@@ -10,26 +10,18 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         // 배열 순서가 굽기와 마감의 링크 인덱스다. 빼거나 순서를 바꾸면 두 순서가 어긋난다.
         [SerializeField] private RoomLink[] links;
 
-        [Header("Spawn Points")]
+        [Header("Spawn Points (시작지점이 아니면 설정할 필요 없음)")]
         [SerializeField] private Transform playerSpawnPoint;
-        [SerializeField] private Transform[] enemySpawnPoints;
-        [SerializeField] private Transform[] rewardSpawnPoints;
-
+        
         public Tilemap GetTileMap()
             => tilemap;
-
+        
         public RoomLink[] GetRoomLink()
             => links;
-
+        
         public Transform GetPlayerSpawnPoint()
             => playerSpawnPoint;
-
-        public IReadOnlyList<Transform> GetEnemySpawnPoints()
-            => enemySpawnPoints ?? System.Array.Empty<Transform>();
-
-        public IReadOnlyList<Transform> GetRewardSpawnPoints()
-            => rewardSpawnPoints ?? System.Array.Empty<Transform>();
-
+        
         // connected[i]가 links[i]의 연결 여부다. 연결되지 않은 링크는 막는다.
         public void ApplyLinkState(bool[] connected)
         {

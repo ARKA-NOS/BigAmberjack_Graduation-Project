@@ -20,7 +20,16 @@ namespace _Scripts.UI.SettingsUI
         [SerializeField] private Button openKeysButton;
         [SerializeField] private Button closeKeysButton;
 
+        [Header("Give Up")]
+        [SerializeField] private SettingsGiveUpSection giveUpSection;
+
         public bool IsKeysPageOpen => keysPage.activeSelf;
+        public bool IsGiveUpPopupOpen => giveUpSection != null && giveUpSection.IsPopupOpen;
+
+        public void CloseGiveUpPopup()
+        {
+            if (giveUpSection != null) giveUpSection.ClosePopup();
+        }
 
         protected override void Awake()
         {
@@ -51,11 +60,13 @@ namespace _Scripts.UI.SettingsUI
         protected override void OnOpened(object data)
         {
             if (connector != null) connector.RefreshModel();
+            if (giveUpSection != null) giveUpSection.Refresh();
             ShowMainPage();
         }
 
         protected override void OnClosed()
         {
+            CloseGiveUpPopup();
             if (viewModel != null) viewModel.Save();
         }
 

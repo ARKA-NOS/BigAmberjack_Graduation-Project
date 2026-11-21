@@ -29,11 +29,22 @@ namespace _Scripts.UI.SettingsUI
         {
             if (window.IsOpen)
             {
+                // 포기 확인 팝업이 떠 있으면 팝업만 닫는다.
+                if (window.IsGiveUpPopupOpen)
+                {
+                    window.CloseGiveUpPopup();
+                    return;
+                }
+
                 // 키 설정 화면에서는 메인 화면으로 한 단계만 돌아간다.
                 if (window.IsKeysPageOpen) window.ShowMainPage();
                 else window.RequestClose();
                 return;
             }
+
+            // 화면 전환(Fade) 중에는 설정 창이 같이 어두워지고 시간이 멈추므로 열지 않는다.
+            IScreenFadeState fadeState = ServiceLocator.Get<IScreenFadeState>();
+            if (fadeState != null && fadeState.IsFading) return;
 
             IUIWindowState windowState = ServiceLocator.Get<IUIWindowState>();
             if (windowState != null && (windowState.HasOpenWindow || windowState.LastCloseFrame == Time.frameCount)) return;

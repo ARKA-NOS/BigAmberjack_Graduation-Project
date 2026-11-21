@@ -43,6 +43,7 @@ namespace _Scripts.UI.RunEnd
 
             _isEnded = true;
             _source.LockPlayerInput();
+            _source.PauseGame();
 
             _result.Value = new RunResultData(
                 reason,

@@ -20,7 +20,7 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private StateSo comboStates;
+        //[SerializeField] private StateSo comboStates;
         [SerializeField] private int animatorLayer = 0;
         
         [Header("DamageCast Setting")]
@@ -168,7 +168,7 @@ namespace _Scripts.Agent.Players.Skills
                 ? _animator.GetNextAnimatorStateInfo(animatorLayer)
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            _isAttackState = info.shortNameHash == comboStates.stateParam.HashValue;
+            //_isAttackState = info.shortNameHash == comboStates.stateParam.HashValue;
             //GroundStop();
             //AttackMove();
             base.UpdateSkill();

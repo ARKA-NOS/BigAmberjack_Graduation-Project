@@ -15,7 +15,7 @@ namespace _Scripts.Agent.Enemies
 
         [Header("Death Burst")]
         [Tooltip("사망 혈흔과 금속 파편의 초기 속도에만 곱합니다. 피격 이펙트는 기존 설정을 사용합니다.")]
-        [SerializeField, Min(0f)] private float burstSpeedMultiplier = 1.8f;
+        [SerializeField, Min(0f)] private float burstSpeedMultiplier = 1.25f;
         [Tooltip("사망 버스트의 입자 수에 곱합니다. 이펙트 하나당 최대 128개로 제한합니다.")]
         [SerializeField, Range(1f, 4f)] private float burstCountMultiplier = 2f;
 

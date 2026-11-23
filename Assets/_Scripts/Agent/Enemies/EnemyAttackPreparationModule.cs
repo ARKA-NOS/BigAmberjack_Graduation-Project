@@ -33,7 +33,7 @@ namespace _Scripts.Agent.Enemies
         [Tooltip("입자가 출발하는 중심으로부터의 최소·최대 거리입니다. 월드 유닛 기준입니다.")]
         [SerializeField] private Vector2 spawnRadius = new Vector2(0.8f, 1.25f);
         [Tooltip("입자 하나의 최소·최대 크기입니다. 월드 유닛 기준입니다.")]
-        [SerializeField] private Vector2 particleSize = new Vector2(0.14f, 0.55f);
+        [SerializeField] private Vector2 particleSize = new Vector2(0.11f, 0.44f);
 
         [Header("Center / Drawing")]
         [Tooltip("비우면 적 루트의 콜라이더 중심을 사용합니다.")]

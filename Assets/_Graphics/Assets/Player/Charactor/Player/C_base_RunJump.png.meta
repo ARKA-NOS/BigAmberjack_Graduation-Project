@@ -72,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,7 +93,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 128
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -121,7 +121,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: C_base_run,jump_0
+      name: C_base_RunJump_0
       rect:
         serializedVersion: 2
         x: 0
@@ -136,14 +136,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e04fbfdb6be30841ba3f525a294a7ea
-      internalID: -249881731
+      spriteID: 1916298196fb04d4db338aa1383a4735
+      internalID: -444746554
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_1
+      name: C_base_RunJump_1
       rect:
         serializedVersion: 2
         x: 32
@@ -158,14 +158,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dea0677b8f5cdce47993affa23744764
-      internalID: -2121585008
+      spriteID: 9d547c6ea66ed4840bd2a9b1d8a0c051
+      internalID: 1159063546
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_2
+      name: C_base_RunJump_2
       rect:
         serializedVersion: 2
         x: 64
@@ -180,14 +180,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ccc36074a20e87f4ebc6518361ceaa0d
-      internalID: -2063507114
+      spriteID: 1c36f36ee5d2f6340962da8d3b9bc242
+      internalID: -170934904
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_3
+      name: C_base_RunJump_3
       rect:
         serializedVersion: 2
         x: 96
@@ -202,14 +202,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 259ca36046188c84fb9365484b05b607
-      internalID: 703664513
+      spriteID: 49671f6e9ad64b24899239c5735c6a5a
+      internalID: -295411030
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_4
+      name: C_base_RunJump_4
       rect:
         serializedVersion: 2
         x: 0
@@ -224,14 +224,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 12f888c07de11ed4cbe3201d78acf932
-      internalID: 1073171505
+      spriteID: 5f5db488665ff654ea4b3186de8fcde9
+      internalID: 693630380
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_5
+      name: C_base_RunJump_5
       rect:
         serializedVersion: 2
         x: 32
@@ -246,14 +246,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62b7b0d2d32f8e44189255233c52e8ac
-      internalID: -1371920131
+      spriteID: 8770970c96391774cbdec1f2ab926a3a
+      internalID: 159232439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_6
+      name: C_base_RunJump_6
       rect:
         serializedVersion: 2
         x: 64
@@ -268,14 +268,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 684d2e51e38c93a4595e790f77837309
-      internalID: 202753430
+      spriteID: da153ab411f340641aef7f9866fbcfc9
+      internalID: 1625421795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: C_base_run,jump_7
+      name: C_base_RunJump_7
       rect:
         serializedVersion: 2
         x: 96
@@ -290,8 +290,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 247b88de943b06f448dc9d5ce108fbd8
-      internalID: -884135223
+      spriteID: ab5157e70e9d0b54f9e73f02c5ca21c8
+      internalID: 586421165
       vertices: []
       indices: 
       edges: []
@@ -312,14 +312,14 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      C_base_run,jump_0: -249881731
-      C_base_run,jump_1: -2121585008
-      C_base_run,jump_2: -2063507114
-      C_base_run,jump_3: 703664513
-      C_base_run,jump_4: 1073171505
-      C_base_run,jump_5: -1371920131
-      C_base_run,jump_6: 202753430
-      C_base_run,jump_7: -884135223
+      C_base_RunJump_0: -444746554
+      C_base_RunJump_1: 1159063546
+      C_base_RunJump_2: -170934904
+      C_base_RunJump_3: -295411030
+      C_base_RunJump_4: 693630380
+      C_base_RunJump_5: 159232439
+      C_base_RunJump_6: 1625421795
+      C_base_RunJump_7: 586421165
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

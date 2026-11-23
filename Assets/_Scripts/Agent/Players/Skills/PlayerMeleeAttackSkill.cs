@@ -7,7 +7,10 @@ using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.AnimatorSystem;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
+using _Scripts.VFXSystem.Effect;
+using Lean.Pool;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace _Scripts.Agent.Players.Skills
 {
@@ -26,7 +29,12 @@ namespace _Scripts.Agent.Players.Skills
         [Header("DamageCast Setting")]
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
-        
+
+        [Header("Attack Effect")]
+        [SerializeField] private PooledAnimationEffect attackEffectPrefab;
+        [SerializeField] private Vector2 attackEffectOffset;
+        [SerializeField] private bool attachEffectToOwner = true;
+
         [Header("AttackMove")]
         [SerializeField] private AnimationCurve attackMoveCurve;
         [SerializeField] private float lungeDistance = 1f;
@@ -155,8 +163,25 @@ namespace _Scripts.Agent.Players.Skills
 
         private void OnTrigger()
         {
+            SpawnAttackEffect();
             if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
                 PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
+        }
+
+        private void SpawnAttackEffect()
+        {
+            if (attackEffectPrefab == null) return;
+
+            bool isLeft = _renderer.GetRight().x < 0f;
+            Vector3 offset = attackEffectOffset;
+            if (isLeft) offset.x *= -1f;
+
+            Vector3 position = damageCaster.transform.position + offset;
+            Quaternion rotation = Quaternion.Euler(0f, isLeft ? 180f : 0f, 0f);
+            Transform parent = attachEffectToOwner ? _animator.transform : null;
+            PooledAnimationEffect effect = LeanPool.Spawn(attackEffectPrefab, position, rotation, parent);
+            if (effect != null)
+                effect.Play(_animator.speed);
         }
 
         private Vector2 GetMouseDirection()
@@ -233,6 +258,14 @@ namespace _Scripts.Agent.Players.Skills
             float distance = lungeDistance * stepArea / _attackMoveCurveArea;
             _movement.SetVelocityX(_renderer.GetRight().x * distance / Time.deltaTime);
         }
-        
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Vector3 offset = attackEffectOffset;
+            Vector3 position = damageCaster.transform.position + offset;
+            Gizmos.DrawWireSphere(position, 1);
+        }
+#endif
     }
 }

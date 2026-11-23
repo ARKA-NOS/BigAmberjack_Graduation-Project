@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.QuestSystem;
 using _Scripts.DevLib.ModuleSystem;
@@ -140,7 +141,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             {
                 if (requiredTitle == null || requiredTitle == titleSo || !_allTitles.Contains(requiredTitle))
                 {
-                    Debug.LogWarning($"[TitleModule] {titleSo.name}의 선행 칭호가 어느 TitleGroup에도 없거나 자기 자신이라 해금되지 않습니다.", titleSo);
+                    FDebug.LogWarning($"[TitleModule] {titleSo.name}의 선행 칭호가 어느 TitleGroup에도 없거나 자기 자신이라 해금되지 않습니다.", titleSo);
                     continue;
                 }
 

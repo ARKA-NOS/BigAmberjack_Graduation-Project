@@ -39,6 +39,8 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.01f)] private float deathFadeDuration = 0.2f;
         [Tooltip("선택 사항. 임시 사망 연출의 공통 설정입니다. SO의 Use Temporary Feedback을 끄면 기존 연출로 돌아갑니다.")]
         [SerializeField] private EnemyDeathFeedbackSettingsSO deathFeedbackSettings;
+        [Tooltip("임시 즉시 페이드보다 우선합니다. Death 클립 마지막 자세에서 코인을 드롭한 뒤 페이드합니다.")]
+        [SerializeField] private bool completeDeathAnimationBeforeReward;
 
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
@@ -382,7 +384,7 @@ namespace _Scripts.Agent.Enemies
             IsPlayingDeathReaction = true;
             _deathStartedAt = Time.time;
             EnemyDeathFeedbackSettingsSO feedback = DeathFeedbackSettings;
-            _fadeDeathImmediately = feedback != null && feedback.FadeImmediately;
+            _fadeDeathImmediately = !completeDeathAnimationBeforeReward && feedback != null && feedback.FadeImmediately;
             _immediateDeathFadeDuration = feedback != null ? feedback.ImmediateFadeDuration : deathFadeDuration;
 
             _skills?.StopAttack();
@@ -504,7 +506,7 @@ namespace _Scripts.Agent.Enemies
 
             if (_death != null) _death.ReportDeath();
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
-            if (_currencyReward != null) _currencyReward.GrantDeathReward();
+            if (!completeDeathAnimationBeforeReward || !isActiveAndEnabled) _currencyReward?.GrantDeathReward();
             // 사망 중에는 AI가 IsDead로 멈추며, 비주얼은 페이드가 끝날 때까지 유지합니다.
             if (isActiveAndEnabled) FadeAndDespawnAsync(destroyCancellationToken).Forget();
             else Destroy(gameObject, _fadeDeathImmediately ? 0f : Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
@@ -543,6 +545,9 @@ namespace _Scripts.Agent.Enemies
                     if (!gameObject.activeInHierarchy) return;
                 }
             }
+
+            // 선택한 적은 마지막 사망 자세를 확정한 뒤 보상을 생성합니다.
+            if (completeDeathAnimationBeforeReward) _currencyReward?.GrantDeathReward();
 
             SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
             float[] originalAlphas = new float[sprites.Length];

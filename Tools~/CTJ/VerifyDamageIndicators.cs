@@ -67,6 +67,126 @@ public static class VerifyDamageIndicators
         return path;
     }
 
+    public static object EnterVariationPlay()
+    {
+        Check(!EditorApplication.isPlaying && !EditorApplication.isCompiling && !SceneManager.GetActiveScene().isDirty &&
+            SceneManager.GetActiveScene().path == "Assets/_Scenes/Test/EnemyTestScene.unity", "Use saved EnemyTestScene in Edit Mode");
+        EditorApplication.EnterPlaymode();
+        return "Starting indicator position and size verification";
+    }
+
+    public static async Task<object> RunVariation()
+    {
+        Check(Application.isPlaying && SceneManager.GetActiveScene().path == "Assets/_Scenes/Test/EnemyTestScene.unity",
+            "Use EnemyTestScene Play Mode");
+        var roots = SceneManager.GetActiveScene().GetRootGameObjects()
+            .Where(root => root.activeSelf && root.GetComponent<Lean.Pool.LeanGameObjectPool>() == null).ToArray();
+        foreach (var root in roots) root.SetActive(false);
+        var random = UnityEngine.Random.state;
+        UnityEngine.Random.InitState(231123);
+        var prefab = AssetDatabase.LoadAssetAtPath<EnemyDamageIndicatorPopup>(Effects + "EnemyDamageIndicator.prefab");
+        EnemyDamageIndicatorPopup sample = null;
+        GameObject a = null, b = null;
+        try
+        {
+            sample = Object.Instantiate(prefab);
+            Vector3 origin = new Vector3(2f, 3f, 0f);
+            Vector2[] directions = { Vector2.right, Vector2.left, Vector2.up, Vector2.down,
+                new Vector2(1f, 1f), new Vector2(-1f, 1f), new Vector2(1f, -1f), new Vector2(-1f, -1f) };
+            var results = new List<object>();
+            foreach (bool critical in new[] { false, true })
+            {
+                float minimum = float.PositiveInfinity, maximum = 0f, maxDistance = 0f;
+                var positions = new HashSet<Vector3>();
+                var sizes = new HashSet<float>();
+                for (int i = 0; i < 512; i++)
+                {
+                    Vector2 direction = directions[i % directions.Length];
+                    sample.Show(new DamageIndicatorData(1, 9.8f, critical, origin, direction));
+                    Vector2 offset = sample.transform.position - origin;
+                    Check(offset.magnitude <= 0.50001f && Vector2.Dot(offset, direction) >= -0.00001f,
+                        "Popup outside radius or behind incoming attack");
+                    Check(Label(sample).text == "10", "Rounded damage changed");
+                    Check(critical ? Label(sample).color.g > 0.7f && Label(sample).color.b < 0.3f :
+                        Label(sample).color == Color.white, "Wrong text color");
+                    positions.Add(sample.transform.position);
+                    maxDistance = Mathf.Max(maxDistance, offset.magnitude);
+                    typeof(EnemyDamageIndicatorPopup).GetMethod("ApplyFrame", Private).Invoke(sample, new object[] { 0.45f });
+                    float factor = sample.transform.localScale.x / prefab.transform.localScale.x;
+                    Check(factor >= (critical ? 1.3f : 0.8f) - 0.00001f &&
+                        factor <= (critical ? 1.6f : 1f) + 0.00001f, "Size outside requested range or accumulated on reuse");
+                    minimum = Mathf.Min(minimum, factor); maximum = Mathf.Max(maximum, factor); sizes.Add(factor);
+                    typeof(EnemyDamageIndicatorPopup).GetMethod("ApplyFrame", Private).Invoke(sample, new object[] { 0.26f });
+                    float rebound = sample.transform.localScale.x / prefab.transform.localScale.x;
+                    Check(Mathf.Abs(rebound - factor * (critical ? 1.4f : 1.12f)) < 0.0001f,
+                        "Random size changed during one animation");
+                }
+                Check(positions.Count > 500 && sizes.Count > 500, "Repeated hits did not vary");
+                results.Add(new { critical, samples = 512, minimum, maximum, maxDistance,
+                    uniquePositions = positions.Count, uniqueSizes = sizes.Count, checkedDirections = directions.Length });
+            }
+            sample.Show(new DamageIndicatorData(1, 1f, false, origin));
+            Check(Vector3.Distance(sample.transform.position, origin) <= 0.50001f, "Old constructor without direction failed");
+            Object.Destroy(sample.gameObject); sample = null;
+            await Awaitable.NextFrameAsync();
+
+            string current = "Assets/_Prefabs/Enemies/Enemy/Enemy17/Enemy17_IntakeBiter.prefab";
+            a = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(current), Vector3.zero, Quaternion.identity);
+            b = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(current), Vector3.right * 4f, Quaternion.identity);
+            foreach (var root in new[] { a, b })
+            {
+                root.GetComponent<Rigidbody2D>().simulated = false;
+                foreach (var module in root.GetComponentsInChildren<EnemyParticleModule>()) module.enabled = false;
+                foreach (var module in root.GetComponentsInChildren<EnemyHitReactionModule>()) module.enabled = false;
+                foreach (var module in root.GetComponentsInChildren<EnemyHitCameraShakeModule>()) module.enabled = false;
+            }
+            var source = a.GetComponentInChildren<EnemyDamageIndicatorModule>();
+            var other = b.GetComponentInChildren<EnemyDamageIndicatorModule>();
+            foreach (var hit in new[] {
+                (Direction: Vector2.right, Normal: Vector2.left, Dealer: (EnemyBase)null, Critical: false, Expected: Vector2.right),
+                (Direction: Vector2.left, Normal: Vector2.right, Dealer: (EnemyBase)null, Critical: true, Expected: Vector2.left),
+                (Direction: Vector2.zero, Normal: Vector2.zero, Dealer: b.GetComponent<EnemyBase>(), Critical: false, Expected: Vector2.left),
+                (Direction: Vector2.zero, Normal: Vector2.down, Dealer: (EnemyBase)null, Critical: false, Expected: Vector2.up) })
+            {
+                a.GetComponent<EnemyBase>().ApplyDamage(new DamageData { DamageAmount = 1f, IsCritical = hit.Critical, Dealer = hit.Dealer },
+                    a.transform.position, hit.Direction, hit.Normal);
+                var popups = Popups();
+                Check(popups.Length == 1, "Real hit lost or duplicated indicator");
+                Vector3 center = a.transform.position + Vector3.up * 0.45f;
+                Vector2 offset = popups[0].transform.position - center;
+                Check(offset.magnitude <= 0.50001f && Vector2.Dot(offset, hit.Expected) >= -0.00001f,
+                    "DamageReceived did not pass direction or fallback to popup");
+                Object.Destroy(popups[0].gameObject);
+                await Awaitable.NextFrameAsync();
+            }
+            source.ShowDamage(11f, false, origin, Vector2.right);
+            source.ShowDamage(12f, true, origin, Vector2.left);
+            other.ShowDamage(13f, false, origin, Vector2.up);
+            other.ShowDamage(14f, true, origin, Vector2.down);
+            var burst = Popups();
+            Check(burst.Length == 4 && burst.Select(Damage).OrderBy(value => value).SequenceEqual(new[] { 11f, 12f, 13f, 14f }),
+                "Same-frame multi-enemy indicators were overwritten or duplicated");
+            await UntilNoPopups();
+            return new { results, realHitRoutes = 4, sameFrameRequests = 4, cleanedUp = Popups().Length == 0 };
+        }
+        finally
+        {
+            if (sample != null) Object.Destroy(sample.gameObject);
+            if (a != null) Object.Destroy(a);
+            if (b != null) Object.Destroy(b);
+            foreach (var popup in Popups()) Object.Destroy(popup.gameObject);
+            foreach (var root in roots) if (root != null) root.SetActive(true);
+            UnityEngine.Random.state = random;
+        }
+    }
+
+    private static async Task UntilNoPopups()
+    {
+        float deadline = Time.realtimeSinceStartup + 3f;
+        while (Popups().Length > 0 && Time.realtimeSinceStartup < deadline) await Awaitable.NextFrameAsync();
+        Check(Popups().Length == 0, "Indicator lifetime no longer finishes");
+    }
+
     private static EnemyBase Spawn(Vector3 position)
     {
         var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(EnemyPath), position, Quaternion.identity);
@@ -212,7 +332,7 @@ public static class VerifyDamageIndicators
                 {
                     var popup = Object.Instantiate(prefab);
                     objects.Add(popup.gameObject);
-                    typeof(EnemyDamageIndicatorPopup).GetField("_horizontalSpread", Private).SetValue(popup, 0f);
+                    typeof(EnemyDamageIndicatorPopup).GetField("_spawnRadius", Private).SetValue(popup, 0f);
                     typeof(EnemyDamageIndicatorPopup).GetField("_horizontalDrift", Private).SetValue(popup, 0f);
                     popup.Show(new DamageIndicatorData(1, 24f, row == 1, new Vector3(-2.7f + column * 1.8f, 0.6f - row * 1.5f, 0f)));
                     typeof(EnemyDamageIndicatorPopup).GetMethod("ApplyFrame", Private).Invoke(popup, new object[] { stages[column] });

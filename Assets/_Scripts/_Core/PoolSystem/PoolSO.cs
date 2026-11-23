@@ -8,13 +8,23 @@ namespace _Scripts._Core.PoolSystem
     public class PoolSO : ScriptableObject
     {
         [SerializeField] private GameObject prefab;
-        
+
         public GameObject Spawn()
-            => LeanPool.Spawn(prefab);
+        {
+            if (prefab != null) 
+                return LeanPool.Spawn(prefab);
+            FDebug.LogError("Prefab is null");
+            return null;
+        }
         
         public T Spawn<T>()
         {
-            if (LeanPool.Spawn(prefab).TryGetComponent(out T result))
+            GameObject go = Spawn();
+
+            if (go == null) 
+                return default;
+            
+            if (go.TryGetComponent(out T result))
                 return result;
             
             FDebug.LogError("Pool Prefab doesn't have a " + typeof(T).Name, this);

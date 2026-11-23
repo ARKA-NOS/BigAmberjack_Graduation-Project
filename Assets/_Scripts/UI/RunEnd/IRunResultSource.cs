@@ -23,6 +23,9 @@ namespace _Scripts.UI.RunEnd
         // 결과 화면을 보는 동안 플레이어가 움직이지 않게 입력을 끈다.
         void LockPlayerInput();
 
+        // 결과 화면을 보는 동안 게임 시간을 멈춘다. GoNext에서 되돌린다.
+        void PauseGame();
+
         // 런 상태를 정리하고 다음 씬으로 넘어간다.
         void GoNext(RunEndReason reason);
     }

@@ -89,7 +89,7 @@ namespace _Scripts.Agent.Enemies
         internal float MaximumLifetime => Mathf.Max(0.1f, lifetimeRange.x, lifetimeRange.y) +
             Mathf.Max(0.01f, fadeDuration) + 0.1f;
 
-        internal void Emit(ParticleSystem particles)
+        internal void Emit(ParticleSystem particles, float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             _particles = particles;
             var renderer = particles.GetComponent<ParticleSystemRenderer>();
@@ -110,6 +110,9 @@ namespace _Scripts.Agent.Enemies
 
             int minimum = Mathf.Clamp(fragmentCount.x, 1, 64);
             int maximum = Mathf.Clamp(fragmentCount.y, minimum, 64);
+            float countScale = Mathf.Clamp(countMultiplier, 1f, 4f);
+            minimum = Mathf.Clamp(Mathf.RoundToInt(minimum * countScale), 1, 128);
+            maximum = Mathf.Clamp(Mathf.RoundToInt(maximum * countScale), minimum, 128);
             _count = Random.Range(minimum, maximum + 1);
 
             if (_fragments == null || _fragments.Length < maximum)
@@ -143,7 +146,7 @@ namespace _Scripts.Agent.Enemies
                 var fragment = new Fragment
                 {
                     Position = (Vector2)origin + Random.insideUnitCircle * 0.025f,
-                    Velocity = direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed,
+                    Velocity = (direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed) * Mathf.Max(0f, speedMultiplier),
                     Size = new Vector2(size * Random.Range(0.92f, 1.08f), size * Random.Range(0.92f, 1.08f)),
                     Tint = PickBodyColor(totalBodyColorWeight),
                     Angle = Random.Range(0f, 360f),

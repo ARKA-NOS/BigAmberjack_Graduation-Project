@@ -71,7 +71,7 @@ namespace _Scripts.Maps.New_Map
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-
+            
             _currentSeed = seed;
             GenerateMapUniTask(mapSetting, seed, _generateCts.Token).Forget();
         }
@@ -83,7 +83,7 @@ namespace _Scripts.Maps.New_Map
             using LoadingScope loading = LoadingEvents.BeginLoading();
 
             // 오류가 난 맵을 같은 시드로 다시 확인할 수 있도록 시드를 먼저 남긴다.
-            FDebug.Log($"[MapGenerator] Seed={seed}");
+            FDebug.Log($"[MapGenerator] Seed={seed}", this);
 
             ClearGeneratedMap();
 

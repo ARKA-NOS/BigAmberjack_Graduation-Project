@@ -89,6 +89,7 @@ MonoBehaviour:
   _label: {fileID: 442673249190962739}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _duration: 0.8
+  _normalSizeRange: {x: 0.8, y: 1}
   _normalScale:
     serializedVersion: 2
     m_Curve:
@@ -141,7 +142,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _criticalColor: {r: 1, g: 0.84, b: 0.12, a: 1}
-  _criticalSizeMultiplier: 1.25
+  _criticalSizeRange: {x: 1.3, y: 1.6}
   _criticalDurationMultiplier: 1.1
   _criticalScale:
     serializedVersion: 2
@@ -198,7 +199,7 @@ MonoBehaviour:
   _criticalRiseMultiplier: 1.2
   _riseStart: 0.22
   _fadeStart: 0.55
-  _horizontalSpread: 0.16
+  _spawnRadius: 0.5
   _horizontalDrift: 0.12
 --- !u!1 &3258215485134232979
 GameObject:

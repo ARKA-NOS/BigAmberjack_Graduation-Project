@@ -517,6 +517,7 @@ Transform:
   - {fileID: 7429289157699939900}
   - {fileID: 576478010420115079}
   - {fileID: 1571470936509046672}
+  - {fileID: 6800000000000000002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1380922992422332455
@@ -615,6 +616,7 @@ MonoBehaviour:
   deathAnimator: {fileID: 5100271244934982590}
   deathDespawnDelay: 1.1
   deathFadeDuration: 0.2
+  deathFeedbackSettings: {fileID: 11400000, guid: a8c367fb2984e13489d78f4216a66b0f, type: 2}
 --- !u!1 &3765492493668839947
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,7 +700,7 @@ MonoBehaviour:
   hitColor: {r: 0.75, g: 0.18, b: 0.22, a: 1}
   showOnlyWhenHit: 1
   showDuringAttackPreparation: 1
-  preparationColor: {r: 1, g: 0.78, b: 0.25, a: 1}
+  preparationColor: {r: 1, g: 0.15, b: 0.2, a: 1}
   preparationWidth: 3
   width: 2
   outerSilhouetteOnly: 0
@@ -1275,3 +1277,21 @@ MonoBehaviour:
   attackSounds:
   - skill: {fileID: 1614437594355341458}
     cue: {fileID: 11400000, guid: d161e94cfd6b6024aa520ee2d10d6a3b, type: 2}
+--- !u!1001 &6800000000000000001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5688870116634397305}
+    m_Modifications: []
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7a5b2637411c01e4db0239c3663d61b9, type: 3}
+--- !u!4 &6800000000000000002 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2547433973611120816, guid: 7a5b2637411c01e4db0239c3663d61b9, type: 3}
+  m_PrefabInstance: {fileID: 6800000000000000001}
+  m_PrefabAsset: {fileID: 0}

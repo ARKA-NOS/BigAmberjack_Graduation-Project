@@ -17,7 +17,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private bool showOnlyWhenHit = true;
         [Tooltip("공격 준비 동안 밝은 바깥쪽 테두리를 표시합니다. Full Rect 스프라이트를 사용합니다.")]
         [SerializeField] private bool showDuringAttackPreparation;
-        [SerializeField, ColorUsage(false)] private Color preparationColor = new Color(1f, 0.78f, 0.25f, 1f);
+        [SerializeField, ColorUsage(false)] private Color preparationColor = new Color(1f, 0.15f, 0.2f, 1f);
         [SerializeField, Range(0f, 6f)] private float preparationWidth = 3f;
         [Tooltip("화면 픽셀 기준 테두리 두께입니다. Outer Silhouette Only를 켜면 바깥쪽, 끄면 안쪽에 표시합니다. 0이면 숨깁니다.")]
         [SerializeField, Range(0f, 6f)] private float width = 2f;

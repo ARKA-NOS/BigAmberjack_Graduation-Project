@@ -2,6 +2,8 @@
 
 2026-11-23부터 Enemy17~22·Boss23에는 [임시 사망 폭발 연출](C:/Users/USER/BigAmberjack_Graduation-Project/Tools~/CTJ/TemporaryDeathFeedback.md)을 적용했다. 아래는 임시 SO의 Use Temporary Feedback을 끄거나 연결하지 않았을 때 사용하는 기존 방식이다.
 
+추가 변경으로 Enemy23은 임시 분사·쉐이크 배율을 사용하면서도 Death 애니메이션을 끝까지 재생한다. 마지막 자세에서 코인을 드롭하고 페이드하는 현재 정책은 [Enemy23 사망 연출](Boss23DeathFeedback.md)에 정리했다.
+
 ## 동작
 
 - HP가 0이 되는 프레임에 기존처럼 Death 애니메이션과 피격 반응을 시작한다. 처치 수와 코인 보상도 기존 피격 반응 종료 시점에 처리한다.

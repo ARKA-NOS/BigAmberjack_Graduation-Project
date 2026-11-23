@@ -2,6 +2,8 @@
 
 적용일은 2026-11-23이다. Enemy17~22와 Boss23의 사망을 즉시 터지는 느낌으로 비교하기 위한 임시 설정이다.
 
+추가 조정: Enemy23은 `Complete Death Animation Before Reward`를 켜서 즉시 몸체 페이드를 적용하지 않는다. 임시 금속 분사·쉐이크 배율은 사용하고, 데스 마지막 자세에서 코인을 드롭한다. 화면 플래시·시간 감속 모듈은 이 임시 SO와 별도로 조절한다. [Enemy23 사망 연출](Boss23DeathFeedback.md)을 참고한다.
+
 공통 설정은 [TemporaryDeathFeedback.asset](C:/Users/USER/BigAmberjack_Graduation-Project/Assets/_Prefabs/Enemies/Effects/TemporaryDeathFeedback.asset)에 모았다. 각 적 루트의 EnemyBase **Death Feedback Settings**에 같은 SO를 연결했다. 기존 적·파티클·쉐이크의 원래 수치는 유지하고 재생할 때 추가 배율을 전달한다.
 
 ## 즉시 복구하는 방법

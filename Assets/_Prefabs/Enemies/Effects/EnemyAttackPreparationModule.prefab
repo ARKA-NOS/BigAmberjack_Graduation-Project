@@ -46,11 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemyAttackPreparationModule
   particlesEnabled: 1
   particlePrefab: {fileID: 6105295136781298636, guid: 660af3ab31ba27d439ce48ce9dc9d5f8, type: 3}
-  gatherTime: 0.25
+  gatherTime: 0.45
+  completionLeadTime: 0.05
+  emissionDurationRatio: 0.6
   particleCount: 40
-  particleColor: {r: 0.65, g: 0.08, b: 0.1, a: 0.95}
+  particleColor: {r: 0.85, g: 0.12, b: 0.16, a: 0.95}
   spawnRadius: {x: 0.8, y: 1.25}
-  particleSize: {x: 0.07, y: 0.15}
+  particleSize: {x: 0.14, y: 0.55}
   centerOverride: {fileID: 0}
   centerOffset: {x: 0, y: 0}
   sortingSource: {fileID: 0}

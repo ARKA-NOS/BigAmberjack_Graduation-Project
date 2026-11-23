@@ -150,7 +150,10 @@ namespace _Scripts.Agent.Enemies
 
             Vector3 position = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
             // 사망 분사는 타격 방향에 관계없이 전방위로 뻗는 전용 프리팹을 사용합니다.
-            SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale);
+            EnemyDeathFeedbackSettingsSO feedback = _enemy.DeathFeedbackSettings;
+            SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale,
+                feedback != null ? feedback.BurstSpeedMultiplier : 1f,
+                feedback != null ? feedback.BurstCountMultiplier : 1f);
         }
 
         internal void PlayLandingEffect(ParticleSystem prefab, Vector3 position)
@@ -159,7 +162,8 @@ namespace _Scripts.Agent.Enemies
                 SpawnEffect(prefab, position, Quaternion.identity, 1f);
         }
 
-        private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale)
+        private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale,
+            float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
             {
@@ -169,7 +173,7 @@ namespace _Scripts.Agent.Enemies
             }
 
             EnemyHitParticle effect = EnemyHitParticle.Spawn(prefab, position, rotation, gameObject.scene,
-                Mathf.Max(0.01f, effectScale) * scale, maxEffectLifetime, this);
+                Mathf.Max(0.01f, effectScale) * scale, maxEffectLifetime, this, speedMultiplier, countMultiplier);
             if (effect != null) _activeEffects.Add(effect);
         }
 

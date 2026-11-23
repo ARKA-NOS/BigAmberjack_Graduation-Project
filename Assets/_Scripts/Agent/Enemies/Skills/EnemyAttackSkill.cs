@@ -165,9 +165,9 @@ namespace _Scripts.Agent.Enemies.Skills
         private void ReleaseAttack()
         {
             if (!IsUsing || !CanContinue || HasReleased) return;
-            if (_preparationParticles != null && !_preparationParticles.CanReleaseAttack(this)) return;
 
             HasReleased = true;
+            // 프레임이 늦어 입자가 남아 있어도 발동 전에 정리하고, 공격 시간은 연장하지 않습니다.
             _preparationParticles?.EndPreparation(this);
             if (preparationWarning != null) preparationWarning.Hide();
             OnReleaseAttack();

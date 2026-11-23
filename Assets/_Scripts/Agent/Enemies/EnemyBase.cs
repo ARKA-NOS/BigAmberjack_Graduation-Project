@@ -37,6 +37,8 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float deathDespawnDelay = 1.1f;
         [Tooltip("사망 애니메이션 마지막 프레임을 유지하며 사라지는 시간입니다.")]
         [SerializeField, Min(0.01f)] private float deathFadeDuration = 0.2f;
+        [Tooltip("선택 사항. 임시 사망 연출의 공통 설정입니다. SO의 Use Temporary Feedback을 끄면 기존 연출로 돌아갑니다.")]
+        [SerializeField] private EnemyDeathFeedbackSettingsSO deathFeedbackSettings;
 
         private Rigidbody2D _rigidbody;
         private EnemyMovementModule _movement;
@@ -56,6 +58,8 @@ namespace _Scripts.Agent.Enemies
         private bool _deathFinalized;
         private bool _hasDeathAnimation;
         private float _deathStartedAt;
+        private bool _fadeDeathImmediately;
+        private float _immediateDeathFadeDuration;
         private ContactFilter2D _deathGroundFilter;
         private List<ContactPoint2D> _deathGroundContacts;
 
@@ -76,8 +80,11 @@ namespace _Scripts.Agent.Enemies
         // 실제 HP가 줄어든 타격만 전달합니다. DamageAmount는 방어/잔여 HP를 반영한 감소량입니다.
         // 사망 타격도 포함하며 크리티컬 여부와 피격 위치/방향을 보존합니다.
         public event Action<DamageData, Vector2, Vector2, Vector2> DamageReceived;
-        // 사망 애니메이션 시작과 함께 한 번 전달합니다. 공중에서 죽으면 착지를 기다립니다.
+        // 사망 연출 시작에 한 번 전달합니다. 즉시 페이드 모드에서는 공중에서도 바로 전달합니다.
         public event Action DeathStarted;
+
+        internal EnemyDeathFeedbackSettingsSO DeathFeedbackSettings =>
+            deathFeedbackSettings != null && deathFeedbackSettings.UseTemporaryFeedback ? deathFeedbackSettings : null;
 
         public bool IsHitReacting => _hitReaction != null && _hitReaction.IsReacting;
         internal float FacingDirection => facingRoot != null && facingRoot.localScale.x < 0f ? -1f : 1f;
@@ -374,6 +381,9 @@ namespace _Scripts.Agent.Enemies
             IsDead = true;
             IsPlayingDeathReaction = true;
             _deathStartedAt = Time.time;
+            EnemyDeathFeedbackSettingsSO feedback = DeathFeedbackSettings;
+            _fadeDeathImmediately = feedback != null && feedback.FadeImmediately;
+            _immediateDeathFadeDuration = feedback != null ? feedback.ImmediateFadeDuration : deathFadeDuration;
 
             _skills?.StopAttack();
             StopHorizontalMovement();
@@ -388,7 +398,7 @@ namespace _Scripts.Agent.Enemies
                     hasSolidBody = true;
             }
 
-            IsWaitingForDeathLanding = ShouldWaitForDeathLanding(hasSolidBody);
+            IsWaitingForDeathLanding = !_fadeDeathImmediately && ShouldWaitForDeathLanding(hasSolidBody);
 
             if (hit.HasValue)
             {
@@ -400,6 +410,13 @@ namespace _Scripts.Agent.Enemies
             if (_deathFinalized) return;
 
             if (!IsWaitingForDeathLanding) BeginDeathPresentation();
+            if (_fadeDeathImmediately)
+            {
+                // 마지막 피격·사망 이벤트는 그대로 전달하고 연출 종료 대기만 생략합니다.
+                FinishDeath();
+                return;
+            }
+
             if (isActiveAndEnabled) FinishDeathAfterReactionAsync(destroyCancellationToken).Forget();
             else FinishDeath();
         }
@@ -490,12 +507,12 @@ namespace _Scripts.Agent.Enemies
             if (_currencyReward != null) _currencyReward.GrantDeathReward();
             // 사망 중에는 AI가 IsDead로 멈추며, 비주얼은 페이드가 끝날 때까지 유지합니다.
             if (isActiveAndEnabled) FadeAndDespawnAsync(destroyCancellationToken).Forget();
-            else Destroy(gameObject, Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
+            else Destroy(gameObject, _fadeDeathImmediately ? 0f : Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
         }
 
         private async UniTaskVoid FadeAndDespawnAsync(CancellationToken cancellationToken)
         {
-            if (_hasDeathAnimation && deathAnimator != null && deathAnimator.isActiveAndEnabled)
+            if (!_fadeDeathImmediately && _hasDeathAnimation && deathAnimator != null && deathAnimator.isActiveAndEnabled)
             {
                 AnimatorStateInfo state = deathAnimator.GetCurrentAnimatorStateInfo(0);
 
@@ -517,7 +534,7 @@ namespace _Scripts.Agent.Enemies
                     deathAnimator.speed = 0f;
                 }
             }
-            else
+            else if (!_fadeDeathImmediately)
             {
                 float remaining = deathDespawnDelay - (Time.time - _deathStartedAt);
                 if (remaining > 0f)
@@ -532,7 +549,7 @@ namespace _Scripts.Agent.Enemies
             for (int i = 0; i < sprites.Length; i++)
                 if (sprites[i] != null) originalAlphas[i] = sprites[i].color.a;
 
-            float duration = Mathf.Max(0.01f, deathFadeDuration);
+            float duration = _fadeDeathImmediately ? _immediateDeathFadeDuration : Mathf.Max(0.01f, deathFadeDuration);
             float elapsed = 0f;
 
             while (elapsed < duration)

@@ -311,10 +311,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HomePrefab
       objectReference: {fileID: 0}
-    - target: {fileID: 3192605017432186694, guid: 84fea5e63e6b6d84c87a9103675db388, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 5271990164659265008, guid: 84fea5e63e6b6d84c87a9103675db388, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1512,7 +1508,7 @@ Camera:
   near clip plane: 0.01
   far clip plane: 50
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 6
   m_Depth: -1
   m_CullingMask:

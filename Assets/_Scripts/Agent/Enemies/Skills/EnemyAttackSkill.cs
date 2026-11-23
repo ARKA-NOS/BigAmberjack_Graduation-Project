@@ -28,6 +28,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private float _blinkDuration;
         private float _holdDuration;
         private bool _isRecovering;
+        private EnemyAttackPreparationModule _preparationParticles;
         protected AttackTelegraphUI Telegraph { get; private set; }
         protected bool HasReleased { get; private set; }
         protected virtual bool ShouldShowTelegraph => true;
@@ -56,6 +57,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             base.InitSkill(owner);
             Enemy = owner as EnemyBase;
+            _preparationParticles = owner.GetModule<EnemyAttackPreparationModule>();
             if (attackDelayStat != null && owner.TryGetModule(out IStatModule stats))
                 _attackDelay = stats.GetStat(attackDelayStat);
         }
@@ -82,6 +84,8 @@ namespace _Scripts.Agent.Enemies.Skills
             _preparationPhase = PreparationPhase.Waiting;
             _phaseEndTime = Time.time + Mathf.Max(0f, AttackDelay - _blinkDuration);
             PrepareAttack();
+
+            if (IsPreparing) _preparationParticles?.BeginPreparation(this, AttackDelay + _holdDuration);
 
             if (IsUsing && Telegraph != null && ShouldShowTelegraph)
             {
@@ -163,6 +167,8 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!IsUsing || !CanContinue || HasReleased) return;
 
             HasReleased = true;
+            // 프레임이 늦어 입자가 남아 있어도 발동 전에 정리하고, 공격 시간은 연장하지 않습니다.
+            _preparationParticles?.EndPreparation(this);
             if (preparationWarning != null) preparationWarning.Hide();
             OnReleaseAttack();
         }
@@ -177,6 +183,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnStopSkill() => ClearAttack();
         private void ClearAttack()
         {
+            _preparationParticles?.EndPreparation(this);
             Telegraph?.Hide();
             if (preparationWarning != null) preparationWarning.Hide();
             HasReleased = false;

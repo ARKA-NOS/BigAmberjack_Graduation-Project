@@ -6,7 +6,7 @@ namespace _Scripts.Agent.Players.InteractSystem
     public abstract class AbstractInteractObject : MonoBehaviour, ICanInteract
     {
         [SerializeField] private Vector2 interactUIOffset;
-        public Vector2 Position => transform.position + (Vector3)interactUIOffset;
+        public Vector2 Position => (transform != null ? transform.position : Vector2.zero) + (Vector3)interactUIOffset;
         public abstract void Interact(ModuleOwner owner);
 
         protected void OnDrawGizmosSelected()

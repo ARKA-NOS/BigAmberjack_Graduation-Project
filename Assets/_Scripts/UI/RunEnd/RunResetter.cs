@@ -1,21 +1,31 @@
-using _Scripts._Core._Debug;
 using _Scripts._Core._Manager;
 using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Players;
 using _Scripts.Agent.Players.PlayerPackSystem;
+using _Scripts.DevLib.ModuleSystem;
+using _Scripts.Inventory;
 using _Scripts.Maps;
 using UnityEngine;
 
 namespace _Scripts.UI.RunEnd
 {
     // 탐험이 끝나 다른 씬으로 넘어가기 직전에, 씬을 넘어 남는 상태를 정리한다.
+    // 플레이어는 사망했을 때만 파괴해서 다음 씬에서 새로 생성되게 하고, 보스 클리어 시에는 유지하되 인벤토리를 비운다.
     public static class RunResetter
     {
         public static void ResetRun(RunEndReason reason)
         {
-            ResetPlayer();
+            if (reason == RunEndReason.PlayerDead)
+                ResetPlayer();
+            else
+            {
+                // 플레이어를 유지하므로 장착 아이템과 그 효과가 다음 런에 남지 않게 인벤토리를 비운다.
+                ClearInventory();
+                RestorePlayerInput();
+            }
+
             DestroyGameManager();
             Portal.ResetTransitionState();
-            FDebug.Log($"[RunResetter] 런 종료({reason}) - 플레이어/GameManager 초기화");
         }
 
         // PlayerPack은 DontDestroyOnLoad라 죽은 상태 그대로 다음 씬에 남는다.
@@ -23,14 +33,23 @@ namespace _Scripts.UI.RunEnd
         // NullPlayerPack이 등록되어 있어 CharacterManager가 새 캐릭터를 만든다.
         private static void ResetPlayer()
         {
-            IPlayerPack playerPack = ServiceLocator.Get<IPlayerPack>();
-            if (!playerPack.IsExist())
-            {
-                FDebug.LogWarning("[RunResetter] 파괴할 PlayerPack이 없습니다.");
-                return;
-            }
+            ServiceLocator.Get<IPlayerPack>().Destroy();
+        }
 
-            playerPack.Destroy();
+        private static void ClearInventory()
+        {
+            ModuleOwner player = ServiceLocator.Get<IPlayerController>() as ModuleOwner;
+            if (player != null && player.TryGetModule(out IInventoryModule inventory))
+                inventory.Clear();
+        }
+
+        // 결과 화면을 띄울 때 입력을 껐으므로, 플레이어를 유지하는 경우 다시 켜 둔다.
+        // (PlayerSpawner는 위치만 옮기고 입력을 켜지 않는다)
+        private static void RestorePlayerInput()
+        {
+            IPlayerController player = ServiceLocator.Get<IPlayerController>();
+            if (player is Object playerObject && playerObject != null)
+                player.SetInputActive(true);
         }
 
         // GameManager는 DontDestroyOnLoad라 다른 씬(또는 같은 씬)을 불러오면 그 씬의 GameManager와 중복된다.

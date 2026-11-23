@@ -291,7 +291,7 @@ public static class VerifyMetalFragments
 
     private static void Play(GameObject effect, ParticleSystem root) =>
         typeof(EnemyHitParticle).GetMethod("Play", BindingFlags.Instance | BindingFlags.NonPublic)
-            .Invoke(effect.GetComponent<EnemyHitParticle>(), new object[] { root, 3f });
+            .Invoke(effect.GetComponent<EnemyHitParticle>(), new object[] { root, 3f, 1f, 1f });
 
     private static Vector2 LocalOffset(ParticleSystem.Particle body, ParticleSystem.Particle attachment)
     {

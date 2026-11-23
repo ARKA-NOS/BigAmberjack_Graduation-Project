@@ -48,18 +48,24 @@ namespace _Scripts.Agent.Enemies
             if (_useHitPoint && IsFinite(point.x) && IsFinite(point.y) &&
                 Vector2.Distance(point, origin) <= _maxHitPointDistance)
                 position = new Vector3(point.x, point.y, origin.z);
-            ShowDamage(damage.DamageAmount, damage.IsCritical, position + (Vector3)_worldOffset);
+            if (!HasDirection(direction) && damage.Dealer != null)
+                direction = _enemy.transform.position - damage.Dealer.transform.position;
+            if (!HasDirection(direction)) direction = -normal;
+
+            ShowDamage(damage.DamageAmount, damage.IsCritical, position + (Vector3)_worldOffset, direction);
         }
 
         // 표시만 요청합니다. HP 변경이나 크리티컬 확률/배율 계산은 하지 않습니다.
-        public void ShowDamage(float damage, bool isCritical, Vector3 position)
+        public void ShowDamage(float damage, bool isCritical, Vector3 position, Vector2 direction = default)
         {
             if (!isActiveAndEnabled || _viewModel == null || !IsFinite(damage) || damage <= 0f ||
                 !IsFinite(position.x) || !IsFinite(position.y) || !IsFinite(position.z)) return;
-            _viewModel.Bind(new DamageIndicatorData(GetInstanceID(), damage, isCritical, position));
+            _viewModel.Bind(new DamageIndicatorData(GetInstanceID(), damage, isCritical, position, direction));
         }
 
         private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+        private static bool HasDirection(Vector2 value) =>
+            IsFinite(value.x) && IsFinite(value.y) && value.sqrMagnitude > 0.0001f;
         private void OnDisable() => Unsubscribe();
         private void OnDestroy() => Unsubscribe();
 

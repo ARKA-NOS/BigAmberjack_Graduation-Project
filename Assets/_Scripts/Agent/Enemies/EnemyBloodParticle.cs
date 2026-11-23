@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace _Scripts.Agent.Enemies
@@ -33,6 +34,8 @@ namespace _Scripts.Agent.Enemies
 
         private const float Skin = 0.005f;
         private const int TrailSamples = 12;
+        private static readonly ProfilerMarker UpdateMarker = new ProfilerMarker(ProfilerCategory.Scripts, "CTJ.Blood.FixedUpdate");
+        private static readonly ProfilerMarker TrailMarker = new ProfilerMarker(ProfilerCategory.Scripts, "CTJ.Blood.Trails");
         private enum SurfaceState { Air, Floor, Wall }
         private struct Drop
         {
@@ -65,11 +68,14 @@ namespace _Scripts.Agent.Enemies
             // 공중 페이드 도중 늦게 착지하는 경우까지 포함합니다.
             Mathf.Max(0f, traceDuration.x, traceDuration.y) + 2f * Mathf.Max(0.01f, fadeDuration) + 0.1f;
 
-        internal void Emit()
+        internal void Emit(float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             _particles = GetComponent<ParticleSystem>();
             int minimum = Mathf.Clamp(particleCount.x, 1, 64);
             int maximum = Mathf.Clamp(particleCount.y, minimum, 64);
+            float countScale = Mathf.Clamp(countMultiplier, 1f, 4f);
+            minimum = Mathf.Clamp(Mathf.RoundToInt(minimum * countScale), 1, 128);
+            maximum = Mathf.Clamp(Mathf.RoundToInt(maximum * countScale), minimum, 128);
             _count = Random.Range(minimum, maximum + 1);
 
             if (_drops == null || _drops.Length < _count)
@@ -103,7 +109,7 @@ namespace _Scripts.Agent.Enemies
                 _drops[i] = new Drop
                 {
                     Position = (Vector2)transform.position + Random.insideUnitCircle * 0.025f,
-                    Velocity = direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed,
+                    Velocity = (direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed) * Mathf.Max(0f, speedMultiplier),
                     Size = RandomBetween(sizeRange, 0.01f) * scale,
                     Angle = Random.Range(0f, 360f), Spin = Random.Range(-220f, 220f),
                     Color = Color.Lerp(darkColor, brightColor, Random.value),
@@ -123,6 +129,8 @@ namespace _Scripts.Agent.Enemies
         private void FixedUpdate()
         {
             if (_count == 0 || _particles == null) return;
+
+            using var sample = UpdateMarker.Auto();
 
             float dt = Time.fixedDeltaTime;
             _age += dt;
@@ -203,6 +211,8 @@ namespace _Scripts.Agent.Enemies
         private void WriteTrails()
         {
             if (_trailMesh == null) return;
+
+            using var sample = TrailMarker.Auto();
 
             _trailVertices.Clear();
             _trailColors.Clear();

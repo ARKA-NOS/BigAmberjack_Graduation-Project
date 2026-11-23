@@ -25,7 +25,7 @@ public static class SetupBoss23
     private const string EnemyTemplate = Enemies + "/Enemy/Enemy17/Enemy17_IntakeBiter.prefab";
     private const string Effects = Enemies + "/Effects";
     private const float PixelsPerUnit = 28f;
-    private static readonly Vector2 NumberPosition = new Vector2(-17.5f, 10.5f) / PixelsPerUnit;
+    private static readonly Vector2 NumberPosition = new Vector2(-15.5f, 10.5f) / PixelsPerUnit;
     private static readonly Vector2 LampPosition = new Vector2(-11.5f, 18.5f) / PixelsPerUnit;
 
     public static object Create()

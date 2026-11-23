@@ -16,6 +16,8 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField, Range(0f, 1f)] private float airPhaseHealthRatio = 0.5f;
         [SerializeField, Min(0.1f)] private float lowAltitude = 1.05f;
         [SerializeField, Min(0.1f)] private float highAltitude = 4.55f;
+        [Tooltip("부채꼴 레이저를 준비할 때의 바닥 기준 높이입니다. 폭탄의 High Altitude와 별도입니다.")]
+        [SerializeField, Min(0.1f)] private float laserAltitude = 6.5f;
         [SerializeField, Min(0.1f)] private float arenaEdgeMargin = 1.05f;
         [SerializeField, Min(0f)] private float airRecoveryTime = 1.2f;
         [SerializeField] private LayerMask terrainLayers = 1 << 6;
@@ -36,6 +38,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public bool IsAirPhase { get; private set; }
         internal float FloorY => _arena.FloorY;
         internal LayerMask TerrainLayers => terrainLayers;
+        internal BossArenaModule Arena => _arena;
         private Vector2 Home => new Vector2(_arena.Center.x, FloorY + lowAltitude);
 
         protected override void InitializeBoss()
@@ -142,10 +145,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             if (skill == null || !Skills.IsSkillEnabled(skill) || skill.RemainingCoolTime > 0f) return false;
 
-            float x = skill == laser ? ClampX(Target.position.x) : transform.position.x;
+            float x = skill == laser ? _arena.Center.x : transform.position.x;
             if (skill == bomb && Mathf.Abs(Target.position.x - x) > bomb.Range) return false;
 
-            Vector2 highPoint = new Vector2(x, FloorY + highAltitude);
+            Vector2 highPoint = new Vector2(x, FloorY + (skill == laser ? laserAltitude : highAltitude));
+            if (skill == laser && !laser.CanPlanFrom(highPoint)) return false;
             if (skill == bomb && !bomb.CanPlanFrom(highPoint, Target)) return false;
 
             Vector2 from = transform.position;

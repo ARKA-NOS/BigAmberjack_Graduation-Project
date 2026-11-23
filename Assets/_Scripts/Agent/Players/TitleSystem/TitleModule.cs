@@ -53,7 +53,37 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             if (CurrentStage == null) CurrentStage = startStage;
             RefreshStageTitles();
+            SetupTitles();
 
+            OnTitlesChanged?.Invoke();
+        }
+
+        public void ResetTitles()
+        {
+            foreach (Title title in _titles.Values)
+            {
+                title.OnComplete -= OnTitleComplete;
+                title.OnProgressChanged -= OnTitleProgressChanged;
+            }
+
+            foreach (AbstractTitleSo completedTitle in _completedTitles)
+                completedTitle.Downgrade(_owner);
+
+            _titles.Clear();
+            _completedTitles.Clear();
+            _waitingTitles.Clear();
+            _questModule.ClearQuests();
+
+            CurrentStage = startStage;
+            RefreshStageTitles();
+            SetupTitles();
+
+            FDebug.Log("[TitleModule] 칭호 초기화", this);
+            OnTitlesChanged?.Invoke();
+        }
+
+        private void SetupTitles()
+        {
             foreach (AbstractTitleSo titleSo in _allTitles)
             {
                 AbstractTitleSo[] requiredTitles = titleSo.RequiredTitles;
@@ -66,8 +96,6 @@ namespace _Scripts.Agent.Players.TitleSystem
                     AddWaitingTitle(titleSo, requiredTitles);
                 }
             }
-
-            OnTitlesChanged?.Invoke();
         }
 
         private void OnDestroy()

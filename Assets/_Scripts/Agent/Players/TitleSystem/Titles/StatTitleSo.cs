@@ -29,5 +29,17 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
                 statModule.GetStat(entry.StatData).SetModify(this, entry.ModifyData);
             }
         }
+
+        public override void Downgrade(ModuleOwner owner)
+        {
+            if (!owner.TryGetModule(out IStatModule statModule)) return;
+            if (modifies == null) return;
+
+            foreach (StatModifyEntry entry in modifies)
+            {
+                if (entry.StatData == null) continue;
+                statModule.GetStat(entry.StatData).RemoveModify(this);
+            }
+        }
     }
 }

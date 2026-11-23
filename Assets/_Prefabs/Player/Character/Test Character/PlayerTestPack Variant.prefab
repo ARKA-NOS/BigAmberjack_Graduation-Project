@@ -79,6 +79,7 @@ MonoBehaviour:
   kbForce: 3
   attackEffectPrefab: {fileID: 6049528467469964863, guid: 66d7271e8e232814c86d22aa248eaac3, type: 3}
   attackEffectOffset: {x: 0, y: 0.58}
+  attachEffectToOwner: 1
   attackMoveCurve:
     serializedVersion: 2
     m_Curve:
@@ -194,8 +195,8 @@ MonoBehaviour:
     maxNormalAngle: 0
   castType: 1
   radius: 1
-  boxSize: {x: 1.25, y: 1.6}
-  offSet: {x: -0.1, y: 0.25}
+  boxSize: {x: 2.06, y: 1.6}
+  offSet: {x: -0.4, y: 0.64}
 --- !u!1001 &8857932151561612586
 PrefabInstance:
   m_ObjectHideFlags: 0

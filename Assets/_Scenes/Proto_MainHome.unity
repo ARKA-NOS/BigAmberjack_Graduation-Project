@@ -552,6 +552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 815496230}
   - component: {fileID: 815496229}
+  - component: {fileID: 815496231}
   m_Layer: 0
   m_Name: Charactor Building
   m_TagString: Untagged
@@ -633,6 +634,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &815496231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815496228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6daa878e07e430bacc4783281e30e03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Interactable.WindowOpenObject
+  interactUIOffset: {x: 0, y: 0}
+  <TargetWindow>k__BackingField: {fileID: 0}
 --- !u!1 &857674694
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,6 +658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 857674696}
   - component: {fileID: 857674695}
+  - component: {fileID: 857674697}
   m_Layer: 0
   m_Name: Encyclopedia Building
   m_TagString: Untagged
@@ -724,6 +740,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &857674697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857674694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6daa878e07e430bacc4783281e30e03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Interactable.WindowOpenObject
+  interactUIOffset: {x: 0, y: 0}
+  <TargetWindow>k__BackingField: {fileID: 0}
 --- !u!1 &870231816
 GameObject:
   m_ObjectHideFlags: 0

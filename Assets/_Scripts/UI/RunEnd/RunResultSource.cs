@@ -22,6 +22,8 @@ namespace _Scripts.UI.RunEnd
         private readonly CurrencySO _gold;
         private readonly SceneSo _nextScene;
         private Action<RunEndReason> _runEnded;
+        private float _prevTimeScale = 1f;
+        private bool _isPaused;
 
         public RunResultSource(CurrencySO gold, SceneSo nextScene)
         {
@@ -95,15 +97,34 @@ namespace _Scripts.UI.RunEnd
                 player.SetInputActive(false);
         }
 
+        // 이미 멈춰 있으면(다른 창이 멈춘 상태) 그 값을 되돌리지 않도록 처음 한 번만 기억한다.
+        public void PauseGame()
+        {
+            if (_isPaused) return;
+
+            _prevTimeScale = Time.timeScale;
+            Time.timeScale = 0f;
+            _isPaused = true;
+        }
+
         // nextScene(예: Test Home)으로 이동한다. 비어 있으면 현재 씬을 다시 시작한다.
         public void GoNext(RunEndReason reason)
         {
+            ResumeGame();
             RunResetter.ResetRun(reason);
 
             if (_nextScene != null)
                 SceneManager.LoadScene(_nextScene);
             else
                 RestartScene();
+        }
+
+        private void ResumeGame()
+        {
+            if (!_isPaused) return;
+
+            Time.timeScale = _prevTimeScale;
+            _isPaused = false;
         }
 
         private void HandleRunEnded(RunEndedEvent evt) => _runEnded?.Invoke(evt.Reason);

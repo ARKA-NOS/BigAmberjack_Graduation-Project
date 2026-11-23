@@ -1,0 +1,5481 @@
+{
+  "generated": "2026-11-23T10:17:55.7737110Z",
+  "unity": "6000.3.22f1",
+  "cpu": "Intel(R) Core(TM) i9-14900HX",
+  "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "graphicsApi": "Direct3D12",
+  "ramMB": 32386,
+  "processorCount": 32,
+  "width": 1280,
+  "height": 720,
+  "repeats": 5,
+  "sampleWindowSeconds": 0.9,
+  "gpuTimingFeature": true,
+  "allocationMetric": "Spawn/release memory is Mono used-memory delta (approximate), not exact allocated bytes. Frame GC includes editor activity. Thread allocation API failed a 1MiB calibration and is not used.",
+  "comparison": "Current effect code; legacy-style Instantiate/Destroy versus warmed Lean Pool. Legacy payload=count1/speed1, current=count2/speed1.8. Not historical recorded performance.",
+  "trials": [
+    {
+      "batch": "current2pilot",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 2,
+      "particles": 218,
+      "sampleFrames": 42,
+      "fixedCalls": 30,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.3,
+      "spawnMs": 0.5637,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0968,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 9.5152,
+      "fixedPerCallMs": 0.47908333333333342,
+      "trailPerCallMs": 0.30605937499999997,
+      "managedFrameTotalKB": 704.7998046875,
+      "unityMemoryDeltaMB": 0.057500839233398438,
+      "wallMs": {
+        "count": 42,
+        "mean": 7.1826119047619059,
+        "median": 7.0718,
+        "p95": 8.9313,
+        "max": 9.4958
+      },
+      "mainMs": {
+        "count": 40,
+        "mean": 7.1270975,
+        "median": 6.7998,
+        "p95": 8.8934,
+        "max": 9.3576
+      },
+      "gpuMs": {
+        "count": 41,
+        "mean": 0.18649287804878045,
+        "median": 0.181248,
+        "p95": 0.284672,
+        "max": 0.314368
+      },
+      "bloodFrameMs": {
+        "count": 42,
+        "mean": 0.342202380952381,
+        "median": 0.0,
+        "p95": 1.2116,
+        "max": 1.3726
+      },
+      "trailFrameMs": {
+        "count": 42,
+        "mean": 0.23318809523809522,
+        "median": 0.0,
+        "p95": 0.8033,
+        "max": 0.9419
+      },
+      "gcFrameKB": {
+        "count": 42,
+        "mean": 16.780947730654763,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current2pilot",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 2,
+      "particles": 218,
+      "sampleFrames": 42,
+      "fixedCalls": 30,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.3,
+      "spawnMs": 1.5845,
+      "spawnMonoUsedDeltaKB": 168.0,
+      "releaseRequestMs": 0.0509,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 9.1649,
+      "fixedPerCallMs": 0.45823333333333327,
+      "trailPerCallMs": 0.29132187499999995,
+      "managedFrameTotalKB": 1312.6572265625,
+      "unityMemoryDeltaMB": 0.086317062377929688,
+      "wallMs": {
+        "count": 42,
+        "mean": 7.1320476190476185,
+        "median": 7.0235,
+        "p95": 9.7214,
+        "max": 10.8856
+      },
+      "mainMs": {
+        "count": 40,
+        "mean": 7.11254,
+        "median": 7.0461,
+        "p95": 9.7709,
+        "max": 10.9826
+      },
+      "gpuMs": {
+        "count": 40,
+        "mean": 0.1873408,
+        "median": 0.182272,
+        "p95": 0.27648,
+        "max": 0.29184
+      },
+      "bloodFrameMs": {
+        "count": 42,
+        "mean": 0.32730952380952377,
+        "median": 0.0,
+        "p95": 1.0744,
+        "max": 1.4375
+      },
+      "trailFrameMs": {
+        "count": 42,
+        "mean": 0.22195952380952377,
+        "median": 0.0,
+        "p95": 0.8341,
+        "max": 0.9407
+      },
+      "gcFrameKB": {
+        "count": 42,
+        "mean": 31.253743489583332,
+        "median": 16.2705078125,
+        "p95": 152.3642578125,
+        "max": 156.3212890625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy0",
+      "payload": "legacy",
+      "mode": "baseline",
+      "repeat": 1,
+      "concurrent": 0,
+      "particles": 0,
+      "sampleFrames": 185,
+      "fixedCalls": 0,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 0,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1444,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0304,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.2469,
+      "fixedPerCallMs": 0.0,
+      "trailPerCallMs": 0.0,
+      "managedFrameTotalKB": 2996.41796875,
+      "unityMemoryDeltaMB": 0.011434555053710938,
+      "wallMs": {
+        "count": 185,
+        "mean": 4.8705410810810816,
+        "median": 4.85,
+        "p95": 5.5541,
+        "max": 6.9459
+      },
+      "mainMs": {
+        "count": 183,
+        "mean": 4.8674983606557376,
+        "median": 4.8736,
+        "p95": 5.4987,
+        "max": 7.0142
+      },
+      "gpuMs": {
+        "count": 184,
+        "mean": 0.18414747826086941,
+        "median": 0.169984,
+        "p95": 0.236544,
+        "max": 0.252928
+      },
+      "bloodFrameMs": {
+        "count": 185,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "trailFrameMs": {
+        "count": 185,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "gcFrameKB": {
+        "count": 185,
+        "mean": 16.196853885135134,
+        "median": 16.2705078125,
+        "p95": 16.3212890625,
+        "max": 18.6142578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy0",
+      "payload": "legacy",
+      "mode": "baseline",
+      "repeat": 2,
+      "concurrent": 0,
+      "particles": 0,
+      "sampleFrames": 181,
+      "fixedCalls": 0,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 0,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.0002,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0011,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.5842,
+      "fixedPerCallMs": 0.0,
+      "trailPerCallMs": 0.0,
+      "managedFrameTotalKB": 2931.81640625,
+      "unityMemoryDeltaMB": 0.34045219421386719,
+      "wallMs": {
+        "count": 181,
+        "mean": 4.9862436464088411,
+        "median": 4.9102,
+        "p95": 5.8403,
+        "max": 7.7084
+      },
+      "mainMs": {
+        "count": 179,
+        "mean": 4.9830765363128506,
+        "median": 4.9494,
+        "p95": 5.7724,
+        "max": 7.2797
+      },
+      "gpuMs": {
+        "count": 180,
+        "mean": 0.18046293333333313,
+        "median": 0.169984,
+        "p95": 0.232448,
+        "max": 0.26112
+      },
+      "bloodFrameMs": {
+        "count": 181,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "trailFrameMs": {
+        "count": 181,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "gcFrameKB": {
+        "count": 181,
+        "mean": 16.197880697513813,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 18.6142578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy0",
+      "payload": "legacy",
+      "mode": "baseline",
+      "repeat": 3,
+      "concurrent": 0,
+      "particles": 0,
+      "sampleFrames": 183,
+      "fixedCalls": 0,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 0,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.0001,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.001,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.9842,
+      "fixedPerCallMs": 0.0,
+      "trailPerCallMs": 0.0,
+      "managedFrameTotalKB": 2964.357421875,
+      "unityMemoryDeltaMB": 0.017583847045898438,
+      "wallMs": {
+        "count": 183,
+        "mean": 4.9247038251366106,
+        "median": 4.8464,
+        "p95": 6.192,
+        "max": 7.3009
+      },
+      "mainMs": {
+        "count": 181,
+        "mean": 4.9204779005524859,
+        "median": 4.8528,
+        "p95": 6.141,
+        "max": 7.4509
+      },
+      "gpuMs": {
+        "count": 182,
+        "mean": 0.1841118186813184,
+        "median": 0.16896,
+        "p95": 0.23552,
+        "max": 0.257023
+      },
+      "bloodFrameMs": {
+        "count": 183,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "trailFrameMs": {
+        "count": 183,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "gcFrameKB": {
+        "count": 183,
+        "mean": 16.198674436475411,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 18.6142578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy0",
+      "payload": "legacy",
+      "mode": "baseline",
+      "repeat": 4,
+      "concurrent": 0,
+      "particles": 0,
+      "sampleFrames": 188,
+      "fixedCalls": 0,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 0,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.0002,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0012,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.6208,
+      "fixedPerCallMs": 0.0,
+      "trailPerCallMs": 0.0,
+      "managedFrameTotalKB": 3042.8857421875,
+      "unityMemoryDeltaMB": 0.35496330261230469,
+      "wallMs": {
+        "count": 188,
+        "mean": 4.7930404255319168,
+        "median": 4.7499,
+        "p95": 5.4751,
+        "max": 6.5124
+      },
+      "mainMs": {
+        "count": 186,
+        "mean": 4.7875129032258066,
+        "median": 4.7426,
+        "p95": 5.4536,
+        "max": 6.6186
+      },
+      "gpuMs": {
+        "count": 187,
+        "mean": 0.18585873262032068,
+        "median": 0.169984,
+        "p95": 0.236544,
+        "max": 0.257023
+      },
+      "bloodFrameMs": {
+        "count": 188,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "trailFrameMs": {
+        "count": 188,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "gcFrameKB": {
+        "count": 188,
+        "mean": 16.185562458444149,
+        "median": 16.2705078125,
+        "p95": 16.3212890625,
+        "max": 16.4091796875
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy0",
+      "payload": "legacy",
+      "mode": "baseline",
+      "repeat": 5,
+      "concurrent": 0,
+      "particles": 0,
+      "sampleFrames": 188,
+      "fixedCalls": 0,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 0,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.0002,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0012,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.2426,
+      "fixedPerCallMs": 0.0,
+      "trailPerCallMs": 0.0,
+      "managedFrameTotalKB": 3042.8857421875,
+      "unityMemoryDeltaMB": 0.014181137084960938,
+      "wallMs": {
+        "count": 188,
+        "mean": 4.7860686170212769,
+        "median": 4.7312,
+        "p95": 5.5482,
+        "max": 5.8735
+      },
+      "mainMs": {
+        "count": 186,
+        "mean": 4.7696451612903212,
+        "median": 4.7319,
+        "p95": 5.5474,
+        "max": 5.9078
+      },
+      "gpuMs": {
+        "count": 187,
+        "mean": 0.18606681283422441,
+        "median": 0.169984,
+        "p95": 0.237568,
+        "max": 0.257023
+      },
+      "bloodFrameMs": {
+        "count": 188,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "trailFrameMs": {
+        "count": 188,
+        "mean": 0.0,
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "gcFrameKB": {
+        "count": 188,
+        "mean": 16.185562458444149,
+        "median": 16.2705078125,
+        "p95": 16.3212890625,
+        "max": 16.3583984375
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 1,
+      "particles": 53,
+      "sampleFrames": 172,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.3505,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1343,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.4231,
+      "fixedPerCallMs": 0.23554666666666668,
+      "trailPerCallMs": 0.14475217391304349,
+      "managedFrameTotalKB": 2822.8798828125,
+      "unityMemoryDeltaMB": 0.38306236267089844,
+      "wallMs": {
+        "count": 172,
+        "mean": 5.2354930232558141,
+        "median": 5.1153,
+        "p95": 6.2683,
+        "max": 7.307
+      },
+      "mainMs": {
+        "count": 170,
+        "mean": 5.2220305882352935,
+        "median": 5.137,
+        "p95": 6.336,
+        "max": 7.2808
+      },
+      "gpuMs": {
+        "count": 171,
+        "mean": 0.18325408187134506,
+        "median": 0.172032,
+        "p95": 0.239616,
+        "max": 0.252928
+      },
+      "bloodFrameMs": {
+        "count": 172,
+        "mean": 0.061625581395348843,
+        "median": 0.0,
+        "p95": 0.2787,
+        "max": 0.3889
+      },
+      "trailFrameMs": {
+        "count": 172,
+        "mean": 0.038712790697674415,
+        "median": 0.0,
+        "p95": 0.1928,
+        "max": 0.3103
+      },
+      "gcFrameKB": {
+        "count": 172,
+        "mean": 16.412092341933139,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 1,
+      "particles": 53,
+      "sampleFrames": 178,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.8095,
+      "spawnMonoUsedDeltaKB": 56.0,
+      "releaseRequestMs": 0.0332,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.0125,
+      "fixedPerCallMs": 0.22408863636363643,
+      "trailPerCallMs": 0.13677555555555559,
+      "managedFrameTotalKB": 3113.3486328125,
+      "unityMemoryDeltaMB": -0.032655715942382813,
+      "wallMs": {
+        "count": 178,
+        "mean": 5.0733977528089858,
+        "median": 5.1243,
+        "p95": 6.4984,
+        "max": 7.2743
+      },
+      "mainMs": {
+        "count": 176,
+        "mean": 5.0672374999999983,
+        "median": 5.12,
+        "p95": 6.5239,
+        "max": 7.1006
+      },
+      "gpuMs": {
+        "count": 177,
+        "mean": 0.17740655367231645,
+        "median": 0.171008,
+        "p95": 0.24064,
+        "max": 0.260096
+      },
+      "bloodFrameMs": {
+        "count": 178,
+        "mean": 0.0553926966292135,
+        "median": 0.0,
+        "p95": 0.284,
+        "max": 0.3344
+      },
+      "trailFrameMs": {
+        "count": 178,
+        "mean": 0.03457808988764046,
+        "median": 0.0,
+        "p95": 0.1832,
+        "max": 0.2364
+      },
+      "gcFrameKB": {
+        "count": 178,
+        "mean": 17.49072265625,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 84.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 1,
+      "particles": 64,
+      "sampleFrames": 165,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.6012,
+      "spawnMonoUsedDeltaKB": 56.0,
+      "releaseRequestMs": 0.0749,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.1751,
+      "fixedPerCallMs": 0.27434545454545467,
+      "trailPerCallMs": 0.16952666666666663,
+      "managedFrameTotalKB": 2852.416015625,
+      "unityMemoryDeltaMB": 0.17242813110351563,
+      "wallMs": {
+        "count": 165,
+        "mean": 5.44923696969697,
+        "median": 5.3772,
+        "p95": 6.6219,
+        "max": 7.6591
+      },
+      "mainMs": {
+        "count": 163,
+        "mean": 5.4406840490797563,
+        "median": 5.3494,
+        "p95": 6.538,
+        "max": 7.5935
+      },
+      "gpuMs": {
+        "count": 164,
+        "mean": 0.18276526829268286,
+        "median": 0.173056,
+        "p95": 0.24576,
+        "max": 0.259072
+      },
+      "bloodFrameMs": {
+        "count": 165,
+        "mean": 0.0731587878787879,
+        "median": 0.0,
+        "p95": 0.339,
+        "max": 0.5255
+      },
+      "trailFrameMs": {
+        "count": 165,
+        "mean": 0.046234545454545445,
+        "median": 0.0,
+        "p95": 0.2239,
+        "max": 0.3097
+      },
+      "gcFrameKB": {
+        "count": 165,
+        "mean": 17.287369791666666,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 84.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 1,
+      "particles": 64,
+      "sampleFrames": 172,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1981,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0729,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.1367,
+      "fixedPerCallMs": 0.25845999999999997,
+      "trailPerCallMs": 0.15803913043478254,
+      "managedFrameTotalKB": 2820.5361328125,
+      "unityMemoryDeltaMB": 0.19470787048339844,
+      "wallMs": {
+        "count": 172,
+        "mean": 5.25371918604651,
+        "median": 5.1347,
+        "p95": 6.4722,
+        "max": 8.5003
+      },
+      "mainMs": {
+        "count": 170,
+        "mean": 5.2449447058823537,
+        "median": 5.1575,
+        "p95": 6.4485,
+        "max": 8.3919
+      },
+      "gpuMs": {
+        "count": 171,
+        "mean": 0.1863799766081872,
+        "median": 0.173056,
+        "p95": 0.24064,
+        "max": 0.258048
+      },
+      "bloodFrameMs": {
+        "count": 172,
+        "mean": 0.0676203488372093,
+        "median": 0.0,
+        "p95": 0.321,
+        "max": 0.4642
+      },
+      "trailFrameMs": {
+        "count": 172,
+        "mean": 0.042266279069767425,
+        "median": 0.0,
+        "p95": 0.2105,
+        "max": 0.2887
+      },
+      "gcFrameKB": {
+        "count": 172,
+        "mean": 16.398465888444768,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 1,
+      "particles": 63,
+      "sampleFrames": 190,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.2217,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0722,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.8336,
+      "fixedPerCallMs": 0.24437954545454543,
+      "trailPerCallMs": 0.15465555555555557,
+      "managedFrameTotalKB": 3113.4052734375,
+      "unityMemoryDeltaMB": 0.22546195983886719,
+      "wallMs": {
+        "count": 190,
+        "mean": 4.7444589473684253,
+        "median": 4.5914,
+        "p95": 6.2414,
+        "max": 7.8525
+      },
+      "mainMs": {
+        "count": 188,
+        "mean": 4.7342994680851049,
+        "median": 4.5924,
+        "p95": 6.264,
+        "max": 7.8808
+      },
+      "gpuMs": {
+        "count": 189,
+        "mean": 0.16821773544973564,
+        "median": 0.166912,
+        "p95": 0.226304,
+        "max": 0.26112
+      },
+      "bloodFrameMs": {
+        "count": 190,
+        "mean": 0.056593157894736838,
+        "median": 0.0,
+        "p95": 0.3117,
+        "max": 0.3721
+      },
+      "trailFrameMs": {
+        "count": 190,
+        "mean": 0.036628947368421053,
+        "median": 0.0,
+        "p95": 0.2102,
+        "max": 0.2501
+      },
+      "gcFrameKB": {
+        "count": 190,
+        "mean": 16.386343544407893,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 1,
+      "particles": 63,
+      "sampleFrames": 212,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.4738,
+      "spawnMonoUsedDeltaKB": 56.0,
+      "releaseRequestMs": 0.0331,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.1735,
+      "fixedPerCallMs": 0.2306666666666666,
+      "trailPerCallMs": 0.14656956521739128,
+      "managedFrameTotalKB": 3615.2626953125,
+      "unityMemoryDeltaMB": 0.22981834411621094,
+      "wallMs": {
+        "count": 212,
+        "mean": 4.2588778301886805,
+        "median": 4.1488,
+        "p95": 5.1898,
+        "max": 5.9215
+      },
+      "mainMs": {
+        "count": 210,
+        "mean": 4.2486938095238092,
+        "median": 4.137,
+        "p95": 5.2352,
+        "max": 5.9235
+      },
+      "gpuMs": {
+        "count": 211,
+        "mean": 0.16079711848341263,
+        "median": 0.164864,
+        "p95": 0.16896,
+        "max": 0.173056
+      },
+      "bloodFrameMs": {
+        "count": 212,
+        "mean": 0.048962264150943381,
+        "median": 0.0,
+        "p95": 0.2823,
+        "max": 0.3429
+      },
+      "trailFrameMs": {
+        "count": 212,
+        "mean": 0.031802830188679243,
+        "median": 0.0,
+        "p95": 0.1904,
+        "max": 0.2598
+      },
+      "gcFrameKB": {
+        "count": 212,
+        "mean": 17.053125921285378,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 84.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 1,
+      "particles": 56,
+      "sampleFrames": 193,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.4412,
+      "spawnMonoUsedDeltaKB": 56.0,
+      "releaseRequestMs": 0.0369,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.6138,
+      "fixedPerCallMs": 0.21421555555555558,
+      "trailPerCallMs": 0.13147826086956529,
+      "managedFrameTotalKB": 3306.123046875,
+      "unityMemoryDeltaMB": 0.40684318542480469,
+      "wallMs": {
+        "count": 193,
+        "mean": 4.663732642487048,
+        "median": 4.5786,
+        "p95": 5.9568,
+        "max": 6.9635
+      },
+      "mainMs": {
+        "count": 191,
+        "mean": 4.6626989528795812,
+        "median": 4.5644,
+        "p95": 5.9293,
+        "max": 6.867
+      },
+      "gpuMs": {
+        "count": 192,
+        "mean": 0.24787190104166659,
+        "median": 0.254975,
+        "p95": 0.269312,
+        "max": 0.27136
+      },
+      "bloodFrameMs": {
+        "count": 193,
+        "mean": 0.049946632124352339,
+        "median": 0.0,
+        "p95": 0.2483,
+        "max": 0.3464
+      },
+      "trailFrameMs": {
+        "count": 193,
+        "mean": 0.031336787564766856,
+        "median": 0.0,
+        "p95": 0.1721,
+        "max": 0.2234
+      },
+      "gcFrameKB": {
+        "count": 193,
+        "mean": 17.130171227331605,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 84.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 1,
+      "particles": 56,
+      "sampleFrames": 193,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1256,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0485,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.1732,
+      "fixedPerCallMs": 0.23396888888888892,
+      "trailPerCallMs": 0.14351956521739132,
+      "managedFrameTotalKB": 3162.216796875,
+      "unityMemoryDeltaMB": 0.12425804138183594,
+      "wallMs": {
+        "count": 193,
+        "mean": 4.6694746113989636,
+        "median": 4.4578,
+        "p95": 6.8183,
+        "max": 8.763
+      },
+      "mainMs": {
+        "count": 191,
+        "mean": 4.6715287958115184,
+        "median": 4.5198,
+        "p95": 6.7793,
+        "max": 8.8933
+      },
+      "gpuMs": {
+        "count": 192,
+        "mean": 0.3099306666666668,
+        "median": 0.32256,
+        "p95": 0.333824,
+        "max": 0.34304
+      },
+      "bloodFrameMs": {
+        "count": 193,
+        "mean": 0.05455233160621762,
+        "median": 0.0,
+        "p95": 0.2882,
+        "max": 0.5605
+      },
+      "trailFrameMs": {
+        "count": 193,
+        "mean": 0.03420673575129534,
+        "median": 0.0,
+        "p95": 0.1766,
+        "max": 0.3402
+      },
+      "gcFrameKB": {
+        "count": 193,
+        "mean": 16.384542988989637,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 1,
+      "particles": 53,
+      "sampleFrames": 236,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1229,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0387,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.5357,
+      "fixedPerCallMs": 0.18812272727272725,
+      "trailPerCallMs": 0.11671555555555556,
+      "managedFrameTotalKB": 3861.8486328125,
+      "unityMemoryDeltaMB": 0.057806015014648438,
+      "wallMs": {
+        "count": 236,
+        "mean": 3.8112156779661008,
+        "median": 3.7353,
+        "p95": 4.663,
+        "max": 5.8653
+      },
+      "mainMs": {
+        "count": 234,
+        "mean": 3.8063803418803395,
+        "median": 3.7323,
+        "p95": 4.7119,
+        "max": 5.9093
+      },
+      "gpuMs": {
+        "count": 235,
+        "mean": 0.29511679148936232,
+        "median": 0.219136,
+        "p95": 0.464896,
+        "max": 0.556032
+      },
+      "bloodFrameMs": {
+        "count": 236,
+        "mean": 0.035073728813559316,
+        "median": 0.0,
+        "p95": 0.2064,
+        "max": 0.2997
+      },
+      "trailFrameMs": {
+        "count": 236,
+        "mean": 0.022255084745762713,
+        "median": 0.0,
+        "p95": 0.1366,
+        "max": 0.2127
+      },
+      "gcFrameKB": {
+        "count": 236,
+        "mean": 16.363765393273304,
+        "median": 16.2705078125,
+        "p95": 16.3212890625,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy1",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 1,
+      "particles": 53,
+      "sampleFrames": 239,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.4246,
+      "spawnMonoUsedDeltaKB": 56.0,
+      "releaseRequestMs": 0.024,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.9804,
+      "fixedPerCallMs": 0.19549090909090908,
+      "trailPerCallMs": 0.12417111111111115,
+      "managedFrameTotalKB": 4054.56640625,
+      "unityMemoryDeltaMB": 0.21422386169433594,
+      "wallMs": {
+        "count": 239,
+        "mean": 3.767369874476985,
+        "median": 3.6752,
+        "p95": 4.495,
+        "max": 5.5465
+      },
+      "mainMs": {
+        "count": 237,
+        "mean": 3.7643295358649778,
+        "median": 3.6662,
+        "p95": 4.5286,
+        "max": 5.5666
+      },
+      "gpuMs": {
+        "count": 238,
+        "mean": 0.21124947899159691,
+        "median": 0.216064,
+        "p95": 0.22016,
+        "max": 0.227328
+      },
+      "bloodFrameMs": {
+        "count": 239,
+        "mean": 0.035989958158995812,
+        "median": 0.0,
+        "p95": 0.2126,
+        "max": 0.3205
+      },
+      "trailFrameMs": {
+        "count": 239,
+        "mean": 0.023379497907949798,
+        "median": 0.0,
+        "p95": 0.1425,
+        "max": 0.2437
+      },
+      "gcFrameKB": {
+        "count": 239,
+        "mean": 16.964712996861923,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 84.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 1,
+      "particles": 118,
+      "sampleFrames": 224,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.3164,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0805,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.4201,
+      "fixedPerCallMs": 0.37798444444444435,
+      "trailPerCallMs": 0.22325652173913041,
+      "managedFrameTotalKB": 3666.6025390625,
+      "unityMemoryDeltaMB": 0.24457740783691406,
+      "wallMs": {
+        "count": 224,
+        "mean": 4.0290191964285729,
+        "median": 3.839,
+        "p95": 5.5849,
+        "max": 7.5662
+      },
+      "mainMs": {
+        "count": 222,
+        "mean": 4.0244635135135143,
+        "median": 3.8293,
+        "p95": 5.7072,
+        "max": 7.7469
+      },
+      "gpuMs": {
+        "count": 223,
+        "mean": 0.29089406278026864,
+        "median": 0.295936,
+        "p95": 0.297984,
+        "max": 0.305152
+      },
+      "bloodFrameMs": {
+        "count": 224,
+        "mean": 0.075934374999999985,
+        "median": 0.0,
+        "p95": 0.4209,
+        "max": 0.6379
+      },
+      "trailFrameMs": {
+        "count": 224,
+        "mean": 0.045847321428571418,
+        "median": 0.0,
+        "p95": 0.2844,
+        "max": 0.3708
+      },
+      "gcFrameKB": {
+        "count": 224,
+        "mean": 16.368761335100448,
+        "median": 16.2705078125,
+        "p95": 16.3212890625,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 1,
+      "particles": 118,
+      "sampleFrames": 235,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.7652,
+      "spawnMonoUsedDeltaKB": 84.0,
+      "releaseRequestMs": 0.0218,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.9642,
+      "fixedPerCallMs": 0.37286363636363623,
+      "trailPerCallMs": 0.22175999999999998,
+      "managedFrameTotalKB": 4148.828125,
+      "unityMemoryDeltaMB": 0.22101402282714844,
+      "wallMs": {
+        "count": 235,
+        "mean": 3.8319846808510643,
+        "median": 3.7726,
+        "p95": 4.712,
+        "max": 6.5678
+      },
+      "mainMs": {
+        "count": 233,
+        "mean": 3.8252540772532169,
+        "median": 3.747,
+        "p95": 4.7061,
+        "max": 6.5665
+      },
+      "gpuMs": {
+        "count": 234,
+        "mean": 0.33919781196581156,
+        "median": 0.359424,
+        "p95": 0.36352,
+        "max": 0.36864
+      },
+      "bloodFrameMs": {
+        "count": 235,
+        "mean": 0.069812765957446787,
+        "median": 0.0,
+        "p95": 0.4185,
+        "max": 0.511
+      },
+      "trailFrameMs": {
+        "count": 235,
+        "mean": 0.042464680851063821,
+        "median": 0.0,
+        "p95": 0.2613,
+        "max": 0.3817
+      },
+      "gcFrameKB": {
+        "count": 235,
+        "mean": 17.654587765957448,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 152.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 1,
+      "particles": 106,
+      "sampleFrames": 245,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.4387,
+      "spawnMonoUsedDeltaKB": 84.0,
+      "releaseRequestMs": 0.0315,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.7288,
+      "fixedPerCallMs": 0.336165909090909,
+      "trailPerCallMs": 0.19499111111111109,
+      "managedFrameTotalKB": 4311.533203125,
+      "unityMemoryDeltaMB": 0.036685943603515625,
+      "wallMs": {
+        "count": 245,
+        "mean": 3.6830016326530628,
+        "median": 3.6001,
+        "p95": 4.5948,
+        "max": 5.5648
+      },
+      "mainMs": {
+        "count": 243,
+        "mean": 3.6728530864197517,
+        "median": 3.596,
+        "p95": 4.5569,
+        "max": 5.5693
+      },
+      "gpuMs": {
+        "count": 243,
+        "mean": 0.27540541975308663,
+        "median": 0.21504,
+        "p95": 0.500735,
+        "max": 0.560128
+      },
+      "bloodFrameMs": {
+        "count": 245,
+        "mean": 0.060372653061224475,
+        "median": 0.0,
+        "p95": 0.3597,
+        "max": 0.5106
+      },
+      "trailFrameMs": {
+        "count": 245,
+        "mean": 0.03581469387755102,
+        "median": 0.0,
+        "p95": 0.2317,
+        "max": 0.3953
+      },
+      "gcFrameKB": {
+        "count": 245,
+        "mean": 17.598094706632654,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 152.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 1,
+      "particles": 106,
+      "sampleFrames": 195,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.151,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0464,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.6964,
+      "fixedPerCallMs": 0.40599090909090896,
+      "trailPerCallMs": 0.22454444444444444,
+      "managedFrameTotalKB": 3194.7578125,
+      "unityMemoryDeltaMB": 0.22543144226074219,
+      "wallMs": {
+        "count": 195,
+        "mean": 4.6153579487179472,
+        "median": 4.0596,
+        "p95": 8.0677,
+        "max": 9.4207
+      },
+      "mainMs": {
+        "count": 193,
+        "mean": 4.6164284974093261,
+        "median": 4.0694,
+        "p95": 8.2876,
+        "max": 9.5638
+      },
+      "gpuMs": {
+        "count": 194,
+        "mean": 0.21421657731958765,
+        "median": 0.21504,
+        "p95": 0.268288,
+        "max": 0.272384
+      },
+      "bloodFrameMs": {
+        "count": 195,
+        "mean": 0.0916082051282051,
+        "median": 0.0,
+        "p95": 0.4597,
+        "max": 0.6832
+      },
+      "trailFrameMs": {
+        "count": 195,
+        "mean": 0.051817948717948717,
+        "median": 0.0,
+        "p95": 0.2904,
+        "max": 0.3549
+      },
+      "gcFrameKB": {
+        "count": 195,
+        "mean": 16.383373397435896,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 1,
+      "particles": 115,
+      "sampleFrames": 193,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1613,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0592,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.918,
+      "fixedPerCallMs": 0.3778727272727273,
+      "trailPerCallMs": 0.21954888888888885,
+      "managedFrameTotalKB": 3162.216796875,
+      "unityMemoryDeltaMB": 0.42143821716308594,
+      "wallMs": {
+        "count": 193,
+        "mean": 4.6611124352331625,
+        "median": 4.6499,
+        "p95": 6.0454,
+        "max": 8.0335
+      },
+      "mainMs": {
+        "count": 191,
+        "mean": 4.6578062827225155,
+        "median": 4.71,
+        "p95": 6.1141,
+        "max": 8.1436
+      },
+      "gpuMs": {
+        "count": 192,
+        "mean": 0.30386666666666634,
+        "median": 0.313344,
+        "p95": 0.325632,
+        "max": 0.333824
+      },
+      "bloodFrameMs": {
+        "count": 193,
+        "mean": 0.086147150259067357,
+        "median": 0.0,
+        "p95": 0.4224,
+        "max": 0.55
+      },
+      "trailFrameMs": {
+        "count": 193,
+        "mean": 0.0511901554404145,
+        "median": 0.0,
+        "p95": 0.2757,
+        "max": 0.4002
+      },
+      "gcFrameKB": {
+        "count": 193,
+        "mean": 16.384542988989637,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 1,
+      "particles": 115,
+      "sampleFrames": 207,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.7396,
+      "spawnMonoUsedDeltaKB": 84.0,
+      "releaseRequestMs": 0.0363,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.1517,
+      "fixedPerCallMs": 0.37625333333333333,
+      "trailPerCallMs": 0.21598260869565217,
+      "managedFrameTotalKB": 3693.25390625,
+      "unityMemoryDeltaMB": -0.05962371826171875,
+      "wallMs": {
+        "count": 207,
+        "mean": 4.36243961352657,
+        "median": 4.1486,
+        "p95": 5.6866,
+        "max": 7.6801
+      },
+      "mainMs": {
+        "count": 205,
+        "mean": 4.3528741463414651,
+        "median": 4.1469,
+        "p95": 5.6945,
+        "max": 7.6499
+      },
+      "gpuMs": {
+        "count": 205,
+        "mean": 0.33229548780487755,
+        "median": 0.36864,
+        "p95": 0.47616,
+        "max": 0.560128
+      },
+      "bloodFrameMs": {
+        "count": 207,
+        "mean": 0.08179420289855073,
+        "median": 0.0,
+        "p95": 0.4042,
+        "max": 0.559
+      },
+      "trailFrameMs": {
+        "count": 207,
+        "mean": 0.047996135265700485,
+        "median": 0.0,
+        "p95": 0.2723,
+        "max": 0.4202
+      },
+      "gcFrameKB": {
+        "count": 207,
+        "mean": 17.841806310386474,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 152.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 1,
+      "particles": 104,
+      "sampleFrames": 223,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.5191,
+      "spawnMonoUsedDeltaKB": 84.0,
+      "releaseRequestMs": 0.0374,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.0365,
+      "fixedPerCallMs": 0.33793333333333325,
+      "trailPerCallMs": 0.19531739130434783,
+      "managedFrameTotalKB": 3953.58203125,
+      "unityMemoryDeltaMB": 0.22021293640136719,
+      "wallMs": {
+        "count": 223,
+        "mean": 4.0389618834080734,
+        "median": 3.8154,
+        "p95": 5.5941,
+        "max": 6.4478
+      },
+      "mainMs": {
+        "count": 221,
+        "mean": 4.0254416289592774,
+        "median": 3.8096,
+        "p95": 5.4843,
+        "max": 6.4405
+      },
+      "gpuMs": {
+        "count": 221,
+        "mean": 0.22104036199095006,
+        "median": 0.22528,
+        "p95": 0.229376,
+        "max": 0.241664
+      },
+      "bloodFrameMs": {
+        "count": 223,
+        "mean": 0.068192825112107613,
+        "median": 0.0,
+        "p95": 0.3659,
+        "max": 0.4437
+      },
+      "trailFrameMs": {
+        "count": 223,
+        "mean": 0.040289686098654708,
+        "median": 0.0,
+        "p95": 0.2412,
+        "max": 0.3251
+      },
+      "gcFrameKB": {
+        "count": 223,
+        "mean": 17.72906740470852,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 152.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 1,
+      "particles": 104,
+      "sampleFrames": 156,
+      "fixedCalls": 44,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.2086,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0485,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.6355,
+      "fixedPerCallMs": 0.40411818181818177,
+      "trailPerCallMs": 0.22467999999999996,
+      "managedFrameTotalKB": 2560.2080078125,
+      "unityMemoryDeltaMB": 0.37434196472167969,
+      "wallMs": {
+        "count": 156,
+        "mean": 5.7790737179487222,
+        "median": 5.7217,
+        "p95": 7.3135,
+        "max": 8.9629
+      },
+      "mainMs": {
+        "count": 154,
+        "mean": 5.7701577922077938,
+        "median": 5.6829,
+        "p95": 7.2889,
+        "max": 8.9614
+      },
+      "gpuMs": {
+        "count": 154,
+        "mean": 0.30858306493506504,
+        "median": 0.318464,
+        "p95": 0.336896,
+        "max": 0.344064
+      },
+      "bloodFrameMs": {
+        "count": 156,
+        "mean": 0.11398205128205127,
+        "median": 0.0,
+        "p95": 0.4701,
+        "max": 0.6067
+      },
+      "trailFrameMs": {
+        "count": 156,
+        "mean": 0.064811538461538448,
+        "median": 0.0,
+        "p95": 0.307,
+        "max": 0.3603
+      },
+      "gcFrameKB": {
+        "count": 156,
+        "mean": 16.411589793669872,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 1,
+      "particles": 118,
+      "sampleFrames": 175,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.1849,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.0645,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.5631,
+      "fixedPerCallMs": 0.40027999999999991,
+      "trailPerCallMs": 0.2289195652173914,
+      "managedFrameTotalKB": 2869.34765625,
+      "unityMemoryDeltaMB": 0.20543479919433594,
+      "wallMs": {
+        "count": 175,
+        "mean": 5.1598102857142862,
+        "median": 5.0879,
+        "p95": 6.1828,
+        "max": 7.5
+      },
+      "mainMs": {
+        "count": 173,
+        "mean": 5.1569479768786106,
+        "median": 5.0895,
+        "p95": 6.0789,
+        "max": 7.5269
+      },
+      "gpuMs": {
+        "count": 174,
+        "mean": 0.309683494252873,
+        "median": 0.233472,
+        "p95": 0.48128,
+        "max": 0.575488
+      },
+      "bloodFrameMs": {
+        "count": 175,
+        "mean": 0.10292914285714283,
+        "median": 0.0,
+        "p95": 0.4458,
+        "max": 0.5302
+      },
+      "trailFrameMs": {
+        "count": 175,
+        "mean": 0.060173142857142883,
+        "median": 0.0,
+        "p95": 0.2945,
+        "max": 0.3964
+      },
+      "gcFrameKB": {
+        "count": 175,
+        "mean": 16.396272321428572,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current1",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 1,
+      "particles": 118,
+      "sampleFrames": 198,
+      "fixedCalls": 45,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 2,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.8146,
+      "spawnMonoUsedDeltaKB": 84.0,
+      "releaseRequestMs": 0.0255,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.9633,
+      "fixedPerCallMs": 0.38859555555555558,
+      "trailPerCallMs": 0.22756086956521737,
+      "managedFrameTotalKB": 3546.8193359375,
+      "unityMemoryDeltaMB": 0.43588829040527344,
+      "wallMs": {
+        "count": 198,
+        "mean": 4.5593439393939388,
+        "median": 4.3681,
+        "p95": 6.2399,
+        "max": 8.5008
+      },
+      "mainMs": {
+        "count": 196,
+        "mean": 4.542601530612246,
+        "median": 4.4068,
+        "p95": 5.7032,
+        "max": 8.6394
+      },
+      "gpuMs": {
+        "count": 197,
+        "mean": 0.22727082233502541,
+        "median": 0.232448,
+        "p95": 0.236544,
+        "max": 0.295936
+      },
+      "bloodFrameMs": {
+        "count": 198,
+        "mean": 0.088317171717171725,
+        "median": 0.0,
+        "p95": 0.4299,
+        "max": 0.57
+      },
+      "trailFrameMs": {
+        "count": 198,
+        "mean": 0.052867676767676758,
+        "median": 0.0,
+        "p95": 0.2997,
+        "max": 0.4404
+      },
+      "gcFrameKB": {
+        "count": 198,
+        "mean": 17.913228969381311,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 152.3642578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 10,
+      "particles": 584,
+      "sampleFrames": 166,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.8218,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1827,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.9276,
+      "fixedPerCallMs": 0.17095840909090909,
+      "trailPerCallMs": 0.11821599999999997,
+      "managedFrameTotalKB": 2727.0009765625,
+      "unityMemoryDeltaMB": 0.19069480895996094,
+      "wallMs": {
+        "count": 166,
+        "mean": 5.4353584337349394,
+        "median": 5.1571,
+        "p95": 7.6328,
+        "max": 8.6951
+      },
+      "mainMs": {
+        "count": 164,
+        "mean": 5.4170152439024388,
+        "median": 5.1394,
+        "p95": 7.6578,
+        "max": 8.711
+      },
+      "gpuMs": {
+        "count": 165,
+        "mean": 0.25686881212121182,
+        "median": 0.262144,
+        "p95": 0.267264,
+        "max": 0.269312
+      },
+      "bloodFrameMs": {
+        "count": 166,
+        "mean": 0.45314277108433731,
+        "median": 0.0,
+        "p95": 2.0468,
+        "max": 2.677
+      },
+      "trailFrameMs": {
+        "count": 166,
+        "mean": 0.32046506024096377,
+        "median": 0.0,
+        "p95": 1.4624,
+        "max": 2.0998
+      },
+      "gcFrameKB": {
+        "count": 166,
+        "mean": 16.427716726280121,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9384765625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 10,
+      "particles": 584,
+      "sampleFrames": 193,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.6326,
+      "spawnMonoUsedDeltaKB": 560.0,
+      "releaseRequestMs": 0.0861,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.7541,
+      "fixedPerCallMs": 0.1576515555555556,
+      "trailPerCallMs": 0.10933934782608695,
+      "managedFrameTotalKB": 4604.009765625,
+      "unityMemoryDeltaMB": 0.34320640563964844,
+      "wallMs": {
+        "count": 193,
+        "mean": 4.6629367875647674,
+        "median": 4.3004,
+        "p95": 6.5669,
+        "max": 7.1883
+      },
+      "mainMs": {
+        "count": 191,
+        "mean": 4.6659952879581166,
+        "median": 4.285,
+        "p95": 6.5802,
+        "max": 7.1937
+      },
+      "gpuMs": {
+        "count": 191,
+        "mean": 0.31785281675392696,
+        "median": 0.34816,
+        "p95": 0.356352,
+        "max": 0.364544
+      },
+      "bloodFrameMs": {
+        "count": 193,
+        "mean": 0.36758134715025914,
+        "median": 0.0,
+        "p95": 1.8735,
+        "max": 2.6022
+      },
+      "trailFrameMs": {
+        "count": 193,
+        "mean": 0.26060155440414506,
+        "median": 0.0,
+        "p95": 1.3923,
+        "max": 1.9947
+      },
+      "gcFrameKB": {
+        "count": 193,
+        "mean": 23.854972878886009,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 697.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 10,
+      "particles": 587,
+      "sampleFrames": 180,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.004,
+      "spawnMonoUsedDeltaKB": 560.0,
+      "releaseRequestMs": 0.0608,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.9319,
+      "fixedPerCallMs": 0.16412066666666658,
+      "trailPerCallMs": 0.113489347826087,
+      "managedFrameTotalKB": 4390.1494140625,
+      "unityMemoryDeltaMB": 0.24106407165527344,
+      "wallMs": {
+        "count": 180,
+        "mean": 4.9953699999999985,
+        "median": 4.6415,
+        "p95": 7.1322,
+        "max": 8.3864
+      },
+      "mainMs": {
+        "count": 178,
+        "mean": 5.0020455056179767,
+        "median": 4.6617,
+        "p95": 7.1715,
+        "max": 8.3733
+      },
+      "gpuMs": {
+        "count": 178,
+        "mean": 0.35704807865168564,
+        "median": 0.372736,
+        "p95": 0.545792,
+        "max": 0.744448
+      },
+      "bloodFrameMs": {
+        "count": 180,
+        "mean": 0.41030166666666645,
+        "median": 0.0,
+        "p95": 1.8817,
+        "max": 2.7014
+      },
+      "trailFrameMs": {
+        "count": 180,
+        "mean": 0.29002833333333344,
+        "median": 0.0,
+        "p95": 1.3032,
+        "max": 2.0653
+      },
+      "gcFrameKB": {
+        "count": 180,
+        "mean": 24.389718967013888,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 697.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 10,
+      "particles": 587,
+      "sampleFrames": 156,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.6129,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1317,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.5342,
+      "fixedPerCallMs": 0.17492577777777776,
+      "trailPerCallMs": 0.12032565217391304,
+      "managedFrameTotalKB": 2560.5947265625,
+      "unityMemoryDeltaMB": 0.14157867431640625,
+      "wallMs": {
+        "count": 156,
+        "mean": 5.7656980769230772,
+        "median": 5.2494,
+        "p95": 8.2147,
+        "max": 12.1152
+      },
+      "mainMs": {
+        "count": 154,
+        "mean": 5.7787733766233753,
+        "median": 5.2755,
+        "p95": 8.2537,
+        "max": 12.167
+      },
+      "gpuMs": {
+        "count": 155,
+        "mean": 0.24200752258064537,
+        "median": 0.248832,
+        "p95": 0.253952,
+        "max": 0.256
+      },
+      "bloodFrameMs": {
+        "count": 156,
+        "mean": 0.5045935897435897,
+        "median": 0.0,
+        "p95": 2.1867,
+        "max": 2.7909
+      },
+      "trailFrameMs": {
+        "count": 156,
+        "mean": 0.35480641025641024,
+        "median": 0.0,
+        "p95": 1.6791,
+        "max": 2.1389
+      },
+      "gcFrameKB": {
+        "count": 156,
+        "mean": 16.414068760016026,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 10,
+      "particles": 568,
+      "sampleFrames": 170,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.6175,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1327,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.5081,
+      "fixedPerCallMs": 0.16253886363636363,
+      "trailPerCallMs": 0.11276466666666665,
+      "managedFrameTotalKB": 2851.7109375,
+      "unityMemoryDeltaMB": 0.12138175964355469,
+      "wallMs": {
+        "count": 170,
+        "mean": 5.3090247058823543,
+        "median": 4.99,
+        "p95": 7.4197,
+        "max": 9.0091
+      },
+      "mainMs": {
+        "count": 168,
+        "mean": 5.3042279761904778,
+        "median": 4.9743,
+        "p95": 7.4388,
+        "max": 9.0248
+      },
+      "gpuMs": {
+        "count": 169,
+        "mean": 0.35970877514792932,
+        "median": 0.370688,
+        "p95": 0.541696,
+        "max": 0.571392
+      },
+      "bloodFrameMs": {
+        "count": 170,
+        "mean": 0.42068882352941178,
+        "median": 0.0,
+        "p95": 1.86,
+        "max": 2.7604
+      },
+      "trailFrameMs": {
+        "count": 170,
+        "mean": 0.29849470588235294,
+        "median": 0.0,
+        "p95": 1.4108,
+        "max": 2.1226
+      },
+      "gcFrameKB": {
+        "count": 170,
+        "mean": 16.774770220588234,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 79.599609375
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 10,
+      "particles": 568,
+      "sampleFrames": 174,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.4388,
+      "spawnMonoUsedDeltaKB": 560.0,
+      "releaseRequestMs": 0.0864,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.157,
+      "fixedPerCallMs": 0.15793022222222225,
+      "trailPerCallMs": 0.10981130434782609,
+      "managedFrameTotalKB": 4292.5263671875,
+      "unityMemoryDeltaMB": 0.38710594177246094,
+      "wallMs": {
+        "count": 174,
+        "mean": 5.1912327586206919,
+        "median": 4.8284,
+        "p95": 7.3424,
+        "max": 9.6207
+      },
+      "mainMs": {
+        "count": 172,
+        "mean": 5.1903837209302335,
+        "median": 4.821,
+        "p95": 7.3579,
+        "max": 9.6464
+      },
+      "gpuMs": {
+        "count": 172,
+        "mean": 0.268407069767442,
+        "median": 0.273408,
+        "p95": 0.280576,
+        "max": 0.284672
+      },
+      "bloodFrameMs": {
+        "count": 174,
+        "mean": 0.40844022988505757,
+        "median": 0.0,
+        "p95": 1.9918,
+        "max": 2.7975
+      },
+      "trailFrameMs": {
+        "count": 174,
+        "mean": 0.29030574712643675,
+        "median": 0.0,
+        "p95": 1.536,
+        "max": 2.1353
+      },
+      "gcFrameKB": {
+        "count": 174,
+        "mean": 24.669691765445403,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 697.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 10,
+      "particles": 599,
+      "sampleFrames": 175,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.3501,
+      "spawnMonoUsedDeltaKB": 560.0,
+      "releaseRequestMs": 0.0796,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.6365,
+      "fixedPerCallMs": 0.16424133333333332,
+      "trailPerCallMs": 0.11429869565217388,
+      "managedFrameTotalKB": 4308.796875,
+      "unityMemoryDeltaMB": 0.17712211608886719,
+      "wallMs": {
+        "count": 175,
+        "mean": 5.1429788571428618,
+        "median": 4.7888,
+        "p95": 7.1514,
+        "max": 8.4079
+      },
+      "mainMs": {
+        "count": 173,
+        "mean": 5.1378942196531758,
+        "median": 4.788,
+        "p95": 7.2255,
+        "max": 8.2102
+      },
+      "gpuMs": {
+        "count": 174,
+        "mean": 0.33721967816091974,
+        "median": 0.283648,
+        "p95": 0.540672,
+        "max": 0.715776
+      },
+      "bloodFrameMs": {
+        "count": 175,
+        "mean": 0.42233485714285712,
+        "median": 0.0,
+        "p95": 2.0833,
+        "max": 2.9251
+      },
+      "trailFrameMs": {
+        "count": 175,
+        "mean": 0.30044228571428561,
+        "median": 0.0,
+        "p95": 1.5754,
+        "max": 2.2466
+      },
+      "gcFrameKB": {
+        "count": 175,
+        "mean": 24.621696428571429,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 697.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 10,
+      "particles": 599,
+      "sampleFrames": 164,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.5325,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1172,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.4004,
+      "fixedPerCallMs": 0.16715288888888885,
+      "trailPerCallMs": 0.11559260869565224,
+      "managedFrameTotalKB": 2690.7587890625,
+      "unityMemoryDeltaMB": -0.040590286254882813,
+      "wallMs": {
+        "count": 164,
+        "mean": 5.5112878048780471,
+        "median": 5.1209,
+        "p95": 7.5823,
+        "max": 8.493
+      },
+      "mainMs": {
+        "count": 162,
+        "mean": 5.5225265432098771,
+        "median": 5.136,
+        "p95": 7.5385,
+        "max": 8.4871
+      },
+      "gpuMs": {
+        "count": 163,
+        "mean": 0.27321953374233121,
+        "median": 0.282624,
+        "p95": 0.287744,
+        "max": 0.290816
+      },
+      "bloodFrameMs": {
+        "count": 164,
+        "mean": 0.45865121951219506,
+        "median": 0.0,
+        "p95": 2.0819,
+        "max": 2.804
+      },
+      "trailFrameMs": {
+        "count": 164,
+        "mean": 0.32422317073170753,
+        "median": 0.0,
+        "p95": 1.596,
+        "max": 2.1788
+      },
+      "gcFrameKB": {
+        "count": 164,
+        "mean": 16.407065786966463,
+        "median": 16.2705078125,
+        "p95": 16.3251953125,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 10,
+      "particles": 591,
+      "sampleFrames": 170,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.5588,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1269,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.0134,
+      "fixedPerCallMs": 0.15991555555555553,
+      "trailPerCallMs": 0.11052217391304349,
+      "managedFrameTotalKB": 2837.8779296875,
+      "unityMemoryDeltaMB": 0.40502738952636719,
+      "wallMs": {
+        "count": 170,
+        "mean": 5.3187258823529406,
+        "median": 4.9496,
+        "p95": 7.4972,
+        "max": 9.7051
+      },
+      "mainMs": {
+        "count": 168,
+        "mean": 5.323647619047617,
+        "median": 4.9427,
+        "p95": 7.5057,
+        "max": 9.7231
+      },
+      "gpuMs": {
+        "count": 167,
+        "mean": 0.35464124550898224,
+        "median": 0.309248,
+        "p95": 0.544768,
+        "max": 0.845824
+      },
+      "bloodFrameMs": {
+        "count": 170,
+        "mean": 0.42330588235294109,
+        "median": 0.0,
+        "p95": 1.9625,
+        "max": 2.6749
+      },
+      "trailFrameMs": {
+        "count": 170,
+        "mean": 0.29906,
+        "median": 0.0,
+        "p95": 1.4845,
+        "max": 2.0657
+      },
+      "gcFrameKB": {
+        "count": 170,
+        "mean": 16.69339958639706,
+        "median": 16.2705078125,
+        "p95": 16.4130859375,
+        "max": 56.44921875
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy10",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 10,
+      "particles": 591,
+      "sampleFrames": 177,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.9862,
+      "spawnMonoUsedDeltaKB": 560.0,
+      "releaseRequestMs": 0.0827,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.9625,
+      "fixedPerCallMs": 0.15900822222222222,
+      "trailPerCallMs": 0.11032326086956523,
+      "managedFrameTotalKB": 4341.337890625,
+      "unityMemoryDeltaMB": 0.17943382263183594,
+      "wallMs": {
+        "count": 177,
+        "mean": 5.09422372881356,
+        "median": 4.7853,
+        "p95": 7.2144,
+        "max": 7.9041
+      },
+      "mainMs": {
+        "count": 175,
+        "mean": 5.0866039999999977,
+        "median": 4.7318,
+        "p95": 7.2837,
+        "max": 7.9305
+      },
+      "gpuMs": {
+        "count": 176,
+        "mean": 0.3000261818181818,
+        "median": 0.308224,
+        "p95": 0.315392,
+        "max": 0.318464
+      },
+      "bloodFrameMs": {
+        "count": 177,
+        "mean": 0.40425819209039543,
+        "median": 0.0,
+        "p95": 2.0228,
+        "max": 2.5898
+      },
+      "trailFrameMs": {
+        "count": 177,
+        "mean": 0.2867158192090396,
+        "median": 0.0,
+        "p95": 1.5001,
+        "max": 1.9952
+      },
+      "gcFrameKB": {
+        "count": 177,
+        "mean": 24.527332715395481,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 697.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 10,
+      "particles": 1140,
+      "sampleFrames": 162,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.1365,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1441,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.7797,
+      "fixedPerCallMs": 0.29829022222222223,
+      "trailPerCallMs": 0.19560543478260875,
+      "managedFrameTotalKB": 2661.9189453125,
+      "unityMemoryDeltaMB": 0.17452049255371094,
+      "wallMs": {
+        "count": 162,
+        "mean": 5.5578067901234558,
+        "median": 4.7602,
+        "p95": 8.5551,
+        "max": 10.1811
+      },
+      "mainMs": {
+        "count": 160,
+        "mean": 5.556620624999999,
+        "median": 4.7683,
+        "p95": 8.5882,
+        "max": 10.1129
+      },
+      "gpuMs": {
+        "count": 157,
+        "mean": 0.43617834394904437,
+        "median": 0.412672,
+        "p95": 0.656384,
+        "max": 0.754688
+      },
+      "bloodFrameMs": {
+        "count": 162,
+        "mean": 0.828583950617284,
+        "median": 0.0,
+        "p95": 3.3132,
+        "max": 4.3138
+      },
+      "trailFrameMs": {
+        "count": 162,
+        "mean": 0.555422839506173,
+        "median": 0.0,
+        "p95": 2.4728,
+        "max": 3.3305
+      },
+      "gcFrameKB": {
+        "count": 162,
+        "mean": 16.431598427854937,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9384765625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 10,
+      "particles": 1140,
+      "sampleFrames": 160,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 3.2817,
+      "spawnMonoUsedDeltaKB": 840.0,
+      "releaseRequestMs": 0.0735,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.239,
+      "fixedPerCallMs": 0.3030686666666666,
+      "trailPerCallMs": 0.19819304347826092,
+      "managedFrameTotalKB": 5660.5205078125,
+      "unityMemoryDeltaMB": 0.17983818054199219,
+      "wallMs": {
+        "count": 160,
+        "mean": 5.6275862499999985,
+        "median": 4.8275,
+        "p95": 8.8458,
+        "max": 9.7887
+      },
+      "mainMs": {
+        "count": 158,
+        "mean": 5.6353341772151877,
+        "median": 4.8342,
+        "p95": 9.0787,
+        "max": 9.7946
+      },
+      "gpuMs": {
+        "count": 156,
+        "mean": 0.43970297435897432,
+        "median": 0.415744,
+        "p95": 0.687104,
+        "max": 0.736256
+      },
+      "bloodFrameMs": {
+        "count": 160,
+        "mean": 0.85238062499999978,
+        "median": 0.0,
+        "p95": 3.4533,
+        "max": 4.2555
+      },
+      "trailFrameMs": {
+        "count": 160,
+        "mean": 0.56980500000000012,
+        "median": 0.0,
+        "p95": 2.5424,
+        "max": 3.1822
+      },
+      "gcFrameKB": {
+        "count": 160,
+        "mean": 35.378253173828128,
+        "median": 16.2705078125,
+        "p95": 18.6142578125,
+        "max": 1377.2080078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 10,
+      "particles": 1202,
+      "sampleFrames": 145,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.804,
+      "spawnMonoUsedDeltaKB": 840.0,
+      "releaseRequestMs": 0.0859,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.4173,
+      "fixedPerCallMs": 0.32805886363636366,
+      "trailPerCallMs": 0.21521644444444446,
+      "managedFrameTotalKB": 5416.462890625,
+      "unityMemoryDeltaMB": -0.026697158813476563,
+      "wallMs": {
+        "count": 145,
+        "mean": 6.2043441379310327,
+        "median": 5.2709,
+        "p95": 9.5678,
+        "max": 11.5932
+      },
+      "mainMs": {
+        "count": 143,
+        "mean": 6.1992307692307707,
+        "median": 5.1977,
+        "p95": 9.5869,
+        "max": 11.5965
+      },
+      "gpuMs": {
+        "count": 144,
+        "mean": 0.32866844444444454,
+        "median": 0.340992,
+        "p95": 0.349184,
+        "max": 0.351232
+      },
+      "bloodFrameMs": {
+        "count": 145,
+        "mean": 0.99548896551724142,
+        "median": 0.0,
+        "p95": 3.7558,
+        "max": 5.1251
+      },
+      "trailFrameMs": {
+        "count": 145,
+        "mean": 0.66791310344827592,
+        "median": 0.0,
+        "p95": 2.7227,
+        "max": 3.9161
+      },
+      "gcFrameKB": {
+        "count": 145,
+        "mean": 37.354916487068962,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 1241.1142578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 10,
+      "particles": 1202,
+      "sampleFrames": 150,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 0.9691,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1287,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.7358,
+      "fixedPerCallMs": 0.3261172727272727,
+      "trailPerCallMs": 0.21383111111111106,
+      "managedFrameTotalKB": 2462.9716796875,
+      "unityMemoryDeltaMB": 0.10835838317871094,
+      "wallMs": {
+        "count": 150,
+        "mean": 6.0173000000000023,
+        "median": 5.0822,
+        "p95": 9.3953,
+        "max": 11.9562
+      },
+      "mainMs": {
+        "count": 148,
+        "mean": 6.0013371621621623,
+        "median": 5.0907,
+        "p95": 9.336,
+        "max": 11.9695
+      },
+      "gpuMs": {
+        "count": 144,
+        "mean": 0.40521955555555556,
+        "median": 0.339968,
+        "p95": 0.71168,
+        "max": 0.95744
+      },
+      "bloodFrameMs": {
+        "count": 150,
+        "mean": 0.9566106666666665,
+        "median": 0.0,
+        "p95": 3.7003,
+        "max": 4.8729
+      },
+      "trailFrameMs": {
+        "count": 150,
+        "mean": 0.64149333333333314,
+        "median": 0.0,
+        "p95": 2.7782,
+        "max": 3.8211
+      },
+      "gcFrameKB": {
+        "count": 150,
+        "mean": 16.419811197916665,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 10,
+      "particles": 1109,
+      "sampleFrames": 146,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.2968,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1518,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.6534,
+      "fixedPerCallMs": 0.30192533333333338,
+      "trailPerCallMs": 0.19844000000000003,
+      "managedFrameTotalKB": 2397.8896484375,
+      "unityMemoryDeltaMB": 0.15068626403808594,
+      "wallMs": {
+        "count": 146,
+        "mean": 6.1854643835616452,
+        "median": 5.2579,
+        "p95": 9.5437,
+        "max": 10.4391
+      },
+      "mainMs": {
+        "count": 144,
+        "mean": 6.1893569444444472,
+        "median": 5.2727,
+        "p95": 9.5951,
+        "max": 10.4653
+      },
+      "gpuMs": {
+        "count": 145,
+        "mean": 0.32154306206896555,
+        "median": 0.334848,
+        "p95": 0.342016,
+        "max": 0.345088
+      },
+      "bloodFrameMs": {
+        "count": 146,
+        "mean": 0.930591780821918,
+        "median": 0.0,
+        "p95": 3.5137,
+        "max": 4.6053
+      },
+      "trailFrameMs": {
+        "count": 146,
+        "mean": 0.62522191780821923,
+        "median": 0.0,
+        "p95": 2.4831,
+        "max": 3.58
+      },
+      "gcFrameKB": {
+        "count": 146,
+        "mean": 16.423901701626711,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 10,
+      "particles": 1109,
+      "sampleFrames": 160,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.3229,
+      "spawnMonoUsedDeltaKB": 840.0,
+      "releaseRequestMs": 0.0757,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.2376,
+      "fixedPerCallMs": 0.29152772727272719,
+      "trailPerCallMs": 0.19213666666666668,
+      "managedFrameTotalKB": 5707.1162109375,
+      "unityMemoryDeltaMB": 0.40450859069824219,
+      "wallMs": {
+        "count": 160,
+        "mean": 5.623896874999998,
+        "median": 4.9191,
+        "p95": 8.4194,
+        "max": 9.8571
+      },
+      "mainMs": {
+        "count": 158,
+        "mean": 5.6285164556962037,
+        "median": 4.9272,
+        "p95": 8.5269,
+        "max": 9.8671
+      },
+      "gpuMs": {
+        "count": 156,
+        "mean": 0.44214482051282022,
+        "median": 0.417792,
+        "p95": 0.652288,
+        "max": 0.785408
+      },
+      "bloodFrameMs": {
+        "count": 160,
+        "mean": 0.80170124999999981,
+        "median": 0.0,
+        "p95": 3.215,
+        "max": 4.5404
+      },
+      "trailFrameMs": {
+        "count": 160,
+        "mean": 0.540384375,
+        "median": 0.0,
+        "p95": 2.3916,
+        "max": 3.5886
+      },
+      "gcFrameKB": {
+        "count": 160,
+        "mean": 35.669476318359372,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 832.8330078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 10,
+      "particles": 1140,
+      "sampleFrames": 159,
+      "fixedCalls": 440,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.6802,
+      "spawnMonoUsedDeltaKB": 840.0,
+      "releaseRequestMs": 0.1262,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.0613,
+      "fixedPerCallMs": 0.30268295454545457,
+      "trailPerCallMs": 0.19910088888888891,
+      "managedFrameTotalKB": 5641.90625,
+      "unityMemoryDeltaMB": 0.20400047302246094,
+      "wallMs": {
+        "count": 159,
+        "mean": 5.6568849056603785,
+        "median": 4.8276,
+        "p95": 9.1054,
+        "max": 10.6655
+      },
+      "mainMs": {
+        "count": 157,
+        "mean": 5.6490356687898107,
+        "median": 4.8025,
+        "p95": 9.118,
+        "max": 10.6572
+      },
+      "gpuMs": {
+        "count": 157,
+        "mean": 0.43658924840764329,
+        "median": 0.41984,
+        "p95": 0.69632,
+        "max": 0.78336
+      },
+      "bloodFrameMs": {
+        "count": 159,
+        "mean": 0.83761320754717,
+        "median": 0.0,
+        "p95": 3.5875,
+        "max": 4.5217
+      },
+      "trailFrameMs": {
+        "count": 159,
+        "mean": 0.56349308176100632,
+        "median": 0.0,
+        "p95": 2.5673,
+        "max": 3.5852
+      },
+      "gcFrameKB": {
+        "count": 159,
+        "mean": 35.483687106918239,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 832.8330078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 10,
+      "particles": 1140,
+      "sampleFrames": 153,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.0504,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.129,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.6788,
+      "fixedPerCallMs": 0.30224577777777772,
+      "trailPerCallMs": 0.19804173913043488,
+      "managedFrameTotalKB": 2511.783203125,
+      "unityMemoryDeltaMB": 0.15622520446777344,
+      "wallMs": {
+        "count": 153,
+        "mean": 5.8982901960784311,
+        "median": 5.0488,
+        "p95": 8.7876,
+        "max": 10.6643
+      },
+      "mainMs": {
+        "count": 151,
+        "mean": 5.9096860927152344,
+        "median": 5.0302,
+        "p95": 8.812,
+        "max": 10.6916
+      },
+      "gpuMs": {
+        "count": 151,
+        "mean": 0.35516524503311275,
+        "median": 0.366592,
+        "p95": 0.372736,
+        "max": 0.380928
+      },
+      "bloodFrameMs": {
+        "count": 153,
+        "mean": 0.88895816993464039,
+        "median": 0.0,
+        "p95": 3.4516,
+        "max": 4.3097
+      },
+      "trailFrameMs": {
+        "count": 153,
+        "mean": 0.59541960784313752,
+        "median": 0.0,
+        "p95": 2.5704,
+        "max": 3.3339
+      },
+      "gcFrameKB": {
+        "count": 153,
+        "mean": 16.416883680555557,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 10,
+      "particles": 1149,
+      "sampleFrames": 137,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.0883,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.1529,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.9976,
+      "fixedPerCallMs": 0.33857488888888887,
+      "trailPerCallMs": 0.22162369565217388,
+      "managedFrameTotalKB": 2251.455078125,
+      "unityMemoryDeltaMB": -0.12816047668457031,
+      "wallMs": {
+        "count": 137,
+        "mean": 6.5747613138686134,
+        "median": 5.6718,
+        "p95": 10.6387,
+        "max": 14.9846
+      },
+      "mainMs": {
+        "count": 135,
+        "mean": 6.5892851851851839,
+        "median": 5.6867,
+        "p95": 10.6373,
+        "max": 15.2487
+      },
+      "gpuMs": {
+        "count": 133,
+        "mean": 0.42372042105263152,
+        "median": 0.405504,
+        "p95": 0.705536,
+        "max": 0.72704
+      },
+      "bloodFrameMs": {
+        "count": 137,
+        "mean": 1.1121072992700729,
+        "median": 0.0,
+        "p95": 4.3508,
+        "max": 5.3714
+      },
+      "trailFrameMs": {
+        "count": 137,
+        "mean": 0.7441379562043795,
+        "median": 0.0,
+        "p95": 3.154,
+        "max": 3.7371
+      },
+      "gcFrameKB": {
+        "count": 137,
+        "mean": 16.433978672445257,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current10",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 10,
+      "particles": 1149,
+      "sampleFrames": 147,
+      "fixedCalls": 450,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 10,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 3.0319,
+      "spawnMonoUsedDeltaKB": 840.0,
+      "releaseRequestMs": 0.0699,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.6408,
+      "fixedPerCallMs": 0.31397155555555556,
+      "trailPerCallMs": 0.20616804347826087,
+      "managedFrameTotalKB": 5448.017578125,
+      "unityMemoryDeltaMB": 0.37587547302246094,
+      "wallMs": {
+        "count": 147,
+        "mean": 6.1377387755102015,
+        "median": 5.3356,
+        "p95": 9.7374,
+        "max": 10.3537
+      },
+      "mainMs": {
+        "count": 145,
+        "mean": 6.1393399999999989,
+        "median": 5.2861,
+        "p95": 9.7807,
+        "max": 10.4172
+      },
+      "gpuMs": {
+        "count": 145,
+        "mean": 0.40331475862068944,
+        "median": 0.413696,
+        "p95": 0.42496,
+        "max": 0.427008
+      },
+      "bloodFrameMs": {
+        "count": 147,
+        "mean": 0.96113741496598648,
+        "median": 0.0,
+        "p95": 3.5945,
+        "max": 4.5531
+      },
+      "trailFrameMs": {
+        "count": 147,
+        "mean": 0.645151700680272,
+        "median": 0.0,
+        "p95": 2.7109,
+        "max": 3.6145
+      },
+      "gcFrameKB": {
+        "count": 147,
+        "mean": 37.061344068877553,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 1241.1142578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 1694,
+      "sampleFrames": 157,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.7792,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2836,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.4252,
+      "fixedPerCallMs": 0.15166585185185186,
+      "trailPerCallMs": 0.10816855072463771,
+      "managedFrameTotalKB": 2579.08203125,
+      "unityMemoryDeltaMB": -0.053789138793945313,
+      "wallMs": {
+        "count": 157,
+        "mean": 5.7504063694267531,
+        "median": 4.4697,
+        "p95": 11.1481,
+        "max": 13.6493
+      },
+      "mainMs": {
+        "count": 155,
+        "mean": 5.7600690322580652,
+        "median": 4.447,
+        "p95": 11.1468,
+        "max": 13.6444
+      },
+      "gpuMs": {
+        "count": 149,
+        "mean": 0.4283412617449664,
+        "median": 0.355328,
+        "p95": 0.771072,
+        "max": 1.083392
+      },
+      "bloodFrameMs": {
+        "count": 157,
+        "mean": 1.3041331210191085,
+        "median": 0.0,
+        "p95": 6.1139,
+        "max": 7.8935
+      },
+      "trailFrameMs": {
+        "count": 157,
+        "mean": 0.95078089171974545,
+        "median": 0.0,
+        "p95": 4.7291,
+        "max": 6.2189
+      },
+      "gcFrameKB": {
+        "count": 157,
+        "mean": 16.427274084394906,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 1694,
+      "sampleFrames": 150,
+      "fixedCalls": 1320,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 6.0392,
+      "spawnMonoUsedDeltaKB": 1680.0,
+      "releaseRequestMs": 0.2236,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.4699,
+      "fixedPerCallMs": 0.15558833333333336,
+      "trailPerCallMs": 0.11097629629629631,
+      "managedFrameTotalKB": 6781.0185546875,
+      "unityMemoryDeltaMB": 0.40057945251464844,
+      "wallMs": {
+        "count": 150,
+        "mean": 6.0026166666666674,
+        "median": 4.6194,
+        "p95": 11.1547,
+        "max": 13.5642
+      },
+      "mainMs": {
+        "count": 148,
+        "mean": 5.9906135135135132,
+        "median": 4.593,
+        "p95": 11.1807,
+        "max": 13.5492
+      },
+      "gpuMs": {
+        "count": 143,
+        "mean": 0.34662758041958025,
+        "median": 0.354304,
+        "p95": 0.361472,
+        "max": 0.454656
+      },
+      "bloodFrameMs": {
+        "count": 150,
+        "mean": 1.3691773333333335,
+        "median": 0.0,
+        "p95": 5.9475,
+        "max": 7.7486
+      },
+      "trailFrameMs": {
+        "count": 150,
+        "mean": 0.99878666666666671,
+        "median": 0.0,
+        "p95": 4.6491,
+        "max": 6.1242
+      },
+      "gcFrameKB": {
+        "count": 150,
+        "mean": 45.206790364583334,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 2059.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 1703,
+      "sampleFrames": 149,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 5.1251,
+      "spawnMonoUsedDeltaKB": 1680.0,
+      "releaseRequestMs": 0.2019,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.8381,
+      "fixedPerCallMs": 0.15754281481481483,
+      "trailPerCallMs": 0.11191891304347824,
+      "managedFrameTotalKB": 6764.748046875,
+      "unityMemoryDeltaMB": 0.15986442565917969,
+      "wallMs": {
+        "count": 149,
+        "mean": 6.0468510067114112,
+        "median": 4.6199,
+        "p95": 11.1427,
+        "max": 15.1336
+      },
+      "mainMs": {
+        "count": 147,
+        "mean": 6.0619340136054447,
+        "median": 4.6315,
+        "p95": 11.193,
+        "max": 15.2078
+      },
+      "gpuMs": {
+        "count": 142,
+        "mean": 0.46122546478873272,
+        "median": 0.359424,
+        "p95": 0.795648,
+        "max": 1.784832
+      },
+      "bloodFrameMs": {
+        "count": 149,
+        "mean": 1.4274013422818792,
+        "median": 0.0,
+        "p95": 5.8876,
+        "max": 8.2133
+      },
+      "trailFrameMs": {
+        "count": 149,
+        "mean": 1.0365644295302012,
+        "median": 0.0,
+        "p95": 4.602,
+        "max": 6.4276
+      },
+      "gcFrameKB": {
+        "count": 149,
+        "mean": 45.400993603187921,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 2059.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 1703,
+      "sampleFrames": 139,
+      "fixedCalls": 1320,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.9515,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2934,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.6155,
+      "fixedPerCallMs": 0.15979409090909083,
+      "trailPerCallMs": 0.11387333333333333,
+      "managedFrameTotalKB": 2286.212890625,
+      "unityMemoryDeltaMB": 0.17803859710693359,
+      "wallMs": {
+        "count": 139,
+        "mean": 6.49144604316547,
+        "median": 5.0131,
+        "p95": 12.2197,
+        "max": 13.3675
+      },
+      "mainMs": {
+        "count": 137,
+        "mean": 6.4922897810218982,
+        "median": 4.9728,
+        "p95": 12.2681,
+        "max": 13.4035
+      },
+      "gpuMs": {
+        "count": 137,
+        "mean": 0.3474499270072996,
+        "median": 0.357376,
+        "p95": 0.366592,
+        "max": 0.441344
+      },
+      "bloodFrameMs": {
+        "count": 139,
+        "mean": 1.5174690647482008,
+        "median": 0.0,
+        "p95": 6.3707,
+        "max": 7.3858
+      },
+      "trailFrameMs": {
+        "count": 139,
+        "mean": 1.1059640287769783,
+        "median": 0.0,
+        "p95": 4.8454,
+        "max": 5.8125
+      },
+      "gcFrameKB": {
+        "count": 139,
+        "mean": 16.447574752697843,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 1733,
+      "sampleFrames": 136,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.6612,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.282,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.0316,
+      "fixedPerCallMs": 0.15949888888888888,
+      "trailPerCallMs": 0.11348297101449276,
+      "managedFrameTotalKB": 2236.0439453125,
+      "unityMemoryDeltaMB": 0.10795688629150391,
+      "wallMs": {
+        "count": 136,
+        "mean": 6.6260632352941169,
+        "median": 5.0524,
+        "p95": 12.2826,
+        "max": 13.8963
+      },
+      "mainMs": {
+        "count": 134,
+        "mean": 6.64445671641791,
+        "median": 5.0124,
+        "p95": 12.2574,
+        "max": 13.8825
+      },
+      "gpuMs": {
+        "count": 129,
+        "mean": 0.47777141085271319,
+        "median": 0.364544,
+        "p95": 0.83456,
+        "max": 2.161664
+      },
+      "bloodFrameMs": {
+        "count": 136,
+        "mean": 1.5832610294117646,
+        "median": 0.0,
+        "p95": 6.5947,
+        "max": 7.6573
+      },
+      "trailFrameMs": {
+        "count": 136,
+        "mean": 1.1515183823529413,
+        "median": 0.0,
+        "p95": 5.1625,
+        "max": 6.1232
+      },
+      "gcFrameKB": {
+        "count": 136,
+        "mean": 16.441499597886029,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 1733,
+      "sampleFrames": 130,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 6.5344,
+      "spawnMonoUsedDeltaKB": 1680.0,
+      "releaseRequestMs": 0.1965,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 11.1238,
+      "fixedPerCallMs": 0.16047274074074075,
+      "trailPerCallMs": 0.11356297101449273,
+      "managedFrameTotalKB": 6455.6083984375,
+      "unityMemoryDeltaMB": 0.12303733825683594,
+      "wallMs": {
+        "count": 130,
+        "mean": 6.9515084615384612,
+        "median": 5.3156,
+        "p95": 12.0533,
+        "max": 14.0113
+      },
+      "mainMs": {
+        "count": 128,
+        "mean": 6.9530382812500022,
+        "median": 5.1918,
+        "p95": 12.0863,
+        "max": 13.9868
+      },
+      "gpuMs": {
+        "count": 129,
+        "mean": 0.35078747286821704,
+        "median": 0.36352,
+        "p95": 0.370688,
+        "max": 0.443392
+      },
+      "bloodFrameMs": {
+        "count": 130,
+        "mean": 1.6664476923076923,
+        "median": 0.0,
+        "p95": 6.3117,
+        "max": 7.6754
+      },
+      "trailFrameMs": {
+        "count": 130,
+        "mean": 1.205514615384615,
+        "median": 0.0,
+        "p95": 4.9146,
+        "max": 6.1168
+      },
+      "gcFrameKB": {
+        "count": 130,
+        "mean": 49.658526141826925,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 2059.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 1721,
+      "sampleFrames": 113,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 6.1009,
+      "spawnMonoUsedDeltaKB": 1680.0,
+      "releaseRequestMs": 0.1754,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 10.7502,
+      "fixedPerCallMs": 0.16182807407407407,
+      "trailPerCallMs": 0.11411101449275364,
+      "managedFrameTotalKB": 6179.009765625,
+      "unityMemoryDeltaMB": -0.060457229614257813,
+      "wallMs": {
+        "count": 113,
+        "mean": 7.9930973451327416,
+        "median": 6.0746,
+        "p95": 13.5954,
+        "max": 15.6464
+      },
+      "mainMs": {
+        "count": 111,
+        "mean": 8.0086108108108132,
+        "median": 6.0572,
+        "p95": 13.6036,
+        "max": 15.4634
+      },
+      "gpuMs": {
+        "count": 96,
+        "mean": 0.72372266666666629,
+        "median": 0.7936,
+        "p95": 0.935936,
+        "max": 1.649664
+      },
+      "bloodFrameMs": {
+        "count": 113,
+        "mean": 1.9333442477876106,
+        "median": 0.0,
+        "p95": 6.3432,
+        "max": 7.9191
+      },
+      "trailFrameMs": {
+        "count": 113,
+        "mean": 1.3935681415929206,
+        "median": 0.0,
+        "p95": 4.8364,
+        "max": 6.2028
+      },
+      "gcFrameKB": {
+        "count": 113,
+        "mean": 54.68150235066372,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 2059.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 1721,
+      "sampleFrames": 110,
+      "fixedCalls": 1320,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.5488,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3111,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.472,
+      "fixedPerCallMs": 0.16471113636363635,
+      "trailPerCallMs": 0.11603874074074076,
+      "managedFrameTotalKB": 1814.3681640625,
+      "unityMemoryDeltaMB": 0.31026268005371094,
+      "wallMs": {
+        "count": 110,
+        "mean": 8.185984545454545,
+        "median": 6.423,
+        "p95": 13.5582,
+        "max": 14.3518
+      },
+      "mainMs": {
+        "count": 108,
+        "mean": 8.1704111111111111,
+        "median": 6.4975,
+        "p95": 13.5911,
+        "max": 14.2376
+      },
+      "gpuMs": {
+        "count": 109,
+        "mean": 0.37944366972477078,
+        "median": 0.39424,
+        "p95": 0.403456,
+        "max": 0.478208
+      },
+      "bloodFrameMs": {
+        "count": 110,
+        "mean": 1.9765336363636363,
+        "median": 0.0,
+        "p95": 6.8007,
+        "max": 7.5699
+      },
+      "trailFrameMs": {
+        "count": 110,
+        "mean": 1.4241118181818184,
+        "median": 0.0,
+        "p95": 5.1985,
+        "max": 6.014
+      },
+      "gcFrameKB": {
+        "count": 110,
+        "mean": 16.494256036931819,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 1730,
+      "sampleFrames": 110,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 1.5548,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3753,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 10.0233,
+      "fixedPerCallMs": 0.16331666666666669,
+      "trailPerCallMs": 0.11477695652173914,
+      "managedFrameTotalKB": 1813.0107421875,
+      "unityMemoryDeltaMB": 0.13512992858886719,
+      "wallMs": {
+        "count": 110,
+        "mean": 8.1854027272727254,
+        "median": 6.3139,
+        "p95": 13.3668,
+        "max": 15.0605
+      },
+      "mainMs": {
+        "count": 108,
+        "mean": 8.2118231481481452,
+        "median": 6.3314,
+        "p95": 13.3819,
+        "max": 15.2209
+      },
+      "gpuMs": {
+        "count": 89,
+        "mean": 0.70404025842696616,
+        "median": 0.789504,
+        "p95": 0.97792,
+        "max": 1.06496
+      },
+      "bloodFrameMs": {
+        "count": 110,
+        "mean": 2.0043409090909092,
+        "median": 0.0,
+        "p95": 6.9851,
+        "max": 7.3153
+      },
+      "trailFrameMs": {
+        "count": 110,
+        "mean": 1.4399290909090909,
+        "median": 0.0,
+        "p95": 5.3961,
+        "max": 5.7616
+      },
+      "gcFrameKB": {
+        "count": 110,
+        "mean": 16.481915838068183,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "legacy30",
+      "payload": "legacy",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 1730,
+      "sampleFrames": 113,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 6.329,
+      "spawnMonoUsedDeltaKB": 1680.0,
+      "releaseRequestMs": 0.2288,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.2879,
+      "fixedPerCallMs": 0.16278222222222222,
+      "trailPerCallMs": 0.11439811594202902,
+      "managedFrameTotalKB": 6180.3671875,
+      "unityMemoryDeltaMB": 0.19772148132324219,
+      "wallMs": {
+        "count": 113,
+        "mean": 7.9813646017699105,
+        "median": 6.4025,
+        "p95": 13.8624,
+        "max": 14.7345
+      },
+      "mainMs": {
+        "count": 111,
+        "mean": 7.9949846846846837,
+        "median": 6.3709,
+        "p95": 13.8392,
+        "max": 14.7396
+      },
+      "gpuMs": {
+        "count": 97,
+        "mean": 0.45503602061855664,
+        "median": 0.4352,
+        "p95": 0.528384,
+        "max": 0.612352
+      },
+      "bloodFrameMs": {
+        "count": 113,
+        "mean": 1.9447433628318584,
+        "median": 0.0,
+        "p95": 7.1062,
+        "max": 7.8077
+      },
+      "trailFrameMs": {
+        "count": 113,
+        "mean": 1.3970743362831861,
+        "median": 0.0,
+        "p95": 5.5292,
+        "max": 6.1728
+      },
+      "gcFrameKB": {
+        "count": 113,
+        "mean": 54.693514933628322,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 2059.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 3485,
+      "sampleFrames": 86,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 3.0234,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3497,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 15.1873,
+      "fixedPerCallMs": 0.31260051851851844,
+      "trailPerCallMs": 0.20875507246376812,
+      "managedFrameTotalKB": 1422.5185546875,
+      "unityMemoryDeltaMB": 0.14021873474121094,
+      "wallMs": {
+        "count": 86,
+        "mean": 10.493782558139532,
+        "median": 12.9049,
+        "p95": 19.0474,
+        "max": 21.8531
+      },
+      "mainMs": {
+        "count": 84,
+        "mean": 10.603928571428568,
+        "median": 13.2783,
+        "p95": 19.0285,
+        "max": 21.8393
+      },
+      "gpuMs": {
+        "count": 78,
+        "mean": 0.85014308974358987,
+        "median": 0.515072,
+        "p95": 1.430528,
+        "max": 2.351104
+      },
+      "bloodFrameMs": {
+        "count": 86,
+        "mean": 4.9071011627906964,
+        "median": 7.4207,
+        "p95": 13.4054,
+        "max": 14.8538
+      },
+      "trailFrameMs": {
+        "count": 86,
+        "mean": 3.3497906976744187,
+        "median": 4.0125,
+        "p95": 10.5738,
+        "max": 11.6207
+      },
+      "gcFrameKB": {
+        "count": 86,
+        "mean": 16.540913426598838,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 3485,
+      "sampleFrames": 65,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 9.5581,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.2038,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 15.6547,
+      "fixedPerCallMs": 0.33828525925925929,
+      "trailPerCallMs": 0.22649760869565225,
+      "managedFrameTotalKB": 10179.6953125,
+      "unityMemoryDeltaMB": 0.0093288421630859375,
+      "wallMs": {
+        "count": 65,
+        "mean": 13.790370769230771,
+        "median": 15.3889,
+        "p95": 22.2198,
+        "max": 23.7307
+      },
+      "mainMs": {
+        "count": 63,
+        "mean": 14.004688888888889,
+        "median": 15.4627,
+        "p95": 22.109,
+        "max": 23.8224
+      },
+      "gpuMs": {
+        "count": 61,
+        "mean": 0.46699418032786877,
+        "median": 0.500735,
+        "p95": 0.51712,
+        "max": 0.531456
+      },
+      "bloodFrameMs": {
+        "count": 65,
+        "mean": 7.025924615384616,
+        "median": 8.7654,
+        "p95": 15.252,
+        "max": 16.244
+      },
+      "trailFrameMs": {
+        "count": 65,
+        "mean": 4.8087184615384624,
+        "median": 5.2581,
+        "p95": 11.4279,
+        "max": 12.8112
+      },
+      "gcFrameKB": {
+        "count": 65,
+        "mean": 156.61069711538462,
+        "median": 16.2705078125,
+        "p95": 1039.0830078125,
+        "max": 3962.9892578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 3497,
+      "sampleFrames": 68,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 8.6281,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1884,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 15.4621,
+      "fixedPerCallMs": 0.33624370370370371,
+      "trailPerCallMs": 0.22336884057971015,
+      "managedFrameTotalKB": 10228.5068359375,
+      "unityMemoryDeltaMB": 0.14394187927246094,
+      "wallMs": {
+        "count": 68,
+        "mean": 13.216950000000002,
+        "median": 15.381,
+        "p95": 20.1787,
+        "max": 24.427
+      },
+      "mainMs": {
+        "count": 66,
+        "mean": 13.429400000000006,
+        "median": 15.5056,
+        "p95": 20.1352,
+        "max": 24.4492
+      },
+      "gpuMs": {
+        "count": 60,
+        "mean": 1.3248853333333335,
+        "median": 1.291264,
+        "p95": 2.142208,
+        "max": 2.663424
+      },
+      "bloodFrameMs": {
+        "count": 68,
+        "mean": 6.6754264705882349,
+        "median": 8.8063,
+        "p95": 13.1431,
+        "max": 17.1931
+      },
+      "trailFrameMs": {
+        "count": 68,
+        "mean": 4.533073529411765,
+        "median": 5.2508,
+        "p95": 10.313,
+        "max": 13.4695
+      },
+      "gcFrameKB": {
+        "count": 68,
+        "mean": 150.41921817555146,
+        "median": 16.2705078125,
+        "p95": 1039.0830078125,
+        "max": 4099.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 3497,
+      "sampleFrames": 68,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 3.0778,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3294,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 14.9309,
+      "fixedPerCallMs": 0.33608377777777776,
+      "trailPerCallMs": 0.22327463768115943,
+      "managedFrameTotalKB": 1129.6494140625,
+      "unityMemoryDeltaMB": 0.11935234069824219,
+      "wallMs": {
+        "count": 68,
+        "mean": 13.273638235294113,
+        "median": 15.5984,
+        "p95": 20.8947,
+        "max": 22.7292
+      },
+      "mainMs": {
+        "count": 66,
+        "mean": 13.492249999999995,
+        "median": 15.6641,
+        "p95": 20.9112,
+        "max": 22.6873
+      },
+      "gpuMs": {
+        "count": 60,
+        "mean": 1.2430165333333336,
+        "median": 1.199104,
+        "p95": 2.107392,
+        "max": 2.830336
+      },
+      "bloodFrameMs": {
+        "count": 68,
+        "mean": 6.6722514705882352,
+        "median": 8.8609,
+        "p95": 13.5747,
+        "max": 15.662
+      },
+      "trailFrameMs": {
+        "count": 68,
+        "mean": 4.5311617647058826,
+        "median": 5.3757,
+        "p95": 10.5842,
+        "max": 12.2353
+      },
+      "gcFrameKB": {
+        "count": 68,
+        "mean": 16.612491383272058,
+        "median": 16.2705078125,
+        "p95": 25.3603515625,
+        "max": 26.9775390625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 3476,
+      "sampleFrames": 95,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.9282,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3099,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 14.0271,
+      "fixedPerCallMs": 0.30202570370370374,
+      "trailPerCallMs": 0.20174601449275364,
+      "managedFrameTotalKB": 1570.310546875,
+      "unityMemoryDeltaMB": 0.13345909118652344,
+      "wallMs": {
+        "count": 95,
+        "mean": 9.4934621052631627,
+        "median": 5.9625,
+        "p95": 18.0083,
+        "max": 21.4375
+      },
+      "mainMs": {
+        "count": 93,
+        "mean": 9.57333333333333,
+        "median": 6.2203,
+        "p95": 17.9458,
+        "max": 21.3855
+      },
+      "gpuMs": {
+        "count": 79,
+        "mean": 0.78079340506329109,
+        "median": 0.524288,
+        "p95": 1.50528,
+        "max": 2.736128
+      },
+      "bloodFrameMs": {
+        "count": 95,
+        "mean": 4.2919442105263164,
+        "median": 0.0,
+        "p95": 11.2472,
+        "max": 15.1155
+      },
+      "trailFrameMs": {
+        "count": 95,
+        "mean": 2.9306263157894739,
+        "median": 0.0,
+        "p95": 8.3388,
+        "max": 11.9141
+      },
+      "gcFrameKB": {
+        "count": 95,
+        "mean": 16.529584703947368,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 3476,
+      "sampleFrames": 93,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 7.6938,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1706,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 13.9808,
+      "fixedPerCallMs": 0.30782666666666664,
+      "trailPerCallMs": 0.20589898550724639,
+      "managedFrameTotalKB": 10683.93359375,
+      "unityMemoryDeltaMB": 0.15282058715820313,
+      "wallMs": {
+        "count": 93,
+        "mean": 9.67721505376344,
+        "median": 5.9424,
+        "p95": 18.0202,
+        "max": 22.8566
+      },
+      "mainMs": {
+        "count": 91,
+        "mean": 9.7524351648351644,
+        "median": 5.917,
+        "p95": 18.0033,
+        "max": 22.9059
+      },
+      "gpuMs": {
+        "count": 80,
+        "mean": 0.49704942499999988,
+        "median": 0.520192,
+        "p95": 0.534528,
+        "max": 0.55296
+      },
+      "bloodFrameMs": {
+        "count": 93,
+        "mean": 4.4684516129032259,
+        "median": 0.0,
+        "p95": 12.0643,
+        "max": 14.8961
+      },
+      "trailFrameMs": {
+        "count": 93,
+        "mean": 3.0552752688172045,
+        "median": 0.0,
+        "p95": 9.3579,
+        "max": 11.7705
+      },
+      "gcFrameKB": {
+        "count": 93,
+        "mean": 114.88100638440861,
+        "median": 16.2705078125,
+        "p95": 26.9384765625,
+        "max": 4099.0830078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 3502,
+      "sampleFrames": 88,
+      "fixedCalls": 1320,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 6.7896,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1843,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.7932,
+      "fixedPerCallMs": 0.31479946969696965,
+      "trailPerCallMs": 0.21199274074074079,
+      "managedFrameTotalKB": 10552.5595703125,
+      "unityMemoryDeltaMB": 0.11261558532714844,
+      "wallMs": {
+        "count": 88,
+        "mean": 10.225695454545457,
+        "median": 13.0465,
+        "p95": 17.2856,
+        "max": 23.3098
+      },
+      "mainMs": {
+        "count": 86,
+        "mean": 10.23326162790698,
+        "median": 13.0607,
+        "p95": 17.2305,
+        "max": 23.2748
+      },
+      "gpuMs": {
+        "count": 80,
+        "mean": 1.2082431999999994,
+        "median": 1.207296,
+        "p95": 1.988608,
+        "max": 3.0464
+      },
+      "bloodFrameMs": {
+        "count": 88,
+        "mean": 4.7219920454545452,
+        "median": 3.4974,
+        "p95": 11.6165,
+        "max": 15.8345
+      },
+      "trailFrameMs": {
+        "count": 88,
+        "mean": 3.2521613636363642,
+        "median": 1.4379,
+        "p95": 8.8423,
+        "max": 12.4316
+      },
+      "gcFrameKB": {
+        "count": 88,
+        "mean": 119.91544966264205,
+        "median": 16.2705078125,
+        "p95": 152.3642578125,
+        "max": 3962.9892578125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 3502,
+      "sampleFrames": 89,
+      "fixedCalls": 1320,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.9317,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2652,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.4345,
+      "fixedPerCallMs": 0.31079704545454551,
+      "trailPerCallMs": 0.20930407407407406,
+      "managedFrameTotalKB": 1472.6875,
+      "unityMemoryDeltaMB": 0.051847457885742188,
+      "wallMs": {
+        "count": 89,
+        "mean": 10.110094382022474,
+        "median": 11.5171,
+        "p95": 18.8429,
+        "max": 21.3386
+      },
+      "mainMs": {
+        "count": 87,
+        "mean": 10.107783908045974,
+        "median": 11.3327,
+        "p95": 18.866,
+        "max": 21.2805
+      },
+      "gpuMs": {
+        "count": 76,
+        "mean": 0.47027186842105229,
+        "median": 0.495616,
+        "p95": 0.512,
+        "max": 0.526336
+      },
+      "bloodFrameMs": {
+        "count": 89,
+        "mean": 4.6095741573033715,
+        "median": 0.0,
+        "p95": 12.7555,
+        "max": 15.1088
+      },
+      "trailFrameMs": {
+        "count": 89,
+        "mean": 3.1748370786516853,
+        "median": 0.1001,
+        "p95": 9.9629,
+        "max": 11.8534
+      },
+      "gcFrameKB": {
+        "count": 89,
+        "mean": 16.547050561797754,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 3454,
+      "sampleFrames": 100,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 2.5179,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2635,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 12.0096,
+      "fixedPerCallMs": 0.297986,
+      "trailPerCallMs": 0.19929289855072466,
+      "managedFrameTotalKB": 1651.6630859375,
+      "unityMemoryDeltaMB": 0.087031364440917969,
+      "wallMs": {
+        "count": 100,
+        "mean": 9.0109199999999969,
+        "median": 5.35,
+        "p95": 16.5528,
+        "max": 22.6836
+      },
+      "mainMs": {
+        "count": 98,
+        "mean": 9.0887448979591827,
+        "median": 5.6475,
+        "p95": 18.049,
+        "max": 22.5196
+      },
+      "gpuMs": {
+        "count": 86,
+        "mean": 0.896357162790698,
+        "median": 0.521216,
+        "p95": 1.717248,
+        "max": 2.546688
+      },
+      "bloodFrameMs": {
+        "count": 100,
+        "mean": 4.022811,
+        "median": 0.0,
+        "p95": 10.9117,
+        "max": 16.0658
+      },
+      "trailFrameMs": {
+        "count": 100,
+        "mean": 2.750242,
+        "median": 0.0,
+        "p95": 8.5583,
+        "max": 12.6759
+      },
+      "gcFrameKB": {
+        "count": 100,
+        "mean": 16.516630859375,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 3454,
+      "sampleFrames": 92,
+      "fixedCalls": 1350,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 0.9,
+      "spawnMs": 7.6514,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1786,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.638,
+      "fixedPerCallMs": 0.30233659259259249,
+      "trailPerCallMs": 0.20225000000000004,
+      "managedFrameTotalKB": 10618.9990234375,
+      "unityMemoryDeltaMB": 0.12742424011230469,
+      "wallMs": {
+        "count": 92,
+        "mean": 9.7954119565217379,
+        "median": 6.4735,
+        "p95": 18.8312,
+        "max": 20.4971
+      },
+      "mainMs": {
+        "count": 90,
+        "mean": 9.89463777777778,
+        "median": 9.2885,
+        "p95": 18.8619,
+        "max": 20.4398
+      },
+      "gpuMs": {
+        "count": 81,
+        "mean": 0.46991483950617285,
+        "median": 0.492544,
+        "p95": 0.51712,
+        "max": 0.528384
+      },
+      "bloodFrameMs": {
+        "count": 92,
+        "mean": 4.4364608695652166,
+        "median": 0.0,
+        "p95": 12.1785,
+        "max": 14.0727
+      },
+      "trailFrameMs": {
+        "count": 92,
+        "mean": 3.0337500000000008,
+        "median": 0.1584,
+        "p95": 9.2507,
+        "max": 10.6842
+      },
+      "gcFrameKB": {
+        "count": 92,
+        "mean": 115.42390242866848,
+        "median": 16.2705078125,
+        "p95": 288.4580078125,
+        "max": 3826.8955078125
+      },
+      "lateBloodFrameMs": null,
+      "lateTrailFrameMs": null
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 3485,
+      "sampleFrames": 472,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 2.98,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2884,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.2828,
+      "fixedPerCallMs": 0.21966856666666654,
+      "trailPerCallMs": 0.075349834162520668,
+      "managedFrameTotalKB": 7763.4384765625,
+      "unityMemoryDeltaMB": 0.32374000549316406,
+      "wallMs": {
+        "count": 472,
+        "mean": 8.48267987288135,
+        "median": 6.3299,
+        "p95": 14.951,
+        "max": 21.2131
+      },
+      "mainMs": {
+        "count": 470,
+        "mean": 8.4815751063829854,
+        "median": 6.3141,
+        "p95": 15.0083,
+        "max": 21.1581
+      },
+      "gpuMs": {
+        "count": 439,
+        "mean": 0.61155422323462438,
+        "median": 0.523263,
+        "p95": 1.220608,
+        "max": 2.52928
+      },
+      "bloodFrameMs": {
+        "count": 472,
+        "mean": 2.7923970338983035,
+        "median": 0.0,
+        "p95": 8.6725,
+        "max": 15.1718
+      },
+      "trailFrameMs": {
+        "count": 472,
+        "mean": 0.96262605932203316,
+        "median": 0.0,
+        "p95": 5.8046,
+        "max": 11.9687
+      },
+      "gcFrameKB": {
+        "count": 472,
+        "mean": 16.447962874073092,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 45.236328125
+      },
+      "lateBloodFrameMs": {
+        "count": 183,
+        "mean": 1.7336065573770485,
+        "median": 0.0,
+        "p95": 5.6678,
+        "max": 7.4986
+      },
+      "lateTrailFrameMs": {
+        "count": 183,
+        "mean": 0.091733879781420752,
+        "median": 0.0,
+        "p95": 0.2873,
+        "max": 0.391
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 1,
+      "concurrent": 30,
+      "particles": 3485,
+      "sampleFrames": 433,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 9.1518,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1526,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.3513,
+      "fixedPerCallMs": 0.22924639999999988,
+      "trailPerCallMs": 0.081205223880596991,
+      "managedFrameTotalKB": 16179.79296875,
+      "unityMemoryDeltaMB": 0.26067447662353516,
+      "wallMs": {
+        "count": 433,
+        "mean": 9.24484064665126,
+        "median": 6.6616,
+        "p95": 16.6953,
+        "max": 22.6362
+      },
+      "mainMs": {
+        "count": 431,
+        "mean": 9.2504888631090427,
+        "median": 6.6632999999999996,
+        "p95": 16.6977,
+        "max": 22.7215
+      },
+      "gpuMs": {
+        "count": 406,
+        "mean": 0.68057913546798132,
+        "median": 0.493568,
+        "p95": 1.370112,
+        "max": 2.963456
+      },
+      "bloodFrameMs": {
+        "count": 433,
+        "mean": 3.1766244803695134,
+        "median": 0.0,
+        "p95": 9.5979,
+        "max": 14.3311
+      },
+      "trailFrameMs": {
+        "count": 433,
+        "mean": 1.1308718244803693,
+        "median": 0.0,
+        "p95": 6.6314,
+        "max": 11.2256
+      },
+      "gcFrameKB": {
+        "count": 433,
+        "mean": 37.366727410508084,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 3962.9892578125
+      },
+      "lateBloodFrameMs": {
+        "count": 183,
+        "mean": 1.7822513661202182,
+        "median": 0.0,
+        "p95": 5.6318,
+        "max": 9.5979
+      },
+      "lateTrailFrameMs": {
+        "count": 183,
+        "mean": 0.093274863387978149,
+        "median": 0.0,
+        "p95": 0.2897,
+        "max": 0.4918
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 3497,
+      "sampleFrames": 435,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 8.863,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1804,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 6.7694,
+      "fixedPerCallMs": 0.2279629,
+      "trailPerCallMs": 0.081226451077943629,
+      "managedFrameTotalKB": 16212.333984375,
+      "unityMemoryDeltaMB": 0.45001792907714844,
+      "wallMs": {
+        "count": 435,
+        "mean": 9.19579747126436,
+        "median": 6.8128,
+        "p95": 16.8881,
+        "max": 22.858
+      },
+      "mainMs": {
+        "count": 433,
+        "mean": 9.1955226327944537,
+        "median": 6.8229,
+        "p95": 16.8663,
+        "max": 22.9572
+      },
+      "gpuMs": {
+        "count": 408,
+        "mean": 0.63800713235294071,
+        "median": 0.520192,
+        "p95": 1.23904,
+        "max": 2.987008
+      },
+      "bloodFrameMs": {
+        "count": 435,
+        "mean": 3.1443158620689653,
+        "median": 0.0,
+        "p95": 9.7874,
+        "max": 14.9396
+      },
+      "trailFrameMs": {
+        "count": 435,
+        "mean": 1.125966666666667,
+        "median": 0.0,
+        "p95": 6.9333,
+        "max": 11.7593
+      },
+      "gcFrameKB": {
+        "count": 435,
+        "mean": 37.269733297413794,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 4099.0830078125
+      },
+      "lateBloodFrameMs": {
+        "count": 180,
+        "mean": 1.8167638888888888,
+        "median": 0.0,
+        "p95": 5.7623,
+        "max": 9.624
+      },
+      "lateTrailFrameMs": {
+        "count": 180,
+        "mean": 0.098605,
+        "median": 0.0,
+        "p95": 0.3025,
+        "max": 0.4822
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 2,
+      "concurrent": 30,
+      "particles": 3497,
+      "sampleFrames": 449,
+      "fixedCalls": 5970,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 3.3539,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2797,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.0807,
+      "fixedPerCallMs": 0.22618125628140698,
+      "trailPerCallMs": 0.082261699999999965,
+      "managedFrameTotalKB": 7391.8359375,
+      "unityMemoryDeltaMB": 0.64125633239746094,
+      "wallMs": {
+        "count": 449,
+        "mean": 8.9046815144766089,
+        "median": 6.3318,
+        "p95": 16.5479,
+        "max": 27.0654
+      },
+      "mainMs": {
+        "count": 447,
+        "mean": 8.9036093959731577,
+        "median": 6.2953,
+        "p95": 16.5714,
+        "max": 27.105
+      },
+      "gpuMs": {
+        "count": 425,
+        "mean": 0.58768919764705874,
+        "median": 0.500735,
+        "p95": 1.189888,
+        "max": 2.576384
+      },
+      "bloodFrameMs": {
+        "count": 449,
+        "mean": 3.0073543429844092,
+        "median": 0.0,
+        "p95": 9.6218,
+        "max": 15.7815
+      },
+      "trailFrameMs": {
+        "count": 449,
+        "mean": 1.0992654788418705,
+        "median": 0.0,
+        "p95": 6.3237,
+        "max": 12.508
+      },
+      "gcFrameKB": {
+        "count": 449,
+        "mean": 16.462886275055681,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 38.552734375
+      },
+      "lateBloodFrameMs": {
+        "count": 188,
+        "mean": 1.6524494680851067,
+        "median": 0.0,
+        "p95": 5.4285,
+        "max": 6.7042
+      },
+      "lateTrailFrameMs": {
+        "count": 188,
+        "mean": 0.089549468085106387,
+        "median": 0.0,
+        "p95": 0.2876,
+        "max": 0.3712
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 3476,
+      "sampleFrames": 446,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 3.1313,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2739,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 5.5797,
+      "fixedPerCallMs": 0.22454431666666669,
+      "trailPerCallMs": 0.081181774461028158,
+      "managedFrameTotalKB": 7291.4658203125,
+      "unityMemoryDeltaMB": 0.40038108825683594,
+      "wallMs": {
+        "count": 446,
+        "mean": 8.9685251121076224,
+        "median": 6.5898,
+        "p95": 16.0517,
+        "max": 23.3968
+      },
+      "mainMs": {
+        "count": 444,
+        "mean": 8.9715975225225115,
+        "median": 6.5398,
+        "p95": 16.0395,
+        "max": 23.4147
+      },
+      "gpuMs": {
+        "count": 427,
+        "mean": 0.6503094824355975,
+        "median": 0.518144,
+        "p95": 1.253376,
+        "max": 3.009536
+      },
+      "bloodFrameMs": {
+        "count": 446,
+        "mean": 3.0207755605381168,
+        "median": 0.0,
+        "p95": 9.3675,
+        "max": 15.3739
+      },
+      "trailFrameMs": {
+        "count": 446,
+        "mean": 1.0975921524663672,
+        "median": 0.0,
+        "p95": 6.3046,
+        "max": 11.9501
+      },
+      "gcFrameKB": {
+        "count": 446,
+        "mean": 16.348578072449552,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": {
+        "count": 193,
+        "mean": 1.5686678756476684,
+        "median": 0.0,
+        "p95": 5.1426,
+        "max": 7.667
+      },
+      "lateTrailFrameMs": {
+        "count": 193,
+        "mean": 0.084177720207253851,
+        "median": 0.0,
+        "p95": 0.2652,
+        "max": 0.3896
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 3,
+      "concurrent": 30,
+      "particles": 3476,
+      "sampleFrames": 465,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 8.4802,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1716,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 8.7514,
+      "fixedPerCallMs": 0.21744741666666653,
+      "trailPerCallMs": 0.077542238805970082,
+      "managedFrameTotalKB": 16700.44921875,
+      "unityMemoryDeltaMB": 0.30003929138183594,
+      "wallMs": {
+        "count": 465,
+        "mean": 8.6005827956989265,
+        "median": 6.323,
+        "p95": 15.5096,
+        "max": 21.3746
+      },
+      "mainMs": {
+        "count": 463,
+        "mean": 8.6014289416846612,
+        "median": 6.323,
+        "p95": 15.5208,
+        "max": 21.2995
+      },
+      "gpuMs": {
+        "count": 431,
+        "mean": 0.58662601856148522,
+        "median": 0.507904,
+        "p95": 1.150976,
+        "max": 2.142208
+      },
+      "bloodFrameMs": {
+        "count": 465,
+        "mean": 2.8057731182795682,
+        "median": 0.0,
+        "p95": 9.0944,
+        "max": 14.7521
+      },
+      "trailFrameMs": {
+        "count": 465,
+        "mean": 1.005547741935483,
+        "median": 0.0,
+        "p95": 6.0583,
+        "max": 11.6573
+      },
+      "gcFrameKB": {
+        "count": 465,
+        "mean": 35.914944556451616,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 4099.0830078125
+      },
+      "lateBloodFrameMs": {
+        "count": 197,
+        "mean": 1.5084299492385789,
+        "median": 0.0,
+        "p95": 5.3631,
+        "max": 7.6293
+      },
+      "lateTrailFrameMs": {
+        "count": 197,
+        "mean": 0.081351269035533011,
+        "median": 0.0,
+        "p95": 0.2807,
+        "max": 0.4497
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 3502,
+      "sampleFrames": 434,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 8.8039,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1571,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 9.057,
+      "fixedPerCallMs": 0.22805153333333339,
+      "trailPerCallMs": 0.082544925373134376,
+      "managedFrameTotalKB": 16259.392578125,
+      "unityMemoryDeltaMB": 0.38034820556640625,
+      "wallMs": {
+        "count": 434,
+        "mean": 9.224235253456218,
+        "median": 6.8193,
+        "p95": 16.3549,
+        "max": 23.2473
+      },
+      "mainMs": {
+        "count": 432,
+        "mean": 9.2279597222222165,
+        "median": 6.8677,
+        "p95": 16.2909,
+        "max": 23.1676
+      },
+      "gpuMs": {
+        "count": 409,
+        "mean": 0.63915876283618578,
+        "median": 0.484352,
+        "p95": 1.19296,
+        "max": 2.625536
+      },
+      "bloodFrameMs": {
+        "count": 434,
+        "mean": 3.1527861751152084,
+        "median": 0.0,
+        "p95": 9.6472,
+        "max": 16.3772
+      },
+      "trailFrameMs": {
+        "count": 434,
+        "mean": 1.1468799539170513,
+        "median": 0.0,
+        "p95": 6.508,
+        "max": 12.0464
+      },
+      "gcFrameKB": {
+        "count": 434,
+        "mean": 37.4640381984447,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 3962.9892578125
+      },
+      "lateBloodFrameMs": {
+        "count": 193,
+        "mean": 1.5833398963730574,
+        "median": 0.0,
+        "p95": 5.3601,
+        "max": 5.7664
+      },
+      "lateTrailFrameMs": {
+        "count": 193,
+        "mean": 0.084237305699481846,
+        "median": 0.0,
+        "p95": 0.2759,
+        "max": 0.2978
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 4,
+      "concurrent": 30,
+      "particles": 3502,
+      "sampleFrames": 430,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 3.2208,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.3118,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.1707,
+      "fixedPerCallMs": 0.22912201666666651,
+      "trailPerCallMs": 0.083385671641791073,
+      "managedFrameTotalKB": 7082.4501953125,
+      "unityMemoryDeltaMB": 0.61527347564697266,
+      "wallMs": {
+        "count": 430,
+        "mean": 9.3121193023255717,
+        "median": 6.8273,
+        "p95": 17.0456,
+        "max": 24.255
+      },
+      "mainMs": {
+        "count": 428,
+        "mean": 9.315785280373829,
+        "median": 6.8267,
+        "p95": 16.981,
+        "max": 24.1593
+      },
+      "gpuMs": {
+        "count": 414,
+        "mean": 0.60537194202898559,
+        "median": 0.494592,
+        "p95": 1.230848,
+        "max": 2.576384
+      },
+      "bloodFrameMs": {
+        "count": 430,
+        "mean": 3.1970513953488351,
+        "median": 0.0,
+        "p95": 10.1775,
+        "max": 16.5067
+      },
+      "trailFrameMs": {
+        "count": 430,
+        "mean": 1.1693386046511631,
+        "median": 0.0,
+        "p95": 6.6993,
+        "max": 12.8504
+      },
+      "gcFrameKB": {
+        "count": 430,
+        "mean": 16.470814407703489,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 45.21484375
+      },
+      "lateBloodFrameMs": {
+        "count": 186,
+        "mean": 1.6518763440860216,
+        "median": 0.0,
+        "p95": 5.5054,
+        "max": 6.0156
+      },
+      "lateTrailFrameMs": {
+        "count": 186,
+        "mean": 0.089046774193548381,
+        "median": 0.0,
+        "p95": 0.2831,
+        "max": 0.4013
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "pool-warm",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 3454,
+      "sampleFrames": 440,
+      "fixedCalls": 5970,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 3.0077,
+      "spawnMonoUsedDeltaKB": 0.0,
+      "releaseRequestMs": 0.2707,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 7.9563,
+      "fixedPerCallMs": 0.22243515912897804,
+      "trailPerCallMs": 0.08017585,
+      "managedFrameTotalKB": 7193.8427734375,
+      "unityMemoryDeltaMB": 0.57715606689453125,
+      "wallMs": {
+        "count": 440,
+        "mean": 9.0860281818181861,
+        "median": 6.4412,
+        "p95": 16.2796,
+        "max": 22.4572
+      },
+      "mainMs": {
+        "count": 438,
+        "mean": 9.091562328767111,
+        "median": 6.4175,
+        "p95": 16.3474,
+        "max": 22.4851
+      },
+      "gpuMs": {
+        "count": 414,
+        "mean": 0.60751888647343033,
+        "median": 0.50176,
+        "p95": 1.252352,
+        "max": 2.438144
+      },
+      "bloodFrameMs": {
+        "count": 440,
+        "mean": 3.0180406818181793,
+        "median": 0.0,
+        "p95": 9.4147,
+        "max": 15.0049
+      },
+      "trailFrameMs": {
+        "count": 440,
+        "mean": 1.0933070454545455,
+        "median": 0.0,
+        "p95": 6.1485,
+        "max": 11.6613
+      },
+      "gcFrameKB": {
+        "count": 440,
+        "mean": 16.34964266690341,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 27.5869140625
+      },
+      "lateBloodFrameMs": {
+        "count": 185,
+        "mean": 1.681975135135136,
+        "median": 0.0,
+        "p95": 5.5744,
+        "max": 10.5137
+      },
+      "lateTrailFrameMs": {
+        "count": 185,
+        "mean": 0.091172432432432435,
+        "median": 0.0,
+        "p95": 0.2889,
+        "max": 0.5621
+      }
+    },
+    {
+      "batch": "current30steady",
+      "payload": "current",
+      "mode": "instantiate-destroy",
+      "repeat": 5,
+      "concurrent": 30,
+      "particles": 3454,
+      "sampleFrames": 551,
+      "fixedCalls": 6000,
+      "collections0": 0,
+      "collections1": 0,
+      "collections2": 0,
+      "retainedClones": 30,
+      "measuredWindowSeconds": 4.0,
+      "spawnMs": 8.451,
+      "spawnMonoUsedDeltaKB": 2520.0,
+      "releaseRequestMs": 0.1434,
+      "releaseMonoUsedDeltaKB": 0.0,
+      "cleanupMainMaxMs": 4.966,
+      "fixedPerCallMs": 0.21323458333333323,
+      "trailPerCallMs": 0.079934892205638472,
+      "managedFrameTotalKB": 18097.369140625,
+      "unityMemoryDeltaMB": 0.29611015319824219,
+      "wallMs": {
+        "count": 551,
+        "mean": 7.2637711433756831,
+        "median": 4.9122,
+        "p95": 16.392,
+        "max": 24.1517
+      },
+      "mainMs": {
+        "count": 549,
+        "mean": 7.2622794171220368,
+        "median": 4.883,
+        "p95": 16.3728,
+        "max": 24.1055
+      },
+      "gpuMs": {
+        "count": 520,
+        "mean": 0.57316035769230711,
+        "median": 0.478208,
+        "p95": 1.124352,
+        "max": 2.441216
+      },
+      "bloodFrameMs": {
+        "count": 551,
+        "mean": 2.321973684210525,
+        "median": 0.0,
+        "p95": 9.436,
+        "max": 15.3804
+      },
+      "trailFrameMs": {
+        "count": 551,
+        "mean": 0.87478656987295822,
+        "median": 0.0,
+        "p95": 6.0612,
+        "max": 11.8373
+      },
+      "gcFrameKB": {
+        "count": 551,
+        "mean": 32.8445900918784,
+        "median": 16.2705078125,
+        "p95": 16.3583984375,
+        "max": 3826.8955078125
+      },
+      "lateBloodFrameMs": {
+        "count": 257,
+        "mean": 1.0541350194552532,
+        "median": 0.0,
+        "p95": 4.6872,
+        "max": 5.062
+      },
+      "lateTrailFrameMs": {
+        "count": 257,
+        "mean": 0.054526070038910489,
+        "median": 0.0,
+        "p95": 0.2368,
+        "max": 0.2869
+      }
+    }
+  ],
+  "coldTrials": [
+    {
+      "concurrent": 1,
+      "repeat": 1,
+      "particles": 118,
+      "spawnMs": 1.4643,
+      "spawnMonoUsedDeltaKB": 84.0
+    },
+    {
+      "concurrent": 1,
+      "repeat": 2,
+      "particles": 106,
+      "spawnMs": 0.5956,
+      "spawnMonoUsedDeltaKB": 84.0
+    },
+    {
+      "concurrent": 1,
+      "repeat": 3,
+      "particles": 115,
+      "spawnMs": 0.9,
+      "spawnMonoUsedDeltaKB": 84.0
+    },
+    {
+      "concurrent": 1,
+      "repeat": 4,
+      "particles": 104,
+      "spawnMs": 0.7019,
+      "spawnMonoUsedDeltaKB": 84.0
+    },
+    {
+      "concurrent": 1,
+      "repeat": 5,
+      "particles": 118,
+      "spawnMs": 0.7301,
+      "spawnMonoUsedDeltaKB": 84.0
+    },
+    {
+      "concurrent": 10,
+      "repeat": 1,
+      "particles": 1140,
+      "spawnMs": 3.9534,
+      "spawnMonoUsedDeltaKB": 840.0
+    },
+    {
+      "concurrent": 10,
+      "repeat": 2,
+      "particles": 1202,
+      "spawnMs": 3.9175,
+      "spawnMonoUsedDeltaKB": 840.0
+    },
+    {
+      "concurrent": 10,
+      "repeat": 3,
+      "particles": 1109,
+      "spawnMs": 3.0059,
+      "spawnMonoUsedDeltaKB": 840.0
+    },
+    {
+      "concurrent": 10,
+      "repeat": 4,
+      "particles": 1140,
+      "spawnMs": 3.5038,
+      "spawnMonoUsedDeltaKB": 840.0
+    },
+    {
+      "concurrent": 10,
+      "repeat": 5,
+      "particles": 1149,
+      "spawnMs": 2.8005,
+      "spawnMonoUsedDeltaKB": 840.0
+    },
+    {
+      "concurrent": 30,
+      "repeat": 1,
+      "particles": 3485,
+      "spawnMs": 10.0073,
+      "spawnMonoUsedDeltaKB": 2520.0
+    },
+    {
+      "concurrent": 30,
+      "repeat": 2,
+      "particles": 3497,
+      "spawnMs": 8.6061,
+      "spawnMonoUsedDeltaKB": 2520.0
+    },
+    {
+      "concurrent": 30,
+      "repeat": 3,
+      "particles": 3476,
+      "spawnMs": 10.7954,
+      "spawnMonoUsedDeltaKB": 2520.0
+    },
+    {
+      "concurrent": 30,
+      "repeat": 4,
+      "particles": 3502,
+      "spawnMs": 8.491,
+      "spawnMonoUsedDeltaKB": 2520.0
+    },
+    {
+      "concurrent": 30,
+      "repeat": 5,
+      "particles": 3454,
+      "spawnMs": 6.703,
+      "spawnMonoUsedDeltaKB": 2520.0
+    }
+  ]
+}

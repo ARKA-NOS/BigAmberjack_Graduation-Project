@@ -15,7 +15,8 @@ namespace _Scripts.Agent.Enemies
         private float _expiresAt;
 
         internal static EnemyHitParticle Spawn(ParticleSystem prefab, Vector3 position, Quaternion rotation,
-            Scene scene, float scale, float maximumLifetime, EnemyParticleModule owner = null)
+            Scene scene, float scale, float maximumLifetime, EnemyParticleModule owner = null,
+            float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             ParticleSystem particle = LeanPool.Spawn(prefab, position, rotation);
             if (particle == null) return null;
@@ -27,11 +28,11 @@ namespace _Scripts.Agent.Enemies
                 lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
 
             lifetime._owner = owner;
-            lifetime.Play(particle, maximumLifetime);
+            lifetime.Play(particle, maximumLifetime, speedMultiplier, countMultiplier);
             return lifetime;
         }
 
-        internal void Play(ParticleSystem root, float maximumLifetime)
+        internal void Play(ParticleSystem root, float maximumLifetime, float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             _root = root;
             _root.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -58,12 +59,12 @@ namespace _Scripts.Agent.Enemies
             {
                 // 흔적 유지 시간은 방출이 아닌 표면 접촉부터 세므로 일반 효과보다 수명이 깁니다.
                 _expiresAt = _startedAt + Mathf.Max(maximumLifetime, blood.MaximumLifetime);
-                blood.Emit();
+                blood.Emit(speedMultiplier, countMultiplier);
             }
             else if (TryGetComponent(out EnemyMetalFragmentParticle metal))
             {
                 _expiresAt = _startedAt + Mathf.Max(maximumLifetime, metal.MaximumLifetime);
-                metal.Emit(_root);
+                metal.Emit(_root, speedMultiplier, countMultiplier);
             }
         }
 

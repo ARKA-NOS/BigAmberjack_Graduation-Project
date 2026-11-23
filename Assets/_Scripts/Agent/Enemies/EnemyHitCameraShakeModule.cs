@@ -89,6 +89,17 @@ namespace _Scripts.Agent.Enemies
                 duration *= Mathf.Max(1f, _lethalDurationMultiplier);
             }
 
+            EnemyDeathFeedbackSettingsSO feedback = _enemy != null ? _enemy.DeathFeedbackSettings : null;
+            if (feedback != null)
+            {
+                strength *= feedback.HitShakeStrengthMultiplier;
+                if (isLethal)
+                {
+                    strength *= feedback.LethalShakeStrengthMultiplier;
+                    duration *= feedback.LethalShakeDurationMultiplier;
+                }
+            }
+
             strength *= EnemyHitCameraShakeManager.Intensity;
             if (!IsFinite(strength) || strength <= 0f || !IsFinite(duration) || duration <= 0f) return;
 

@@ -74,6 +74,7 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             _titles.Clear();
             _completedTitles.Clear();
+            _equippedTitles.Clear(); // 효과는 위 Downgrade에서 이미 되돌렸다. 장착 표시만 지운다.
             _waitingTitles.Clear();
             _questModule.ClearQuests();
 
@@ -83,6 +84,7 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             FDebug.Log("[TitleModule] 칭호 초기화", this);
             OnTitlesChanged?.Invoke();
+            OnEquipChanged?.Invoke();
         }
 
         private void SetupTitles()
@@ -237,7 +239,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             else
             {
                 _equippedTitles.Remove(title);
-                title.Remove(_owner);
+                title.Downgrade(_owner);
             }
 
             OnEquipChanged?.Invoke();

@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace _Scripts.Agent.Players.TitleSystem
 {
-    public class TitleModule : Module, IAfterInitModule, ITitleStageReceiver, ITitleModule
+    public class TitleModule : Module, IAfterInitModule, ITitleStageReceiver, ITitleModule, ITitleEquipModule
     {
         [SerializeField] private TitleGroupSo[] titleGroups;
 
@@ -21,6 +21,7 @@ namespace _Scripts.Agent.Players.TitleSystem
 
         private Dictionary<AbstractTitleSo,Title> _titles;
         private HashSet<AbstractTitleSo> _completedTitles;
+        private HashSet<AbstractTitleSo> _equippedTitles;
         private Dictionary<AbstractTitleSo,List<AbstractTitleSo>> _waitingTitles;
         private List<AbstractTitleSo> _allTitles;
         private HashSet<AbstractTitleSo> _stageTitles;
@@ -29,6 +30,7 @@ namespace _Scripts.Agent.Players.TitleSystem
         public RoomDataSO CurrentStage { get; private set; }
 
         public event Action OnTitlesChanged;
+        public event Action OnEquipChanged;
 
         public IReadOnlyCollection<Title> Titles
             => _titles != null ? (IReadOnlyCollection<Title>)_titles.Values : Array.Empty<Title>();
@@ -39,6 +41,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             _questModule = owner.GetModule<IQuestModule>();
             _titles = new();
             _completedTitles = new();
+            _equippedTitles = new();
             _waitingTitles = new();
             _allTitles = new();
             _stageTitles = new();
@@ -171,7 +174,7 @@ namespace _Scripts.Agent.Players.TitleSystem
         {
             title.OnComplete -= OnTitleComplete;
             title.OnProgressChanged -= OnTitleProgressChanged;
-            Upgrade(title);
+            // 달성만으로는 효과가 적용되지 않는다. 장착(TrySetEquipped)할 때 적용된다.
             _completedTitles.Add(title.TitleSo);
             UnlockWaitingTitles(title.TitleSo);
 
@@ -187,10 +190,32 @@ namespace _Scripts.Agent.Players.TitleSystem
                 title.TitleSo.TitleIcon
             );
 
-        private void Upgrade(Title title)
+        #region Equip
+
+        public bool IsEquipped(AbstractTitleSo title)
+            => title != null && _equippedTitles.Contains(title);
+
+        public bool TrySetEquipped(AbstractTitleSo title, bool equipped)
         {
-            title.TitleSo.Upgrade(_owner);
+            if (title == null || !_completedTitles.Contains(title)) return false;
+            if (_equippedTitles.Contains(title) == equipped) return false;
+
+            if (equipped)
+            {
+                _equippedTitles.Add(title);
+                title.Upgrade(_owner);
+            }
+            else
+            {
+                _equippedTitles.Remove(title);
+                title.Remove(_owner);
+            }
+
+            OnEquipChanged?.Invoke();
+            return true;
         }
+
+        #endregion
 
         private void UnlockWaitingTitles(AbstractTitleSo completedTitle)
         {

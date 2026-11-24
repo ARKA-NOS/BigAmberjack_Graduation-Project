@@ -16,6 +16,10 @@ namespace _Scripts.Agent.Players.TitleSystem
         
         [field:SerializeField] public QuestSo[] Quests { get; private set; }
 
+        // 칭호를 장착할 때 효과를 적용한다.
         public abstract void Upgrade(ModuleOwner owner);
+
+        // 칭호를 해제할 때 Upgrade가 적용한 효과를 되돌린다.
+        public abstract void Remove(ModuleOwner owner);
     }
 }

@@ -121,10 +121,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4320075811135936925}
   - {fileID: 8383144966180777336}
   - {fileID: 6422759494966327487}
   - {fileID: 4955617778566162205}
+  - {fileID: 1087844770779268480}
+  - {fileID: 5141343052960566993}
   m_Father: {fileID: 1834065246700390251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2978702082493847210
@@ -140,17 +141,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
   skills:
-  - skill: {fileID: 8487964626767521386}
+  - skill: {fileID: 5100423052139958201}
     useSkill: 1
     useForAutomaticSelection: 0
     requireUsableToEnterAttack: 0
     minRange: 0
     allowCloseAttackWhenRetreatBlocked: 0
-    maxRange: 1.2
+    maxRange: 20
     useHorizontalRange: 0
-    maxHeightDifference: 0.55
-    requireGrounded: 1
-    requireClearPath: 1
+    maxHeightDifference: -1
+    requireGrounded: 0
+    requireClearPath: 0
     origin: {fileID: 0}
     chargeDuration: 0
   - skill: {fileID: 7789525361035768514}
@@ -159,11 +160,24 @@ MonoBehaviour:
     requireUsableToEnterAttack: 0
     minRange: 0
     allowCloseAttackWhenRetreatBlocked: 0
-    maxRange: 1.2
+    maxRange: 20
     useHorizontalRange: 0
-    maxHeightDifference: 0.55
-    requireGrounded: 1
-    requireClearPath: 1
+    maxHeightDifference: -1
+    requireGrounded: 0
+    requireClearPath: 0
+    origin: {fileID: 0}
+    chargeDuration: 0
+  - skill: {fileID: 4659289001773010214}
+    useSkill: 1
+    useForAutomaticSelection: 0
+    requireUsableToEnterAttack: 0
+    minRange: 0
+    allowCloseAttackWhenRetreatBlocked: 0
+    maxRange: 20
+    useHorizontalRange: 0
+    maxHeightDifference: -1
+    requireGrounded: 0
+    requireClearPath: 0
     origin: {fileID: 0}
     chargeDuration: 0
   - skill: {fileID: 5655728798388514575}
@@ -172,11 +186,11 @@ MonoBehaviour:
     requireUsableToEnterAttack: 0
     minRange: 0
     allowCloseAttackWhenRetreatBlocked: 0
-    maxRange: 1.2
+    maxRange: 20
     useHorizontalRange: 0
-    maxHeightDifference: 0.55
-    requireGrounded: 1
-    requireClearPath: 1
+    maxHeightDifference: -1
+    requireGrounded: 0
+    requireClearPath: 0
     origin: {fileID: 0}
     chargeDuration: 0
   - skill: {fileID: 3753185771557598351}
@@ -185,11 +199,11 @@ MonoBehaviour:
     requireUsableToEnterAttack: 0
     minRange: 0
     allowCloseAttackWhenRetreatBlocked: 0
-    maxRange: 1.2
+    maxRange: 20
     useHorizontalRange: 0
-    maxHeightDifference: 0.55
-    requireGrounded: 1
-    requireClearPath: 1
+    maxHeightDifference: -1
+    requireGrounded: 0
+    requireClearPath: 0
     origin: {fileID: 0}
     chargeDuration: 0
 --- !u!1 &1178431035188163275
@@ -725,7 +739,7 @@ GameObject:
   - component: {fileID: 4955617778566162205}
   - component: {fileID: 3753185771557598351}
   m_Layer: 8
-  m_Name: UpwardBomb
+  m_Name: TargetBomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -765,15 +779,69 @@ MonoBehaviour:
   postBlinkDelay: 0
   blinkBeforeAttack: 0
   telegraphOpacity: 1
-  telegraphPrefab: {fileID: 11400001, guid: cbf6ed2c90ad21c47868bb8603254b2a, type: 3}
+  telegraphPrefab: {fileID: 0}
   preparationWarning: {fileID: 0}
   visual: {fileID: 1212681801938135448}
   bombPrefab: {fileID: 7017584031548995892, guid: 4ca95047a8497c0438d4c1391734426e, type: 3}
-  preview: {fileID: 859012023680327460}
+  warningPrefab: {fileID: 6876724711930002241, guid: 634624a5d0ba10648847760d0f54103c, type: 3}
   muzzle: {fileID: 1922333751288955853}
-  range: 6
+  preview: {fileID: 859012023680327460}
+  range: 20
   radius: 1.3
   damage: 20
+  normalDrops: 3
+  lastStandDrops: 6
+  normalInterval: 1
+  lastStandInterval: 0.5
+--- !u!1 &5368720564318391535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2223745505444299649}
+  - component: {fileID: 2058559490976559290}
+  m_Layer: 0
+  m_Name: AfterImageModule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2223745505444299649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368720564318391535}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1834065246700390251}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2058559490976559290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368720564318391535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b11fa90757488c34a9826a389f73b408, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemyAfterImageModule
+  sourceRenderer: {fileID: 4520948201894991573}
+  ghostPrefab: {fileID: 8087064846575038440, guid: fa99970d636723b45bf1232104097e6c, type: 3}
+  spawnInterval: 0.035
+  lifetime: 0.18
+  ghostColor: {r: 0.45, g: 1, b: 0.65, a: 0.45}
 --- !u!1 &5401220922051504569
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,6 +898,67 @@ MonoBehaviour:
   introHeight: 4
   arenaCamera: {fileID: 0}
   offscreenPadding: 1
+--- !u!1 &5662332018241880359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1087844770779268480}
+  - component: {fileID: 5100423052139958201}
+  m_Layer: 0
+  m_Name: Charge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1087844770779268480
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662332018241880359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4458099837348170734}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5100423052139958201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662332018241880359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1266653284eb1b44aa56a4e9d052b5b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneChargeSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: 52e3d870632a69644a4901d173cdec9b, type: 2}
+  <BaseCoolTime>k__BackingField: 2
+  attackDelayStat: {fileID: 0}
+  fallbackAttackDelay: 0.35
+  postBlinkDelay: 0
+  blinkBeforeAttack: 0
+  telegraphOpacity: 1
+  telegraphPrefab: {fileID: 0}
+  preparationWarning: {fileID: 0}
+  visual: {fileID: 1212681801938135448}
+  afterImages: {fileID: 2058559490976559290}
+  distance: 3
+  speed: 8
+  easeDuration: 0.08
+  damage: 14
+  repeatDelay: 0.12
+  recoveryTime: 0.4
 --- !u!1 &5663925715741917236
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,70 +1050,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!1 &5873591622954976147
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4320075811135936925}
-  - component: {fileID: 8487964626767521386}
-  m_Layer: 8
-  m_Name: RegularSalvo
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4320075811135936925
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5873591622954976147}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4458099837348170734}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8487964626767521386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5873591622954976147}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bbe4127a96e26f4899a22408141d0d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneSalvoSkill
-  <SkillSo>k__BackingField: {fileID: 11400000, guid: db1e8881d90e8ab479f1f241be7ecfa6, type: 2}
-  <BaseCoolTime>k__BackingField: 2.4
-  attackDelayStat: {fileID: 0}
-  fallbackAttackDelay: 0.55
-  postBlinkDelay: 0
-  blinkBeforeAttack: 0
-  telegraphOpacity: 1
-  telegraphPrefab: {fileID: 0}
-  preparationWarning: {fileID: 0}
-  projectilePrefab: {fileID: 68064173103500871, guid: 640d04e23b1343c49978d6b51e2262e2, type: 3}
-  muzzle: {fileID: 2842680000748699620}
-  visual: {fileID: 1212681801938135448}
-  fireState: Shot
-  range: 8
-  projectileSpeed: 10
-  projectileScale: 1.35
-  damage: 14
-  projectilesPerSalvo: 1
-  shotInterval: 0.13
-  recoveryTime: 0.8
 --- !u!1 &5959494414919803739
 GameObject:
   m_ObjectHideFlags: 0
@@ -997,7 +1062,7 @@ GameObject:
   - component: {fileID: 5655728798388514575}
   - component: {fileID: 2163153266953831039}
   m_Layer: 8
-  m_Name: DownwardLaser
+  m_Name: FanLaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1169,6 +1234,7 @@ Transform:
   - {fileID: 6363921321855388750}
   - {fileID: 2020917335596098926}
   - {fileID: 6540846351975437152}
+  - {fileID: 2223745505444299649}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7702678802249521529
@@ -1270,21 +1336,21 @@ MonoBehaviour:
   deathFeedbackSettings: {fileID: 11400000, guid: a8c367fb2984e13489d78f4216a66b0f, type: 2}
   completeDeathAnimationBeforeReward: 1
   displayName: "\uACF5\uC815 \uD1B5\uC81C \uB4DC\uB860"
-  regularSalvo: {fileID: 8487964626767521386}
-  rapidSalvo: {fileID: 7789525361035768514}
+  charge: {fileID: 5100423052139958201}
+  rapidFire: {fileID: 7789525361035768514}
+  airTransition: {fileID: 4659289001773010214}
   laser: {fileID: 5655728798388514575}
   bomb: {fileID: 3753185771557598351}
   visual: {fileID: 1212681801938135448}
-  airPhaseHealthRatio: 0.5
-  lowAltitude: 1.05
-  highAltitude: 4.55
-  laserAltitude: 6.5
+  lastStandHealthRatio: 0.35
+  lowAltitude: 0.9
+  airAttackAltitude: 6.5
   ascentSpeed: 6
   arenaEdgeMargin: 1.05
   airRecoveryTime: 1.2
   terrainLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1088
 --- !u!1 &6671728520120383386
 GameObject:
   m_ObjectHideFlags: 0
@@ -1332,14 +1398,14 @@ MonoBehaviour:
   hitCue: {fileID: 11400000, guid: ab9ea74a4208a4d419e01d6b02ddf15d, type: 2}
   deathCue: {fileID: 0}
   attackSounds:
-  - skill: {fileID: 3753185771557598351}
-    cue: {fileID: 11400000, guid: 3ad58368950494149aac293f4736b4b9, type: 2}
-  - skill: {fileID: 5655728798388514575}
-    cue: {fileID: 11400000, guid: 03071edd633ea2549b82fab822e92bee, type: 2}
-  - skill: {fileID: 8487964626767521386}
-    cue: {fileID: 11400000, guid: 03071edd633ea2549b82fab822e92bee, type: 2}
   - skill: {fileID: 7789525361035768514}
     cue: {fileID: 11400000, guid: e5cca4d2d6ca94d44a94166e18a20bf3, type: 2}
+  - skill: {fileID: 4659289001773010214}
+    cue: {fileID: 11400000, guid: e5cca4d2d6ca94d44a94166e18a20bf3, type: 2}
+  - skill: {fileID: 5655728798388514575}
+    cue: {fileID: 11400000, guid: 03071edd633ea2549b82fab822e92bee, type: 2}
+  - skill: {fileID: 3753185771557598351}
+    cue: {fileID: 11400000, guid: 3ad58368950494149aac293f4736b4b9, type: 2}
 --- !u!1 &7005864005305973819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,6 +1693,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8194897102444749883}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7691521898314228280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5141343052960566993}
+  - component: {fileID: 4659289001773010214}
+  m_Layer: 0
+  m_Name: AirTransition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5141343052960566993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691521898314228280}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4458099837348170734}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4659289001773010214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691521898314228280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab5e2a175a687048909ef889a1aabe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneAirTransitionSkill
+  <SkillSo>k__BackingField: {fileID: 11400000, guid: fbabccb446f0bb546b5b5300c4a20f86, type: 2}
+  <BaseCoolTime>k__BackingField: 2
+  attackDelayStat: {fileID: 0}
+  fallbackAttackDelay: 0.15
+  postBlinkDelay: 0
+  blinkBeforeAttack: 0
+  telegraphOpacity: 1
+  telegraphPrefab: {fileID: 0}
+  preparationWarning: {fileID: 0}
+  visual: {fileID: 1212681801938135448}
+  muzzle: {fileID: 2842680000748699620}
+  projectilePrefab: {fileID: 68064173103500871, guid: 640d04e23b1343c49978d6b51e2262e2, type: 3}
+  projectileSpeed: 10
+  projectileRange: 16
+  damage: 8
+  shotgunAngle: 60
 --- !u!1 &7866431528516769323
 GameObject:
   m_ObjectHideFlags: 0
@@ -1763,7 +1889,7 @@ GameObject:
   - component: {fileID: 8383144966180777336}
   - component: {fileID: 7789525361035768514}
   m_Layer: 8
-  m_Name: RapidSalvo
+  m_Name: RapidFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1808,13 +1934,17 @@ MonoBehaviour:
   projectilePrefab: {fileID: 68064173103500871, guid: 640d04e23b1343c49978d6b51e2262e2, type: 3}
   muzzle: {fileID: 2842680000748699620}
   visual: {fileID: 1212681801938135448}
-  fireState: RapidShot
-  range: 8
+  range: 16
   projectileSpeed: 15
   projectileScale: 1
   damage: 8
-  projectilesPerSalvo: 3
-  shotInterval: 0.13
+  firingDuration: 2.5
+  normalVolleys: 7
+  lastStandVolleys: 12
+  lastStandSpreadAngle: 12
+  verticalSpawnOffset: 0.3
+  retreatDistance: 3
+  retreatSpeed: 1.5
   recoveryTime: 0.8
 --- !u!1 &8903535185823925582
 GameObject:

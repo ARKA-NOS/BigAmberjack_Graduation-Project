@@ -42,6 +42,9 @@ namespace _Scripts.Agent.Enemies
 
         private int FlightSteps => Mathf.Max(1, Mathf.CeilToInt(flightDuration / Time.fixedDeltaTime));
 
+        public bool IsInFlight => _launched;
+        public float FlightProgress => _steps > 0 ? Mathf.Clamp01(_step / (float)_steps) : 0f;
+
         internal bool HasClearArc(Vector2 origin, Vector2 landingPoint, ContactFilter2D terrain, RaycastHit2D[] hits)
         {
             int steps = FlightSteps;

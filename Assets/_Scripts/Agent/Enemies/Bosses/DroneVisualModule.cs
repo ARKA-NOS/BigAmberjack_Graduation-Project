@@ -19,13 +19,17 @@ namespace _Scripts.Agent.Enemies.Bosses
             _drone = owner as ProductionControlDrone;
         }
 
-        internal void Play(string state)
+        internal void Play(string state, float speed = 1f)
         {
             if (_drone == null || _drone.IsDead || animator == null || !animator.isActiveAndEnabled) return;
 
             int hash = Animator.StringToHash("Base Layer." + state);
 
-            if (animator.HasState(0, hash)) animator.Play(hash, 0, 0f);
+            if (animator.HasState(0, hash))
+            {
+                animator.speed = Mathf.Max(0.01f, speed);
+                animator.Play(hash, 0, 0f);
+            }
         }
 
         internal bool HasFinished(string state)
@@ -47,6 +51,11 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (gunFlash != null) gunFlash.enabled = visible;
         }
 
+        internal void ResetPlaybackSpeed()
+        {
+            if (animator != null) animator.speed = 1f;
+        }
+
         private void LateUpdate()
         {
             if (_drone == null) return;
@@ -54,7 +63,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             bool alive = !_drone.IsDead;
 
             if (alarmLamp != null)
-                alarmLamp.enabled = alive && (!_drone.IsAirPhase || Time.time % 0.55f < 0.29f);
+                alarmLamp.enabled = alive && (!_drone.IsLastStand || Time.time % 0.55f < 0.29f);
 
             if (processNumber != null)
             {

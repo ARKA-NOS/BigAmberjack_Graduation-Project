@@ -7,58 +7,63 @@ namespace _Scripts.Agent.Enemies.Bosses
     [DisallowMultipleComponent]
     public sealed class ProductionControlDrone : BossBase
     {
-        private enum State { Dormant, Engage, GroundAttack, Ascend, AirAttack, Descend, Recover, Return }
+        private enum State { Dormant, ChooseGround, GroundAttack, Ascending, ChooseAir, AirAttack, Descend, Recover, Return }
 
-        private enum Pattern { Salvo, Laser, Bomb }
-
-        [SerializeField] private DroneSalvoSkill regularSalvo;
-        [SerializeField] private DroneSalvoSkill rapidSalvo;
+        [SerializeField] private DroneChargeSkill charge;
+        [SerializeField] private DroneSalvoSkill rapidFire;
+        [SerializeField] private DroneAirTransitionSkill airTransition;
         [SerializeField] private DroneDownwardLaserSkill laser;
         [SerializeField] private DroneBombSkill bomb;
         [SerializeField] private DroneVisualModule visual;
-        [SerializeField, Range(0f, 1f)] private float airPhaseHealthRatio = 0.5f;
-        [SerializeField, Min(0.1f)] private float lowAltitude = 1.05f;
-        [SerializeField, Min(0.1f)] private float highAltitude = 4.55f;
-        [Tooltip("부채꼴 레이저를 준비할 때의 바닥 기준 높이입니다. 폭탄의 High Altitude와 별도입니다.")]
-        [SerializeField, Min(0.1f)] private float laserAltitude = 6.5f;
-        [Tooltip("레이저와 폭탄을 준비할 때의 상승 이동 속도입니다. 지상 이동·하강 속도와 별도입니다.")]
+
+        [SerializeField, Range(0f, 1f)] private float lastStandHealthRatio = 0.35f;
+        [SerializeField, Min(0.1f)] private float lowAltitude = 0.9f;
+        [Tooltip("레이저와 폭격이 함께 사용하는 바닥 기준 공중 높이입니다.")]
+        [SerializeField, Min(0.1f)] private float airAttackAltitude = 6.5f;
         [SerializeField, Min(0.1f)] private float ascentSpeed = 6f;
         [SerializeField, Min(0.1f)] private float arenaEdgeMargin = 1.05f;
         [SerializeField, Min(0f)] private float airRecoveryTime = 1.2f;
-        [SerializeField] private LayerMask terrainLayers = 1 << 6;
+        [SerializeField] private LayerMask terrainLayers = (1 << 6) | (1 << 10);
 
+        private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[16];
+        private readonly List<EnemyAttackSkill> _candidates = new List<EnemyAttackSkill>(3);
         private BossArenaModule _arena;
         private State _state;
-        private EnemyAttackSkill _airSkill;
-
-        private bool _nextRapid;
-        private bool _phaseLaserPending;
-        private float _nextSalvoAt;
+        private Vector2 _bodyOffset;
+        private Vector2 _bodySize;
+        private bool _lastStandEntryPending;
+        private bool _entryLaserActive;
         private float _recoverUntil;
         private float _nextNavigationAt;
 
-        private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[1];
-        private readonly List<Pattern> _availablePatterns = new List<Pattern>(3);
-
         protected override bool UpdatesWithoutCombatTarget => true;
-        public bool IsAirPhase { get; private set; }
+        public bool IsLastStand { get; private set; }
+        internal bool UseLastStandPatterns => IsLastStand && !_lastStandEntryPending && !_entryLaserActive;
         internal float FloorY => _arena.FloorY;
         internal LayerMask TerrainLayers => terrainLayers;
         internal BossArenaModule Arena => _arena;
+        internal bool IsMoving => Flight != null && Flight.IsMoving;
+        internal Bounds ContactBounds => new Bounds((Vector2)transform.position + _bodyOffset, _bodySize);
         private Vector2 Home => new Vector2(_arena.Center.x, FloorY + lowAltitude);
 
         protected override void InitializeBoss()
         {
             _arena = GetModule<BossArenaModule>();
+            var body = GetComponent<BoxCollider2D>();
 
-            if (_arena == null || Flight == null || Skills == null || visual == null)
+            if (_arena == null || Flight == null || Skills == null || visual == null || body == null)
             {
-                Debug.LogError("ProductionControlDrone requires Arena, Flight, Skill and DroneVisual modules.", this);
+                Debug.LogError("ProductionControlDrone requires Arena, Flight, Skill, Visual and BoxCollider2D.", this);
                 enabled = false;
 
                 return;
             }
 
+            _bodyOffset = transform.TransformVector(body.offset);
+            Vector3 scale = transform.lossyScale;
+
+            _bodySize = new Vector2(body.size.x * Mathf.Abs(scale.x), body.size.y * Mathf.Abs(scale.y));
+            _arena.SetLaserHeightFromFloor(airAttackAltitude);
             Flight.Place(Home);
         }
 
@@ -66,62 +71,52 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             if (_arena == null || Flight == null || Skills == null) return;
 
-            if (!IsAirPhase && NewHealthModule != null && NewHealthModule.MaxHealth > 0f &&
-                NewHealthModule.CurrentHealth <= NewHealthModule.MaxHealth * airPhaseHealthRatio)
+            if (!IsLastStand && NewHealthModule != null && NewHealthModule.MaxHealth > 0f &&
+                (NewHealthModule.CurrentHealth <= NewHealthModule.MaxHealth * lastStandHealthRatio ||
+                 Mathf.Approximately(NewHealthModule.CurrentHealth, NewHealthModule.MaxHealth * lastStandHealthRatio)))
             {
-                IsAirPhase = true;
-                _phaseLaserPending = true;
+                IsLastStand = true;
+                _lastStandEntryPending = true;
             }
-
-            if (_phaseLaserPending && _state == State.AirAttack && _airSkill == laser && laser.DidFire)
-                _phaseLaserPending = false;
 
             bool canPursue = HasCombatTarget && IsTargetInRange(ChaseReleaseRange);
 
             switch (_state)
             {
                 case State.Dormant:
-                    if (HasCombatTarget && IsTargetInRange(DetectionRange)) Change(State.Engage);
+                    if (HasCombatTarget && IsTargetInRange(DetectionRange)) Change(State.ChooseGround);
 
                     break;
 
-                case State.Engage:
+                case State.ChooseGround:
                     if (!canPursue) Change(State.Return);
-                    else SelectAttack();
+                    else ChooseGroundPattern();
 
                     break;
 
                 case State.GroundAttack:
-                    if (!Skills.IsBusy)
-                    {
-                        var salvo = _nextRapid ? rapidSalvo : regularSalvo;
-
-                        if (salvo != null && salvo.DidFire)
-                        {
-                            _nextSalvoAt = salvo.CoolTimeStartTime + salvo.CoolTime;
-                            _nextRapid = !_nextRapid;
-                        }
-
-                        Change(canPursue ? State.Engage : State.Return);
-                    }
+                    if (!Skills.IsBusy) Change(canPursue ? State.ChooseGround : State.Return);
 
                     break;
 
-                case State.Ascend:
-                    if (!canPursue) Change(State.Return);
-                    else if (Flight.HasArrived)
-                    {
-                        if (Skills.TryUseSpecifiedSkill(_airSkill) && Skills.IsBusy)
-                            Change(State.AirAttack);
-                        else
-                            Change(State.Descend);
-                    }
+                case State.Ascending:
+                    if (!Skills.IsBusy)
+                        Change(airTransition != null && airTransition.DidArrive && canPursue ? State.ChooseAir : State.Descend);
+
+                    break;
+
+                case State.ChooseAir:
+                    if (!canPursue) Change(State.Descend);
+                    else ChooseAirPattern();
 
                     break;
 
                 case State.AirAttack:
                     if (!Skills.IsBusy)
                     {
+                        if (_entryLaserActive && laser != null && laser.DidFire) _lastStandEntryPending = false;
+
+                        _entryLaserActive = false;
                         Change(State.Descend);
                     }
 
@@ -133,144 +128,179 @@ namespace _Scripts.Agent.Enemies.Bosses
                     break;
 
                 case State.Recover:
-                    if (Time.time >= _recoverUntil) Change(canPursue ? State.Engage : State.Return);
+                    if (Time.time >= _recoverUntil) Change(canPursue ? State.ChooseGround : State.Return);
 
                     break;
 
                 case State.Return:
-                    if (Flight.HasArrived) Change(State.Dormant);
+                    if (!Flight.IsMoving) Change(State.Dormant);
 
                     break;
             }
         }
 
-        private void SelectAttack()
+        private void ChooseGroundPattern()
         {
-            float horizontalDistance = Mathf.Abs(Target.position.x - transform.position.x);
-            var salvo = _nextRapid ? rapidSalvo : regularSalvo;
+            _candidates.Clear();
 
-            // 전환 레이저를 실제로 발사하기 전에는 무작위 패턴을 선택하지 않습니다.
-            if (_phaseLaserPending)
+            if (_lastStandEntryPending)
             {
-                if (laser == null || !Skills.IsSkillEnabled(laser)) _phaseLaserPending = false;
-                else
-                {
-                    if (!TryAscend(laser)) Reposition(salvo != null ? salvo.Range : 8f, horizontalDistance);
-
-                    return;
-                }
-            }
-
-            if (!IsAirPhase)
-            {
-                if (!TrySalvo(salvo, horizontalDistance)) Reposition(salvo != null ? salvo.Range : 8f, horizontalDistance);
+                if (Ready(airTransition) && AirAttackReadyAtDestination(true)) StartGround(airTransition);
+                else Reposition();
 
                 return;
             }
 
-            _availablePatterns.Clear();
+            if (Ready(charge)) _candidates.Add(charge);
+            if (Ready(rapidFire)) _candidates.Add(rapidFire);
+            if (Ready(airTransition) && AirAttackReadyAtDestination(false)) _candidates.Add(airTransition);
 
-            if (CanUseSalvo(salvo, horizontalDistance)) _availablePatterns.Add(Pattern.Salvo);
-            if (TryPlanAscent(laser, out Vector2 laserPoint)) _availablePatterns.Add(Pattern.Laser);
-            if (TryPlanAscent(bomb, out Vector2 bombPoint)) _availablePatterns.Add(Pattern.Bomb);
-
-            if (_availablePatterns.Count == 0)
-            {
-                Reposition(salvo != null && Skills.IsSkillEnabled(salvo) ? salvo.Range : bomb != null ? bomb.Range : 6f,
-                    horizontalDistance);
-
-                return;
-            }
-
-            switch (_availablePatterns[Random.Range(0, _availablePatterns.Count)])
-            {
-                case Pattern.Salvo:
-                    TrySalvo(salvo, horizontalDistance);
-                    break;
-
-                case Pattern.Laser:
-                    StartAscent(laser, laserPoint);
-                    break;
-
-                case Pattern.Bomb:
-                    StartAscent(bomb, bombPoint);
-                    break;
-            }
+            if (_candidates.Count > 0) StartGround(_candidates[Random.Range(0, _candidates.Count)]);
+            else Reposition();
         }
 
-        private bool CanUseSalvo(DroneSalvoSkill salvo, float horizontalDistance) =>
-            salvo != null && horizontalDistance <= salvo.Range && Time.time >= _nextSalvoAt &&
-            Skills.IsSkillEnabled(salvo) && Skills.CanUseSkill(salvo.SkillSo);
+        private bool Ready(EnemyAttackSkill skill) =>
+            skill != null && Skills.IsSkillEnabled(skill) && Skills.CanUseSkill(skill.SkillSo);
 
-        private bool TrySalvo(DroneSalvoSkill salvo, float horizontalDistance)
+        private bool AirAttackReadyAtDestination(bool entry)
         {
-            if (!CanUseSalvo(salvo, horizontalDistance) || !Skills.TryUseSpecifiedSkill(salvo) || !Skills.IsBusy) return false;
+            if (!TryPlanAirTransition(out Vector2 point)) return false;
+            if (laser != null && Skills.IsSkillEnabled(laser) && laser.RemainingCoolTime <= 0f && laser.CanPlanFrom(point)) return true;
 
-            Change(State.GroundAttack);
-
-            return true;
+            return !entry && bomb != null && Skills.IsSkillEnabled(bomb) && bomb.RemainingCoolTime <= 0f &&
+                bomb.CanPlanFrom(point, Target);
         }
 
-        private bool TryAscend(EnemyAttackSkill skill)
+        private void StartGround(EnemyAttackSkill skill)
         {
-            if (!TryPlanAscent(skill, out Vector2 highPoint)) return false;
+            if (!Skills.TryUseSpecifiedSkill(skill) || !Skills.IsBusy) return;
 
-            StartAscent(skill, highPoint);
-
-            return true;
+            Change(skill == airTransition ? State.Ascending : State.GroundAttack);
         }
 
-        private bool TryPlanAscent(EnemyAttackSkill skill, out Vector2 highPoint)
+        private void ChooseAirPattern()
         {
-            highPoint = default;
+            _candidates.Clear();
 
-            if (skill == null || !Skills.IsSkillEnabled(skill) || skill.RemainingCoolTime > 0f) return false;
+            if (Ready(laser)) _candidates.Add(laser);
+            if (!_lastStandEntryPending && Ready(bomb)) _candidates.Add(bomb);
 
-            float x = skill == laser ? _arena.Center.x : transform.position.x;
-            if (skill == bomb && Mathf.Abs(Target.position.x - x) > bomb.Range) return false;
+            if (_candidates.Count == 0) return;
 
-            highPoint = new Vector2(x, FloorY + (skill == laser ? laserAltitude : highAltitude));
+            var selected = _candidates[Random.Range(0, _candidates.Count)];
+            if (!Skills.TryUseSpecifiedSkill(selected) || !Skills.IsBusy) return;
 
-            if (skill == laser && !laser.CanPlanFrom(highPoint)) return false;
-            if (skill == bomb && !bomb.CanPlanFrom(highPoint, Target)) return false;
+            _entryLaserActive = _lastStandEntryPending && selected == laser;
+            Change(State.AirAttack);
+        }
 
+        internal bool TryPlanAirTransition(out Vector2 destination)
+        {
+            destination = new Vector2(_arena.Center.x, FloorY + airAttackAltitude);
             Vector2 from = transform.position;
-            Vector2 offset = highPoint - from;
+            Vector2 delta = destination - from;
             var filter = new ContactFilter2D { useTriggers = false };
 
             filter.SetLayerMask(terrainLayers);
+            int count = Physics2D.CircleCast(from, 0.4f, delta.normalized, filter, _terrainHits, delta.magnitude);
 
-            if (Physics2D.CircleCast(from, 0.4f, offset.normalized, filter, _terrainHits, offset.magnitude) > 0)
-                return false;
+            for (int i = 0; i < count; i++)
+                if (!OneWay(_terrainHits[i].collider) && _terrainHits[i].collider.GetComponentInParent<Agent>() == null) return false;
 
             return true;
         }
 
-        private void StartAscent(EnemyAttackSkill skill, Vector2 highPoint)
+        internal bool TryPlanGroundMove(float direction, float distance, out Vector2 destination)
         {
-            Flight.MoveTo(highPoint, ascentSpeed);
-            _airSkill = skill;
-            Change(State.Ascend);
+            Vector2 from = transform.position;
+            Vector2 requested = new Vector2(ClampX(from.x + Mathf.Sign(direction) * Mathf.Max(0f, distance)), Home.y);
+
+            destination = ConstrainGroundSegment(from, requested);
+
+            return Mathf.Abs(destination.x - from.x) > 0.05f;
         }
 
-        private void Reposition(float range, float horizontalDistance)
+        private Vector2 ConstrainGroundSegment(Vector2 from, Vector2 requested)
         {
-            if (horizontalDistance <= range)
-            {
-                Flight.Stop();
-                FaceTarget();
+            float offset = ClampX(requested.x) - from.x;
+            float direction = Mathf.Sign(offset);
+            float allowed = Mathf.Abs(offset);
+            if (allowed < 0.0001f) return new Vector2(from.x, Home.y);
 
-                return;
+            var filter = new ContactFilter2D { useTriggers = false };
+
+            filter.SetLayerMask(terrainLayers);
+            int count = Physics2D.BoxCast(from + _bodyOffset, _bodySize * 0.95f, 0f, Vector2.right * direction,
+                filter, _terrainHits, allowed);
+
+            for (int i = 0; i < count; i++)
+            {
+                var hit = _terrainHits[i];
+                if (OneWay(hit.collider) || hit.collider.GetComponentInParent<Agent>() != null) continue;
+
+                allowed = Mathf.Min(allowed, Mathf.Max(0f, hit.distance - 0.025f));
             }
 
+            float safe = 0f;
+            int steps = Mathf.Max(1, Mathf.CeilToInt(allowed / 0.15f));
+
+            for (int i = 1; i <= steps; i++)
+            {
+                float travel = allowed * i / steps;
+                float probeX = from.x + direction * (travel + _bodySize.x * 0.35f);
+                int hits = Physics2D.Raycast(new Vector2(probeX, FloorY + 0.3f), Vector2.down, filter, _terrainHits, 0.65f);
+                bool supported = false;
+
+                for (int h = 0; h < hits; h++)
+                    if (_terrainHits[h].normal.y > 0.5f) { supported = true; break; }
+
+                if (!supported) break;
+
+                safe = travel;
+            }
+
+            return new Vector2(from.x + direction * safe, Home.y);
+        }
+
+        private static bool OneWay(Collider2D collider) => collider != null && collider.usedByEffector &&
+            collider.TryGetComponent(out PlatformEffector2D effector) && effector.useOneWay;
+
+        internal void MoveGround(Vector2 destination, float speed, float? ease = null) => Flight.MoveTo(destination, speed, ease);
+
+        internal void MoveToAir(Vector2 destination) => Flight.MoveTo(destination, ascentSpeed);
+
+        internal void StopMovement() => Flight?.Stop();
+
+        internal void TickAirMovement() => Flight?.Tick();
+
+        internal void TickGroundMovement()
+        {
+            Vector2 before = transform.position;
+
+            Flight.Tick();
+            Vector2 after = transform.position;
+            if (Mathf.Abs(after.x - before.x) < 0.0001f) return;
+
+            Vector2 safe = ConstrainGroundSegment(before, after);
+
+            if (Mathf.Abs(safe.x - after.x) > 0.001f) Flight.Place(safe);
+        }
+
+        private void Reposition()
+        {
             if (Flight.IsMoving || Time.time < _nextNavigationAt) return;
 
-            float direction = Mathf.Sign(Target.position.x - transform.position.x);
-            Vector2 point = new Vector2(ClampX(Target.position.x - direction * range * 0.72f), Home.y);
+            float difference = Target.position.x - transform.position.x;
+
+            if (Mathf.Abs(difference) < 5f) { FaceTarget(); return; }
+
+            if (TryPlanGroundMove(Mathf.Sign(difference), Mathf.Min(3f, Mathf.Abs(difference) - 4f), out Vector2 destination))
+            {
+                OnMoveDirectionChanged(destination.x - transform.position.x);
+                MoveGround(destination, MoveSpeed);
+            }
 
             _nextNavigationAt = Time.time + 0.15f;
-            OnMoveDirectionChanged(point.x - transform.position.x);
-            Flight.MoveTo(point, MoveSpeed);
         }
 
         internal float ClampX(float x)
@@ -284,46 +314,44 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             _state = state;
 
-            switch (state)
+            if (state == State.Descend)
             {
-                case State.GroundAttack:
-                    Flight.Stop();
-                    break;
+                Flight.MoveTo(new Vector2(transform.position.x, Home.y), MoveSpeed);
+                visual.Play("Descend");
+            }
+            else if (state == State.Recover)
+            {
+                visual.Play("Idle");
+                _recoverUntil = Time.time + airRecoveryTime;
+            }
+            else if (state == State.Return)
+            {
+                Vector2 destination = ConstrainGroundSegment(transform.position, Home);
 
-                case State.Ascend:
-                    FaceTarget();
-                    visual.Play("Rise");
-                    break;
-
-                case State.Descend:
-                    Flight.MoveTo(new Vector2(transform.position.x, Home.y), MoveSpeed);
-                    visual.Play("Descend");
-                    break;
-
-                case State.Recover:
-                    visual.Play("Idle");
-                    _recoverUntil = Time.time + airRecoveryTime;
-                    break;
-
-                case State.Return:
-                    Flight.MoveTo(Home, MoveSpeed);
-                    visual.Play("Descend");
-                    break;
-
-                case State.Dormant:
-                    Flight.Stop();
-                    visual.Play("Idle");
-                    break;
+                Flight.MoveTo(destination, MoveSpeed);
+                visual.Play("Idle");
+            }
+            else if (state == State.Dormant)
+            {
+                Flight.Stop();
+                visual.Play("Idle");
             }
         }
 
-        protected override void FixedUpdateBoss() => Flight?.Tick();
+        protected override void FixedUpdateBoss()
+        {
+            if (_state == State.Descend || _state == State.AirAttack || _state == State.ChooseAir) TickAirMovement();
+            else TickGroundMovement();
+        }
 
         protected override void OnCombatInterrupted()
         {
-            if (_phaseLaserPending && _airSkill == laser && laser != null && laser.DidFire) _phaseLaserPending = false;
+            if (_entryLaserActive && laser != null && laser.DidFire) _lastStandEntryPending = false;
 
-            if (isActiveAndEnabled && !IsDead && _arena != null && Flight != null && visual != null) Change(State.Return);
+            _entryLaserActive = false;
+
+            if (isActiveAndEnabled && !IsDead && _arena != null && Flight != null && visual != null)
+                Change(transform.position.y > Home.y + 0.2f ? State.Descend : State.Return);
         }
     }
 }

@@ -53,6 +53,9 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool _didHit;
         private float _beamStartedAt, _previousAngle;
         private float _startSpeed, _endSpeed, _sweepDuration;
+        private float _totalSweepDuration;
+        private int _sweepCount = 1;
+        private int _sweepLeg;
         private bool _isFadingOut;
 
         public bool DidFire { get; private set; }
@@ -106,7 +109,15 @@ namespace _Scripts.Agent.Enemies.Skills
             _halfAngle = Mathf.Min(Mathf.Clamp(sweepHalfAngle, 0f, 85f), safeAngle);
             _endSpeed = Mathf.Max(0.01f, Mathf.Min(minSpeed, maxSpeed));
             _startSpeed = Mathf.Max(_endSpeed, Mathf.Max(minSpeed, maxSpeed));
+            bool enhanced = drone.UseLastStandPatterns;
+
+            _sweepCount = enhanced ? 2 : 1;
+
+            if (enhanced) { _startSpeed *= 1.25f; _endSpeed *= 1.25f; }
+
             _sweepDuration = 2f * _halfAngle / ((_startSpeed + _endSpeed) * 0.5f);
+            _totalSweepDuration = _sweepDuration * _sweepCount;
+            _sweepLeg = 0;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(drone.TerrainLayers);
             _didHit = false;
@@ -154,22 +165,35 @@ namespace _Scripts.Agent.Enemies.Skills
 
             if (!_isFadingOut)
             {
-                // 프레임이 늦어도 회전 사이를 빠뜨리지 않도록 레이저 폭보다 작은 간격으로 나눕니다.
-                int steps = Mathf.Clamp(Mathf.CeilToInt(Mathf.Abs(angle - _previousAngle) * Mathf.Deg2Rad * _radius /
-                    Mathf.Max(0.05f, _beamWidth * 0.5f)), 1, 128);
+                int currentLeg = _sweepDuration > 0f ? Mathf.Min(_sweepCount - 1, Mathf.FloorToInt(elapsed / _sweepDuration)) : 0;
 
-                for (int i = 1; i <= steps && !_didHit; i++) TryHit(Mathf.Lerp(_previousAngle, angle, i / (float)steps));
+                for (int leg = _sweepLeg; leg <= currentLeg; leg++)
+                {
+                    if (leg > _sweepLeg)
+                    {
+                        _didHit = false;
+                        _previousAngle = leg % 2 == 0 ? -_halfAngle : _halfAngle;
+                    }
 
-                _previousAngle = angle;
+                    float target = leg < currentLeg ? (leg % 2 == 0 ? _halfAngle : -_halfAngle) : angle;
+                    int steps = Mathf.Clamp(Mathf.CeilToInt(Mathf.Abs(target - _previousAngle) * Mathf.Deg2Rad * _radius /
+                        Mathf.Max(0.05f, _beamWidth * 0.5f)), 1, 128);
 
-                if (elapsed >= _sweepDuration)
+                    for (int i = 1; i <= steps && !_didHit; i++) TryHit(Mathf.Lerp(_previousAngle, target, i / (float)steps));
+
+                    _previousAngle = target;
+                }
+
+                _sweepLeg = currentLeg;
+
+                if (elapsed >= _totalSweepDuration)
                 {
                     _isFadingOut = true;
                     cameraShake?.FadeOut();
                 }
             }
 
-            if (elapsed >= _sweepDuration + Mathf.Max(0f, fadeOutDuration))
+            if (elapsed >= _totalSweepDuration + Mathf.Max(0f, fadeOutDuration))
             {
                 beam.enabled = false;
                 cameraShake?.StopShake();
@@ -182,12 +206,15 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             if (_sweepDuration <= 0f) return _halfAngle;
 
-            float t = Mathf.Clamp01(elapsed / _sweepDuration);
+            int leg = Mathf.Min(_sweepCount - 1, Mathf.FloorToInt(elapsed / _sweepDuration));
+            float t = Mathf.Clamp01((elapsed - leg * _sweepDuration) / _sweepDuration);
             // SmoothStep으로 감속하는 속도를 적분합니다. 프레임 간격과 무관하게 같은 각도를 얻습니다.
             float integratedSmoothStep = t * t * t * (1f - 0.5f * t);
             float distance = _sweepDuration * (_startSpeed * t + (_endSpeed - _startSpeed) * integratedSmoothStep);
 
-            return Mathf.Clamp(-_halfAngle + distance, -_halfAngle, _halfAngle);
+            float angle = Mathf.Clamp(-_halfAngle + distance, -_halfAngle, _halfAngle);
+
+            return leg % 2 == 0 ? angle : -angle;
         }
 
         private void SetBeamSorting()
@@ -226,8 +253,8 @@ namespace _Scripts.Agent.Enemies.Skills
             beam.transform.localScale = new Vector3(_beamWidth / beam.sprite.bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
                 (distance + _bodyOverlap) / beam.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             Color tint = beam.color;
-            float fade = elapsed <= _sweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
-                1f - Mathf.SmoothStep(0f, 1f, (elapsed - _sweepDuration) / fadeOutDuration);
+            float fade = elapsed <= _totalSweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
+                1f - Mathf.SmoothStep(0f, 1f, (elapsed - _totalSweepDuration) / fadeOutDuration);
 
             tint.a = Mathf.Lerp(0.45f, 1f, Mathf.Clamp01(elapsed / 0.055f)) * fade;
             beam.color = tint;

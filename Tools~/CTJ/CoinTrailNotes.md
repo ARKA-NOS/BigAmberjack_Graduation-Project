@@ -2,6 +2,8 @@
 
 작업일: 2026-11-07 / 위쪽 분산 조정: 2026-11-11
 
+2026-11-24: 첫 바닥 튕김에 각도·높이 무작위 범위를 추가했다. 설정과 실행 검증은 [CoinBounceNotes.md](CoinBounceNotes.md)를 참고한다.
+
 ## 적용 내용과 조절 위치
 
 `Assets/_Prefabs/Enemies/Effects/EnemyRewardCoin.prefab`의 `EnemyCoinTrail` 컴포넌트에서 조절한다.

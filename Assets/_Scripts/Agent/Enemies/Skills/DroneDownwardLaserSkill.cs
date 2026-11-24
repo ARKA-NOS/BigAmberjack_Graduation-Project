@@ -19,13 +19,17 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0.1f)] private float width = 0.8f;
         [Tooltip("빔 표시만 원점 뒤로 연장해 몸체 안에 겹치는 거리입니다. 월드 유닛이며 피해 판정과 끝점은 유지합니다.")]
         [SerializeField, Min(0f)] private float bodyOverlapDistance = 0.35f;
-        [SerializeField, Min(0f)] private float damage = 18f;
+        [SerializeField, Min(0f)] private float damage = 24f;
+        [SerializeField, Min(0f)] private float lastStandDamage = 28f;
+        [SerializeField, Min(0.1f)] private float lastStandSpeedMultiplier = 1.2f;
         [Tooltip("발사 시작 시 회전 속도입니다. 도/초 단위이며 Min Speed까지 부드럽게 감속합니다.")]
         [SerializeField, Min(0.01f)] private float maxSpeed = 600f;
         [Tooltip("회전이 끝날 때의 속도입니다. 도/초 단위이며 전체 회전 시간은 두 속도로 계산합니다.")]
         [SerializeField, Min(0.01f)] private float minSpeed = 50f;
         [Tooltip("회전을 끝낸 뒤 빔이 사라지는 시간입니다. 이 구간에는 추가 피해를 주지 않습니다.")]
         [SerializeField, Min(0f)] private float fadeOutDuration = 0.14f;
+        [Tooltip("강화 레이저 첫 발사 후 쉬는 시간입니다. 두 번째 발사는 재경고 없이 진행합니다.")]
+        [SerializeField, Min(0f)] private float repeatPause = 0.25f;
         [Tooltip("수직 아래에서 좌우로 각각 회전할 각도입니다. 안전 폭을 지키도록 필요하면 줄입니다.")]
         [SerializeField, Range(0f, 85f)] private float sweepHalfAngle = 60f;
         [Tooltip("아레나 양 끝에 남겨 둘 안전 폭입니다. 레이저 두께까지 포함해 보호합니다.")]
@@ -53,10 +57,12 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool _didHit;
         private float _beamStartedAt, _previousAngle;
         private float _startSpeed, _endSpeed, _sweepDuration;
-        private float _totalSweepDuration;
         private int _sweepCount = 1;
         private int _sweepLeg;
         private bool _isFadingOut;
+        private bool _waitingForRepeat;
+        private float _currentDamage;
+        private float _repeatAt;
 
         public bool DidFire { get; private set; }
 
@@ -112,12 +118,13 @@ namespace _Scripts.Agent.Enemies.Skills
             bool enhanced = drone.UseLastStandPatterns;
 
             _sweepCount = enhanced ? 2 : 1;
+            _currentDamage = enhanced ? lastStandDamage : damage;
 
-            if (enhanced) { _startSpeed *= 1.25f; _endSpeed *= 1.25f; }
+            if (enhanced) { _startSpeed *= lastStandSpeedMultiplier; _endSpeed *= lastStandSpeedMultiplier; }
 
             _sweepDuration = 2f * _halfAngle / ((_startSpeed + _endSpeed) * 0.5f);
-            _totalSweepDuration = _sweepDuration * _sweepCount;
             _sweepLeg = 0;
+            _waitingForRepeat = false;
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(drone.TerrainLayers);
             _didHit = false;
@@ -137,7 +144,7 @@ namespace _Scripts.Agent.Enemies.Skills
             visual.Play("Laser");
             SetBeamSorting();
             beam.enabled = true;
-            _previousAngle = -_halfAngle;
+            _previousAngle = _sweepLeg % 2 == 0 ? -_halfAngle : _halfAngle;
             UpdateBeam(_previousAngle, 0f);
             cameraShake?.StartShake(_warningBounds);
             NotifyAttackPerformed(_origin);
@@ -154,7 +161,27 @@ namespace _Scripts.Agent.Enemies.Skills
 
             if (!beam.enabled)
             {
-                if (visual.HasFinished("Laser")) EndSkill();
+                if (_waitingForRepeat)
+                {
+                    if (Time.time >= _repeatAt)
+                    {
+                        _waitingForRepeat = false;
+                        _sweepLeg++;
+                        _didHit = false;
+                        _isFadingOut = false;
+                        OnReleaseAttack();
+                    }
+                }
+                else if (visual.HasFinished("Laser"))
+                {
+                    if (_sweepLeg + 1 >= _sweepCount) EndSkill();
+                    else
+                    {
+                        _waitingForRepeat = true;
+                        _repeatAt = Time.time + Mathf.Max(0f, repeatPause);
+                        visual.Play("Idle");
+                    }
+                }
 
                 return;
             }
@@ -165,56 +192,39 @@ namespace _Scripts.Agent.Enemies.Skills
 
             if (!_isFadingOut)
             {
-                int currentLeg = _sweepDuration > 0f ? Mathf.Min(_sweepCount - 1, Mathf.FloorToInt(elapsed / _sweepDuration)) : 0;
+                int steps = Mathf.Clamp(Mathf.CeilToInt(Mathf.Abs(angle - _previousAngle) * Mathf.Deg2Rad * _radius /
+                    Mathf.Max(0.05f, _beamWidth * 0.5f)), 1, 128);
 
-                for (int leg = _sweepLeg; leg <= currentLeg; leg++)
-                {
-                    if (leg > _sweepLeg)
-                    {
-                        _didHit = false;
-                        _previousAngle = leg % 2 == 0 ? -_halfAngle : _halfAngle;
-                    }
+                for (int i = 1; i <= steps && !_didHit; i++) TryHit(Mathf.Lerp(_previousAngle, angle, i / (float)steps));
 
-                    float target = leg < currentLeg ? (leg % 2 == 0 ? _halfAngle : -_halfAngle) : angle;
-                    int steps = Mathf.Clamp(Mathf.CeilToInt(Mathf.Abs(target - _previousAngle) * Mathf.Deg2Rad * _radius /
-                        Mathf.Max(0.05f, _beamWidth * 0.5f)), 1, 128);
+                _previousAngle = angle;
 
-                    for (int i = 1; i <= steps && !_didHit; i++) TryHit(Mathf.Lerp(_previousAngle, target, i / (float)steps));
-
-                    _previousAngle = target;
-                }
-
-                _sweepLeg = currentLeg;
-
-                if (elapsed >= _totalSweepDuration)
+                if (elapsed >= _sweepDuration)
                 {
                     _isFadingOut = true;
                     cameraShake?.FadeOut();
                 }
             }
 
-            if (elapsed >= _totalSweepDuration + Mathf.Max(0f, fadeOutDuration))
+            if (elapsed >= _sweepDuration + Mathf.Max(0f, fadeOutDuration))
             {
                 beam.enabled = false;
                 cameraShake?.StopShake();
-
-                if (visual.HasFinished("Laser")) EndSkill();
             }
         }
 
         private float EvaluateSweepAngle(float elapsed)
         {
-            if (_sweepDuration <= 0f) return _halfAngle;
+            if (_sweepDuration <= 0f) return _sweepLeg % 2 == 0 ? _halfAngle : -_halfAngle;
 
-            int leg = Mathf.Min(_sweepCount - 1, Mathf.FloorToInt(elapsed / _sweepDuration));
-            float t = Mathf.Clamp01((elapsed - leg * _sweepDuration) / _sweepDuration);
+            float t = Mathf.Clamp01(elapsed / _sweepDuration);
             // SmoothStep으로 감속하는 속도를 적분합니다. 프레임 간격과 무관하게 같은 각도를 얻습니다.
             float integratedSmoothStep = t * t * t * (1f - 0.5f * t);
             float distance = _sweepDuration * (_startSpeed * t + (_endSpeed - _startSpeed) * integratedSmoothStep);
 
             float angle = Mathf.Clamp(-_halfAngle + distance, -_halfAngle, _halfAngle);
 
-            return leg % 2 == 0 ? angle : -angle;
+            return _sweepLeg % 2 == 0 ? angle : -angle;
         }
 
         private void SetBeamSorting()
@@ -253,8 +263,8 @@ namespace _Scripts.Agent.Enemies.Skills
             beam.transform.localScale = new Vector3(_beamWidth / beam.sprite.bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
                 (distance + _bodyOverlap) / beam.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             Color tint = beam.color;
-            float fade = elapsed <= _totalSweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
-                1f - Mathf.SmoothStep(0f, 1f, (elapsed - _totalSweepDuration) / fadeOutDuration);
+            float fade = elapsed <= _sweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
+                1f - Mathf.SmoothStep(0f, 1f, (elapsed - _sweepDuration) / fadeOutDuration);
 
             tint.a = Mathf.Lerp(0.45f, 1f, Mathf.Clamp01(elapsed / 0.055f)) * fade;
             beam.color = tint;
@@ -281,7 +291,7 @@ namespace _Scripts.Agent.Enemies.Skills
             foreach (var hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget) || hit.bounds.max.y <= _floorY) continue;
-                if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, hit.ClosestPoint(center), direction)) continue;
+                if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, _currentDamage, hit.ClosestPoint(center), direction)) continue;
 
                 _didHit = true;
                 break;
@@ -365,6 +375,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
+            _waitingForRepeat = false;
 
             if (beam != null) beam.enabled = false;
 
@@ -374,6 +385,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnStopSkill()
         {
             base.OnStopSkill();
+            _waitingForRepeat = false;
 
             if (beam != null) beam.enabled = false;
 

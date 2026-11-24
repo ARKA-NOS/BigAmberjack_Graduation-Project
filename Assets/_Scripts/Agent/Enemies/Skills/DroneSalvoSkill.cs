@@ -1,6 +1,7 @@
 using _Scripts.Agent.Enemies.Bosses;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Agent.Enemies.Skills
 {
@@ -13,22 +14,33 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0.1f)] private float range = 16f;
         [SerializeField, Min(0.1f)] private float projectileSpeed = 15f;
         [SerializeField, Min(0.1f)] private float projectileScale = 1f;
-        [SerializeField, Min(0f)] private float damage = 8f;
-        [SerializeField, Min(0.1f)] private float firingDuration = 2.5f;
+        [SerializeField, Min(0f)] private float damage = 10f;
+        [SerializeField, Min(0.01f)] private float normalShotInterval = 0.32f;
+        [SerializeField, Min(0.01f)] private float lastStandShotInterval = 0.144f;
+        [SerializeField, Min(0f)] private float chargeEndTime = 0.55f;
+        [SerializeField, Min(0f)] private float firstShotTime = 0.58f;
+        [SerializeField, Min(0f)] private float lastStandFirstShotTime = 0.48f;
+        [SerializeField, Min(0.1f)] private float firingAnimationSpeed = 1.2f;
+        [SerializeField, Min(0.1f)] private float lastStandFiringAnimationSpeed = 3f;
         [SerializeField, Min(1)] private int normalVolleys = 7;
         [SerializeField, Min(1)] private int lastStandVolleys = 12;
         [SerializeField, Range(0f, 80f)] private float lastStandSpreadAngle = 12f;
         [SerializeField, Min(0f)] private float verticalSpawnOffset = 0.3f;
 
-        [SerializeField, Min(0f)] private float retreatDistance = 3f;
-        [SerializeField, Min(0.1f)] private float retreatSpeed = 1.5f;
-        [SerializeField, Min(0f)] private float recoveryTime = 0.8f;
+        [Tooltip("사격 중 유지할 플레이어와의 가로 거리입니다. 발사 방향은 바꾸지 않고 앞뒤로 이동합니다.")]
+        [SerializeField, FormerlySerializedAs("retreatDistance"), Min(0f)] private float preferredDistance = 3f;
+        [SerializeField, Min(0.01f)] private float distanceTolerance = 0.2f;
+        [SerializeField, Min(0f)] private float recoveryTime = 0.2f;
 
         private ProductionControlDrone _drone;
         private bool _enhanced;
         private int _volleyCount;
-        private float _firingStartedAt;
+        private float _startedAt, _firstShotAt, _interval, _direction;
+        private bool _beganFiring;
+        private bool _returnedToIdle;
         private float _recoveryUntil;
+        private bool _movementLocked;
+        private float _spacingDirection, _spacingDestinationX, _nextSpacingPlanAt;
 
         public bool DidFire { get; private set; }
         public int FiredVolleys { get; private set; }
@@ -36,6 +48,7 @@ namespace _Scripts.Agent.Enemies.Skills
         public float Range => range;
         public override bool ControlsMovement => true;
         protected override bool ShouldShowTelegraph => false;
+        private string FiringState => _enhanced ? "CrouchFire" : "SalvoSingleShot";
 
         protected override bool CanUseSkillCondition() =>
             base.CanUseSkillCondition() && projectilePrefab != null && muzzle != null &&
@@ -48,28 +61,76 @@ namespace _Scripts.Agent.Enemies.Skills
             _volleyCount = Mathf.Max(1, _enhanced ? lastStandVolleys : normalVolleys);
             DidFire = false;
             FiredVolleys = ProjectilesFired = 0;
+            _startedAt = Time.time;
+            _beganFiring = false;
+            _returnedToIdle = false;
+            _movementLocked = false;
+            _spacingDirection = _spacingDestinationX = _nextSpacingPlanAt = 0f;
+            _interval = Mathf.Max(0.01f, _enhanced ? lastStandShotInterval : normalShotInterval);
+            _firstShotAt = _enhanced ? lastStandFirstShotTime : Mathf.Max(firstShotTime, chargeEndTime);
             _drone.StopMovement();
             Enemy.FaceTarget();
-            visual.Play("LaserCharge");
+            _direction = Enemy.FacingDirection;
+            visual.Play("Charge", _enhanced ? 1.2f : 1f);
         }
 
-        protected override void OnReleaseAttack()
+        protected override void OnReleaseAttack() => CoolTimeStartTime = Time.time;
+
+        private void BeginFiring()
         {
-            _firingStartedAt = Time.time;
-            Enemy.FaceTarget();
-            float away = -Enemy.FacingDirection;
+            _beganFiring = true;
 
-            if (_drone.TryPlanGroundMove(away, retreatDistance, out Vector2 destination))
-                _drone.MoveGround(destination, retreatSpeed);
+            UpdateSpacing();
+        }
 
-            visual.Play("Laser");
-            FireVolley();
+        private void UpdateSpacing()
+        {
+            if (_movementLocked || CastTarget == null) return;
+
+            float gap = (CastTarget.position.x - Enemy.transform.position.x) * _direction;
+
+            if (gap <= 0f)
+            {
+                _movementLocked = true;
+                _drone.StopMovement();
+
+                return;
+            }
+
+            if (!_beganFiring) return;
+
+            float difference = gap - preferredDistance;
+
+            if (Mathf.Abs(difference) <= distanceTolerance)
+            {
+                float plannedGap = (CastTarget.position.x - _spacingDestinationX) * _direction;
+
+                // 유효한 목적지로 가는 중이면 기존 감속을 끝까지 재생합니다.
+                if (_drone.IsMoving && Mathf.Abs(plannedGap - preferredDistance) > distanceTolerance)
+                    _drone.StopMovement();
+
+                return;
+            }
+
+            float direction = _direction * Mathf.Sign(difference);
+
+            if (_drone.IsMoving && direction == _spacingDirection) return;
+            if (_drone.IsMoving) _drone.StopMovement();
+            if (Time.time < _nextSpacingPlanAt) return;
+
+            _nextSpacingPlanAt = Time.time + 0.1f;
+
+            if (_drone.TryPlanGroundMove(direction, Mathf.Abs(difference), out Vector2 destination))
+            {
+                _spacingDirection = direction;
+                _spacingDestinationX = destination.x;
+                _drone.MoveGround(destination, Enemy.MoveSpeed);
+            }
         }
 
         private void FireVolley()
         {
-            Enemy.FaceTarget();
-            Vector2 direction = Vector2.right * Enemy.FacingDirection;
+            Vector2 direction = Vector2.right * _direction;
             Vector3 origin = muzzle.position + Vector3.up * Random.Range(-verticalSpawnOffset, verticalSpawnOffset);
             int count = _enhanced ? 3 : 1;
 
@@ -90,12 +151,16 @@ namespace _Scripts.Agent.Enemies.Skills
             FiredVolleys++;
             DidFire = true;
             CoolTimeStartTime = Time.time;
+            visual.Play(FiringState, _enhanced ? lastStandFiringAnimationSpeed : firingAnimationSpeed);
             NotifyAttackPerformed(origin);
         }
 
         public override void FixedUpdateAttack()
         {
-            if (IsUsing && HasReleased && !IsRecovering) _drone.TickGroundMovement();
+            if (!IsUsing || !HasReleased || IsRecovering) return;
+
+            UpdateSpacing();
+            _drone.TickGroundMovement();
         }
 
         public override void UpdateSkill()
@@ -111,24 +176,26 @@ namespace _Scripts.Agent.Enemies.Skills
                 return;
             }
 
-            float elapsed = Time.time - _firingStartedAt;
-            float interval = firingDuration / Mathf.Max(1, _volleyCount - 1);
+            UpdateSpacing();
 
-            while (FiredVolleys < _volleyCount && elapsed >= FiredVolleys * interval) FireVolley();
+            float elapsed = Time.time - _startedAt;
+            if (elapsed < _firstShotAt) return;
+            if (!_beganFiring) BeginFiring();
 
-            if (elapsed < firingDuration)
+            while (FiredVolleys < _volleyCount && elapsed >= _firstShotAt + FiredVolleys * _interval) FireVolley();
+
+            if (FiredVolleys < _volleyCount) return;
+
+            if (!_returnedToIdle)
             {
-                if (visual.HasFinished("Laser")) visual.Play("Laser");
+                if (!visual.HasFinished(FiringState)) return;
 
-                return;
+                _returnedToIdle = true;
+                _drone.StopMovement();
+                visual.Play("Idle");
+                BeginRecovery();
+                _recoveryUntil = Time.time + recoveryTime;
             }
-
-            if (!visual.HasFinished("Laser")) return;
-
-            _drone.StopMovement();
-            visual.Play("Idle");
-            BeginRecovery();
-            _recoveryUntil = Time.time + recoveryTime;
         }
 
         public override void OnAttackFinished() { }

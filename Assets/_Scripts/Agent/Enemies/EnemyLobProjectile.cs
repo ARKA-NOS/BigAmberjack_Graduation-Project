@@ -67,7 +67,7 @@ namespace _Scripts.Agent.Enemies
             Physics2D.Raycast(origin, direction, terrain, hits, distance) > 0 ? hits[0] : default;
 
         internal void Launch(EnemyBase dealer, Transform target, Vector2 landingPoint, float damage, float radius,
-            LayerMask terrainLayers, AttackTelegraphUI warning)
+            LayerMask terrainLayers, AttackTelegraphUI warning, float? flightTime = null)
         {
             _dealer = dealer;
             _target = target;
@@ -77,7 +77,8 @@ namespace _Scripts.Agent.Enemies
             _radius = radius;
             _terrain = new ContactFilter2D { useTriggers = false };
             _terrain.SetLayerMask(terrainLayers);
-            _steps = FlightSteps;
+            _step = 0;
+            _steps = flightTime.HasValue ? Mathf.Max(1, Mathf.CeilToInt(flightTime.Value / Time.fixedDeltaTime)) : FlightSteps;
             _launched = true;
             _warning = warning;
 

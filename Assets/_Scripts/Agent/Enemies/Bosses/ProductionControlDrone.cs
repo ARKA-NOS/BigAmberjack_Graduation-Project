@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using _Scripts.Agent.Enemies.Skills;
+using _Scripts.DevLib.BattleSystem;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Scripts.Agent.Enemies.Bosses
 {
@@ -19,10 +21,12 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField, Range(0f, 1f)] private float lastStandHealthRatio = 0.35f;
         [SerializeField, Min(0.1f)] private float lowAltitude = 0.9f;
         [Tooltip("레이저와 폭격이 함께 사용하는 바닥 기준 공중 높이입니다.")]
-        [SerializeField, Min(0.1f)] private float airAttackAltitude = 6.5f;
-        [SerializeField, Min(0.1f)] private float ascentSpeed = 6f;
+        [SerializeField, Min(0.1f)] private float airAttackAltitude = 4.5f;
+        [SerializeField, Min(0.1f)] private float ascentSpeed = 10f;
+        [SerializeField, Min(0.1f)] private float descentSpeed = 10f;
         [SerializeField, Min(0.1f)] private float arenaEdgeMargin = 1.05f;
-        [SerializeField, Min(0f)] private float airRecoveryTime = 1.2f;
+        [Tooltip("각 패턴이 끝난 뒤 기본 자세에서 멈춰 플레이어에게 반격 시간을 줍니다.")]
+        [SerializeField, FormerlySerializedAs("airRecoveryTime"), Min(0f)] private float patternRecoveryTime = 1.25f;
         [SerializeField] private LayerMask terrainLayers = (1 << 6) | (1 << 10);
 
         private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[16];
@@ -33,16 +37,21 @@ namespace _Scripts.Agent.Enemies.Bosses
         private Vector2 _bodySize;
         private bool _lastStandEntryPending;
         private bool _entryLaserActive;
+        private bool _airPatternIsBomb;
+        private bool _resumeAirAfterRecovery;
         private float _recoverUntil;
         private float _nextNavigationAt;
 
         protected override bool UpdatesWithoutCombatTarget => true;
         public bool IsLastStand { get; private set; }
         internal bool UseLastStandPatterns => IsLastStand && !_lastStandEntryPending && !_entryLaserActive;
+        internal bool IsLastStandEntry => _lastStandEntryPending || _entryLaserActive;
         internal float FloorY => _arena.FloorY;
         internal LayerMask TerrainLayers => terrainLayers;
         internal BossArenaModule Arena => _arena;
         internal bool IsMoving => Flight != null && Flight.IsMoving;
+        internal bool IsSalvoMoving => IsMoving && rapidFire != null && rapidFire.IsUsing &&
+            !rapidFire.IsRecovering && rapidFire.DidFire;
         internal Bounds ContactBounds => new Bounds((Vector2)transform.position + _bodyOffset, _bodySize);
         private Vector2 Home => new Vector2(_arena.Center.x, FloorY + lowAltitude);
 
@@ -95,13 +104,25 @@ namespace _Scripts.Agent.Enemies.Bosses
                     break;
 
                 case State.GroundAttack:
-                    if (!Skills.IsBusy) Change(canPursue ? State.ChooseGround : State.Return);
+                    if (!Skills.IsBusy)
+                    {
+                        _resumeAirAfterRecovery = false;
+                        Change(canPursue ? State.Recover : State.Return);
+                    }
 
                     break;
 
                 case State.Ascending:
                     if (!Skills.IsBusy)
-                        Change(airTransition != null && airTransition.DidArrive && canPursue ? State.ChooseAir : State.Descend);
+                    {
+                        if (airTransition == null || !airTransition.DidArrive || !canPursue) Change(State.Descend);
+                        else if (IsLastStandEntry) Change(State.ChooseAir);
+                        else
+                        {
+                            _resumeAirAfterRecovery = true;
+                            Change(State.Recover);
+                        }
+                    }
 
                     break;
 
@@ -117,18 +138,26 @@ namespace _Scripts.Agent.Enemies.Bosses
                         if (_entryLaserActive && laser != null && laser.DidFire) _lastStandEntryPending = false;
 
                         _entryLaserActive = false;
-                        Change(State.Descend);
+                        _resumeAirAfterRecovery = false;
+                        Change(_airPatternIsBomb && bomb != null && bomb.DidReturnToGround
+                            ? (canPursue ? State.Recover : State.Return) : State.Descend);
                     }
 
                     break;
 
                 case State.Descend:
-                    if (Flight.HasArrived && visual.HasFinished("Descend")) Change(State.Recover);
+                    if (Flight.HasArrived && visual.HasFinished("Descend"))
+                    {
+                        _resumeAirAfterRecovery = false;
+                        Change(State.Recover);
+                    }
 
                     break;
 
                 case State.Recover:
-                    if (Time.time >= _recoverUntil) Change(canPursue ? State.ChooseGround : State.Return);
+                    if (Time.time >= _recoverUntil)
+                        Change(canPursue ? (_resumeAirAfterRecovery ? State.ChooseAir : State.ChooseGround) :
+                            (_resumeAirAfterRecovery ? State.Descend : State.Return));
 
                     break;
 
@@ -191,12 +220,19 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (!Skills.TryUseSpecifiedSkill(selected) || !Skills.IsBusy) return;
 
             _entryLaserActive = _lastStandEntryPending && selected == laser;
+            _airPatternIsBomb = selected == bomb;
             Change(State.AirAttack);
         }
 
         internal bool TryPlanAirTransition(out Vector2 destination)
         {
             destination = new Vector2(_arena.Center.x, FloorY + airAttackAltitude);
+
+            return HasAirPath(destination);
+        }
+
+        internal bool HasAirPath(Vector2 destination)
+        {
             Vector2 from = transform.position;
             Vector2 delta = destination - from;
             var filter = new ContactFilter2D { useTriggers = false };
@@ -267,7 +303,24 @@ namespace _Scripts.Agent.Enemies.Bosses
 
         internal void MoveGround(Vector2 destination, float speed, float? ease = null) => Flight.MoveTo(destination, speed, ease);
 
-        internal void MoveToAir(Vector2 destination) => Flight.MoveTo(destination, ascentSpeed);
+        internal void MoveGroundForDuration(Vector2 destination, float duration) => Flight.MoveToDuration(destination, duration);
+
+        internal void MoveToAir(Vector2 destination, float speedMultiplier = 1f) => Flight.MoveTo(destination, ascentSpeed * speedMultiplier);
+
+        internal void BeginPatternDescent()
+        {
+            Vector2 destination = new Vector2(transform.position.x, Home.y);
+            Flight.MoveTo(destination, descentSpeed);
+            visual.Play("Descend");
+        }
+
+        protected override float ModifyIncomingDamage(DamageData damage, Vector2 hitPoint, Vector2 hitDirection,
+            out bool suppressHitControl)
+        {
+            suppressHitControl = true;
+
+            return damage.DamageAmount;
+        }
 
         internal void StopMovement() => Flight?.Stop();
 
@@ -316,13 +369,14 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             if (state == State.Descend)
             {
-                Flight.MoveTo(new Vector2(transform.position.x, Home.y), MoveSpeed);
+                Flight.MoveTo(new Vector2(transform.position.x, Home.y), descentSpeed);
                 visual.Play("Descend");
             }
             else if (state == State.Recover)
             {
-                visual.Play("Idle");
-                _recoverUntil = Time.time + airRecoveryTime;
+                Flight.Stop();
+                visual.Play(_resumeAirAfterRecovery ? "AirIdle" : "Idle");
+                _recoverUntil = Time.time + patternRecoveryTime;
             }
             else if (state == State.Return)
             {

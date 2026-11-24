@@ -34,7 +34,6 @@ public static class InspectBoss23LaserRoot
             Set("_radius", 7.5f); Set("_beamWidth", data.FindProperty("width").floatValue);
             Set("_bodyOverlap", data.FindProperty("bodyOverlapDistance").floatValue);
             Set("_beamProperties", new MaterialPropertyBlock()); Set("_sweepDuration", 1f);
-            Set("_totalSweepDuration", 1f);
             beam.enabled = true;
             var update = typeof(DroneDownwardLaserSkill).GetMethod("UpdateBeam", Private);
             float[] angles = { -57.85f, 0f, 57.85f };

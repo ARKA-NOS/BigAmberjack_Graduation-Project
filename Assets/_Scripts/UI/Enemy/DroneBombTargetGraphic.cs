@@ -11,7 +11,7 @@ namespace _Scripts.UI.Enemy
         [SerializeField, Range(0.05f, 1f)] private float ellipseHeightRatio = 0.2f;
         [SerializeField, Min(0.05f)] private float crossHeight = 0.65f;
         [SerializeField, Min(0.01f)] private float crossHalfSize = 0.16f;
-        [SerializeField, Min(0.05f)] private float countdownRadius = 0.48f;
+        [SerializeField, Min(0.05f)] private float countdownRadius = 1f;
         [SerializeField, Range(0f, 1f)] private float fillOpacity = 0.1f;
 
         private EnemyLobProjectile _projectile;

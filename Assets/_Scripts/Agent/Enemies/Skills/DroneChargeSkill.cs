@@ -8,22 +8,39 @@ namespace _Scripts.Agent.Enemies.Skills
     {
         [SerializeField] private DroneVisualModule visual;
         [SerializeField] private EnemyAfterImageModule afterImages;
-        [SerializeField, Min(0.1f)] private float distance = 3f;
-        [SerializeField, Min(0.1f)] private float speed = 8f;
-        [SerializeField, Min(0.01f)] private float easeDuration = 0.08f;
-        [SerializeField, Min(0f)] private float damage = 14f;
-        [SerializeField, Min(0f)] private float repeatDelay = 0.12f;
-        [SerializeField, Min(0f)] private float recoveryTime = 0.4f;
+        [Tooltip("플레이어 거리와 명중 여부에 관계없이 이동할 목표 거리입니다. 벽·절벽·아레나 경계에서만 제한합니다.")]
+        [SerializeField, Min(0.1f)] private float distance = 6.5f;
+        [Tooltip("몸통 뒤쪽에서 제외할 비율입니다. 0.5이면 앞쪽 절반부터 경고와 피해 판정이 시작됩니다.")]
+        [SerializeField, Range(0f, 0.95f)] private float damageStartRatio = 0.5f;
+        [SerializeField, Min(0f)] private float damage = 18f;
+        [SerializeField, Min(0f)] private float lastStandDamage = 22f;
+        [Tooltip("돌진 동작의 스프라이트 재생 속도. 돌진 이동 시간과 별도로 조절합니다.")]
+        [SerializeField, Min(0.1f)] private float dashAnimationSpeed = 2f;
+
+        [Header("Normal Timeline")]
+        [SerializeField, Min(0f)] private float followDuration = 0.65f;
+        [SerializeField, Min(0f)] private float chargeDuration = 0.55f;
+        [SerializeField, Min(0.01f)] private float dashDuration = 0.8f;
+        [SerializeField, Min(0f)] private float recoveryDuration = 0.2f;
+
+        [Header("Last Stand Timeline")]
+        [SerializeField, Min(0f)] private float lastStandFollowDuration = 0.45f;
+        [SerializeField, Min(0f)] private float lastStandChargeDuration = 0.46f;
+        [SerializeField, Min(0.01f)] private float lastStandDashDuration = 0.55f;
+        [SerializeField, Min(0f)] private float reaimDuration = 0.34f;
+        [SerializeField, Min(0f)] private float lastStandRecoveryDuration = 0.2f;
+
+        private enum Step { Following, Charging, FirstDash, Reaiming, SecondDash, Recovering }
 
         private readonly List<Collider2D> _hits = new List<Collider2D>();
         private ProductionControlDrone _drone;
+        private Step _step;
+        private bool _enhanced, _hitApplied;
+        private float _startedAt, _direction, _currentDamage;
+        private float _chargeAt, _firstDashAt, _secondDashAt, _finishAt;
+        private float _dashTime, _recoveryTime;
         private Vector2 _previousCenter;
-        private int _remaining;
-        private bool _hitApplied;
-        private bool _waiting;
-        private bool _enhanced;
-        private float _nextDashAt;
-        private float _recoverUntil;
+        private Vector2 _dashDestination;
 
         public override bool ControlsMovement => true;
         protected override bool ShouldShowTelegraph => false;
@@ -32,61 +49,98 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             _drone = (ProductionControlDrone)Enemy;
             _enhanced = _drone.UseLastStandPatterns;
-            _remaining = _enhanced ? 2 : 1;
-            _waiting = false;
+            _currentDamage = _enhanced ? lastStandDamage : damage;
+            _startedAt = Time.time;
+            _chargeAt = _enhanced ? lastStandFollowDuration : followDuration;
+            _firstDashAt = _chargeAt + (_enhanced ? lastStandChargeDuration : chargeDuration);
+            _dashTime = Mathf.Max(0.01f, _enhanced ? lastStandDashDuration : dashDuration);
+            _recoveryTime = _enhanced ? lastStandRecoveryDuration : recoveryDuration;
+            _step = Step.Following;
             _drone.StopMovement();
-            Enemy.FaceTarget();
-            visual.Play("LaserCharge");
+            LockDirection();
+
+            float gap = Mathf.Abs(CastTarget.position.x - Enemy.transform.position.x);
+            float travel = Mathf.Min(Mathf.Max(0f, gap - _drone.ContactBounds.extents.x), Enemy.MoveSpeed * _chargeAt * 0.5f);
+            if (_drone.TryPlanGroundMove(_direction, travel, out Vector2 destination))
+                _drone.MoveGround(destination, Enemy.MoveSpeed);
+
+            visual.Play("Idle");
         }
 
-        protected override void OnReleaseAttack()
-        {
-            CoolTimeStartTime = Time.time;
-            StartDash();
-        }
-
-        private void StartDash()
+        private void LockDirection()
         {
             Enemy.FaceTarget();
-            float direction = Mathf.Sign(CastTarget.position.x - Enemy.transform.position.x);
+            _direction = Enemy.FacingDirection;
+        }
 
-            if (direction == 0f) direction = Enemy.FacingDirection;
+        protected override void OnReleaseAttack() => CoolTimeStartTime = Time.time;
 
-            _drone.TryPlanGroundMove(direction, distance, out Vector2 destination);
-            _drone.MoveGround(destination, speed * (_enhanced ? 1.5f : 1f), easeDuration);
-            _previousCenter = _drone.ContactBounds.center;
+        private void StartDash(Step step)
+        {
+            Telegraph?.Hide();
+
+            _step = step;
+            _drone.MoveGroundForDuration(_dashDestination, _dashTime);
+            _previousCenter = GetDamageBounds().center;
             _hitApplied = false;
-            _waiting = false;
-            _remaining--;
-            visual.Play("Laser");
+            CoolTimeStartTime = Time.time;
+            visual.Play(_enhanced ? "CrouchFire" : "GroundRush", dashAnimationSpeed);
             afterImages?.Play();
             NotifyAttackPerformed(Enemy.transform.position);
         }
 
+        private void ShowDashWarning()
+        {
+            _drone.TryPlanGroundMove(_direction, distance, out _dashDestination);
+
+            if (Telegraph == null) return;
+
+            float offset = _dashDestination.x - Enemy.transform.position.x;
+            Bounds bounds = GetDamageBounds();
+
+            bounds.center += Vector3.right * (offset * 0.5f);
+            bounds.size += Vector3.right * Mathf.Abs(offset);
+            Telegraph.SetBounds(bounds);
+            Telegraph.Show();
+        }
+
+        private Bounds GetDamageBounds()
+        {
+            Bounds bounds = _drone.ContactBounds;
+            float removedWidth = bounds.size.x * Mathf.Clamp(damageStartRatio, 0f, 0.95f);
+
+            bounds.center += Vector3.right * (_direction * removedWidth * 0.5f);
+            bounds.size -= Vector3.right * removedWidth;
+
+            return bounds;
+        }
+
         public override void FixedUpdateAttack()
         {
-            if (!IsUsing || !HasReleased || IsRecovering || _waiting) return;
+            if (!IsUsing) return;
 
-            _drone.TickGroundMovement();
-            ApplySweep();
+            if (_step == Step.Following || _step == Step.FirstDash || _step == Step.SecondDash)
+                _drone.TickGroundMovement();
+
+            if (_step == Step.FirstDash || _step == Step.SecondDash) ApplySweep();
         }
 
         private void ApplySweep()
         {
-            Bounds body = _drone.ContactBounds;
+            Bounds body = GetDamageBounds();
             Vector2 center = body.center;
             Vector2 size = (Vector2)body.size + new Vector2(Mathf.Abs(center.x - _previousCenter.x), 0f);
-            Vector2 sweepCenter = (center + _previousCenter) * 0.5f;
 
             if (!_hitApplied)
             {
-                Physics2D.OverlapBox(sweepCenter, size, 0f, new ContactFilter2D { useTriggers = true }, _hits);
+                Physics2D.OverlapBox((center + _previousCenter) * 0.5f, size, 0f,
+                    new ContactFilter2D { useTriggers = true }, _hits);
 
                 foreach (var hit in _hits)
                 {
                     if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget)) continue;
-                    if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, hit.ClosestPoint(center),
-                        Vector2.right * Enemy.FacingDirection)) continue;
+                    if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, _currentDamage, hit.ClosestPoint(center),
+                        Vector2.right * _direction)) continue;
 
                     _hitApplied = true;
                     break;
@@ -99,41 +153,71 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+            if (!IsUsing) return;
 
-            if (!IsUsing || !HasReleased) return;
-
-            if (IsRecovering)
+            float elapsed = Time.time - _startedAt;
+            switch (_step)
             {
-                if (Time.time >= _recoverUntil) EndSkill();
+                case Step.Following:
+                    if (elapsed < _chargeAt) return;
+                    _drone.StopMovement();
+                    _step = Step.Charging;
+                    visual.Play(_enhanced ? "Charge" : "CrouchCharge", _enhanced ? 1.2f : 1f);
+                    ShowDashWarning();
+                    break;
 
-                return;
+                case Step.Charging:
+                    if (elapsed >= _firstDashAt) StartDash(Step.FirstDash);
+                    break;
+
+                case Step.FirstDash:
+                    if (_drone.IsMoving) return;
+                    FinishDash();
+                    if (_enhanced)
+                    {
+                        _step = Step.Reaiming;
+                        _secondDashAt = elapsed + reaimDuration;
+                        LockDirection();
+                        visual.Play("Idle");
+                        ShowDashWarning();
+                    }
+                    else StartRecovery();
+                    break;
+
+                case Step.Reaiming:
+                    float previousDirection = _direction;
+
+                    LockDirection();
+                    if (_direction != previousDirection) ShowDashWarning();
+
+                    if (elapsed >= _secondDashAt) StartDash(Step.SecondDash);
+                    break;
+
+                case Step.SecondDash:
+                    if (_drone.IsMoving) return;
+                    FinishDash();
+                    StartRecovery();
+                    break;
+
+                case Step.Recovering:
+                    if (elapsed >= _finishAt) EndSkill();
+                    break;
             }
+        }
 
-            if (_waiting)
-            {
-                if (Time.time >= _nextDashAt) StartDash();
-
-                return;
-            }
-
-            if (_drone.IsMoving) return;
-
+        private void FinishDash()
+        {
             ApplySweep();
             afterImages?.Stop();
+            _drone.StopMovement();
+        }
 
-            if (_remaining > 0)
-            {
-                _waiting = true;
-                _nextDashAt = Time.time + repeatDelay;
-
-                return;
-            }
-
-            if (!visual.HasFinished("Laser")) return;
-
+        private void StartRecovery()
+        {
+            _step = Step.Recovering;
+            _finishAt = Time.time - _startedAt + _recoveryTime;
             BeginRecovery();
             visual.Play("Idle");
-            _recoverUntil = Time.time + recoveryTime;
         }
 
         public override void OnAttackFinished() { }
@@ -143,6 +227,7 @@ namespace _Scripts.Agent.Enemies.Skills
             base.OnEndSkill();
             afterImages?.Stop();
             _drone?.StopMovement();
+            visual?.Play("Idle");
         }
 
         protected override void OnStopSkill()
@@ -150,6 +235,7 @@ namespace _Scripts.Agent.Enemies.Skills
             base.OnStopSkill();
             afterImages?.Stop();
             _drone?.StopMovement();
+            visual?.ResetPlaybackSpeed();
         }
     }
 }

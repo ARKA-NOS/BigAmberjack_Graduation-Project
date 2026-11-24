@@ -46,9 +46,11 @@ Shader "Enemy/DroneLaserFade"
             half4 Frag(Varyings input) : SV_Target
             {
                 half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * input.color;
-                float remaining = _BeamLength - dot(input.positionWS.xy - _BeamOrigin.xy, _BeamDirection.xy);
+                float along = dot(input.positionWS.xy - _BeamOrigin.xy, _BeamDirection.xy);
+                float remaining = _BeamLength - along;
+                float centerHeight = _BeamOrigin.y + _BeamDirection.y * along;
                 float fadeDistance = max(0.01, _EndFadeDistance);
-                color.a *= smoothstep(0, fadeDistance, remaining) * smoothstep(_FloorY, _FloorY + fadeDistance, input.positionWS.y);
+                color.a *= smoothstep(0, fadeDistance, remaining) * smoothstep(_FloorY, _FloorY + fadeDistance, centerHeight);
                 return color;
             }
             ENDHLSL

@@ -26,10 +26,23 @@ public static class FormatFunctionalSpacing
 
     public static object Run() => Process(true);
 
-    private static object Process(bool apply)
+    public static object RunBoss23Rework() => Process(true, new[] {
+        "Assets/_Scripts/Agent/Enemies/Bosses/ProductionControlDrone.cs",
+        "Assets/_Scripts/Agent/Enemies/Bosses/DroneVisualModule.cs",
+        "Assets/_Scripts/Agent/Enemies/EnemyAfterImageModule.cs",
+        "Assets/_Scripts/Agent/Enemies/EnemyLobProjectile.cs",
+        "Assets/_Scripts/Agent/Enemies/Skills/DroneChargeSkill.cs",
+        "Assets/_Scripts/Agent/Enemies/Skills/DroneAirTransitionSkill.cs",
+        "Assets/_Scripts/Agent/Enemies/Skills/DroneSalvoSkill.cs",
+        "Assets/_Scripts/Agent/Enemies/Skills/DroneDownwardLaserSkill.cs",
+        "Assets/_Scripts/Agent/Enemies/Skills/DroneBombSkill.cs",
+        "Assets/_Scripts/UI/Enemy/DroneBombTargetGraphic.cs"
+    });
+
+    private static object Process(bool apply, string[] pathsOverride = null)
     {
         if (EditorApplication.isPlaying || EditorApplication.isCompiling) throw new Exception("Use Edit Mode");
-        var paths = Roots.SelectMany(path => Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories))
+        var paths = pathsOverride ?? Roots.SelectMany(path => Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories))
             .Concat(AudioFiles.Select(name => "Assets/_Scripts/Audio/" + name)).OrderBy(path => path).ToArray();
         var replacements = new List<(string path, string content, bool bom, int lines, string tokenHash)>();
         var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest)
@@ -123,7 +136,8 @@ public static class FormatFunctionalSpacing
             report.AppendLine("모든 변경 파일에서 C# 토큰과 비어 있지 않은 원문 줄이 전후 동일하다. 아래 해시는 공백·주석을 제외한 코드 토큰을 기준으로 하며 전후 같은 값이다. 기존 들여쓰기, 줄 내용, 문자열, 주석과 파일 BOM·줄바꿈 형식은 유지했다.\n");
             report.AppendLine("| 파일 | 추가 빈 줄 | 전후 동일 토큰 SHA256 |\n| --- | ---: | --- |");
             foreach (var item in replacements) report.AppendLine($"| {item.path} | {item.lines} | {item.tokenHash} |");
-            File.WriteAllText("Tools~/CTJ/FunctionalSpacingReport.md", report.ToString(), new UTF8Encoding(false));
+            File.WriteAllText(pathsOverride == null ? "Tools~/CTJ/FunctionalSpacingReport.md" : "Tools~/CTJ/Boss23ReworkSpacing.md",
+                report.ToString(), new UTF8Encoding(false));
         }
 
         return new { apply, scanned = paths.Length, changed = replacements.Count, addedBlankLines = replacements.Sum(item => item.lines),

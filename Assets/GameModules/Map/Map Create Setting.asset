@@ -12,25 +12,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 372da74244e74b9e95bd378b91a94d8c, type: 3}
   m_Name: Map Create Setting
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapGenerateSetting
-  <Seed>k__BackingField: 3
-  <DefaultRoom>k__BackingField: {fileID: 11400000, guid: 128154f208e69bb4885a4c19dcd750fe, type: 2}
+  <DefaultRoom>k__BackingField: {fileID: 11400000, guid: c6f01e3fd32263a47a08e79afa43045a, type: 2}
   <Rooms>k__BackingField:
   - {fileID: 11400000, guid: 128154f208e69bb4885a4c19dcd750fe, type: 2}
   - {fileID: 11400000, guid: 107ff463e93bea041a98f7f17d1e2059, type: 2}
   - {fileID: 11400000, guid: 42a181f8fdbeaf3488a3667ee7e2ce6e, type: 2}
   - {fileID: 11400000, guid: c1da718e142755a4f800bdc0fe2f9256, type: 2}
   - {fileID: 11400000, guid: 9ceadb61fe9decd45a024e25262891ab, type: 2}
-  - {fileID: 11400000, guid: a52927a1ecd60344b9b66c41db98a694, type: 2}
   - {fileID: 11400000, guid: 969e28dc0e403aa47ace05a39c4db305, type: 2}
-  <MainCombatCount>k__BackingField: 5
-  <BranchAnchorRange>k__BackingField: {x: 2, y: 4}
+  - {fileID: 11400000, guid: a52927a1ecd60344b9b66c41db98a694, type: 2}
+  - {fileID: 11400000, guid: 5544341e8b8e43d883505f1ea5f99042, type: 2}
+  - {fileID: 11400000, guid: 8b6124a29f9225d44a0ce951a985ff48, type: 2}
+  - {fileID: 11400000, guid: 79fcca5b7e1c9874582cb37b67ff0b72, type: 2}
+  - {fileID: 11400000, guid: c6f01e3fd32263a47a08e79afa43045a, type: 2}
+  - {fileID: 11400000, guid: cb56b0ac8a9fe904e9280a5fc52bc7df, type: 2}
+  - {fileID: 11400000, guid: de13101a4dcfeb146943f93138d5d181, type: 2}
+  - {fileID: 11400000, guid: 53fa9858be887fb4ebf75d5564a79826, type: 2}
+  - {fileID: 11400000, guid: b1d352feba4ac4b4ba475cf09a8bbda5, type: 2}
+  - {fileID: 11400000, guid: 53a7f7ee0cdaada44927f20985430f14, type: 2}
+  - {fileID: 11400000, guid: a1a8ce3f42939dc489baccf094b7bd2b, type: 2}
+  - {fileID: 11400000, guid: 77ed451a238a92b46906f14f7d8fbc7f, type: 2}
+  - {fileID: 11400000, guid: da9cc138df8ff4d46bde9f50452690f7, type: 2}
+  - {fileID: 11400000, guid: 183aeaf079eeb5f4bb11fba4c7f195c2, type: 2}
+  - {fileID: 11400000, guid: 201c15207252c704e80ca86aa2149aed, type: 2}
+  - {fileID: 11400000, guid: 98f5867835ae119429520f2e48cfd1f9, type: 2}
+  - {fileID: 11400000, guid: 9c21fa34d05b3134a8ff933d562d9584, type: 2}
+  - {fileID: 11400000, guid: 9c9550ba85fc04c40a8d861cf0c9961a, type: 2}
+  - {fileID: 11400000, guid: 26d5c5888095cec47b39bf94f08902e6, type: 2}
+  - {fileID: 11400000, guid: 4d56eba45650c0c4aa935835555e2b87, type: 2}
+  <MainCombatCount>k__BackingField: 10
+  <BranchAnchorRange>k__BackingField: {x: 2, y: 8}
   <ShopBranchCount>k__BackingField: 1
   <RewardBranchCount>k__BackingField: 1
   <RewardBranchCombatCount>k__BackingField: 1
   <MaxPlacementSteps>k__BackingField: 4000
   <MaxFullRetries>k__BackingField: 5
-  <MapBounds>k__BackingField: {x: 100, y: 100}
+  <MapBounds>k__BackingField: {x: 500, y: 500}
   <FallbackMapPrefab>k__BackingField: {fileID: 6811135894836302115, guid: 26fa5427c1758f64b90d4c0f15857bd9, type: 3}
-  <WallTile>k__BackingField: {fileID: 11400000, guid: c3a1a7d7f808d1f48a18092604aba983, type: 2}
+  <WallTile>k__BackingField: {fileID: 11400000, guid: d42240c9d225e32459ee9ecd644e9598, type: 2}
   <WallPadding>k__BackingField: 5
   <WallTilesPerFrame>k__BackingField: 4096

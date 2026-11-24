@@ -9,7 +9,6 @@ using _Scripts.DevLib.ModuleSystem;
 using _Scripts.VFXSystem.Effect;
 using Lean.Pool;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 using _Scripts._Core._ServiceLocator;
 
 namespace _Scripts.Agent.Players.Skills

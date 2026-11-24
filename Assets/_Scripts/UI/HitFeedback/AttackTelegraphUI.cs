@@ -12,6 +12,7 @@ namespace _Scripts.UI.HitFeedback
         [SerializeField] private Color areaColor = new Color32(255, 110, 110, 50);
         [SerializeField, Min(0f)] private float blinkDuration = 0.12f;
         [SerializeField, Min(0.01f)] private float blinkInterval = 0.04f;
+
         private Canvas _canvas;
         private RectTransform _rect;
         private float _blinkStartedAt;
@@ -26,7 +27,9 @@ namespace _Scripts.UI.HitFeedback
             _canvas = GetComponent<Canvas>();
             _rect = GetComponent<RectTransform>();
             _canvas.renderMode = RenderMode.WorldSpace;
+
             if (areaImage != null) areaImage.raycastTarget = false;
+
             Hide();
         }
 
@@ -37,6 +40,7 @@ namespace _Scripts.UI.HitFeedback
             IsVisible = true;
             IsBlinking = false;
             _canvas.enabled = true;
+
             if (areaImage != null) areaImage.color = _displayColor;
         }
 
@@ -53,6 +57,7 @@ namespace _Scripts.UI.HitFeedback
             if (!IsVisible) return;
 
             IsBlinking = false;
+
             if (areaImage != null) areaImage.color = _displayColor;
         }
 
@@ -60,6 +65,7 @@ namespace _Scripts.UI.HitFeedback
         {
             IsVisible = false;
             IsBlinking = false;
+
             if (_canvas != null) _canvas.enabled = false;
         }
 
@@ -68,14 +74,17 @@ namespace _Scripts.UI.HitFeedback
             if (!IsVisible || areaImage == null) return;
 
             Color color = _displayColor;
+
             if (IsBlinking && Mathf.FloorToInt((Time.time - _blinkStartedAt) / Mathf.Max(0.01f, blinkInterval)) % 2 == 0)
                 color.a = 0f;
+
             areaImage.color = color;
         }
 
         public void SetBox(BoxCollider2D box)
         {
             Vector3 scale = box.transform.lossyScale;
+
             SetWorldRect(box.transform.TransformPoint(box.offset),
                 new Vector2(box.size.x * Mathf.Abs(scale.x), box.size.y * Mathf.Abs(scale.y)), box.transform.rotation);
         }
@@ -85,6 +94,7 @@ namespace _Scripts.UI.HitFeedback
         public void SetPolygon(Bounds bounds, System.Collections.Generic.IReadOnlyList<Vector2> worldPoints)
         {
             SetWorldRect(bounds.center, bounds.size, Quaternion.identity);
+
             if (areaImage is ConvexPolygonGraphic polygon) polygon.SetPoints(worldPoints, bounds.center);
         }
 
@@ -100,6 +110,7 @@ namespace _Scripts.UI.HitFeedback
         public void SetRadialLanes(Vector2 origin, int count, float distance, float width)
         {
             SetWorldRect(origin, Vector2.one * (Mathf.Max(0f, distance) * 2f + Mathf.Max(0.01f, width)), Quaternion.identity);
+
             if (areaImage is RadialLanesGraphic lanes) lanes.SetLanes(count, distance, width);
         }
 
@@ -120,12 +131,14 @@ namespace _Scripts.UI.HitFeedback
 
             _rect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg);
             float heightScale = Vector3.Dot(Vector3.Cross(Vector3.forward, right.normalized), up);
+
             _rect.localScale = new Vector3(right.magnitude, heightScale,
                 parent != null ? InverseScale(parent.lossyScale.z) : 1f);
             _rect.sizeDelta = size;
         }
 
         private static float InverseScale(float value) => Mathf.Abs(value) > 0.0001f ? 1f / value : 1f;
+
         private void OnDisable() => Hide();
     }
 }

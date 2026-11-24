@@ -1,4 +1,6 @@
-﻿using _Scripts._Core._EventSystem;
+﻿using System;
+using _Scripts._Core._Debug;
+using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.UI.PlayerUI.InteractUI_system;
@@ -71,9 +73,23 @@ namespace _Scripts.Agent.Players.InteractSystem
         private void SetInteractUI()
         {
             InteractUISettingEvent evt = InteractUIEvent.InteractUISettingEvent;
+
+            Vector3 pos;
+            bool active;
             
-            evt.Init(_interact != null, (_interact?.Position ?? Vector3.zero));
+            try
+            {
+                active = _interact != null;
+                pos = _interact?.Position ?? Vector3.zero;
+            }
+            catch
+            {
+                FDebug.LogWarning("상호작용 객체 소멸함", this);
+                active = false;
+                pos = Vector3.zero;
+            }
             
+            evt.Init(active, pos);
             EventBus<InteractUISettingEvent>.Raise(evt);
         }
 

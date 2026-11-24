@@ -53,6 +53,7 @@ namespace _Scripts.Agent.Enemies.Skills
 
             Bounds bounds = attackHitbox.bounds;
             float height = _movement.GetTargetHeightDifference(target);
+
             return height >= minimumHeightForUpwardAttack &&
                 Enemy.transform.position.y + height <= bounds.max.y &&
                 target.position.x >= bounds.min.x && target.position.x <= bounds.max.x;
@@ -63,7 +64,9 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnUseSkill()
         {
             float previousCooldownStart = CoolTimeStartTime;
+
             base.OnUseSkill();
+
             if (cooldownFromStrike) CoolTimeStartTime = previousCooldownStart;
         }
 
@@ -88,11 +91,15 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             if (!lockFacingDuringPreparation && IsPreparing && CanContinue) Enemy.FaceTarget();
+
             base.UpdateSkill();
+
             if (!IsUsing || !HasReleased) return;
+
             if (Time.time < _activeUntil)
             {
                 TryHit();
+
                 return;
             }
 
@@ -119,6 +126,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 return false;
 
             AnimatorStateInfo state = attackAnimator.GetCurrentAnimatorStateInfo(0);
+
             return state.IsName(attackStateName) && state.normalizedTime < 1f;
         }
 
@@ -131,6 +139,7 @@ namespace _Scripts.Agent.Enemies.Skills
             }
 
             if (cooldownFromStrike) CoolTimeStartTime = Time.time;
+
             _activeUntil = Time.time + Mathf.Max(0.01f, activeDuration);
             _recoveryUntil = _activeUntil + Mathf.Max(0f, recoveryTime);
             PlayAnimation(attackStateName);
@@ -146,6 +155,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 Vector2.Dot((Vector2)(CastTarget.position - Enemy.transform.position), _direction) <= 0f) return;
 
             Physics2D.SyncTransforms();
+
             if (attackUpward && !IsInUpwardRange(CastTarget)) return;
 
             attackHitbox.Overlap(new ContactFilter2D { useTriggers = true }, _overlaps);
@@ -159,24 +169,29 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, point, _direction)) continue;
 
                 _hitApplied = true;
+
                 if (cooldownFromStrike) CoolTimeStartTime = Time.time;
+
                 break;
             }
         }
 
         // 재사용한 그림의 Animation Event가 시간 기반 판정/후딜을 조기 종료하지 않게 합니다.
         public override void OnAttackHit() { }
+
         public override void OnAttackFinished() { }
 
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
+
             if (Enemy != null && !Enemy.IsDead) PlayAnimation(idleStateName);
         }
 
         protected override void OnStopSkill()
         {
             base.OnStopSkill();
+
             if (Enemy != null && !Enemy.IsDead) PlayAnimation(idleStateName);
         }
 

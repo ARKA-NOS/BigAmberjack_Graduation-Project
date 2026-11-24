@@ -18,5 +18,12 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             FDebug.Log("Title Upgrade");
             statModule.GetStat(statData).SetModify(this,statModifyData);
         }
+
+        public override void Downgrade(ModuleOwner owner)
+        {
+            if (!owner.TryGetModule(out IStatModule statModule)) return;
+            if (statData == null) return;
+            statModule.GetStat(statData).RemoveModify(this);
+        }
     }
 }

@@ -22,5 +22,11 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             buff.Init(owner, statModule.GetStat(damageStat), statModule.GetStat(dashRangeStat),
                 firstAttackBonus, dashRangeBonus, boostedInvincibleTime, requiredHits);
         }
+
+        public override void Downgrade(ModuleOwner owner)
+        {
+            foreach (MultitaskBuff buff in owner.GetComponents<MultitaskBuff>())
+                Destroy(buff);
+        }
     }
 }

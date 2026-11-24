@@ -1,0 +1,110 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "AirTransition",
+        "enhanced": false,
+        "total": 2.169609,
+        "shotAt": 1.60380554,
+        "arrivedAt": 1.60380554,
+        "shotHeight": 6.180225,
+        "shots": 1,
+        "damagePerShot": 10,
+        "flyingSeen": true,
+        "idleAfterShot": true,
+        "jetSeen": true,
+        "postAttackDelay": 0.150001526
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": false,
+        "crossings": 1,
+        "releases": 1,
+        "repeatWarningSeen": false,
+        "pauseSeen": false,
+        "speed": 600,
+        "finalAngle": 60.0000038,
+        "damage": 24,
+        "hits": 1
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": false,
+        "drops": 3,
+        "firstDrop": 0.8027191,
+        "interval": 1.05,
+        "warningDurations": [
+          1.65929413,
+          1.64345551,
+          1.66817474
+        ],
+        "radius": 2.67857146,
+        "damagePerBomb": 22,
+        "descentAt": 3.64406586,
+        "total": 4.575012,
+        "predictionSeen": true,
+        "fixedMarkers": true,
+        "horizontalTravel": 2.50368786
+      },
+      {
+        "pattern": "Descent",
+        "duration": 0.7535019,
+        "speed": 10,
+        "idleAfterLanding": true
+      },
+      {
+        "pattern": "AirTransition",
+        "enhanced": true,
+        "total": 1.1214447,
+        "shotAt": 0.4609604,
+        "arrivedAt": 1.1214447,
+        "shotHeight": 0.6299999,
+        "shots": 5,
+        "damagePerShot": 10,
+        "flyingSeen": true,
+        "idleAfterShot": true,
+        "jetSeen": false,
+        "postAttackDelay": 0.125
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": true,
+        "crossings": 2,
+        "releases": 2,
+        "repeatWarningSeen": false,
+        "pauseSeen": true,
+        "speed": 720,
+        "finalAngle": -60,
+        "damage": 56,
+        "hits": 2
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": true,
+        "drops": 6,
+        "firstDrop": 0.6562576,
+        "interval": 0.508,
+        "warningDurations": [
+          1.168129,
+          1.162178,
+          1.15557861,
+          1.14367676,
+          1.15534973,
+          1.17627716
+        ],
+        "radius": 3.21428561,
+        "damagePerBomb": 26,
+        "descentAt": 3.577446,
+        "total": 4.37486267,
+        "predictionSeen": true,
+        "fixedMarkers": true,
+        "horizontalTravel": 0
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 303,
+  "executeMs": 16819,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_e0285bdc946b4497be91aa56d0c1f69e"
+}

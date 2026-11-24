@@ -23,6 +23,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField] private Camera arenaCamera;
         [Tooltip("화면/아레나 경계 바깥의 여유 거리. 보스 크기는 별도로 더합니다.")]
         [SerializeField, Min(0.1f)] private float offscreenPadding = 1f;
+
         private readonly RaycastHit2D[] _floorHits = new RaycastHit2D[8];
         private bool _hasDetectedFloor;
         private float _detectedFloorY;
@@ -46,6 +47,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private bool TryFindFloor(Vector2 center, out float floorY)
         {
             floorY = 0f;
+
             if (!detectFloor) return false;
 
             var filter = new ContactFilter2D { useLayerMask = true, layerMask = floorLayers, useTriggers = false };
@@ -59,6 +61,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                     (_owner != null && hit.collider.transform.IsChildOf(_owner.transform))) continue;
 
                 floorY = hit.point.y;
+
                 return true;
             }
 
@@ -67,14 +70,17 @@ namespace _Scripts.Agent.Enemies.Bosses
 
         public Bounds LaserBounds => new Bounds(new Vector3(Center.x, (FloorY + LaserLeft.y) * 0.5f, 0f),
             new Vector3(LaserRight.x - LaserLeft.x, LaserLeft.y - FloorY, 0f));
+
         // 중심을 벽의 내측 경계에 맞추고, 바깥 절반은 벽의 렌더링으로 가립니다.
         public Vector2 GetLaserStart(int traversal) => traversal % 2 == 0 ? LaserLeft : LaserRight;
+
         public Vector2 GetLaserEnd(int traversal) => traversal % 2 == 0 ? LaserRight : LaserLeft;
 
         public Vector2 GetOutsidePoint(bool right, float bodyRadius, float brakingDistance = 0f)
         {
             Bounds view = GetViewBounds();
             float margin = Mathf.Max(0f, bodyRadius) + Mathf.Max(0.1f, offscreenPadding) + Mathf.Max(0f, brakingDistance);
+
             return new Vector2(right ? Mathf.Max(LaserRight.x, view.max.x) + margin :
                 Mathf.Min(LaserLeft.x, view.min.x) - margin, LaserLeft.y);
         }
@@ -92,14 +98,17 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (depth <= 0f) return arena;
 
             Bounds view = new Bounds(camera.ViewportToWorldPoint(new Vector3(0f, 0f, depth)), Vector3.zero);
+
             for (int x = 0; x <= 1; x++)
                 for (int y = 0; y <= 1; y++)
                     view.Encapsulate(camera.ViewportToWorldPoint(new Vector3(x, y, depth)));
+
             // 이미 화면과 떨어진 다른 방/테스트 보스를 카메라가 있는 방까지 이동시키지 않습니다.
             if (view.max.x < arena.min.x || view.min.x > arena.max.x || view.max.y < arena.min.y || view.min.y > arena.max.y)
                 return arena;
 
             arena.Encapsulate(view);
+
             return arena;
         }
 
@@ -114,17 +123,21 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             float top = Center.y + Mathf.Max(0f, laserHeight);
             float bottom = Mathf.Min(FloorY + 1f, top);
+
             return new Vector2(Mathf.Clamp(position.x, LaserLeft.x, LaserRight.x), Mathf.Clamp(position.y, bottom, top));
         }
 
 #if UNITY_EDITOR
+
         private Vector2 GetGizmoCenter()
         {
             // Play 중에는 움직이는 보스가 아니라 Initialize에서 기억한 전투 중심을 표시합니다.
             if (Application.isPlaying && _owner != null) return Center;
             if (centerAnchor != null) return centerAnchor.position;
+
             // 편집 중에는 Initialize가 호출되지 않습니다. 자식 모듈 위치가 아닌 보스 생성 위치를 씁니다.
             ModuleOwner owner = GetComponentInParent<ModuleOwner>();
+
             return owner != null ? (Vector2)owner.transform.position : (Vector2)transform.position;
         }
 
@@ -135,6 +148,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             float bottom = running ? FloorY : TryFindFloor(center, out float detected) ? detected : center.y - Mathf.Max(0.1f, floorDistance);
             // 편집 중에도 바닥 변경분만큼 위쪽 경계를 함께 옮겨 원본 레이저 길이를 유지합니다.
             float top = running ? Center.y + LaserOffsetY : bottom + Mathf.Max(0.1f, floorDistance + laserHeight);
+
             return new Bounds(new Vector3(center.x, (bottom + top) * 0.5f, 0f),
                 new Vector3(Mathf.Max(1f, halfWidth) * 2f, top - bottom, 0f));
         }
@@ -144,13 +158,16 @@ namespace _Scripts.Agent.Enemies.Bosses
             Bounds bounds = GetGizmoBounds();
             Color previousColor = Gizmos.color;
             Matrix4x4 previousMatrix = Gizmos.matrix;
+
             Gizmos.matrix = Matrix4x4.identity; // 아레나 크기는 보스 스케일과 무관한 월드 단위입니다.
+
             try
             {
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireCube(bounds.center, bounds.size);
                 Vector3 left = new Vector3(bounds.min.x, bounds.max.y + 0.4f, 0f);
                 Vector3 right = new Vector3(bounds.max.x, left.y, 0f);
+
                 Gizmos.DrawLine(left, right);
                 Gizmos.DrawLine(left - Vector3.up * 0.15f, left + Vector3.up * 0.15f);
                 Gizmos.DrawLine(right - Vector3.up * 0.15f, right + Vector3.up * 0.15f);
@@ -161,6 +178,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 Gizmos.DrawLine(bounds.min, new Vector3(bounds.max.x, bounds.min.y, 0f));
                 Gizmos.color = Color.yellow;
                 Vector3 center = GetGizmoCenter();
+
                 Gizmos.DrawLine(center - Vector3.right * 0.2f, center + Vector3.right * 0.2f);
                 Gizmos.DrawLine(center - Vector3.up * 0.2f, center + Vector3.up * 0.2f);
             }

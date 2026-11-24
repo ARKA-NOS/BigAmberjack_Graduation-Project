@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using _Scripts._Core._Debug;
+using _Scripts._Core._EventSystem;
 using _Scripts.DataStructure;
 using _Scripts.Loading;
 using _Scripts.Maps.New_Map.MapGenerateData;
@@ -35,17 +36,31 @@ namespace _Scripts.Maps.New_Map
         {
             if (wallFiller == null)
                 wallFiller = GetComponentInChildren<MapWallFiller>(true);
-
+            
             GenerateMap(mapGenerateSetting);
+
+            EventBus<MapGenerateEvent>.Subscribe(HandleMapGenerate);
         }
 
         private void OnDestroy()
         {
+            EventBus<MapGenerateEvent>.UnSubscribe(HandleMapGenerate);
+            
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = null;
         }
 
+        private void HandleMapGenerate(MapGenerateEvent evt)
+        {
+            if (!evt.Active)
+            {
+                ClearGeneratedMap();
+                return;
+            }
+            GenerateMap(mapGenerateSetting);
+        }
+        
         #region MapGenerate
 
         public void GenerateMap(MapGenerateSetting mapSetting)
@@ -71,7 +86,7 @@ namespace _Scripts.Maps.New_Map
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-
+            
             _currentSeed = seed;
             GenerateMapUniTask(mapSetting, seed, _generateCts.Token).Forget();
         }
@@ -83,7 +98,7 @@ namespace _Scripts.Maps.New_Map
             using LoadingScope loading = LoadingEvents.BeginLoading();
 
             // 오류가 난 맵을 같은 시드로 다시 확인할 수 있도록 시드를 먼저 남긴다.
-            FDebug.Log($"[MapGenerator] Seed={seed}");
+            FDebug.Log($"[MapGenerator] Seed={seed}", this);
 
             ClearGeneratedMap();
 
@@ -116,7 +131,7 @@ namespace _Scripts.Maps.New_Map
         }
 
         #region Addressable
-
+        
         private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;

@@ -10,13 +10,15 @@ namespace _Scripts.UI.HitFeedback
         public readonly float Damage;
         public readonly bool IsCritical;
         public readonly Vector3 Position;
+        public readonly Vector2 Direction;
 
-        public DamageIndicatorData(int sourceId, float damage, bool isCritical, Vector3 position)
+        public DamageIndicatorData(int sourceId, float damage, bool isCritical, Vector3 position, Vector2 direction = default)
         {
             SourceId = sourceId;
             Damage = damage;
             IsCritical = isCritical;
             Position = position;
+            Direction = direction;
         }
     }
 

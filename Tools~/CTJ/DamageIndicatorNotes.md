@@ -2,18 +2,26 @@
 
 작업일: 2026-11-09
 
+위치·크기 분산 추가: 2026-11-23.
+
+현재 폰트: **AmberjackPixel Raster**, 숫자 높이 보정 크기 42. 2026-11-24에 적용했으며 [픽셀 폰트 적용·테스트 설명](Boss23VisualFixNotes.md)을 참고한다.
+
 ## 적용 결과
 
 적의 실제 HP가 줄어든 타격마다 숫자가 크게 나타나고, 작아졌다가 다시 커지며 위로 올라가 사라진다. 일반 타격은 흰색, `DamageData.IsCritical == true`인 타격은 노란색과 더 강한 크기 변화로 표시한다.
 
 크리티컬 확률이나 데미지 배율 계산은 추가하지 않았다. 공용 `DamageData`에 이미 있던 `IsCritical`을 읽는다. 같은 피해량 2를 넣으면 플래그가 달라도 HP는 똑같이 2만 줄어들며 연출만 달라진다.
 
-Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDamageIndicatorModule` 자식을 연결했다. 일반 Canvas와 TextMeshProUGUI를 사용하며, 기존 `NanumSquareRoundB SDF` 글꼴을 참조한다. 전용 테두리 머티리얼만 허용 영역 안에 만들었고 원본 글꼴·공용 UI·공용 데미지 구조는 수정하지 않았다.
+최초에는 Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDamageIndicatorModule` 자식을 연결했다. 현재 Enemy17~22·Boss23도 같은 모듈과 표시 프리팹을 사용한다. 일반 Canvas와 TextMeshProUGUI를 사용하며, 기존 `NanumSquareRoundB SDF` 글꼴을 참조한다. 전용 테두리 머티리얼만 허용 영역 안에 만들었고 원본 글꼴·공용 UI·공용 데미지 구조는 수정하지 않았다.
+
+표시 위치는 기존 기준점(피격 지점 또는 적 원점 + World Offset)을 중심으로 공격 진행 방향 쪽 반원에서 무작위로 선택한다. 기준점과의 거리는 최대 0.5유닛이며 일반·크리티컬 모두 같은 위치 분산을 쓴다. 피격 방향이 없으면 가해자→적 방향, 이어서 피격 법선의 반대 방향을 사용한다. 방향이 전혀 없는 미리보기·직접 표시 요청은 원 전체에서 선택한다.
+
+숫자의 기본 크기 배율은 생성 때 한 번만 뽑는다. 일반 0.8~1배, 크리티컬은 일반 기본 크기를 기준으로 1.3~1.6배다. 기존 일반/크리티컬의 크기 애니메이션 곡선에 이 배율을 곱하며, 재생 프레임마다 난수를 다시 뽑지 않는다. 기존 크리티컬 고정 배율 1.25는 제거하여 중복으로 곱하지 않는다. 크리티컬의 더 강한 펀치 곡선은 유지하므로 애니메이션 중 모든 순간의 두 글자 크기 비율이 항상 1.3~1.6인 것은 아니다.
 
 ## 구조와 제거 방법
 
 1. `EnemyBase`가 `NewHealthModule.OnHealthChanged`에서 실제 HP 감소를 확인한다.
-2. `EnemyDamageIndicatorModule`이 `DamageReceived` 이벤트를 받아 위치, 감소량, 크리티컬 여부를 ViewModel로 전달한다.
+2. `EnemyDamageIndicatorModule`이 `DamageReceived` 이벤트를 받아 위치, 감소량, 크리티컬 여부, 피격 방향을 ViewModel로 전달한다.
 3. `EnemyDamageIndicatorBinder`가 표시 요청을 받아 `EnemyDamageIndicatorPopup`을 생성한다.
 4. 숫자는 적의 부모에서 분리된 월드 Canvas로 재생되고, 자기 수명이 끝나면 제거된다. 적이 먼저 파괴되어도 마지막 숫자는 끝까지 남는다. 씬이 언로드되면 같은 씬의 숫자도 함께 정리된다.
 
@@ -39,16 +47,18 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDama
 | --- | --- |
 | Normal Color | 흰색 |
 | Duration | 일반 표시 수명 0.8초 |
+| Normal Size Range | 일반 기본 크기 기준 0.8~1배. 생성마다 한 번 선택 |
 | Normal Scale | 기본 크기의 1.45 → 0.8 → 1.12 → 1배 |
 | Critical Color | 노란색 |
-| Critical Size Multiplier | 기본 크기 1.25배 |
-| Critical Scale | 1.8 → 0.65 → 1.4 → 1배. 위의 1.25배와 곱해짐 |
+| Critical Size Range | 일반 기본 크기 기준 1.3~1.6배. 일반 무작위 배율과 중복 적용하지 않음 |
+| Critical Scale | 1.8 → 0.65 → 1.4 → 1배. 선택된 크리티컬 크기 배율과 곱해짐 |
 | Critical Duration Multiplier | 1.1배, 즉 0.88초 |
 | Rise Distance | 위로 이동하는 거리 1.1유닛 |
 | Critical Rise Multiplier | 크리티컬 상승 거리 1.2배 |
 | Rise Start | 전체 수명의 22%부터 상승 |
 | Fade Start | 전체 수명의 55%부터 투명해짐 |
-| Horizontal Spread / Drift | 시작 위치 0.16유닛, 이동 중 좌우 흔들림 0.12유닛 이내 |
+| Spawn Radius | 공격 방향 쪽 반원 안의 생성 거리 상한 0.5유닛 |
+| Horizontal Drift | 상승 중 좌우 이동 0.12유닛 이내. 시작 위치 분산과 별개 |
 
 기본 글자 크기는 같은 프리팹의 `Damage` 자식 TextMeshProUGUI에서 `Font Size`를 조절한다. 월드 Canvas의 기본 스케일은 0.01이며, 적의 스케일·좌우 반전과 무관하게 표시된다.
 
@@ -62,7 +72,7 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDama
 ## 직접 테스트하는 방법
 
 1. 저장한 테스트 씬에 플레이어와 기존 적 프리팹을 배치하고 Play한다.
-2. 적을 때린다. 흰색 숫자가 **크게 시작 → 축소 → 재확대 → 상승·페이드** 순서로 나오는지 확인한다. 적 여러 마리를 동시에 때리거나 연타해 각 타격이 따로 표시되는지도 본다.
+2. 적을 좌우에서 연속으로 때린다. 기준점에서 공격 진행 방향 쪽으로 최대 0.5유닛 내의 서로 다른 위치에 흰색 숫자가 나오고 크기도 조금씩 달라져야 한다. **크게 시작 → 축소 → 재확대 → 상승·페이드**는 유지된다. 적 여러 마리를 동시에 때리거나 연타해 각 타격이 따로 표시되는지도 본다.
 3. 적을 죽인다. 마지막 타격 숫자가 적의 제거와 함께 끊기지 않고 자기 연출을 끝내는지 확인한다.
 4. 실제 크리티컬 공격이 아직 없으므로, 실행 중 적의 `EnemyDamageIndicatorModule` 자식을 선택하고 컴포넌트 메뉴에서 `Preview/Critical 24 (Play Mode, No Damage)`를 실행한다. 노란색으로 더 크게 움직이며 **실제 HP는 바뀌지 않는다**. `Preview/Normal 24 (Play Mode, No Damage)`와 비교할 수 있다.
 5. 해당 모듈을 껐다 켜고 다시 공격한다. 꺼진 동안에는 숫자가 안 나오며, 다시 켰을 때 중복 표시가 생기지 않는지 확인한다.
@@ -71,13 +81,28 @@ Enemy01, Enemy02, Enemy04, Catto, MadGhost, RobotEyeBoss 프리팹에 `EnemyDama
 
 ```csharp
 indicatorModule.ShowDamage(24f, true, worldPosition);
+// 공격 방향도 지정하려면 네 번째 인자를 전달한다.
+indicatorModule.ShowDamage(24f, true, worldPosition, Vector2.right);
 ```
+
+## 위치·크기 분산 검증
+
+2026-11-23 EnemyTestScene Play Mode에서 일반·크리티컬 각각 512회, 총 1,024회의 표시를 검사했다. 최신 조정값으로 재검증한 결과, 8개 방향(상하좌우·대각선) 모두 반경 0.5유닛 이내이며 공격 방향의 뒤쪽에 생성되지 않았다. 일반 크기는 0.80078~0.99986배, 크리티컬은 1.30061~1.59949배였고 최대 생성 거리는 각각 약 0.49954/0.49950유닛이었다. 한 표시를 재생하는 동안 배율이 바뀌거나 다시 Show할 때 크기가 누적되지 않는 것도 확인했다.
+
+현재 Enemy17 프리팹의 실제 `ApplyDamage` 경로에서 오른쪽·왼쪽 피격, 가해자 방향 대체, 법선 방향 대체의 네 경로가 표시 위치에 전달됐다. 두 적에서 같은 프레임의 표시 요청 4개가 각각 한 번씩 생성되고 수명 후 모두 제거됐다. 소수 반올림과 흰색/노란색 표시도 유지됐다. 검증은 저장되지 않는 런타임 인스턴스로 진행했고 종료 후 원래 EnemyTestScene의 Edit Mode로 돌아왔다.
+
+컴파일 오류 0건, 활성·레거시를 포함한 적 프리팹 15개의 모듈·Binder·ViewModel·표시 프리팹·글꼴 참조 검사를 통과했다. 씬 파일을 수정하거나 저장하지 않았다.
+
+자동 재검증은 저장된 EnemyTestScene의 Edit Mode에서 `VerifyDamageIndicators.EnterVariationPlay`, Play Mode 전환 후 `VerifyDamageIndicators.RunVariation`을 Pipeline `script run`으로 호출한다. 이 도구가 시작한 실행을 마친 뒤 직접 종료한다. 기존 `BeginPlay/RunPlay`는 구형 적을 사용하는 별도의 과거 검증 경로다.
 
 ## 사용한 문법과 이유
 
 - `Module` 상속과 `Initialize(ModuleOwner owner)`: 기존 적 모듈 수집·초기화 규칙을 그대로 사용한다.
 - C# 이벤트의 `+=` / `-=`: 실제 피격 결과만 구독하고, 비활성화·제거 때 해제한다. 재활성화 시 중복 구독되지 않도록 `_subscribed`로 관리한다.
 - `readonly struct DamageIndicatorData`: 표시 요청을 값으로 복사한다. 여러 적의 연타가 다음 요청의 데이터로 덮이는 일을 막고, 생성 후 필드가 바뀌지 않게 한다.
+- `Vector2 direction = default`는 선택적 매개변수다. 기존 세 인자의 `ShowDamage`와 네 인자의 데이터 생성 코드는 유지하면서, 방향이 있는 호출만 추가 인자를 전달할 수 있다.
+- `Random.insideUnitCircle`로 원 안의 위치를 뽑고 반경 0.5를 곱한다. `Vector2.Dot`이 음수면 공격 방향의 뒤쪽이므로 그 성분만 대칭 이동한다. 이 과정은 원래 반경과 균일한 면적 분포를 유지한다.
+- `Random.Range`로 일반/크리티컬의 크기 배율을 한 번 뽑아 저장하고 매 프레임 같은 배율에 곡선 값을 곱한다. `Mathf.Min/Max`로 범위의 순서가 뒤집히거나 0 이하로 입력된 경우에도 양수 범위를 사용한다.
 - 제네릭 `AbstractUIViewModel<DamageIndicatorData>` / `AbstractUIBinder<DamageIndicatorData>`: 공용 UI 바인딩 방식을 재사용한다. 새로운 인터페이스나 추상 클래스는 만들지 않았다.
 - `base.Awake()`: 공용 Binder가 ViewModel 이벤트를 구독하도록 유지한다. 종료 시에는 상속한 `OnDestroy`가 구독을 해제한다.
 - 튜플과 구조체 복사: `EnemyBase`의 기존 피격 튜플을 복사해 표시 이벤트의 `DamageAmount`만 실제 HP 감소량으로 맞춘다. 크리티컬 여부·가해자·방향은 보존한다.

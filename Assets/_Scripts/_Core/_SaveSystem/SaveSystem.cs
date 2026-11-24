@@ -13,10 +13,8 @@ namespace _Scripts._Core._SaveSystem
         public static string SaveDirectory => Application.persistentDataPath;
         
         private static string GetPath<T>(string name)
-{
-    return Path.Combine(SaveDirectory, $"{GetTypeKey(typeof(T))}_{name}{Ext}");
-}
-
+            => Path.Combine(SaveDirectory, $"{GetTypeKey(typeof(T))}_{name}{Ext}");
+        
         private static string GetTypeKey(Type type)
         {
             if (!type.IsGenericType) return type.Name;
@@ -50,7 +48,7 @@ namespace _Scripts._Core._SaveSystem
         {
             string path = GetPath<T>(name);
             if (!File.Exists(path)) return defaultValue;
-
+            
             try
             {
                 string json = File.ReadAllText(path);

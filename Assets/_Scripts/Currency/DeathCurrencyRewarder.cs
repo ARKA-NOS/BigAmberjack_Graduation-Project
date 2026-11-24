@@ -1,3 +1,4 @@
+using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
 using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Enemies;
@@ -28,12 +29,12 @@ namespace _Scripts.Currency
             CurrencyData data = rewardCurrency != null ? CurrencySystem.GetCurrencyData(rewardCurrency) : null;
             if (data == null)
             {
-                Debug.LogWarning($"[{name}] 보상 재화를 찾지 못해 사망 보상을 지급하지 못했습니다.", this);
+                FDebug.LogWarning($"[{name}] 보상 재화를 찾지 못해 사망 보상을 지급하지 못했습니다.", this);
                 return;
             }
 
             data.Add(amount);
-            Debug.Log($"[{name}] 사망 보상 {rewardCurrency.CurrencyName} +{amount} (처치 {killCount})", this);
+            FDebug.Log($"[{name}] 사망 보상 {rewardCurrency.CurrencyName} +{amount} (처치 {killCount})", this);
         }
 
         public int CalculateReward(int killCount) => baseReward + killCount * rewardPerKill;
@@ -51,7 +52,7 @@ namespace _Scripts.Currency
         private void LogExpectedReward()
         {
             int killCount = GetKillCount();
-            Debug.Log($"처치 {killCount} → 예상 보상 {CalculateReward(killCount)}", this);
+            FDebug.Log($"처치 {killCount} → 예상 보상 {CalculateReward(killCount)}", this);
         }
     }
 }

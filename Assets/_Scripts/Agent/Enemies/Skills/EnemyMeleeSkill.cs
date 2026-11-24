@@ -14,6 +14,7 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float damage = 10f;
         [Tooltip("종료 이벤트 누락 복구 시간. 실제 공격 클립보다 길게 둡니다.")]
         [SerializeField, Min(0.1f)] private float attackTimeout = 1.5f;
+
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private bool _hitEventConsumed;
         private float _endDeadline;
@@ -49,6 +50,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 !attackAnimator.HasState(0, Animator.StringToHash(attackStateName)))
             {
                 StopSkill();
+
                 return;
             }
 
@@ -82,11 +84,14 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (IsUsing && (attackAnimator == null || !attackAnimator.isActiveAndEnabled || attackAnimator.runtimeAnimatorController == null))
             {
                 StopSkill();
+
                 return;
             }
+
             if (!IsUsing || !HasReleased || Time.time < _endDeadline) return;
 
             EndSkill();
@@ -111,6 +116,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 attackAnimator.runtimeAnimatorController == null || string.IsNullOrEmpty(idleStateName)) return;
 
             int idleHash = Animator.StringToHash(idleStateName);
+
             if (attackAnimator.HasState(0, idleHash)) attackAnimator.Play(idleHash, 0, 0f);
         }
     }

@@ -50,40 +50,51 @@ namespace _Scripts.Agent.Enemies
 
             // 사망 이벤트가 여러 번 호출되어도 코인은 한 묶음만 생성합니다.
             _rewardHandled = true;
+
             if (rewardCurrency == null || _rewardAmount == null)
             {
                 Debug.LogWarning($"{_enemy.name}: 사망 보상의 Currency / StatModule / 수량 Stat을 확인하세요.", this);
+
                 return;
             }
 
             float value = _rewardAmount.Value;
+
             if (float.IsNaN(value) || float.IsInfinity(value) || (double)value > int.MaxValue)
             {
                 Debug.LogWarning($"{_enemy.name}: 유효하지 않은 사망 보상 수량입니다: {value}", this);
+
                 return;
             }
+
             if (value < 1f) return;
 
             int amount = Mathf.FloorToInt(value);
             int bonusLimit = Mathf.Clamp(maxBonusAmount, 0, int.MaxValue - amount);
+
             if (bonusLimit > 0) amount += Random.Range(0, bonusLimit + 1);
 
             if (coinPrefab == null)
             {
                 Debug.LogWarning($"{_enemy.name}: 사망 보상의 Coin Prefab을 연결하세요.", this);
+
                 return;
             }
 
             // 생성 시점이 아닌 사망 시점에 조회해 매니저 초기화 순서에 대한 의존을 줄입니다.
             CurrencyData currency = CurrencySystem.GetCurrencyData(rewardCurrency);
+
             if (currency == null)
             {
                 Debug.LogWarning($"{_enemy.name}: CurrencyManager 초기화와 {rewardCurrency.name} 등록을 확인하세요. 사망 보상은 지급되지 않았습니다.", this);
+
                 return;
             }
+
             if ((long)currency.Count + amount > int.MaxValue)
             {
                 Debug.LogWarning($"{_enemy.name}: 재화 보유량 한도를 초과하여 사망 보상을 지급하지 않았습니다.", this);
+
                 return;
             }
 
@@ -92,16 +103,20 @@ namespace _Scripts.Agent.Enemies
             int remainder = amount % count;
             Vector2 offset = spawnOffset;
             EnemyVerticalFlipModule verticalFlip = _enemy.GetModule<EnemyVerticalFlipModule>();
+
             if (verticalFlip != null && verticalFlip.IsFlipped) offset.y = -offset.y;
+
             Vector3 position = _enemy.transform.position + (Vector3)offset;
 
             for (int i = 0; i < count; i++)
             {
                 // 부모를 지정하지 않아 적의 사망 연출/제거와 코인의 수명이 독립적입니다.
                 EnemyRewardCoin coin = Instantiate(coinPrefab, position, Quaternion.identity);
+
                 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(coin.gameObject, _enemy.gameObject.scene);
                 // 구간을 나누어 같은 방향에 모두 겹쳐 날아가는 것을 줄입니다.
                 float spread = (i + Random.Range(0.1f, 0.9f)) / count;
+
                 coin.SetCollector(_enemy.Target);
                 coin.Launch(currency, baseAmount + (i < remainder ? 1 : 0), spread,
                     Mathf.Max(1f, deathCoinLaunchMultiplier));

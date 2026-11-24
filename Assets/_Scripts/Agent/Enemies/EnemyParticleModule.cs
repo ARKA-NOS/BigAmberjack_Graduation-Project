@@ -37,15 +37,18 @@ namespace _Scripts.Agent.Enemies
                         if (candidate == null) continue;
 
                         fallback = candidate;
+
                         if (candidate != _lastPrefab) count++;
                     }
 
                 if (count == 0) return _lastPrefab = fallback;
 
                 int choice = UnityEngine.Random.Range(0, count);
+
                 foreach (ParticleSystem candidate in randomPrefabs)
                     if (candidate != null && candidate != _lastPrefab && choice-- == 0)
                         return _lastPrefab = candidate;
+
                 return fallback;
             }
         }
@@ -61,6 +64,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float hitPointInset = 0.1f;
         [SerializeField, Min(0.01f)] private float effectScale = 1f;
         [SerializeField] private List<HitEffect> hitEffects = new List<HitEffect>();
+
         [Header("Death Burst")]
         [Tooltip("HP가 0 이하가 된 프레임에 적의 중심에서 한 번 방출합니다. 비우면 사용하지 않습니다.")]
         [SerializeField] private ParticleSystem deathBurstPrefab;
@@ -79,8 +83,10 @@ namespace _Scripts.Agent.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (hitSprites == null || hitSprites.Length == 0)
                 hitSprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -115,8 +121,11 @@ namespace _Scripts.Agent.Enemies
             Vector3 position = ResolveHitPosition(point, origin);
 
             if (!HasDirection(direction) && damage.Dealer != null) direction = origin - damage.Dealer.transform.position;
+
             if (!HasDirection(direction)) direction = -normal;
+
             if (!HasDirection(direction) && _enemy.Target != null) direction = origin - _enemy.Target.position;
+
             if (!HasDirection(direction)) direction = Vector2.right;
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -136,10 +145,12 @@ namespace _Scripts.Agent.Enemies
                 {
                     // 전달 방향 규약이 서로 다른 공격도 입자는 가해자로부터 멀어지는 쪽으로 뿜습니다.
                     Vector2 away = origin - damage.Dealer.transform.position;
+
                     if (HasDirection(away)) effectAngle = Mathf.Atan2(away.y, away.x) * Mathf.Rad2Deg;
                 }
 
                 Quaternion rotation = Quaternion.Euler(0f, 0f, entry.angleOffset + (entry.alignToHitDirection ? effectAngle : 0f));
+
                 SpawnEffect(selectedPrefab, position + rotation * (Vector3)entry.offset, rotation, entry.scale);
             }
         }
@@ -150,7 +161,11 @@ namespace _Scripts.Agent.Enemies
 
             Vector3 position = fallbackOrigin != null ? fallbackOrigin.position : transform.position;
             // 사망 분사는 타격 방향에 관계없이 전방위로 뻗는 전용 프리팹을 사용합니다.
-            SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale);
+            EnemyDeathFeedbackSettingsSO feedback = _enemy.DeathFeedbackSettings;
+
+            SpawnEffect(deathBurstPrefab, position, Quaternion.identity, deathBurstScale,
+                feedback != null ? feedback.BurstSpeedMultiplier : 1f,
+                feedback != null ? feedback.BurstCountMultiplier : 1f);
         }
 
         internal void PlayLandingEffect(ParticleSystem prefab, Vector3 position)
@@ -159,17 +174,21 @@ namespace _Scripts.Agent.Enemies
                 SpawnEffect(prefab, position, Quaternion.identity, 1f);
         }
 
-        private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale)
+        private void SpawnEffect(ParticleSystem prefab, Vector3 position, Quaternion rotation, float scale,
+            float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             while (_activeEffects.Count >= Mathf.Max(1, maxConcurrentEffects))
             {
                 EnemyHitParticle oldest = _activeEffects[0];
+
                 _activeEffects.RemoveAt(0);
+
                 if (oldest != null) oldest.Release();
             }
 
             EnemyHitParticle effect = EnemyHitParticle.Spawn(prefab, position, rotation, gameObject.scene,
-                Mathf.Max(0.01f, effectScale) * scale, maxEffectLifetime, this);
+                Mathf.Max(0.01f, effectScale) * scale, maxEffectLifetime, this, speedMultiplier, countMultiplier);
+
             if (effect != null) _activeEffects.Add(effect);
         }
 
@@ -201,15 +220,18 @@ namespace _Scripts.Agent.Enemies
                 }
 
             position = Vector2.MoveTowards(position, center, Mathf.Max(0f, hitPointInset));
+
             return new Vector3(position.x, position.y, origin.z);
         }
 
         private static bool IsFinite(Vector2 value) => !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
             !float.IsNaN(value.y) && !float.IsInfinity(value.y);
+
         private static bool HasDirection(Vector2 value) => IsFinite(value) && value.sqrMagnitude > 0.0001f;
 
         // 이미 생성된 효과는 적 사망/모듈 제거 후에도 자신의 수명이 끝날 때까지 재생됩니다.
         private void OnDisable() => Unsubscribe();
+
         private void OnDestroy() => Unsubscribe();
     }
 }

@@ -29,6 +29,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private int sortingOrderOffset = -1;
 
         private static readonly int ColorId = Shader.PropertyToID("_Color");
+
         private TrailRenderer _trail;
         private SpriteRenderer _visual;
         private MaterialPropertyBlock _properties;
@@ -43,11 +44,13 @@ namespace _Scripts.Agent.Enemies
             _following = true;
             _fading = false;
             _proximityOpacity = 1f;
+
             if (!isActiveAndEnabled || trailMaterial == null) return;
 
             if (_trail == null)
             {
                 var child = new GameObject("CoinTrail");
+
                 child.layer = gameObject.layer;
                 child.transform.SetParent(transform, false);
                 _trail = child.AddComponent<TrailRenderer>();
@@ -78,6 +81,7 @@ namespace _Scripts.Agent.Enemies
             }
 
             var gradient = new Gradient();
+
             gradient.SetKeys(
                 new[] { new GradientColorKey(headColor, 0f), new GradientColorKey(tailColor, 1f) },
                 new[] { new GradientAlphaKey(headColor.a, 0f), new GradientAlphaKey(tailColor.a, 1f) });
@@ -93,6 +97,7 @@ namespace _Scripts.Agent.Enemies
 
             float near = Mathf.Max(0f, hideDistance);
             float far = Mathf.Max(near + 0.01f, fadeStartDistance);
+
             _proximityOpacity = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(near, far, distance));
 
             if (_proximityOpacity <= 0.001f)
@@ -114,9 +119,11 @@ namespace _Scripts.Agent.Enemies
         public void StopTrail()
         {
             _following = false;
+
             if (_trail == null) return;
 
             _trail.emitting = false; // 도착 후 플레이어를 따라 새 꼬리를 만들지 않습니다.
+
             if (_fading) return;
 
             _fadeElapsed = 0f;
@@ -129,7 +136,9 @@ namespace _Scripts.Agent.Enemies
 
             _fadeElapsed += Time.deltaTime;
             float t = Mathf.Clamp01(_fadeElapsed / Mathf.Max(0.01f, collectFadeDuration));
+
             SetOpacity(_proximityOpacity * (1f - Mathf.SmoothStep(0f, 1f, t)));
+
             if (t < 1f) return;
 
             _fading = false;
@@ -152,6 +161,7 @@ namespace _Scripts.Agent.Enemies
         private void OnDisable()
         {
             _fading = false;
+
             if (_trail == null) return;
 
             _trail.emitting = false;

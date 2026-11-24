@@ -137,6 +137,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: d948ab6bdf25c8d4c8e6552bc5e07b58, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &2151875538884622094
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -595,6 +597,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 503e3ee9e33c9db4d93957b9b6e845df, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &8122218564872846960
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -744,6 +748,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 9b185769f7d49f84da9aced1100936b4, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &7117735165418215612
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1206,8 +1212,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 14b901055a686454281558f9c6f622cb, type: 2}
-  m_sharedMaterial: {fileID: 3758493450258777016, guid: 14b901055a686454281558f9c6f622cb, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
+  m_sharedMaterial: {fileID: -3068029881454497041, guid: 987e2d6796768c247b27f38637bef3f9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1433,6 +1439,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 052f906ad3c58b94a94fffcb163e9e26, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &5199104420766456182
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1477,7 +1485,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6641459281350516755}
   - {fileID: 7580431601818195293}
   - {fileID: 2324856195427346447}
   m_Father: {fileID: 1012087205076729211}
@@ -1508,15 +1515,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.78, g: 0.6, b: 0.2, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 1080943029, guid: c2b10fa67333cb140b4f0ba10077785d, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1840,6 +1847,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 9c856fc19557e19428de16f543e938a9, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &64052536387697784
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2172,6 +2181,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: fb8f418a34725bf479a700e49fc53f13, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &1513959003976920371
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2219,7 +2230,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: 0, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &971196033979361405
 CanvasRenderer:
@@ -2242,15 +2253,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.03, g: 0.04, b: 0.09, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 1080943029, guid: c2b10fa67333cb140b4f0ba10077785d, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2291,10 +2302,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8682774891476539327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -6, y: -6}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 4}
+  m_SizeDelta: {x: 54, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7826799130725228097
 CanvasRenderer:
@@ -2317,15 +2328,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.03, g: 0.04, b: 0.09, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: -1063030555, guid: c2b10fa67333cb140b4f0ba10077785d, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2591,7 +2602,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2552044426192145162}
   m_HandleRect: {fileID: 7567933262809436413}
   m_Direction: 2
-  m_Value: -0.0000004359654
+  m_Value: 0
   m_Size: 0.44
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2630,7 +2641,7 @@ RectTransform:
   m_Father: {fileID: 8421129146080457347}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0.4399979}
+  m_AnchorMax: {x: 1, y: 0.44}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3419,6 +3430,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 74983ef03b929354783bb3d59a3aca29, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &964293747051702762
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3491,7 +3504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.78, g: 0.6, b: 0.2, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3569,7 +3582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.78, g: 0.6, b: 0.2, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3916,6 +3929,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 943e78e988785a745860ef7844d21931, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &953360338027934284
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4202,6 +4217,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: a6c543a804505a043beddaf53ab7364d, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &2879167792322086824
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4385,7 +4402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 1120.0015}
+  m_AnchoredPosition: {x: 0, y: 1120.0001}
   m_SizeDelta: {x: 0, y: 2000}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &7545938225613875308
@@ -4525,6 +4542,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 94a6e1c78aac2944e83129c05763f3cd, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &2910695117057923454
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4811,6 +4830,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: cbb902aa3403e6844aec0753fe9d3d88, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &9085964243326431625
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4823,102 +4844,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!1 &7738896356364665333
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6641459281350516755}
-  - component: {fileID: 2020543957838803355}
-  - component: {fileID: 4108884921847595226}
-  - component: {fileID: 4772198445267564294}
-  m_Layer: 0
-  m_Name: Fill
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6641459281350516755
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7738896356364665333}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2112163764351486651}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &2020543957838803355
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7738896356364665333}
-  m_CullTransparentMesh: 1
---- !u!114 &4108884921847595226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7738896356364665333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.03, g: 0.04, b: 0.09, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!114 &4772198445267564294
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7738896356364665333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
-  m_IgnoreLayout: 1
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
 --- !u!1 &7823182221487173174
 GameObject:
   m_ObjectHideFlags: 0
@@ -5193,6 +5118,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: bdba8959dcc7ca448b0d658926b9a9a0, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &2631855929831609554
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5270,7 +5197,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bab965f3beba0e0409c5909e552209cd, type: 3}
+  m_Sprite: {fileID: -451977103, guid: c2b10fa67333cb140b4f0ba10077785d, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5507,6 +5434,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 6dccee17c3a614d4a8ead3238d225c40, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &7478969627997882741
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5793,6 +5722,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.UI.UpgradeUI.TestUpgradeNodeButton
   viewModel: {fileID: 0}
   upgradeNode: {fileID: 11400000, guid: 09168409fdf27be4f885dfd57ab21559, type: 2}
+  iconImage: {fileID: 0}
+  nameText: {fileID: 0}
 --- !u!225 &4676019378595691019
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -67,6 +67,31 @@ namespace _Scripts.Upgrade
             return true;
         }
 
+        // 구매한 노드를 모두 되돌리고 쓴 재화를 전부 돌려준다. 되돌린 노드가 하나도 없으면 false.
+        public bool ResetAll()
+        {
+            List<UpgradeNodeSO> purchased = new();
+            foreach (KeyValuePair<UpgradeNodeSO, bool> pair in Data)
+            {
+                if (pair.Value) purchased.Add(pair.Key);
+            }
+
+            if (purchased.Count == 0) return false;
+
+            // 상태를 바꾸는 순간 알림을 받은 쪽이 새 상태를 보므로, 재화를 먼저 돌려준 뒤 노드를 되돌린다.
+            foreach (UpgradeNodeSO node in purchased)
+            {
+                foreach (Cost cost in node.UpgradeCost)
+                    CurrencySystem.GetCurrencyData(cost.Type).Add(cost.Amount);
+            }
+
+            foreach (UpgradeNodeSO node in purchased)
+                SetUpgrade(node, false);
+
+            FDebug.Log($"[UpgradeTree] {TreeSo.TreeName} 초기화 완료 ({purchased.Count}개 환불)");
+            return true;
+        }
+
         public bool IsUpgrade(UpgradeNodeSO nodeSo)
             => Data.GetValueOrDefault(nodeSo, false);
 

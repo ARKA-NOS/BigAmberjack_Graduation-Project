@@ -39,7 +39,10 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.1f)] private float minimumBounceHeight = 0.8f;
         [Tooltip("플레이어가 아직 없거나 몸체 크기를 알 수 없을 때 사용할 키(월드 유닛).")]
         [SerializeField, Min(0.1f)] private float fallbackPlayerHeight = 2f;
-        [SerializeField, Range(0f, 1f)] private float horizontalRetention = 0.65f;
+        [Tooltip("수직 위를 0도로 한 튕김 각도 범위입니다. 음수는 왼쪽, 양수는 오른쪽이며 -60~60도로 제한합니다.")]
+        [SerializeField] private Vector2 bounceAngleRange = new Vector2(-30f, 30f);
+        [Tooltip("기존 튕김 높이에 곱할 무작위 배율입니다. 최소 높이를 지키도록 1 이상을 사용합니다.")]
+        [SerializeField] private Vector2 bounceHeightMultiplierRange = new Vector2(1f, 1.35f);
 
         [Header("Magnet")]
         [SerializeField, Min(0.1f)] private float initialHomingSpeed = 2.5f;
@@ -281,9 +284,19 @@ namespace _Scripts.Agent.Enemies
 
             bool hasCollector = TryGetCollectorBounds(out Vector2 collectorCenter, out float playerHeight);
             float height = Mathf.Max(minimumBounceHeight, playerHeight * Mathf.Max(0.5f, bounceHeightRatio));
-            float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
+            float minHeightMultiplier = Mathf.Max(1f, Mathf.Min(bounceHeightMultiplierRange.x, bounceHeightMultiplierRange.y));
+            float maxHeightMultiplier = Mathf.Max(minHeightMultiplier, Mathf.Max(bounceHeightMultiplierRange.x, bounceHeightMultiplierRange.y));
 
-            _velocity = new Vector2(_velocity.x * horizontalRetention, Mathf.Sqrt(2f * gravity * height));
+            height *= Random.Range(minHeightMultiplier, maxHeightMultiplier);
+
+            float minAngle = Mathf.Clamp(Mathf.Min(bounceAngleRange.x, bounceAngleRange.y), -60f, 60f);
+            float maxAngle = Mathf.Clamp(Mathf.Max(bounceAngleRange.x, bounceAngleRange.y), -60f, 60f);
+            float angle = Random.Range(minAngle, maxAngle) * Mathf.Deg2Rad;
+            float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
+            float upwardSpeed = Mathf.Sqrt(2f * gravity * height);
+
+            // 각도가 달라도 최소 수직 높이는 유지하며, 매 접촉의 방향과 세기를 독립적으로 뽑습니다.
+            _velocity = new Vector2(upwardSpeed * Mathf.Tan(angle), upwardSpeed);
             BounceCount++;
             _phase = CoinPhase.Bounce;
             _airTime = 0f;

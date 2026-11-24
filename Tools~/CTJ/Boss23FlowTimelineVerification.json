@@ -1,0 +1,46 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "RandomSelection",
+        "ground": [
+          77,
+          74,
+          89
+        ],
+        "air": [
+          84,
+          76
+        ]
+      },
+      {
+        "pattern": "GroundRest",
+        "duration": 1.274353,
+        "idle": true,
+        "damageAccepted": true
+      },
+      {
+        "pattern": "AirRest",
+        "duration": 1.25878906,
+        "flightIdle": true
+      },
+      {
+        "pattern": "BombFlow",
+        "returnedToGround": true,
+        "counterattackWindow": 1.255188,
+        "repeatedDescent": false
+      },
+      {
+        "pattern": "LastStandEntry",
+        "boundary": 0.35,
+        "oneWayPreserved": true,
+        "noEntryShotgun": true
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 361,
+  "executeMs": 15650,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_b3514038699e45ccb58cb60069811636"
+}

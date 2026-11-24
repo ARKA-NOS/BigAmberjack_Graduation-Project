@@ -1,0 +1,202 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "Movement",
+        "firstSpeed": 2.66666579,
+        "peakSpeed": 6.000006,
+        "lastSpeed": 1.38889968,
+        "smoothAcceleration": true,
+        "endX": 3
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": false,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.6512875,
+          "FirstDash": 1.20420742,
+          "Recovering": 2.024587
+        },
+        "releases": [
+          1.20420742
+        ],
+        "total": 2.22561479,
+        "damage": 18,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true,
+        "warningSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": false,
+        "direction": 1,
+        "shots": 7,
+        "firstShot": 0.5800755,
+        "interval": 0.32,
+        "idleAt": 2.65248036,
+        "recoveryAt": 2.64602256,
+        "retreat": 1.5,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "flashes": 7,
+        "launchers": [
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0"
+        ],
+        "hoverSeen": true,
+        "exhaustSeen": true,
+        "maxVerticalJitter": 0.29865104,
+        "hoverRange": [
+          0.08000296,
+          0.279989421
+        ]
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": true,
+        "direction": 1,
+        "shots": 7,
+        "firstShot": 0.5802841,
+        "interval": 0.32,
+        "idleAt": 2.64960814,
+        "recoveryAt": 2.645156,
+        "retreat": 0,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "flashes": 7,
+        "launchers": [
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0"
+        ],
+        "hoverSeen": false,
+        "exhaustSeen": false,
+        "maxVerticalJitter": 0.264491141,
+        "hoverRange": null
+      },
+      {
+        "pattern": "BlockedChargeWarning",
+        "direction": "left",
+        "width": 2.05344987,
+        "scaledBoundsMatch": true,
+        "hiddenOnCancel": true
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": true,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.45274353,
+          "FirstDash": 0.9114628,
+          "Reaiming": 1.45419979,
+          "SecondDash": 1.79548264,
+          "Recovering": 2.35372829
+        },
+        "releases": [
+          0.9114628,
+          1.79548264
+        ],
+        "total": 2.556942,
+        "damage": 44,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true,
+        "warningSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "direction": 1,
+        "shots": 36,
+        "firstShot": 0.480406761,
+        "interval": 0.144,
+        "idleAt": 2.21698284,
+        "recoveryAt": 2.21250153,
+        "retreat": 1.5,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "flashes": 12,
+        "launchers": [
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1"
+        ],
+        "hoverSeen": true,
+        "exhaustSeen": true,
+        "maxVerticalJitter": 0,
+        "hoverRange": [
+          0.08000004,
+          0.2799322
+        ]
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "direction": -1,
+        "shots": 36,
+        "firstShot": 0.482934952,
+        "interval": 0.144,
+        "idleAt": 2.210991,
+        "recoveryAt": 2.206174,
+        "retreat": 1.5,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "flashes": 12,
+        "launchers": [
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1",
+          "speedy shot_0",
+          "speedy shot_1"
+        ],
+        "hoverSeen": true,
+        "exhaustSeen": true,
+        "maxVerticalJitter": 0,
+        "hoverRange": [
+          0.08001739,
+          0.279997349
+        ]
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 1718,
+  "executeMs": 16027,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_742db21f03ae401d9960e24f1dc4acc0"
+}

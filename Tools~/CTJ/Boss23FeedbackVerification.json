@@ -1,0 +1,135 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "Movement",
+        "firstSpeed": 5.872801,
+        "lastSpeed": 0.04750093,
+        "endX": 3
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": false,
+        "dashes": 1,
+        "distance": 6.5,
+        "lastX": 6.5,
+        "ghostPeak": 12,
+        "crouchSeen": true,
+        "hits": 1
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": false,
+        "volleys": 7,
+        "shots": 7,
+        "retreat": 3
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": true,
+        "volleys": 7,
+        "shots": 7,
+        "retreat": 0
+      },
+      {
+        "pattern": "AirTransition",
+        "enhanced": false,
+        "height": 6.5,
+        "shots": 0
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": false,
+        "crossings": 1,
+        "releases": 1,
+        "repeatWarningSeen": false,
+        "pauseSeen": false,
+        "speed": 600,
+        "finalAngle": 57.8509445,
+        "hits": 1
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": false,
+        "drops": 3,
+        "interval": 1,
+        "highestRise": 1.68714762,
+        "bombAnimationSeen": true,
+        "fixedMarkers": 3,
+        "ringShrank": true,
+        "impactHidden": true
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": true,
+        "dashes": 2,
+        "distance": 6.5,
+        "lastX": 0,
+        "ghostPeak": 12,
+        "crouchSeen": true,
+        "hits": 2
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "volleys": 12,
+        "shots": 36,
+        "retreat": 3
+      },
+      {
+        "pattern": "AirTransition",
+        "enhanced": true,
+        "height": 6.5,
+        "shots": 5
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": true,
+        "crossings": 2,
+        "releases": 2,
+        "repeatWarningSeen": true,
+        "pauseSeen": true,
+        "speed": 750,
+        "finalAngle": -57.8509521,
+        "hits": 2
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": true,
+        "drops": 6,
+        "interval": 0.75,
+        "highestRise": 1.68714762,
+        "bombAnimationSeen": true,
+        "fixedMarkers": 6,
+        "ringShrank": true,
+        "impactHidden": true
+      },
+      {
+        "pattern": "RandomSelection",
+        "ground": [
+          81,
+          67,
+          92
+        ],
+        "air": [
+          86,
+          74
+        ]
+      },
+      {
+        "pattern": "LastStandEntry",
+        "boundary": 0.35,
+        "oneWayPreserved": true,
+        "noEntryShotgun": true
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 1404,
+  "executeMs": 36833,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_4ffa934f6a4848e18de16212d4442a97"
+}

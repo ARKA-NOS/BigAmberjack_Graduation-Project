@@ -17,13 +17,15 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0.1f)] private float length = 7.5f;
         [Tooltip("월드 유닛 기준 전체 두께입니다. 빔 표시, 경고, 피해 판정에 함께 적용됩니다.")]
         [SerializeField, Min(0.1f)] private float width = 0.8f;
+        [Tooltip("빔 표시만 원점 뒤로 연장해 몸체 안에 겹치는 거리입니다. 월드 유닛이며 피해 판정과 끝점은 유지합니다.")]
+        [SerializeField, Min(0f)] private float bodyOverlapDistance = 0.35f;
         [SerializeField, Min(0f)] private float damage = 18f;
         [Tooltip("발사 시작 시 회전 속도입니다. 도/초 단위이며 Min Speed까지 부드럽게 감속합니다.")]
-        [SerializeField, Min(0.01f)] private float maxSpeed = 140f;
+        [SerializeField, Min(0.01f)] private float maxSpeed = 600f;
         [Tooltip("회전이 끝날 때의 속도입니다. 도/초 단위이며 전체 회전 시간은 두 속도로 계산합니다.")]
         [SerializeField, Min(0.01f)] private float minSpeed = 50f;
         [Tooltip("회전을 끝낸 뒤 빔이 사라지는 시간입니다. 이 구간에는 추가 피해를 주지 않습니다.")]
-        [SerializeField, Min(0f)] private float fadeOutDuration = 0.08f;
+        [SerializeField, Min(0f)] private float fadeOutDuration = 0.14f;
         [Tooltip("수직 아래에서 좌우로 각각 회전할 각도입니다. 안전 폭을 지키도록 필요하면 줄입니다.")]
         [SerializeField, Range(0f, 85f)] private float sweepHalfAngle = 60f;
         [Tooltip("아레나 양 끝에 남겨 둘 안전 폭입니다. 레이저 두께까지 포함해 보호합니다.")]
@@ -45,7 +47,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private MaterialPropertyBlock _beamProperties;
         private ContactFilter2D _terrainFilter;
         private Vector2 _origin;
-        private float _floorY, _safeLeft, _safeRight, _halfAngle, _radius, _beamWidth;
+        private float _floorY, _safeLeft, _safeRight, _halfAngle, _radius, _beamWidth, _bodyOverlap;
         private Bounds _warningBounds;
         private bool _didHit;
         private float _beamStartedAt, _previousAngle;
@@ -89,6 +91,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _safeRight = drone.Arena.LaserRight.x - Mathf.Max(0f, safeEdgeWidth);
             _radius = Mathf.Max(0.1f, length);
             _beamWidth = Mathf.Max(0.1f, width);
+            _bodyOverlap = Mathf.Max(0f, bodyOverlapDistance);
             float reach = Mathf.Max(0f, Mathf.Min(_origin.x - _safeLeft, _safeRight - _origin.x) - _beamWidth * 0.5f);
             float safeAngle = Mathf.Asin(Mathf.Clamp01(reach / _radius)) * Mathf.Rad2Deg;
             _halfAngle = Mathf.Min(Mathf.Clamp(sweepHalfAngle, 0f, 85f), safeAngle);
@@ -189,11 +192,12 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             Vector2 direction = Direction(angle);
             float distance = BeamLength(direction);
-            beam.transform.position = _origin + direction * (distance * 0.5f);
+            // 시작부만 몸체 안으로 연장합니다. 회전 원점과 바닥 쪽 끝점은 그대로 둡니다.
+            beam.transform.position = _origin + direction * ((distance - _bodyOverlap) * 0.5f);
             beam.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             Vector3 parentScale = beam.transform.parent != null ? beam.transform.parent.lossyScale : Vector3.one;
             beam.transform.localScale = new Vector3(_beamWidth / beam.sprite.bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
-                distance / beam.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
+                (distance + _bodyOverlap) / beam.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             Color tint = beam.color;
             float fade = elapsed <= _sweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
                 1f - Mathf.SmoothStep(0f, 1f, (elapsed - _sweepDuration) / fadeOutDuration);
@@ -232,7 +236,8 @@ namespace _Scripts.Agent.Enemies.Skills
             {
                 Vector2 direction = Direction(Mathf.Lerp(-_halfAngle, _halfAngle, i / (float)WarningSegments));
                 Vector2 side = new Vector2(-direction.y, direction.x) * (_beamWidth * 0.5f);
-                Vector2 end = _origin + direction * BeamLength(direction);
+                float distance = BeamLength(direction);
+                Vector2 end = _origin + direction * distance;
                 _warningCloud.Add(_origin + side); _warningCloud.Add(_origin - side);
                 _warningCloud.Add(end + side); _warningCloud.Add(end - side);
             }

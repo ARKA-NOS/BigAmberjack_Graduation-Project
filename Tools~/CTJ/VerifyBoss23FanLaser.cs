@@ -52,6 +52,7 @@ public static class VerifyBoss23FanLaser
         Check(markings == 10, "Missing animated marking tracks");
         return new { markings, shaderErrors = false, warningValid = true, bodyOrder = body.sortingOrder, beamOrder = beam.sortingOrder,
             width = laser.FindProperty("width").floatValue, maxSpeed = laser.FindProperty("maxSpeed").floatValue,
+            bodyOverlapDistance = laser.FindProperty("bodyOverlapDistance").floatValue,
             minSpeed = laser.FindProperty("minSpeed").floatValue, fadeOut = laser.FindProperty("fadeOutDuration").floatValue,
             shakeAmplitude = new SerializedObject(shake).FindProperty("amplitude").floatValue, prefabActive = root.activeSelf,
             prefabScale = root.transform.localScale.ToString() };
@@ -59,8 +60,9 @@ public static class VerifyBoss23FanLaser
 
     public static object Enter()
     {
-        Check(!EditorApplication.isPlaying && !EditorApplication.isCompiling && !SceneManager.GetActiveScene().isDirty &&
-            SceneManager.GetActiveScene().path == "Assets/_Scenes/Test/EnemyTestScene.unity", "Use saved EnemyTestScene in Edit Mode");
+        // 씬 전환이나 저장 없이 현재 편집 상태의 Play Mode 사본에서만 테스트합니다.
+        Check(!EditorApplication.isPlaying && !EditorApplication.isCompiling &&
+            SceneManager.GetActiveScene().path == "Assets/_Scenes/Test/EnemyTestScene.unity", "Use EnemyTestScene in Edit Mode");
         EditorApplication.EnterPlaymode();
         return "Starting fan laser verification";
     }
@@ -95,7 +97,7 @@ public static class VerifyBoss23FanLaser
         object gradient = null;
         try
         {
-            for (int scenario = 0; scenario < 6; scenario++)
+            for (int scenario = 0; scenario < 7; scenario++)
             {
                 player = new GameObject("Fan laser player probe");
                 var body = player.AddComponent<BoxCollider2D>();
@@ -103,7 +105,7 @@ public static class VerifyBoss23FanLaser
                 var probe = player.AddComponent<EnemyDamageProbe>();
                 player.transform.position = Vector3.right * (scenario == 0 ? -7.5f : scenario == 1 ? 7.5f : 0f);
                 root = Object.Instantiate(prefab, Vector3.up * 1.05f, Quaternion.identity);
-                root.SetActive(true); // The user's prefab is intentionally disabled.
+                root.SetActive(true); // 검증 인스턴스만 활성화하며 원본 프리팹의 활성 여부는 보존합니다.
                 var boss = root.GetComponent<ProductionControlDrone>();
                 var laser = root.GetComponentInChildren<DroneDownwardLaserSkill>();
                 var shake = laser.GetComponent<BossLaserShake>();
@@ -141,6 +143,13 @@ public static class VerifyBoss23FanLaser
                 Check(points.All(p => p.x >= safeLeft - 0.001f && p.x <= safeRight + 0.001f && p.y >= arena.FloorY - 0.001f),
                     "Warning enters safe strips or below floor");
                 Vector2 origin = (Vector2)typeof(DroneDownwardLaserSkill).GetField("_origin", Private).GetValue(laser);
+                float overlap = (float)typeof(DroneDownwardLaserSkill).GetField("_bodyOverlap", Private).GetValue(laser);
+                if (scenario == 6)
+                {
+                    body.size = new Vector2(0.2f, 0.2f); body.offset = Vector2.zero;
+                    player.transform.position = origin + Vector2.down * 0.15f;
+                    Physics2D.SyncTransforms();
+                }
                 if (scenario == 0) Capture(camera, sheet, 0);
                 object motion = CheckMotion(laser, beam);
                 await Until(() => beam.enabled, 2f);
@@ -156,10 +165,11 @@ public static class VerifyBoss23FanLaser
                     Vector2 direction = new Vector2(Mathf.Sin(-10f * Mathf.Deg2Rad), -Mathf.Cos(-10f * Mathf.Deg2Rad));
                     player.transform.position = origin + direction * 3f - Vector2.up * 0.675f;
                     Physics2D.SyncTransforms();
-                    typeof(DroneDownwardLaserSkill).GetField("_beamStartedAt", Private).SetValue(laser, Time.time - 0.8f);
+                    float skip = duration * 0.65f;
+                    typeof(DroneDownwardLaserSkill).GetField("_beamStartedAt", Private).SetValue(laser, Time.time - skip);
                     laser.UpdateSkill();
                     Check(probe.ReceivedHitCount == 1, "Angular sweep skipped a target on a late frame");
-                    startedAt = Time.time - 0.8f;
+                    startedAt = Time.time - skip;
                 }
                 if (scenario == 5)
                 {
@@ -201,15 +211,23 @@ public static class VerifyBoss23FanLaser
                         var block = new MaterialPropertyBlock(); beam.GetPropertyBlock(block);
                         Vector2 locked = block.GetVector("_BeamOrigin");
                         Check(Vector2.Distance(locked, origin) < 0.001f, "Laser pivot followed the player");
+                        Vector2 direction = block.GetVector("_BeamDirection");
+                        Vector2 start = beam.transform.TransformPoint(new Vector3(sprite.center.x, sprite.max.y));
+                        Vector2 end = beam.transform.TransformPoint(new Vector3(sprite.center.x, sprite.min.y));
+                        float fullLength = block.GetFloat("_BeamLength");
+                        Check(Mathf.Abs(Vector2.Dot(start - origin, direction) + overlap) < 0.001f,
+                            "Laser root does not overlap the body by configured world distance");
+                        Check(Mathf.Abs(Vector2.Dot(end - origin, direction) - fullLength) < 0.001f,
+                            "Body overlap changed laser reach");
                         float expectedWidth = scenario == 4 ? 1.4f : 0.8f;
                         Check(Mathf.Abs(beam.transform.TransformVector(Vector3.right * beam.sprite.bounds.size.x).magnitude - expectedWidth) < 0.001f,
                             "Beam world width differs from configured width");
                         if (scenario == 0)
                         {
                             float elapsed = Time.time - firedAt;
-                            if (!leftCapture && elapsed >= 0.1f) { Capture(camera, sheet, 1); leftCapture = true; }
-                            if (!centerCapture && elapsed >= 0.6f) { Capture(camera, sheet, 2); centerCapture = true; }
-                            if (!rightCapture && elapsed >= 1.1f) { Capture(camera, sheet, 3); rightCapture = true; }
+                            if (!leftCapture && elapsed >= duration * 0.08f) { Capture(camera, sheet, 1); leftCapture = true; }
+                            if (!centerCapture && elapsed >= duration * 0.5f) { Capture(camera, sheet, 2); centerCapture = true; }
+                            if (!rightCapture && elapsed >= duration * 0.9f) { Capture(camera, sheet, 3); rightCapture = true; }
                         }
                     }
                     await Awaitable.NextFrameAsync();
@@ -293,7 +311,8 @@ public static class VerifyBoss23FanLaser
             beam.gameObject.layer = 30; beam.enabled = true;
             camera.cullingMask = 1 << 30; camera.backgroundColor = Color.clear;
             camera.orthographicSize = 4.5f; camera.transform.position = new Vector3(origin.x, (origin.y + floor) * 0.5f, -10f);
-            typeof(DroneDownwardLaserSkill).GetMethod("UpdateBeam", Private).Invoke(laser, new object[] { 0f, 0.4f });
+            float duration = (float)typeof(DroneDownwardLaserSkill).GetField("_sweepDuration", Private).GetValue(laser);
+            typeof(DroneDownwardLaserSkill).GetMethod("UpdateBeam", Private).Invoke(laser, new object[] { 0f, duration * 0.5f });
             camera.targetTexture = rt; camera.Render(); RenderTexture.active = rt;
             texture.ReadPixels(new Rect(0, 0, 512, 512), 0, 0); texture.Apply();
             float near = Alpha(new Vector2(origin.x, floor + 0.1f));

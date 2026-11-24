@@ -1045,10 +1045,11 @@ MonoBehaviour:
   cameraShake: {fileID: 2163153266953831039}
   length: 7.5
   width: 0.8
+  bodyOverlapDistance: 0.35
   damage: 18
-  maxSpeed: 140
+  maxSpeed: 600
   minSpeed: 50
-  fadeOutDuration: 0.08
+  fadeOutDuration: 0.14
   sweepHalfAngle: 60
   safeEdgeWidth: 1.25
   endFadeDistance: 1
@@ -1131,7 +1132,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1834065246700390251
 Transform:
   m_ObjectHideFlags: 0

@@ -56,9 +56,10 @@ public static class SetupBoss23FanLaser
             var laser = root.GetComponentInChildren<DroneDownwardLaserSkill>(true);
             var laserData = new SerializedObject(laser);
             laserData.FindProperty("length").floatValue = 7.5f;
-            laserData.FindProperty("maxSpeed").floatValue = 140f;
+            laserData.FindProperty("maxSpeed").floatValue = 600f;
+            laserData.FindProperty("bodyOverlapDistance").floatValue = 0.35f;
             laserData.FindProperty("minSpeed").floatValue = 50f;
-            laserData.FindProperty("fadeOutDuration").floatValue = 0.08f;
+            laserData.FindProperty("fadeOutDuration").floatValue = 0.14f;
             laserData.FindProperty("sweepHalfAngle").floatValue = 60f;
             laserData.FindProperty("safeEdgeWidth").floatValue = 1.25f;
             laserData.FindProperty("endFadeDistance").floatValue = 1f;

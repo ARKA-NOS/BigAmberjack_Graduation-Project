@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using _Scripts._Core._Debug;
+using _Scripts._Core._EventSystem;
 using _Scripts.DataStructure;
 using _Scripts.Loading;
 using _Scripts.Maps.New_Map.MapGenerateData;
@@ -35,17 +36,31 @@ namespace _Scripts.Maps.New_Map
         {
             if (wallFiller == null)
                 wallFiller = GetComponentInChildren<MapWallFiller>(true);
-
+            
             GenerateMap(mapGenerateSetting);
+
+            EventBus<MapGenerateEvent>.Subscribe(HandleMapGenerate);
         }
 
         private void OnDestroy()
         {
+            EventBus<MapGenerateEvent>.UnSubscribe(HandleMapGenerate);
+            
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = null;
         }
 
+        private void HandleMapGenerate(MapGenerateEvent evt)
+        {
+            if (!evt.Active)
+            {
+                ClearGeneratedMap();
+                return;
+            }
+            GenerateMap(mapGenerateSetting);
+        }
+        
         #region MapGenerate
 
         public void GenerateMap(MapGenerateSetting mapSetting)
@@ -116,7 +131,7 @@ namespace _Scripts.Maps.New_Map
         }
 
         #region Addressable
-
+        
         private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;

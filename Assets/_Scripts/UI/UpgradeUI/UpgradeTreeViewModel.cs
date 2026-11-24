@@ -85,6 +85,15 @@ namespace _Scripts.UI.UpgradeUI
             return _tree.CanUpgrade(node) ? UpgradeNodeState.Available : UpgradeNodeState.Locked;
         }
 
+        // 구매한 노드를 모두 되돌리고 재화를 환불한다. 결과는 OnUpgradeChanged로 노드 상태에 반영된다.
+        public void ResetTree()
+        {
+            if (_tree == null) return;
+
+            _tree.ResetAll();
+            _selectedNode.Value = null;
+        }
+
         private void Select(UpgradeNodeSO node) => _selectedNode.Value = node;
 
         // 결과는 트리의 OnUpgradeChanged로 돌아와서 노드 상태에 반영된다.

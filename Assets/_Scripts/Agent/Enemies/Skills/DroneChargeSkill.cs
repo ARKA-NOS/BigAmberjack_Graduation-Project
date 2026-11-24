@@ -84,7 +84,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _previousCenter = GetDamageBounds().center;
             _hitApplied = false;
             CoolTimeStartTime = Time.time;
-            visual.Play(_enhanced ? "CrouchFire" : "GroundRush", dashAnimationSpeed);
+            visual.Play("GroundRush", dashAnimationSpeed);
             afterImages?.Play();
             NotifyAttackPerformed(Enemy.transform.position);
         }
@@ -162,7 +162,7 @@ namespace _Scripts.Agent.Enemies.Skills
                     if (elapsed < _chargeAt) return;
                     _drone.StopMovement();
                     _step = Step.Charging;
-                    visual.Play(_enhanced ? "Charge" : "CrouchCharge", _enhanced ? 1.2f : 1f);
+                    visual.Play("CrouchCharge", _enhanced ? 1.2f : 1f);
                     ShowDashWarning();
                     break;
 

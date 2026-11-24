@@ -18,12 +18,12 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float lastStandDamage = 26f;
         [SerializeField, Min(1f)] private float pixelsPerUnit = 28f;
         [SerializeField, Min(1f)] private float normalRadiusPixels = 52.5f;
-        [SerializeField, Min(1f)] private float lastStandRadiusPixels = 63f;
         [SerializeField, Min(0f)] private float predictionLead = 0.35f;
         [SerializeField, Min(0f)] private float maxPredictionDistance = 1.5f;
-        [Tooltip("기본 폭격 중 표적 옆으로 위치를 조정하는 속도와 간격입니다. 강화에는 적용하지 않습니다.")]
+        [Tooltip("폭격 중 표적 옆으로 위치를 조정하는 속도와 간격입니다. 일반과 강화가 같은 이동을 사용합니다.")]
         [SerializeField, Min(0.1f)] private float normalHoverSpeed = 3.2f;
         [SerializeField, Min(0f)] private float normalHoverOffset = 1.2f;
+        [SerializeField, Min(0.1f)] private float lastStandMovementSpeedMultiplier = 1.2f;
 
         [Header("Normal Timeline")]
         [SerializeField, Min(1)] private int normalDrops = 3;
@@ -91,7 +91,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _dropCount = Mathf.Max(1, enhanced ? lastStandDrops : normalDrops);
             _interval = Mathf.Max(0.05f, enhanced ? lastStandInterval : normalInterval);
             _warningTime = Mathf.Max(0.05f, enhanced ? lastStandWarningDuration : warningDuration);
-            _radius = (enhanced ? lastStandRadiusPixels : normalRadiusPixels) / Mathf.Max(1f, pixelsPerUnit);
+            _radius = normalRadiusPixels / Mathf.Max(1f, pixelsPerUnit);
             _damage = enhanced ? lastStandDamage : damage;
             _animationSpeed = enhanced ? 2f : 1f;
             float first = enhanced ? lastStandFirstDropTime : firstDropTime;
@@ -149,16 +149,16 @@ namespace _Scripts.Agent.Enemies.Skills
                 _targetVelocity = Vector2.Lerp(_targetVelocity, (target - _previousTargetPosition) / Time.deltaTime, 0.5f);
             _previousTargetPosition = target;
 
-            if (!_enhanced && !_descending && !_drone.IsMoving && DroppedCount < _dropCount)
+            if (!_descending && !_drone.IsMoving && DroppedCount < _dropCount)
             {
                 Vector2 destination = new Vector2(_drone.ClampX(target.x + _hoverSide * normalHoverOffset), Enemy.transform.position.y);
                 if (Mathf.Abs(destination.x - Enemy.transform.position.x) > 0.35f && _drone.HasAirPath(destination))
-                    _drone.MoveGround(destination, normalHoverSpeed);
+                    _drone.MoveGround(destination, normalHoverSpeed * (_enhanced ? lastStandMovementSpeedMultiplier : 1f));
             }
 
             while (DroppedCount < _dropCount && Time.time >= _nextDropAt) Drop();
 
-            if (!_descending && DroppedCount >= _dropCount && (_enhanced || !_drone.IsMoving) &&
+            if (!_descending && DroppedCount >= _dropCount && !_drone.IsMoving &&
                 (_bombs.Count == 0 || visual.HasFinished("Bomb")))
             {
                 _descending = true;
@@ -181,7 +181,7 @@ namespace _Scripts.Agent.Enemies.Skills
 
         public override void FixedUpdateAttack()
         {
-            if (IsUsing && (_descending || !_enhanced)) _drone.TickAirMovement();
+            if (IsUsing) _drone.TickAirMovement();
         }
 
         public override void OnAttackFinished() { }

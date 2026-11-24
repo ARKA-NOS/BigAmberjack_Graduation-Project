@@ -5604,6 +5604,37 @@ MonoBehaviour:
   salvoHoverHeight: 0.18
   salvoHoverAmplitude: 0.1
   salvoHoverFrequency: 2
+--- !u!1 &4378594841842448926
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 779830165443206181}
+  m_Layer: 0
+  m_Name: SalvoRearShotPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &779830165443206181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4378594841842448926}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.45, y: -0.14285715, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8194897102444749883}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4450664642454536494
 GameObject:
   m_ObjectHideFlags: 0
@@ -5667,11 +5698,11 @@ MonoBehaviour:
   lastStandDamage: 26
   pixelsPerUnit: 28
   normalRadiusPixels: 52.5
-  lastStandRadiusPixels: 63
   predictionLead: 0.35
   maxPredictionDistance: 1.5
   normalHoverSpeed: 3.2
   normalHoverOffset: 1.2
+  lastStandMovementSpeedMultiplier: 1.2
   normalDrops: 3
   firstDropTime: 0.8
   normalInterval: 1.05
@@ -6647,14 +6678,16 @@ MonoBehaviour:
   preparationWarning: {fileID: 0}
   visual: {fileID: 1212681801938135448}
   muzzle: {fileID: 2842680000748699620}
+  rearMuzzle: {fileID: 3535726681065951197}
   projectilePrefab: {fileID: 68064173103500871, guid: 640d04e23b1343c49978d6b51e2262e2, type: 3}
   projectileSpeed: 10
   projectileRange: 16
   damage: 10
-  shotgunAngle: 60
+  shotgunAngle: 24
   transformationDuration: 0.55
   postAttackDelay: 0.15
-  shotDuration: 0.41
+  shotDuration: 0.24
+  shotInterval: 0.38
   lastStandSpeedMultiplier: 1.2
   normalAscentSpeedMultiplier: 0.65
 --- !u!1 &7866431528516769323
@@ -6782,6 +6815,8 @@ Transform:
   - {fileID: 2842680000748699620}
   - {fileID: 2836384921992858730}
   - {fileID: 1071857071624854908}
+  - {fileID: 779830165443206181}
+  - {fileID: 3535726681065951197}
   m_Father: {fileID: 1834065246700390251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8694384291897203147
@@ -6839,6 +6874,7 @@ MonoBehaviour:
   preparationWarning: {fileID: 0}
   projectilePrefab: {fileID: 68064173103500871, guid: 640d04e23b1343c49978d6b51e2262e2, type: 3}
   muzzle: {fileID: 2836384921992858730}
+  rearMuzzle: {fileID: 779830165443206181}
   visual: {fileID: 1212681801938135448}
   range: 16
   projectileSpeed: 15
@@ -6850,7 +6886,7 @@ MonoBehaviour:
   firstShotTime: 0.58
   lastStandFirstShotTime: 0.48
   firingAnimationSpeed: 1.2
-  lastStandFiringAnimationSpeed: 3
+  lastStandFiringAnimationSpeed: 1.2
   normalVolleys: 7
   lastStandVolleys: 12
   lastStandSpreadAngle: 12
@@ -6884,7 +6920,7 @@ Transform:
   m_GameObject: {fileID: 8903535185823925582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.4107143, y: 0.66071427, z: 0}
+  m_LocalPosition: {x: -0.4107143, y: 0.73214287, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6949,6 +6985,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &9198090941020642202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3535726681065951197}
+  m_Layer: 0
+  m_Name: AirRearShotPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3535726681065951197
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9198090941020642202}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.45, y: -0.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8194897102444749883}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2764198834898105281
 PrefabInstance:
   m_ObjectHideFlags: 0

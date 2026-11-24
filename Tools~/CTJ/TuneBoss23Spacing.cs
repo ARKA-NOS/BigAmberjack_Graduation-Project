@@ -24,12 +24,11 @@ public static class TuneBoss23Spacing
             Set(root.GetComponentInChildren<DroneSalvoSkill>(true), "preferredDistance", 3f);
             Set(root.GetComponentInChildren<DroneSalvoSkill>(true), "distanceTolerance", 0.2f);
             Set(root.GetComponentInChildren<DroneBombSkill>(true), "normalRadiusPixels", 52.5f);
-            Set(root.GetComponentInChildren<DroneBombSkill>(true), "lastStandRadiusPixels", 63f);
             PrefabUtility.SaveAsPrefabAsset(root, path);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }
 
-        return new { altitude = 4.5f, rearSafeRatio = 0.5f, salvoDistance = 3f, bombRadii = new[] { 1.875f, 2.25f } };
+        return new { altitude = 4.5f, rearSafeRatio = 0.5f, salvoDistance = 3f, bombRadii = new[] { 1.875f, 1.875f } };
     }
 
     private static void Set(UnityEngine.Object target, string field, float value)

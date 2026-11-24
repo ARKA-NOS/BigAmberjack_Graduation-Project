@@ -1,6 +1,10 @@
 # Enemy23 공정 통제 드론
 
-최근 추가 조정: **[Boss23RushHoverNotes.md](Boss23RushHoverNotes.md)** (2026-11-24, 돌진 속도 증가·연사 이동 호버링).
+최근 추가 조정: **[Boss23VisualFixNotes.md](Boss23VisualFixNotes.md)** (2026-11-24, 강화 연사 높이·공중 표시·레이저 단면·픽셀 데미지 숫자).
+
+강화 패턴 기준: [Boss23EnhancedGifNotes.md](Boss23EnhancedGifNotes.md) (런처 교대·공중 4회 사격·폭격 범위 공유).
+
+돌진 속도·연사 부유: [Boss23RushHoverNotes.md](Boss23RushHoverNotes.md).
 
 거리·판정 기준: **[Boss23SpacingNotes.md](Boss23SpacingNotes.md)** (돌진 앞쪽 절반 판정·연사 거리 유지·공중 고도 4.5유닛·포격 범위 축소).
 

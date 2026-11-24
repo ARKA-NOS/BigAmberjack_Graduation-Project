@@ -9,6 +9,7 @@ namespace _Scripts.Agent.Enemies.Skills
     {
         [SerializeField] private EnemyProjectile projectilePrefab;
         [SerializeField] private Transform muzzle;
+        [SerializeField] private Transform rearMuzzle;
         [SerializeField] private DroneVisualModule visual;
 
         [SerializeField, Min(0.1f)] private float range = 16f;
@@ -21,7 +22,7 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float firstShotTime = 0.58f;
         [SerializeField, Min(0f)] private float lastStandFirstShotTime = 0.48f;
         [SerializeField, Min(0.1f)] private float firingAnimationSpeed = 1.2f;
-        [SerializeField, Min(0.1f)] private float lastStandFiringAnimationSpeed = 3f;
+        [SerializeField, Min(0.1f)] private float lastStandFiringAnimationSpeed = 1.2f;
         [SerializeField, Min(1)] private int normalVolleys = 7;
         [SerializeField, Min(1)] private int lastStandVolleys = 12;
         [SerializeField, Range(0f, 80f)] private float lastStandSpreadAngle = 12f;
@@ -48,7 +49,7 @@ namespace _Scripts.Agent.Enemies.Skills
         public float Range => range;
         public override bool ControlsMovement => true;
         protected override bool ShouldShowTelegraph => false;
-        private string FiringState => _enhanced ? "CrouchFire" : "SalvoSingleShot";
+        private string FiringState => FiredVolleys % 2 == 0 ? "SalvoRearShot" : "SalvoSingleShot";
 
         protected override bool CanUseSkillCondition() =>
             base.CanUseSkillCondition() && projectilePrefab != null && muzzle != null &&
@@ -130,14 +131,16 @@ namespace _Scripts.Agent.Enemies.Skills
 
         private void FireVolley()
         {
-            Vector2 direction = Vector2.right * _direction;
-            Vector3 origin = muzzle.position + Vector3.up * Random.Range(-verticalSpawnOffset, verticalSpawnOffset);
+            bool rear = FiredVolleys % 2 != 0;
+            Transform launcher = rear && rearMuzzle != null ? rearMuzzle : muzzle;
+            float offset = _enhanced ? 0f : Random.Range(-verticalSpawnOffset, verticalSpawnOffset);
+            Vector3 origin = launcher.position + Vector3.up * offset;
             int count = _enhanced ? 3 : 1;
 
             for (int i = 0; i < count; i++)
             {
-                float angle = count == 1 ? 0f : (i - 1) * lastStandSpreadAngle;
-                Vector2 shotDirection = Quaternion.Euler(0f, 0f, angle) * direction;
+                float angle = i * lastStandSpreadAngle * Mathf.Deg2Rad;
+                Vector2 shotDirection = new Vector2(_direction * Mathf.Cos(angle), Mathf.Sin(angle));
                 var projectile = Instantiate(projectilePrefab, origin, Quaternion.identity);
 
                 SceneManager.MoveGameObjectToScene(projectile.gameObject, Enemy.gameObject.scene);

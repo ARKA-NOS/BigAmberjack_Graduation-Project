@@ -93,7 +93,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 float blend = 1f - Mathf.Exp(-movementSmoothing * Time.deltaTime);
                 _displayPosition = Vector3.Lerp(_displayPosition, target, blend);
                 movementVisual.position = _displayPosition;
-                bool hover = !_drone.IsLastStand && !_drone.IsDead && !_drone.IsMoving && _drone.transform.position.y - _drone.FloorY > 2f;
+                bool hover = !_drone.IsDead && !_drone.IsMoving && _drone.transform.position.y - _drone.FloorY > 2f;
                 _basicHoverBlend = Mathf.MoveTowards(_basicHoverBlend, hover ? 1f : 0f, Time.deltaTime * 8f);
                 movementVisual.position += Vector3.up * (Mathf.Sin(Time.time * basicHoverFrequency * 2f * Mathf.PI) * basicHoverAmplitude * _basicHoverBlend);
 
@@ -102,8 +102,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             }
 
             bool alive = !_drone.IsDead;
-            bool emitExhaust = alive && (salvoHover ||
-                (!_drone.IsLastStand && _drone.transform.position.y - _drone.FloorY > 1.4f));
+            bool emitExhaust = alive && (salvoHover || _drone.transform.position.y - _drone.FloorY > 1.4f);
             if (basicFlightExhaust != null)
             {
                 if (emitExhaust && !basicFlightExhaust.isPlaying) basicFlightExhaust.Play();

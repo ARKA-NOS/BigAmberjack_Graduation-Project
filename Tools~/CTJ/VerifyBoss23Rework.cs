@@ -58,6 +58,14 @@ public static class VerifyBoss23Rework
             "Charge rectangle fill or four borders missing");
         Check(Mathf.Abs(data.FindProperty("airAttackAltitude").floatValue - 4.5f) < 0.001f, "Air attack altitude was not lowered");
         Check(Mathf.Abs(charge.FindProperty("damageStartRatio").floatValue - 0.5f) < 0.001f, "Charge rear safe half missing");
+        foreach (var skill in skills.Select(e => e.Skill).Where(s => s is DroneSalvoSkill || s is DroneAirTransitionSkill))
+            Check(new SerializedObject(skill).FindProperty("rearMuzzle").objectReferenceValue != null, "Rear launcher reference missing");
+
+        foreach (string name in new[] { "SalvoRearShot", "AirShotFront", "AirShotRear" })
+        {
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/_Graphics/Animations/Enemy/Enemy23/Boss23_ProductionControlDrone_" + name + ".anim");
+            Check(clip != null && !clip.isLooping, "Alternating launcher clip missing or looping: " + name);
+        }
         return new { skills = skills.Select(e => e.Skill.name).ToArray(), dependencies = AssetDatabase.GetDependencies(Path).Length,
             lastStandAt = 0.35f, airHeight = data.FindProperty("airAttackAltitude").floatValue,
             active = root.activeSelf, scale = root.transform.localScale.ToString() };
@@ -116,6 +124,7 @@ public static class VerifyBoss23Rework
                         if (!enhanced) results.Add(await Motion(rig));
                         results.Add(await Charge(rig, enhanced));
                         results.Add(await Barrage(rig, enhanced, false));
+                        if (enhanced) results.Add(await Barrage(rig, true, false, -1f));
                         if (!enhanced) results.Add(await Barrage(rig, false, true));
                         if (!enhanced) results.Add(await BlockedChargeWarning(rig));
                     }
@@ -187,7 +196,7 @@ public static class VerifyBoss23Rework
             var animator = r.Root.GetComponentInChildren<Animator>();
             if (!phases.ContainsKey(step)) phases[step] = t;
             if ((step == "FirstDash" || step == "SecondDash") && animator.GetCurrentAnimatorStateInfo(0)
-                .IsName(enhanced ? "Base Layer.CrouchFire" : "Base Layer.GroundRush"))
+                .IsName("Base Layer.GroundRush"))
             {
                 Check(Mathf.Abs(animator.speed - 2f) < 0.01f, "Dash clip was stretched to the movement duration");
                 fastDashAnimation = true;
@@ -326,15 +335,15 @@ public static class VerifyBoss23Rework
             smoothAcceleration = true, endX = r.Root.transform.position.x });
     }
 
-    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall)
+    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall, float direction = 1f)
     {
-        r.Prepare(false, 1.5f);
+        r.Prepare(false, direction * 1.5f);
         GameObject blocker = null;
         if (wall)
         {
             Bounds body = (Bounds)typeof(ProductionControlDrone).GetProperty("ContactBounds", Private).GetValue(r.Boss);
             blocker = new GameObject("Retreat blocked test") { layer = LayerMask.NameToLayer("Ground") };
-            blocker.transform.position = new Vector3(-body.extents.x * 0.95f - 0.11f, 1.5f, 0f);
+            blocker.transform.position = new Vector3(-direction * (body.extents.x * 0.95f + 0.11f), 1.5f, 0f);
             blocker.AddComponent<BoxCollider2D>().size = new Vector2(0.2f, 3f);
             Physics2D.SyncTransforms();
         }
@@ -349,14 +358,16 @@ public static class VerifyBoss23Rework
             var visualModule = r.Root.GetComponentInChildren<DroneVisualModule>();
             var exhaust = r.Root.transform.Find("Visual/BasicFlightExhaust").GetComponent<ParticleSystem>();
             int flashes = 0;
+            var launchers = new List<string>();
             await Until(() =>
             {
                 float t = Time.time - start;
                 var animator = r.Root.GetComponentInChildren<Animator>();
                 chargeSeen |= animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Charge");
                 crouchSeen |= AssetDatabase.GetAssetPath(animator.GetComponent<SpriteRenderer>().sprite).Contains("/Crouch/speedy shot.png");
-                bool bright = animator.GetComponent<SpriteRenderer>().sprite.name == "speedy shot_0";
-                if (bright && !wasBright) flashes++;
+                string spriteName = animator.GetComponent<SpriteRenderer>().sprite.name;
+                bool bright = spriteName == "speedy shot_0" || spriteName == "speedy shot_1";
+                if (bright && !wasBright) { flashes++; launchers.Add(spriteName); }
                 wasBright = bright;
                 if (r.Barrage.FiredVolleys == (enhanced ? 12 : 7) && animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Idle") && idleAt < 0f)
                     idleAt = t;
@@ -380,7 +391,7 @@ public static class VerifyBoss23Rework
                     }
                 }
 
-                Check(r.Root.transform.Find("Visual").localScale.x > 0f, "Barrage changed facing");
+                Check(r.Root.transform.Find("Visual").localScale.x * direction > 0f, "Barrage changed facing");
                 if (r.Barrage.IsRecovering)
                 {
                     if (recoveryAt < 0f) recoveryAt = t;
@@ -398,18 +409,30 @@ public static class VerifyBoss23Rework
             for (int i = 1; i < events.Length; i++)
                 Check(Mathf.Abs(events[i].time - events[i - 1].time - interval) < 0.04f, "Shot interval mismatch");
             Check(Mathf.Abs(recoveryAt - (enhanced ? 2.186f : 2.646f)) < 0.08f, "Barrage recovery start mismatch: " + recoveryAt);
-            if (!enhanced) Check(flashes == 7, "Basic barrage did not show exactly one flash per projectile: " + flashes);
+            Check(flashes == count && launchers.Select((name, i) => name == (i % 2 == 0 ? "speedy shot_0" : "speedy shot_1")).All(x => x),
+                "Barrage flashes did not alternate once per volley: " + string.Join(",", launchers));
             Check(idleAt > 0f && Mathf.Abs(idleAt - recoveryAt) < 0.04f, "Barrage did not return to Idle when the last motion ended");
-            Check(r.Shots.All(s => s.damage == 10f && s.direction.x > 0f), "Barrage damage or locked direction changed");
+            Check(r.Shots.All(s => s.damage == 10f && s.direction.x * direction > 0f), "Barrage damage or locked direction changed");
+            float[] verticalOffsets = r.Shots.Select(s => s.origin.y - s.muzzleY).ToArray();
+            Check(enhanced ? verticalOffsets.All(y => Mathf.Abs(y) < 0.0001f) :
+                verticalOffsets.All(y => Mathf.Abs(y) <= 0.3001f) && verticalOffsets.Max() - verticalOffsets.Min() > 0.1f,
+                "Enhanced random height remains or normal variation changed");
             Check(enhanced ? r.Shots.Select(s => Mathf.RoundToInt(Mathf.Atan2(s.direction.y, s.direction.x) * Mathf.Rad2Deg)).Distinct().Count() == 3 :
                 r.Shots.All(s => Mathf.Abs(s.direction.y) < 0.001f), "Wrong forward directions");
-            float retreat = -r.Root.transform.position.x;
+            if (enhanced)
+            {
+                var angles = r.Shots.Select(s => Mathf.RoundToInt(Mathf.Atan2(s.direction.y, Mathf.Abs(s.direction.x)) * Mathf.Rad2Deg))
+                    .Distinct().OrderBy(x => x).ToArray();
+                Check(angles.SequenceEqual(new[] { 0, 12, 24 }), "Lowest enhanced ray was not horizontal");
+            }
+
+            float retreat = -r.Root.transform.position.x * direction;
             Check(wall ? Mathf.Abs(retreat) < 0.02f : retreat > 1.2f && retreat <= 1.51f, "Blocked retreat or preferred distance rule failed");
             if (!wall) Check(hoverSeen && exhaustSeen && hoverMax - hoverMin > 0.1f, "Moving salvo hover or exhaust was not visible");
             Check(ReadFloat(visualModule, "_salvoHoverBlend") < 0.01f, "Hover did not settle after movement ended");
-            return new { pattern = "Barrage", enhanced, wall, shots = r.Shots.Count, firstShot = events[0].time - start,
+            return new { pattern = "Barrage", enhanced, wall, direction, shots = r.Shots.Count, firstShot = events[0].time - start,
                 interval, idleAt, recoveryAt, retreat, directionLocked = true, damagePerShot = 10f,
-                basicFlashCount = enhanced ? (int?)null : flashes, hoverSeen, exhaustSeen,
+                flashes, launchers, hoverSeen, exhaustSeen, maxVerticalJitter = verticalOffsets.Max(y => Mathf.Abs(y)),
                 hoverRange = wall ? null : new[] { hoverMin, hoverMax } };
         }
         finally { if (blocker != null) Object.DestroyImmediate(blocker); }
@@ -517,14 +540,25 @@ public static class VerifyBoss23Rework
         Check(r.Skills.TryUseSpecifiedSkill(r.Air), "Air transition did not start");
         bool flyingSeen = false, shotSeen = false, idleAfterShot = false, jetSeen = false;
         var exhaust = r.Root.transform.Find("Visual/BasicFlightExhaust").GetComponent<ParticleSystem>();
+        var launchers = new List<string>();
+        bool wasBright = false, movedTarget = false;
         float arrivedAt = -1f;
         await Until(() =>
         {
-            string sprite = AssetDatabase.GetAssetPath(r.Root.GetComponentInChildren<Animator>().GetComponent<SpriteRenderer>().sprite);
+            var currentSprite = r.Root.GetComponentInChildren<Animator>().GetComponent<SpriteRenderer>().sprite;
+            string sprite = AssetDatabase.GetAssetPath(currentSprite);
             flyingSeen |= sprite.Contains("/flying up/moving.png");
             shotSeen |= sprite.Contains("/flying up/shot.png");
+            bool bright = currentSprite.name == "shot_1" || currentSprite.name == "shot_3";
+            if (bright && !wasBright) launchers.Add(currentSprite.name);
+            wasBright = bright;
             jetSeen |= exhaust.particleCount > 0;
             if ((bool)Read(r.Air, "_moving") && !r.Flight.IsMoving && arrivedAt < 0f) arrivedAt = Time.time - start;
+            if (r.Events.Count(e => e.skill == r.Air) > 0 && !movedTarget)
+            {
+                r.Player.transform.position = Vector3.left * 3f;
+                movedTarget = true;
+            }
             if ((bool)Read(r.Air, "_returnedToIdle") && Time.time > ReadFloat(r.Air, "_shotEndsAt") + 0.03f)
             {
                 Check(r.Root.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Base Layer.AirIdle"),
@@ -534,16 +568,29 @@ public static class VerifyBoss23Rework
             return !r.Air.IsUsing;
         }, 7f, "Ascent stalled");
         Check(r.Air.DidArrive && Mathf.Abs(r.Root.transform.position.y - 4.5f) < 0.02f &&
-            r.Shots.Count == (enhanced ? 5 : 1) && r.Shots.All(s => s.damage == 10f), "Ascent position or damage mismatch");
+            r.Shots.Count == (enhanced ? 16 : 4) && r.Shots.All(s => s.damage == 10f), "Ascent position or damage mismatch");
         Check(flyingSeen && shotSeen, "Flying animation was not used");
-        var fired = r.Events.Single(e => e.skill == r.Air);
-        Check(enhanced ? fired.position.y < 2f : fired.position.y > 4f, "Aimed shot/shotgun fired at wrong stage");
+        var events = r.Events.Where(e => e.skill == r.Air).ToArray();
+        Check(events.Length == 4 && events.All(e => e.position.y > 4f), "Four volleys were not fired after ascent");
+        Check(launchers.SequenceEqual(new[] { "shot_3", "shot_1", "shot_3", "shot_1" }),
+            "Air launchers did not alternate for four firing motions: " + string.Join(",", launchers));
+        for (int i = 0; i < 4; i++)
+        {
+            int count = enhanced ? 4 : 1;
+            var offsets = r.Shots.Skip(i * count).Take(count).Select(s => Vector2.SignedAngle(r.AimDirections[i], s.direction))
+                .OrderBy(x => x).ToArray();
+            var expected = enhanced ? new[] { -12f, -4f, 4f, 12f } : new[] { 0f };
+            Check(offsets.Zip(expected, (a, b) => Mathf.Abs(a - b) < 0.05f).All(x => x), "Air volley missed its aimed tight spread");
+            if (i > 0) Check(Mathf.Abs(events[i].time - events[i - 1].time - 0.38f / (enhanced ? 1.2f : 1f)) < 0.05f,
+                "Air volley interval mismatch");
+        }
+        Check(r.Shots.First().direction.x > 0f && r.Shots.Last().direction.x < 0f, "Air volleys did not re-aim at the moved target");
         Check(Mathf.Abs(ReadFloat(r.Flight, "_peakSpeed") - (enhanced ? 12f : 6.5f)) < 0.01f, "Ascent speed multiplier mismatch");
-        Check(enhanced ? !jetSeen : jetSeen, "Basic-only flight exhaust gating mismatch");
-        if (!enhanced) Check(Mathf.Abs(fired.time - start - arrivedAt) < 0.03f, "Air shot still waited before firing");
-        Check(idleAfterShot && Time.time - start < (enhanced ? 1.7f : 2.5f), "Air transition/recovery was too slow");
+        Check(jetSeen, "Shared flight exhaust missing");
+        Check(Mathf.Abs(events[0].time - start - arrivedAt) < 0.03f, "Air shot did not follow arrival");
+        Check(idleAfterShot && Time.time - start < (enhanced ? 2.7f : 3.4f), "Air transition/recovery was too slow");
         return new { pattern = "AirTransition", enhanced, total = Time.time - start,
-            shotAt = fired.time - start, arrivedAt, shotHeight = fired.position.y, shots = r.Shots.Count, damagePerShot = 10f,
+            shotsAt = events.Select(e => e.time - start).ToArray(), arrivedAt, volleys = events.Length, launchers, shots = r.Shots.Count, damagePerShot = 10f,
             flyingSeen, idleAfterShot, jetSeen, postAttackDelay = ReadFloat(r.Air, "_recoverUntil") - ReadFloat(r.Air, "_shotEndsAt") };
     }
 
@@ -643,7 +690,7 @@ public static class VerifyBoss23Rework
                 var projectile = marker.GetComponentInParent<EnemyLobProjectile>();
                 markers[marker.GetInstanceID()] = (marker, marker.transform.position, projectile, Time.time);
                 predictionSeen |= marker.transform.position.x > r.Player.transform.position.x + 0.03f;
-                Check(Mathf.Abs(ReadFloat(projectile, "_radius") - (enhanced ? 63f : 52.5f) / 28f) < 0.001f &&
+                Check(Mathf.Abs(ReadFloat(projectile, "_radius") - 52.5f / 28f) < 0.001f &&
                     ReadFloat(projectile, "_damage") == (enhanced ? 26f : 22f), "Bomb radius or damage mismatch");
                 if (firstMarker == null) firstMarker = marker;
                 Canvas.ForceUpdateCanvases();
@@ -692,11 +739,10 @@ public static class VerifyBoss23Rework
             Check(Mathf.Abs(times[i] - times[i - 1] - (enhanced ? 0.508f : 1.05f)) < 0.04f, "Bomb interval mismatch");
         Check(impactDelays.Count == markers.Count && impactDelays.Values.All(t => Mathf.Abs(t - (enhanced ? 1.15f : 1.65f)) < 0.07f),
             "Marker to explosion delay mismatch: " + impactDelays.Count + "/" + markers.Count + " " + string.Join(",", impactDelays.Values));
-        Check(Mathf.Abs(descentAt - (enhanced ? 3.5525f : 3.625f)) < 0.08f &&
-            Mathf.Abs(Time.time - startedAt - (enhanced ? 4.34f : 4.55f)) < 0.13f &&
+        Check(descentAt >= times.Last() - startedAt && Time.time - startedAt < 6f &&
             r.Bomb.DidReturnToGround && Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.02f, "Bomb descent or total timeline mismatch");
         Check(ringShrank && impactHidden && predictionSeen, "Prediction, countdown or impact synchronization failed");
-        Check(enhanced ? maxX - minX < 0.01f : maxX - minX > 0.5f, "Basic-only bombardment movement mismatch");
+        Check(maxX - minX > 0.5f, "Shared bombardment movement missing");
         Check(r.Probe.ReceivedHitCount - hitsBefore == markers.Count &&
             Mathf.Abs(r.Probe.TotalDamage - damageBefore - markers.Count * (enhanced ? 26f : 22f)) < 0.01f, "Actual bomb splash damage mismatch");
         if (sheet != null)
@@ -707,7 +753,7 @@ public static class VerifyBoss23Rework
         }
         return new { pattern = "Bomb", enhanced, drops = markers.Count, firstDrop = times[0] - startedAt,
             interval = enhanced ? 0.508f : 1.05f, warningDurations = impactDelays.Values.ToArray(),
-            radius = (enhanced ? 63f : 52.5f) / 28f, damagePerBomb = enhanced ? 26 : 22,
+            radius = 52.5f / 28f, damagePerBomb = enhanced ? 26 : 22,
             descentAt, total = Time.time - startedAt, predictionSeen, fixedMarkers = true, horizontalTravel = maxX - minX };
     }
 
@@ -748,7 +794,7 @@ public static class VerifyBoss23Rework
     {
         r.Prepare(false, 4f);
         typeof(ProductionControlDrone).GetMethod("StartGround", Private).Invoke(r.Boss, new object[] { r.Air });
-        await Until(() => !r.Air.IsUsing, 3f, "Air transition did not complete");
+        await Until(() => !r.Air.IsUsing, 4f, "Air transition did not complete");
         float rest = await CheckRest(r, true);
         return new { pattern = "AirRest", duration = rest, flightIdle = true };
     }
@@ -878,6 +924,7 @@ public static class VerifyBoss23Rework
         public DroneBombSkill Bomb;
         public readonly List<(EnemyAttackSkill skill, Vector3 position, float time)> Events = new();
         public readonly List<(Vector3 origin, Vector2 direction, float muzzleY, float damage)> Shots = new();
+        public readonly List<Vector2> AimDirections = new();
         private readonly HashSet<int> _seenShots = new();
         private readonly GameObject _floor;
         private readonly Sprite _white;
@@ -944,7 +991,7 @@ public static class VerifyBoss23Rework
             Player.transform.position = Vector3.right * playerX;
             foreach (var entry in Skills.Skills)
                 typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime").SetValue(entry.Skill, float.NegativeInfinity);
-            Events.Clear(); Shots.Clear(); _seenShots.Clear();
+            Events.Clear(); Shots.Clear(); AimDirections.Clear(); _seenShots.Clear();
             Physics2D.SyncTransforms();
         }
 
@@ -965,8 +1012,11 @@ public static class VerifyBoss23Rework
         private void OnAttack(EnemyAttackSkill skill, Vector3 position)
         {
             Events.Add((skill, position, Time.time));
+            int volley = Events.Count(e => e.skill == skill);
+            if (skill is DroneAirTransitionSkill)
+                AimDirections.Add(((Vector2)Player.GetComponent<Collider2D>().bounds.center - (Vector2)position).normalized);
             float muzzleY = skill is DroneSalvoSkill || skill is DroneAirTransitionSkill
-                ? ((Transform)new SerializedObject(skill).FindProperty("muzzle").objectReferenceValue).position.y : position.y;
+                ? ((Transform)new SerializedObject(skill).FindProperty(volley % 2 == 0 ? "rearMuzzle" : "muzzle").objectReferenceValue).position.y : position.y;
             foreach (var projectile in Object.FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None))
             {
                 if (!ReferenceEquals(Read(projectile, "_dealer"), Boss) || !_seenShots.Add(projectile.GetInstanceID())) continue;

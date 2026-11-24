@@ -17,15 +17,15 @@ namespace _Scripts.Agent.Players
         // MapGenerator는 Awake에서 생성을 시작하지만 완료 이벤트는 최소 한 프레임 뒤에 오므로 Awake 구독이면 충분하다.
         private void Awake()
         {
-            EventBus<MapGeneratedEvent>.Subscribe(HandleMapGenerated);
+            EventBus<MapGeneratedEndEvent>.Subscribe(HandleMapGenerated);
         }
 
         private void OnDestroy()
         {
-            EventBus<MapGeneratedEvent>.UnSubscribe(HandleMapGenerated);
+            EventBus<MapGeneratedEndEvent>.UnSubscribe(HandleMapGenerated);
         }
 
-        private void HandleMapGenerated(MapGeneratedEvent evt)
+        private void HandleMapGenerated(MapGeneratedEndEvent evt)
         {
             // 생성도 기본 맵도 실패하면 방이 없고 생성 위치도 의미가 없다.
             if (evt.Rooms == null || evt.Rooms.Count == 0)

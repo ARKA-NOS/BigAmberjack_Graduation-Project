@@ -10,6 +10,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private SpriteRenderer[] sprites;
         [SerializeField] private Material warningMaterial;
         [SerializeField, ColorUsage(false)] private Color warningColor = Color.red;
+
         private EnemyBase _enemy;
         private EnemyHitReactionModule _hitReaction;
         private Color[] _colors;
@@ -24,7 +25,9 @@ namespace _Scripts.Agent.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _hitReaction = owner.GetModule<EnemyHitReactionModule>();
+
             if (sprites == null || sprites.Length == 0) sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
+
             _colors = new Color[sprites.Length];
             _materials = new Material[sprites.Length];
         }
@@ -62,6 +65,7 @@ namespace _Scripts.Agent.Enemies
             if (!_requested || _enemy == null || !_enemy.isActiveAndEnabled || _enemy.IsDead)
             {
                 Hide();
+
                 return;
             }
 
@@ -80,6 +84,7 @@ namespace _Scripts.Agent.Enemies
                 _colors[i] = sprites[i].color;
                 _materials[i] = sprites[i].sharedMaterial;
                 Color color = warningColor;
+
                 color.a = _colors[i].a;
                 sprites[i].sharedMaterial = warningMaterial;
                 sprites[i].color = color;

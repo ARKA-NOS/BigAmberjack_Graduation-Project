@@ -12,18 +12,21 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField] private StatData damageStat;
         [SerializeField, Min(1)] private int projectileCount = 12;
         [SerializeField, Min(0f)] private float recoveryTime = 0.5f;
+
         private Stat _damage;
         private float _endsAt;
         private int _castCount;
         private float _castSpeed;
         private float _castLifetime;
         private float _castWidth;
+
         public Vector2 LockedOrigin { get; private set; }
         public bool DidFire { get; private set; }
 
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
+
             if (damageStat != null && owner.TryGetModule(out IStatModule stats)) _damage = stats.GetStat(damageStat);
         }
 
@@ -55,6 +58,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 float angle = 2f * Mathf.PI * i / count;
                 Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
                 EnemyProjectile projectile = Instantiate(projectilePrefab, LockedOrigin, Quaternion.identity);
+
                 projectile.Speed = _castSpeed;
                 projectile.Lifetime = _castLifetime;
                 boss.TrackProjectile(projectile);
@@ -69,6 +73,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (IsUsing && HasReleased && Time.time >= _endsAt) EndSkill();
         }
     }

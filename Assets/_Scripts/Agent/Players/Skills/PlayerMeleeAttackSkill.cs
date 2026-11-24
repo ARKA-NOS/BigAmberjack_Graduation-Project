@@ -7,7 +7,10 @@ using _Scripts.Agent.StatSystem;
 using _Scripts.DevLib.AnimatorSystem;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
+using _Scripts.VFXSystem.Effect;
+using Lean.Pool;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace _Scripts.Agent.Players.Skills
 {
@@ -20,13 +23,18 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        [SerializeField] private StateSo[] comboStates;
+        //[SerializeField] private StateSo comboStates;
         [SerializeField] private int animatorLayer = 0;
         
         [Header("DamageCast Setting")]
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
-        
+
+        [Header("Attack Effect")]
+        [SerializeField] private PooledAnimationEffect attackEffectPrefab;
+        [SerializeField] private Vector2 attackEffectOffset;
+        [SerializeField] private bool attachEffectToOwner = true;
+
         [Header("AttackMove")]
         [SerializeField] private AnimationCurve attackMoveCurve;
         [SerializeField] private float lungeDistance = 1f;
@@ -125,19 +133,19 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnUseSkill()
         {
             base.OnUseSkill();
-            bool comboCounterOver = ComboCount >= comboStates.Length;
-            bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
-            bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
-            if (comboCounterOver || comboWindowExhaust)
-            {
-                ComboCount = 0;
-            }
+            //bool comboCounterOver = ComboCount >= comboStates.Length;
+            //bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
+            //bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
+            //if (comboCounterOver || comboWindowExhaust)
+            //{
+            //    ComboCount = 0;
+            //}
 
-            if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
-            {
-                ComboCount = 1;
-            }
-            _playerController.ChangeState((PlayerStateEnum)comboStates[ComboCount].assetIndex);
+            //if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
+            //{
+            //    ComboCount = 1;
+            //}
+            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
@@ -155,8 +163,25 @@ namespace _Scripts.Agent.Players.Skills
 
         private void OnTrigger()
         {
+            SpawnAttackEffect();
             if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
                 PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
+        }
+
+        private void SpawnAttackEffect()
+        {
+            if (attackEffectPrefab == null) return;
+
+            bool isLeft = _renderer.GetRight().x < 0f;
+            Vector3 offset = attackEffectOffset;
+            if (isLeft) offset.x *= -1f;
+
+            Vector3 position = damageCaster.transform.position + offset;
+            Quaternion rotation = Quaternion.Euler(0f, isLeft ? 180f : 0f, 0f);
+            Transform parent = attachEffectToOwner ? _animator.transform : null;
+            PooledAnimationEffect effect = LeanPool.Spawn(attackEffectPrefab, position, rotation, parent);
+            if (effect != null)
+                effect.Play(_animator.speed);
         }
 
         private Vector2 GetMouseDirection()
@@ -168,7 +193,7 @@ namespace _Scripts.Agent.Players.Skills
                 ? _animator.GetNextAnimatorStateInfo(animatorLayer)
                 : _animator.GetCurrentAnimatorStateInfo(animatorLayer);
             _currentAnimationNormal = info.normalizedTime;
-            _isAttackState = info.shortNameHash == comboStates[ComboCount].stateParam.HashValue;
+            //_isAttackState = info.shortNameHash == comboStates.stateParam.HashValue;
             //GroundStop();
             //AttackMove();
             base.UpdateSkill();
@@ -178,8 +203,8 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
-            ComboCount++;
-            _moveAttackLastTime = Time.time;
+            //ComboCount++;
+            //_moveAttackLastTime = Time.time;
             SkillEndSetting();
         }
 
@@ -233,6 +258,14 @@ namespace _Scripts.Agent.Players.Skills
             float distance = lungeDistance * stepArea / _attackMoveCurveArea;
             _movement.SetVelocityX(_renderer.GetRight().x * distance / Time.deltaTime);
         }
-        
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Vector3 offset = attackEffectOffset;
+            Vector3 position = damageCaster.transform.position + offset;
+            Gizmos.DrawWireSphere(position, 1);
+        }
+#endif
     }
 }

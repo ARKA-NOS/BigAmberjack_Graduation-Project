@@ -47,7 +47,14 @@ namespace _Scripts.Agent.HealthSystem.NewHealthSystem.Healths
 
         private void HandleMaxHealthChanged(float newValue, float delta)
         {
-            SetHp(HP + Mathf.Max(delta, 0f));
+            if (delta >= 0f)
+            {
+                SetHp(HP + delta);
+                return;
+            }
+
+            if (HP <= 0f) return;
+            SetHp(Mathf.Max(HP + delta, Mathf.Min(1f, HP)));
         }
 
     }

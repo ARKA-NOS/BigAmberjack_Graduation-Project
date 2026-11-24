@@ -19,7 +19,7 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             statModule.GetStat(statData).SetModify(this,statModifyData);
         }
 
-        public override void Remove(ModuleOwner owner)
+        public override void Downgrade(ModuleOwner owner)
         {
             if (!owner.TryGetModule(out IStatModule statModule)) return;
             if (statData == null) return;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.QuestSystem;
 using _Scripts.DevLib.ModuleSystem;
@@ -55,7 +56,37 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             if (CurrentStage == null) CurrentStage = startStage;
             RefreshStageTitles();
+            SetupTitles();
 
+            OnTitlesChanged?.Invoke();
+        }
+
+        public void ResetTitles()
+        {
+            foreach (Title title in _titles.Values)
+            {
+                title.OnComplete -= OnTitleComplete;
+                title.OnProgressChanged -= OnTitleProgressChanged;
+            }
+
+            foreach (AbstractTitleSo completedTitle in _completedTitles)
+                completedTitle.Downgrade(_owner);
+
+            _titles.Clear();
+            _completedTitles.Clear();
+            _waitingTitles.Clear();
+            _questModule.ClearQuests();
+
+            CurrentStage = startStage;
+            RefreshStageTitles();
+            SetupTitles();
+
+            FDebug.Log("[TitleModule] 칭호 초기화", this);
+            OnTitlesChanged?.Invoke();
+        }
+
+        private void SetupTitles()
+        {
             foreach (AbstractTitleSo titleSo in _allTitles)
             {
                 AbstractTitleSo[] requiredTitles = titleSo.RequiredTitles;
@@ -68,8 +99,6 @@ namespace _Scripts.Agent.Players.TitleSystem
                     AddWaitingTitle(titleSo, requiredTitles);
                 }
             }
-
-            OnTitlesChanged?.Invoke();
         }
 
         private void OnDestroy()
@@ -143,7 +172,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             {
                 if (requiredTitle == null || requiredTitle == titleSo || !_allTitles.Contains(requiredTitle))
                 {
-                    Debug.LogWarning($"[TitleModule] {titleSo.name}의 선행 칭호가 어느 TitleGroup에도 없거나 자기 자신이라 해금되지 않습니다.", titleSo);
+                    FDebug.LogWarning($"[TitleModule] {titleSo.name}의 선행 칭호가 어느 TitleGroup에도 없거나 자기 자신이라 해금되지 않습니다.", titleSo);
                     continue;
                 }
 

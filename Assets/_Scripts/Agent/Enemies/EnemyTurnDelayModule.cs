@@ -18,9 +18,11 @@ namespace _Scripts.Agent.Enemies
         {
             direction = currentDirection;
             float requestedDirection = Mathf.Sign(targetOffset);
+
             if (Mathf.Abs(targetOffset) <= centerDeadZone || requestedDirection == currentDirection)
             {
                 ResetTurn();
+
                 return true;
             }
 
@@ -34,6 +36,7 @@ namespace _Scripts.Agent.Enemies
 
             direction = requestedDirection;
             ResetTurn();
+
             return true;
         }
 

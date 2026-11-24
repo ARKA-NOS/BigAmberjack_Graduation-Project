@@ -36,6 +36,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         private void OnEnable() => Subscribe();
+
         private void OnDisable() => Unsubscribe();
 
         private void Subscribe()
@@ -44,6 +45,7 @@ namespace _Scripts.Agent.Enemies
 
             _enemy.DamageReceived += OnDamageReceived;
             _enemy.DeathStarted += OnDeathStarted;
+
             foreach (AttackSound attack in attackSounds)
             {
                 if (attack.skill == null || attack.cue == null || !_attackCues.TryAdd(attack.skill, attack.cue))
@@ -64,6 +66,7 @@ namespace _Scripts.Agent.Enemies
                 _enemy.DamageReceived -= OnDamageReceived;
                 _enemy.DeathStarted -= OnDeathStarted;
             }
+
             foreach (EnemyAttackSkill skill in _attackCues.Keys)
                 if (skill != null) skill.AttackPerformed -= OnAttackPerformed;
 

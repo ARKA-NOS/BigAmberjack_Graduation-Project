@@ -20,6 +20,7 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private string idleStateName = "";
         [Tooltip("발사 후 다른 스킬/이동까지 대기하는 시간(초). 터렛은 이 시간 동안 발사 방향과 전개 상태를 유지합니다.")]
         [SerializeField, Min(0f)] private float recoveryTime = 0.3f;
+
         [Header("Aim")]
         [Tooltip("타깃의 높이는 무시하고 적의 중심을 기준으로 좌우 수평 조준합니다. 끄면 기존 타깃 위치 조준을 사용합니다.")]
         [SerializeField] private bool horizontalAimOnly;
@@ -34,6 +35,7 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Min(0f)] private float aimLineWidth;
         [Tooltip("선택 사항. 전개 완료 후 공격하며, 발사기의 회전을 발사 방향과 일치시킵니다.")]
         [SerializeField] private EnemyTurretModule turret;
+
         private float _endTime;
         private Vector2 _castDirection;
         private Vector2 _desiredAimDirection;
@@ -52,7 +54,9 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void PrepareAttack()
         {
             _aimLocked = turret == null && !trackTargetDuringPreparation;
+
             if (faceTargetDuringPreparation) Enemy.FaceTarget();
+
             UpdateAimTarget();
             RotateAim();
             PlayAnimation(preparationStateName);
@@ -61,12 +65,15 @@ namespace _Scripts.Agent.Enemies.Skills
         private void UpdateAimTarget()
         {
             if (CastTarget == null || firePoint == null) return;
+
             if (horizontalAimOnly)
             {
                 // 발사 위치가 몸체보다 앞에 있어도 타깃의 좌우 판단은 몸체 방향과 일치시킵니다.
                 float offsetX = CastTarget.position.x - Enemy.transform.position.x;
                 float side = Mathf.Approximately(offsetX, 0f) ? Enemy.FacingDirection : Mathf.Sign(offsetX);
+
                 _desiredAimDirection = Vector2.right * side;
+
                 return;
             }
 
@@ -75,12 +82,16 @@ namespace _Scripts.Agent.Enemies.Skills
             if (aimAtTargetCenter)
             {
                 Collider2D targetBody = CastTarget.GetComponent<Collider2D>();
+
                 if (targetBody != null && targetBody.enabled) targetPoint = targetBody.bounds.center;
             }
 
             Vector2 origin = turret != null ? turret.AimOrigin : (Vector2)firePoint.position;
+
             _desiredAimDirection = targetPoint - origin;
+
             if (_desiredAimDirection.sqrMagnitude < 0.0001f) _desiredAimDirection = Vector2.right;
+
             _desiredAimDirection.Normalize();
         }
 
@@ -104,9 +115,11 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnReleaseAttack()
         {
             Telegraph?.Hide();
+
             if (projectilePrefab == null || firePoint == null || (turret != null && !turret.IsDeployed)) { StopSkill(); return; }
 
             EnemyProjectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
             // 프리팹 원본이 아닌 이번 탄에 적용합니다. 수명 종료 시각을 계산하는 Launch보다 먼저 설정합니다.
             projectile.Speed = ProjectileSpeed;
             projectile.Lifetime = ProjectileLifetime;
@@ -114,6 +127,7 @@ namespace _Scripts.Agent.Enemies.Skills
             PlayAnimation(attackStateName);
             _endTime = Time.time + Mathf.Max(0f, recoveryTime);
             BeginRecovery();
+
             if (recoveryTime <= 0f) EndSkill();
         }
 
@@ -124,8 +138,10 @@ namespace _Scripts.Agent.Enemies.Skills
             if (IsPreparing && CanContinue && !_aimLocked)
             {
                 if (faceTargetDuringPreparation) Enemy.FaceTarget();
+
                 if (trackTargetDuringPreparation) UpdateAimTarget();
                 else if (turret == null) _aimLocked = true;
+
                 RotateAim();
             }
 
@@ -134,6 +150,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (IsHoldingWarning)
             {
                 _aimLocked = true;
+
                 if (turret != null) turret.HoldAim();
             }
 

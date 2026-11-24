@@ -10,5 +10,7 @@ namespace _Scripts.Agent.Players.TitleSystem
         event Action OnTitlesChanged;
 
         IReadOnlyCollection<Title> Titles { get; }
+
+        void ResetTitles();
     }
 }

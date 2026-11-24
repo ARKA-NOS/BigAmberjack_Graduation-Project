@@ -44,7 +44,9 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             if (IsPreparing && CanContinue) Enemy.FaceTarget();
+
             base.UpdateSkill();
+
             if (IsRecovering && Time.time >= _recoveryUntil) EndSkill();
         }
 
@@ -61,18 +63,22 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void FixedUpdateAttack()
         {
             float distanceLeft = chargeDistance - Mathf.Abs(_body.position.x - _startX);
+
             if (_chargeTimeLeft <= 0f || distanceLeft <= 0.001f)
             {
                 FinishCharge();
+
                 return;
             }
 
             float stepTime = Mathf.Min(Time.fixedDeltaTime, _chargeTimeLeft);
             float step = Mathf.Min(distanceLeft, chargeDistance / Mathf.Max(0.01f, chargeDuration) * stepTime);
             float stepSpeed = step / Time.fixedDeltaTime;
+
             if (!_movement.CanMoveOnGround(_direction.x, stepSpeed) || HitPlayerInPath(step))
             {
                 if (ControlsMovement) FinishCharge();
+
                 return;
             }
 
@@ -86,6 +92,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 !_reaction.TryStun(parryStunDuration)) return false;
 
             Enemy.CancelAttack();
+
             return true;
         }
 
@@ -94,6 +101,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (CastTarget == null || !CastTarget.gameObject.activeInHierarchy) return false;
 
             Vector2 center = _movement.BodyCenter + _direction * hitboxForwardOffset;
+
             Physics2D.BoxCast(center, hitboxSize, 0f, _direction, new ContactFilter2D { useTriggers = true }, _hits, step);
 
             foreach (RaycastHit2D hit in _hits)
@@ -104,6 +112,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 if (!_movement.HasClearPath(_movement.BodyCenter, point)) continue;
 
                 EnemyDamageUtility.TryApply(hit.collider, CastTarget, Enemy, damage, point, _direction);
+
                 return true;
             }
 
@@ -137,6 +146,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (Enemy == null || Enemy.IsDead) return;
 
             if (_movement != null) _movement.Stop();
+
             PlayAnimation("Base Layer.Idle");
         }
 

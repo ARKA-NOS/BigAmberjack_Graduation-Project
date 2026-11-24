@@ -24,6 +24,7 @@ namespace _Scripts.Audio
             foreach (AudioClip clip in _clips)
             {
                 if (clip == null) continue;
+
                 if (Random.Range(0, ++validCount) == 0) selected = clip;
             }
 
@@ -34,6 +35,7 @@ namespace _Scripts.Audio
         {
             float min = Mathf.Clamp(Mathf.Min(_pitchRange.x, _pitchRange.y), 0.1f, 3f);
             float max = Mathf.Clamp(Mathf.Max(_pitchRange.x, _pitchRange.y), 0.1f, 3f);
+
             return Random.Range(min, max);
         }
     }

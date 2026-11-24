@@ -14,11 +14,13 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField] private BossSpriteBeam spriteBeam;
         [SerializeField] private StatData damageStat;
         [SerializeField] private BossLaserShake cameraShake;
+
         [Header("Wall Safe Space")]
         [Tooltip("플레이어 한 캐릭터의 기준 월드 폭입니다. 현재 공용 Player의 몸통 Collider 폭은 0.5입니다.")]
         [SerializeField, Min(0.01f)] private float characterWidth = 0.5f;
         [Tooltip("출발한 벽에서 비워 둘 캐릭터 수입니다. 넓은 레이저 끝까지 이 공간을 벗어나야 발사합니다.")]
         [SerializeField, Min(0f)] private float safeCharacterCount = 2.5f;
+
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private readonly List<Vector2> _dangerPolygon = new List<Vector2>();
         private readonly List<Vector2> _sweptHull = new List<Vector2>();
@@ -33,6 +35,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private float _fireStartX;
         private float _safeBoundaryX;
         private float _emissionStartX, _traversalEndX;
+
         public bool IsTraversalReady => IsUsing && HasReleased;
         public bool IsFiring => IsTraversalReady && _beamStarted;
         public float SafeZoneWidth => Mathf.Max(0.01f, characterWidth) * Mathf.Max(0f, safeCharacterCount);
@@ -52,7 +55,9 @@ namespace _Scripts.Agent.Enemies.Bosses
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
+
             if (damageStat != null && owner.TryGetModule(out IStatModule stats)) _damage = stats.GetStat(damageStat);
+
             spriteBeam?.Hide();
             BossArenaModule arena = owner.GetModule<BossArenaModule>();
 
@@ -70,6 +75,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             // 맵의 Tilemap/CompositeCollider가 준비된 뒤에도 발사 단계 진입 시 다시 맞춥니다.
             arena.RefreshFloor();
             float offsetY = Enemy != null ? Origin.y - Enemy.transform.position.y : 0f;
+
             // 그림을 늘리지 않고, 그림의 발사구가 눈 아래에 오면서 바닥에 닿도록 보스 경로 높이를 정합니다.
             arena.SetLaserHeightFromFloor(spriteBeam.HeightFromFloor - offsetY);
         }
@@ -80,18 +86,22 @@ namespace _Scripts.Agent.Enemies.Bosses
             _travelsRight = end.x >= start.x;
             _configured = spriteBeam != null && spriteBeam.Configure(_travelsRight) && danger.size.x > 0f && danger.size.y > 0f;
             _dangerPolygon.Clear();
+
             if (!_configured) return;
 
             Vector2 muzzleOffset = Enemy != null ? Origin - (Vector2)Enemy.transform.position : Vector2.zero;
+
             start += muzzleOffset;
             end += muzzleOffset;
             _traversalEndX = end.x;
             float safeWidth = Mathf.Min(SafeZoneWidth, danger.size.x);
+
             _safeBoundaryX = _travelsRight ? danger.min.x + safeWidth : danger.max.x - safeWidth;
             SafeZoneBounds = new Bounds(new Vector3(_travelsRight ? danger.min.x + safeWidth * 0.5f : danger.max.x - safeWidth * 0.5f,
                 danger.center.y, danger.center.z), new Vector3(safeWidth, danger.size.y, danger.size.z));
             // 보스 중심만 기준으로 삼으면 뒤로 퍼진 바닥 부분이 안전 공간을 침범합니다. 그림 전체 경계를 사용합니다.
             Bounds firstBeam = spriteBeam.WorldBoundsAt(start);
+
             _fireStartX = _travelsRight ? start.x + Mathf.Max(0f, _safeBoundaryX - firstBeam.min.x)
                 : start.x - Mathf.Max(0f, firstBeam.max.x - _safeBoundaryX);
             Vector2 firingStart = new Vector2(_fireStartX, start.y);
@@ -100,6 +110,7 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             spriteBeam.GetSweptHull(firingStart, end, _sweptHull);
             Vector2 min = danger.min, max = danger.max;
+
             _dangerPolygon.Add(min);
             _dangerPolygon.Add(new Vector2(min.x, max.y));
             _dangerPolygon.Add(max);
@@ -108,6 +119,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             for (int i = 0; i < _sweptHull.Count && _dangerPolygon.Count > 0; i++)
             {
                 Vector2 edge = _sweptHull[(i + 1) % _sweptHull.Count] - _sweptHull[i];
+
                 ClipWarning(_sweptHull[i], new Vector2(-edge.y, edge.x));
             }
 
@@ -124,9 +136,12 @@ namespace _Scripts.Agent.Enemies.Bosses
             foreach (Vector2 current in _dangerPolygon)
             {
                 float side = Vector2.Dot(current - edgePoint, inwardNormal);
+
                 if ((side >= 0f) != (previousSide >= 0f))
                     _clipBuffer.Add(Vector2.Lerp(previous, current, previousSide / (previousSide - side)));
+
                 if (side >= 0f) _clipBuffer.Add(current);
+
                 previous = current;
                 previousSide = side;
             }
@@ -136,6 +151,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         }
 
         protected override bool CanUseSkillCondition() => base.CanUseSkillCondition() && _configured && firePoint != null && spriteBeam != null;
+
         protected override void PrepareAttack()
         {
             _hitTargetThisTraversal = false;
@@ -143,7 +159,9 @@ namespace _Scripts.Agent.Enemies.Bosses
             spriteBeam.Hide();
             cameraShake?.StopShake();
         }
+
         protected override void UpdateTelegraph() => Telegraph.SetPolygon(_dangerBounds, _dangerPolygon);
+
         protected override void OnReleaseAttack()
         {
             Telegraph?.EndBlink();
@@ -157,12 +175,16 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             Vector2 origin = Origin;
             bool beyondSafeSpace = _travelsRight ? origin.x >= _fireStartX : origin.x <= _fireStartX;
+
             if (!beyondSafeSpace || _dangerPolygon.Count == 0)
             {
                 spriteBeam.Hide();
+
                 if (_beamStarted) cameraShake?.StopShake();
+
                 _beamStarted = false;
                 _previousOrigin = origin;
+
                 return;
             }
 
@@ -177,6 +199,7 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             spriteBeam.Show(origin);
             cameraShake?.SetTraversalProgress(Mathf.InverseLerp(_emissionStartX, _traversalEndX, origin.x));
+
             // 충분히 보이기 전에는 피해를 주지 않고, 페이드 중 지나온 경로도 소급해서 때리지 않습니다.
             if (!spriteBeam.CanDamage) { _previousOrigin = origin; return; }
 
@@ -216,12 +239,16 @@ namespace _Scripts.Agent.Enemies.Bosses
         }
 
         public void FinishTraversal() => EndSkill();
+
         protected override void OnEndSkill() { ClearBeam(true); base.OnEndSkill(); }
+
         protected override void OnStopSkill() { ClearBeam(false); base.OnStopSkill(); }
+
         private void ClearBeam(bool fade)
         {
             if (fade) { spriteBeam?.FadeOut(); cameraShake?.FadeOut(); }
             else { spriteBeam?.Hide(); cameraShake?.StopShake(); }
+
             _hitTargetThisTraversal = false;
             _beamStarted = false;
         }

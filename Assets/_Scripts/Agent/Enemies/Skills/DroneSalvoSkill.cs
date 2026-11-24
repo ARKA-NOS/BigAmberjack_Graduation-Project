@@ -12,6 +12,8 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private string fireState = "Shot";
         [SerializeField, Min(0.1f)] private float range = 8f;
         [SerializeField, Min(0.1f)] private float projectileSpeed = 10f;
+        [Tooltip("이 살보가 생성하는 탄의 크기 배율입니다. 표시와 콜라이더에 함께 적용됩니다.")]
+        [SerializeField, Min(0.1f)] private float projectileScale = 1f;
         [SerializeField, Min(0f)] private float damage = 14f;
         [SerializeField, Min(1)] private int projectilesPerSalvo = 1;
         [SerializeField, Min(0.01f)] private float shotInterval = 0.13f;
@@ -22,6 +24,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private float _nextShotAt;
         private float _recoveryUntil;
         private int _remaining;
+
         public bool DidFire { get; private set; }
         public float Range => range;
 
@@ -32,6 +35,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnUseSkill()
         {
             float previousCooldown = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = previousCooldown;
         }
@@ -56,11 +60,15 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             if (IsPreparing) visual.SetGunFlash(Mathf.FloorToInt((Time.time - _preparedAt) * 16f) % 2 == 0);
+
             base.UpdateSkill();
+
             if (!IsUsing || !HasReleased) return;
+
             if (_remaining > 0)
             {
                 if (Time.time >= _nextShotAt) Fire();
+
                 return;
             }
 
@@ -79,12 +87,16 @@ namespace _Scripts.Agent.Enemies.Skills
         private void Fire()
         {
             var projectile = Instantiate(projectilePrefab, muzzle.position, Quaternion.identity);
+
             SceneManager.MoveGameObjectToScene(projectile.gameObject, Enemy.gameObject.scene);
+            projectile.transform.localScale *= Mathf.Max(0.1f, projectileScale);
             projectile.Speed = projectileSpeed;
             projectile.Lifetime = range / projectileSpeed;
             projectile.Launch(Enemy, CastTarget, damage, _direction);
             NotifyAttackPerformed(muzzle.position);
+
             if (!DidFire) visual.Play(fireState);
+
             DidFire = true;
             CoolTimeStartTime = Time.time;
             _nextShotAt = Time.time + shotInterval;

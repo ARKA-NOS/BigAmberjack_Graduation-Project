@@ -9,14 +9,17 @@ namespace _Scripts.Agent.Enemies
         private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
 
         [SerializeField] private EnemyBase enemy;
+
         private Animator _animator;
         private Rigidbody2D _body;
 
         private void Awake()
         {
             _animator = GetComponent<Animator>();
+
             if (enemy == null)
                 enemy = GetComponentInParent<EnemyBase>();
+
             if (enemy != null)
                 _body = enemy.GetComponent<Rigidbody2D>();
         }
@@ -28,6 +31,7 @@ namespace _Scripts.Agent.Enemies
 
             bool isMoving = enemy.isActiveAndEnabled && !enemy.IsAttackInProgress && !enemy.IsHitReacting &&
                             Mathf.Abs(_body.linearVelocityX) > 0.01f;
+
             _animator.SetBool(IsMovingHash, isMoving);
         }
     }

@@ -23,8 +23,7 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
                 firstAttackBonus, dashRangeBonus, boostedInvincibleTime, requiredHits);
         }
 
-        // 버프 컴포넌트를 파괴하면 OnDestroy에서 이벤트 구독, 스탯 보정, 무적이 정리된다.
-        public override void Remove(ModuleOwner owner)
+        public override void Downgrade(ModuleOwner owner)
         {
             foreach (MultitaskBuff buff in owner.GetComponents<MultitaskBuff>())
                 Destroy(buff);

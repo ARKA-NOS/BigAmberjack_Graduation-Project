@@ -30,7 +30,7 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             }
         }
 
-        public override void Remove(ModuleOwner owner)
+        public override void Downgrade(ModuleOwner owner)
         {
             if (!owner.TryGetModule(out IStatModule statModule)) return;
             if (modifies == null) return;

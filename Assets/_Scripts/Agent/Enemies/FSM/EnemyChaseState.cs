@@ -11,6 +11,7 @@ namespace _Scripts.Agent.Enemies.FSM
             if (!Enemy.IsTargetInRange(Enemy.ChaseReleaseRange))
             {
                 Enemy.ChangeState(EnemyStateType.Idle);
+
                 return;
             }
 
@@ -24,6 +25,7 @@ namespace _Scripts.Agent.Enemies.FSM
             if (Enemy.CanAttackTarget())
             {
                 Enemy.ChangeState(EnemyStateType.Attack);
+
                 return;
             }
 

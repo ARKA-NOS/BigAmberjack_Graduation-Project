@@ -7,6 +7,7 @@ namespace _Scripts.UI.HitFeedback
     public sealed class EnemyDeathScreenFlash : MonoBehaviour
     {
         [SerializeField] private Image image;
+
         private CanvasGroup _group;
         private float _startedAt;
         private float _duration;
@@ -17,6 +18,7 @@ namespace _Scripts.UI.HitFeedback
             _group = GetComponent<CanvasGroup>();
             _group.interactable = false;
             _group.blocksRaycasts = false;
+
             if (image == null) { Destroy(gameObject); return; }
 
             image.raycastTarget = false;
@@ -32,7 +34,9 @@ namespace _Scripts.UI.HitFeedback
             if (!_playing) return;
 
             float t = Mathf.Clamp01((Time.unscaledTime - _startedAt) / _duration);
+
             _group.alpha = 1f - Mathf.SmoothStep(0f, 1f, t);
+
             if (t >= 1f) Destroy(gameObject);
         }
     }

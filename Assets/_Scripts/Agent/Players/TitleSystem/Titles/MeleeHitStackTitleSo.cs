@@ -23,8 +23,7 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             buff.Init(owner, statModule.GetStat(statData), valuePerStack, modifyType, duration, maxStack);
         }
 
-        // 버프 컴포넌트를 파괴하면 OnDestroy에서 이벤트 구독과 스탯 보정이 정리된다.
-        public override void Remove(ModuleOwner owner)
+        public override void Downgrade(ModuleOwner owner)
         {
             foreach (MeleeHitStackBuff buff in owner.GetComponents<MeleeHitStackBuff>())
                 Destroy(buff);

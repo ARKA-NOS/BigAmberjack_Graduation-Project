@@ -26,6 +26,17 @@ namespace _Scripts.Item
 
         public int TagCount => ItemTags.Length;
 
+        // 직접 쓴 Description이 있으면 그것을, 없으면 Effects의 설명을 줄바꿈으로 이어 붙여 돌려준다.
+        public string GetDisplayDescription()
+        {
+            if (!string.IsNullOrWhiteSpace(Description)) return Description;
+
+            return string.Join("\n", Effects
+                .Where(effect => effect != null)
+                .Select(effect => effect.GetDescription())
+                .Where(text => !string.IsNullOrEmpty(text)));
+        }
+
         private void OnValidate()
         {
             if (ItemTags.Length > MaxTagCount)

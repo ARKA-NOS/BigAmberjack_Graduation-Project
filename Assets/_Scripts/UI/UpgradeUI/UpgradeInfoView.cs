@@ -21,7 +21,9 @@ namespace _Scripts.UI.UpgradeUI
 
         private void Show(UpgradeNodeSO node)
         {
-            iconImage.sprite = node != null ? node.NodeIcon : null;
+            Sprite icon = node != null ? node.NodeIcon : null;
+            iconImage.sprite = icon;
+            iconImage.enabled = icon != null; // 선택 전에는 스프라이트가 없어 흰 사각형으로 보이므로 숨긴다.
             descriptionText.text = node != null ? node.NodeDescription : string.Empty;
         }
     }

@@ -32,7 +32,7 @@ namespace _Scripts.Item.ItemTooltip
             nameText.text = item.ItemName;
             nameText.color = GetGradeColor(item.Grade);
             infoText.text = BuildInfo(item);
-            descriptionText.text = item.Description;
+            descriptionText.text = item.GetDisplayDescription();
         }
 
         public void Hide()

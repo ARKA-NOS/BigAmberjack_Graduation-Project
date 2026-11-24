@@ -1,4 +1,6 @@
-﻿namespace _Scripts.Agent.Players.FSM
+﻿using _Scripts.UI.RunEnd;
+
+namespace _Scripts.Agent.Players.FSM
 {
     public class PlayerDeadState : AbstractPlayerState
     {
@@ -11,6 +13,7 @@
         {
             base.Enter();
             ControlMovement.MoveXLock(true);
+            RunEndEvents.RaiseRunEnded(RunEndReason.PlayerDead);
         }
 
         public override void Exit()

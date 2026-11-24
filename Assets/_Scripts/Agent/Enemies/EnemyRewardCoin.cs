@@ -71,6 +71,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.01f)] private float collectScaleDuration = 0.26f;
 
         private const float Skin = 0.005f;
+
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>(8);
         private SpriteRenderer _visual;
         private EnemyCoinTrail _trail;
@@ -107,11 +108,13 @@ namespace _Scripts.Agent.Enemies
         internal void SetCollector(Transform collector)
         {
             PlayerController player = collector != null ? collector.GetComponentInParent<PlayerController>() : null;
+
             if (player != null) collector = player.transform;
 
             _collector = collector;
             _collectorBody = collector != null ? collector.GetComponent<Collider2D>() : null;
             _collectorSprite = collector != null ? collector.GetComponentInChildren<SpriteRenderer>() : null;
+
             if (_collectorBody == null && collector != null)
                 foreach (Collider2D candidate in collector.GetComponentsInChildren<Collider2D>())
                     if (!candidate.isTrigger) { _collectorBody = candidate; break; }
@@ -123,12 +126,15 @@ namespace _Scripts.Agent.Enemies
             {
                 _nextTargetSearch = Time.time + 0.2f;
                 PlayerController player = ServiceLocator.Get<IPlayerController>() as PlayerController;
+
                 if (player == null || !player.gameObject.activeInHierarchy) player = FindFirstObjectByType<PlayerController>();
+
                 SetCollector(player != null ? player.transform : null);
             }
 
             center = transform.position;
             height = fallbackPlayerHeight;
+
             if (_collector == null || !_collector.gameObject.activeInHierarchy) return false;
 
             center = _collector.position;
@@ -145,6 +151,7 @@ namespace _Scripts.Agent.Enemies
             }
 
             if (height <= 0f) height = fallbackPlayerHeight;
+
             return true;
         }
 
@@ -176,6 +183,7 @@ namespace _Scripts.Agent.Enemies
             float launchSpeed = (Mathf.Max(0f, horizontalSpeed) + (low + high) * 0.5f) * 0.5f *
                 Mathf.Max(0f, scatterForceMultiplier);
             float boost = Mathf.Max(1f, launchSpeedMultiplier);
+
             _velocity = (direction * launchSpeed + Vector2.up * scatterUpwardBias) * boost;
 
             // 발사 속도의 제곱만큼 첫 낙하 중력을 키워 전체 비행 범위는 비슷하게 유지합니다.
@@ -194,6 +202,7 @@ namespace _Scripts.Agent.Enemies
             if (!_launched || _completed || IsCollecting) return;
 
             float dt = Time.fixedDeltaTime;
+
             if (IsHoming) { TickHoming(dt); return; }
 
             _airTime += dt;
@@ -201,6 +210,7 @@ namespace _Scripts.Agent.Enemies
                 ? Vector2.zero : Physics2D.gravity * gravityScale *
                     (_phase == CoinPhase.Scatter ? _scatterGravityMultiplier : 1f);
             Vector2 delta = _velocity * dt + gravity * (0.5f * dt * dt);
+
             _velocity += gravity * dt;
 
             float distance = delta.magnitude;
@@ -210,15 +220,19 @@ namespace _Scripts.Agent.Enemies
                 // 이동 방향이 아닌 표면 법선 방향으로 틈을 둡니다. 비스듬히 부딪혀도
                 // 다음 프레임의 수직 이동이 벽에 다시 걸려 공중에 붙지 않게 합니다.
                 Vector2 contactPosition = hit.centroid + hit.normal * Skin;
+
                 transform.position = new Vector3(contactPosition.x, contactPosition.y, transform.position.z);
+
                 if (_velocity.y <= 0f && hit.normal.y >= 0.5f)
                 {
                     HandleGroundContact();
+
                     return;
                 }
 
                 // 벽/천장에서는 안쪽 속도만 제거해 바닥까지 떨어뜨립니다.
                 float inwardSpeed = Vector2.Dot(_velocity, hit.normal);
+
                 if (inwardSpeed < 0f) _velocity -= hit.normal * inwardSpeed;
             }
             else
@@ -261,12 +275,14 @@ namespace _Scripts.Agent.Enemies
             if (BounceCount > 0)
             {
                 BeginHoming();
+
                 return;
             }
 
             bool hasCollector = TryGetCollectorBounds(out Vector2 collectorCenter, out float playerHeight);
             float height = Mathf.Max(minimumBounceHeight, playerHeight * Mathf.Max(0.5f, bounceHeightRatio));
             float gravity = Mathf.Max(0.01f, -Physics2D.gravity.y * gravityScale);
+
             _velocity = new Vector2(_velocity.x * horizontalRetention, Mathf.Sqrt(2f * gravity * height));
             BounceCount++;
             _phase = CoinPhase.Bounce;
@@ -275,6 +291,7 @@ namespace _Scripts.Agent.Enemies
             if (_trail != null)
             {
                 _trail.BeginTrail(_visual);
+
                 if (hasCollector)
                     _trail.SetCollectorDistance(Vector2.Distance(transform.position, collectorCenter));
             }
@@ -299,18 +316,23 @@ namespace _Scripts.Agent.Enemies
             if (!TryGetCollectorBounds(out Vector2 center, out _))
             {
                 _missingTargetTime += dt;
+
                 if (_missingTargetTime >= targetWaitTimeout) BeginCollect(collectedByPlayer: false);
+
                 return;
             }
 
             _missingTargetTime = 0f;
             _homingSpeed = Mathf.MoveTowards(_homingSpeed, Mathf.Max(initialHomingSpeed, maxHomingSpeed), homingAcceleration * dt);
             float distance = Vector2.Distance(transform.position, center);
+
             if (_trail != null) _trail.SetCollectorDistance(distance);
+
             if (distance <= Mathf.Max(collectDistance, _homingSpeed * dt))
             {
                 SetPosition(center);
                 BeginCollect(collectedByPlayer: true);
+
                 return;
             }
 
@@ -324,13 +346,17 @@ namespace _Scripts.Agent.Enemies
         {
             _collectedByPlayer = collectedByPlayer;
             _phase = CoinPhase.Collect;
+
             if (_trail != null) _trail.StopTrail();
+
             _velocity = Vector2.zero;
             _animationTime = 0f;
+
             if (collectFrames == null || collectFrames.Length == 0)
             {
                 Debug.LogWarning("코인의 Collect Frames가 비어 있어 소멸 연출 없이 정산합니다.", this);
                 CompleteReward();
+
                 return;
             }
 
@@ -342,23 +368,29 @@ namespace _Scripts.Agent.Enemies
             if (!_launched || _completed) return;
 
             _aliveTime += Time.deltaTime;
+
             if (!IsCollecting && _aliveTime >= Mathf.Max(0.1f, coinDeathTime))
             {
                 CompleteReward();
+
                 return;
             }
 
             _animationTime += Time.deltaTime;
+
             if (!IsCollecting)
             {
                 UpdateSpinSprite();
+
                 return;
             }
 
             if (TryGetCollectorBounds(out Vector2 center, out _)) SetPosition(center);
+
             UpdateCollectScale();
 
             int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, collectFramesPerSecond));
+
             if (frame >= collectFrames.Length) CompleteReward();
             else _visual.sprite = collectFrames[frame];
         }
@@ -384,6 +416,7 @@ namespace _Scripts.Agent.Enemies
             if (spinFrames == null || spinFrames.Length == 0) return;
 
             int frame = Mathf.FloorToInt(_animationTime * Mathf.Max(1f, spinFramesPerSecond)) % spinFrames.Length;
+
             _visual.sprite = spinFrames[frame];
         }
 
@@ -392,10 +425,13 @@ namespace _Scripts.Agent.Enemies
             if (_completed) return;
 
             if (_trail != null) _trail.StopTrail();
+
             _visual.enabled = false;
             Vector3 pickupPosition = transform.position;
+
             Destroy(gameObject);
             PayReward();
+
             if (_collectedByPlayer) EnemySoundModule.PlayCue(collectCue, pickupPosition);
         }
 
@@ -413,11 +449,14 @@ namespace _Scripts.Agent.Enemies
             if (_completed) return;
 
             _completed = true; // Add의 변경 이벤트에서 재진입해도 한 번만 지급합니다.
+
             if (_currency == null || Amount <= 0) return;
+
             // 연출 중 다른 보상도 들어올 수 있으므로 지급 시점에 다시 한도를 검사합니다.
             if ((long)_currency.Count + Amount > int.MaxValue)
             {
                 Debug.LogWarning("코인 보상이 재화 보유량 한도를 초과하여 지급하지 않았습니다.", this);
+
                 return;
             }
 

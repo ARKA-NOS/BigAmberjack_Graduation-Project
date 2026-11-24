@@ -34,10 +34,12 @@ namespace _Scripts.UI.HitFeedback
             while (_active.Count >= Mathf.Max(1, _maxVisiblePerEnemy))
             {
                 if (_active[0] != null) Destroy(_active[0].gameObject);
+
                 _active.RemoveAt(0);
             }
 
             EnemyDamageIndicatorPopup popup = Instantiate(_popupPrefab, data.Position, Quaternion.identity);
+
             SceneManager.MoveGameObjectToScene(popup.gameObject, gameObject.scene);
             popup.Show(data);
             _active.Add(popup);

@@ -12,6 +12,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float holdDuration = 0.25f;
         [Tooltip("원래 시간 배율로 부드럽게 돌아갈 실시간입니다.")]
         [SerializeField, Min(0f)] private float recoveryDuration = 0.2f;
+
         private static EnemyDeathSlowMotionModule _active;
         private static bool _pendingRestore;
         private static float _pendingOriginal, _pendingApplied;
@@ -30,6 +31,7 @@ namespace _Scripts.Agent.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -38,6 +40,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DeathStarted += PlaySlowMotion;
             _subscribed = true;
         }
@@ -45,17 +48,21 @@ namespace _Scripts.Agent.Enemies
         private void Unsubscribe()
         {
             if (_subscribed && _enemy != null) _enemy.DeathStarted -= PlaySlowMotion;
+
             _subscribed = false;
         }
 
         private void PlaySlowMotion()
         {
             if (_played || !isActiveAndEnabled) return;
+
             _played = true;
             RestorePendingIfResumed();
+
             if (Time.timeScale <= 0f) return;
 
             if (_active != null) _active.StopSlowMotion();
+
             _active = this;
             _originalScale = Time.timeScale;
             _appliedScale = _originalScale * Mathf.Clamp(timeScaleMultiplier, 0.01f, 1f);
@@ -68,9 +75,13 @@ namespace _Scripts.Agent.Enemies
         private void Update()
         {
             if (!_playing) return;
+
             float delta = Time.unscaledTime - _lastUnscaledTime;
+
             _lastUnscaledTime = Time.unscaledTime;
+
             if (Time.timeScale <= 0f) return;
+
             // 다른 시스템이 바꾼 시간 배율은 덮어쓰지 않습니다.
             if (!Mathf.Approximately(Time.timeScale, _appliedScale)) { StopSlowMotion(); return; }
 
@@ -78,16 +89,20 @@ namespace _Scripts.Agent.Enemies
             float recovery = Mathf.Max(0f, recoveryDuration);
             float t = recovery > 0f ? Mathf.Clamp01((_elapsed - Mathf.Max(0f, holdDuration)) / recovery) :
                 _elapsed >= Mathf.Max(0f, holdDuration) ? 1f : 0f;
+
             _appliedScale = _originalScale * Mathf.Lerp(Mathf.Clamp(timeScaleMultiplier, 0.01f, 1f), 1f,
                 Mathf.SmoothStep(0f, 1f, t));
             Time.timeScale = _appliedScale;
+
             if (t >= 1f) StopSlowMotion();
         }
 
         private void StopSlowMotion()
         {
             if (!_playing) return;
+
             _playing = false;
+
             if (_active == this) _active = null;
 
             if (Mathf.Approximately(Time.timeScale, _appliedScale)) Time.timeScale = _originalScale;
@@ -105,13 +120,16 @@ namespace _Scripts.Agent.Enemies
         {
             while (_pendingRestore && Time.timeScale <= 0f)
                 await UniTask.NextFrame(Application.exitCancellationToken);
+
             RestorePendingIfResumed();
         }
 
         private static void RestorePendingIfResumed()
         {
             if (!_pendingRestore || Time.timeScale <= 0f) return;
+
             if (Mathf.Approximately(Time.timeScale, _pendingApplied)) Time.timeScale = _pendingOriginal;
+
             _pendingRestore = false;
         }
 
@@ -122,6 +140,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         private void OnDisable() => Release();
+
         private void OnDestroy() => Release();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

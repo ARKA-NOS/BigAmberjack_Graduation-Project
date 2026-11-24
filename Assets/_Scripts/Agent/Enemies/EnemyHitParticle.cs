@@ -23,12 +23,15 @@ namespace _Scripts.Agent.Enemies
 
             // 발사나 사망 후에도 재생을 이어가되, 적이나 탄이 있던 씬을 벗어나지 않습니다.
             if (particle.gameObject.scene != scene) SceneManager.MoveGameObjectToScene(particle.gameObject, scene);
+
             particle.transform.localScale = prefab.transform.localScale * scale;
+
             if (!particle.TryGetComponent(out EnemyHitParticle lifetime))
                 lifetime = particle.gameObject.AddComponent<EnemyHitParticle>();
 
             lifetime._owner = owner;
             lifetime.Play(particle, maximumLifetime, speedMultiplier, countMultiplier);
+
             return lifetime;
         }
 
@@ -42,6 +45,7 @@ namespace _Scripts.Agent.Enemies
                 foreach (ParticleSystem particle in GetComponentsInChildren<ParticleSystem>(true))
                 {
                     var main = particle.main;
+
                     main.loop = false;
                     main.playOnAwake = false;
                     // 루트와 자식의 재생이 끝날 때까지 반환 시점은 이 컴포넌트가 관리합니다.
@@ -91,8 +95,11 @@ namespace _Scripts.Agent.Enemies
         private void OnDisable()
         {
             if (_root != null) _root.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
             _root = null;
+
             if (_owner != null) _owner.RemoveActiveEffect(this);
+
             _owner = null;
         }
 

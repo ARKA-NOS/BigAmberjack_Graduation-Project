@@ -17,6 +17,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private static readonly int Prepare = Animator.StringToHash("Base Layer.DashPreparation");
         private static readonly int Strike = Animator.StringToHash("Base Layer.Dash");
         private static readonly int Recovery = Animator.StringToHash("Base Layer.Recovery");
+
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>();
         private EnemyFlightModule _flight;
         private Rigidbody2D _body;
@@ -44,12 +45,14 @@ namespace _Scripts.Agent.Enemies.Skills
         private Vector2 DirectionToTarget()
         {
             float dx = Enemy.Target.position.x - _body.position.x;
+
             return Vector2.right * (Mathf.Approximately(dx, 0f) ? Enemy.FacingDirection : Mathf.Sign(dx));
         }
 
         protected override void OnUseSkill()
         {
             float lastStrike = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = lastStrike;
         }
@@ -77,20 +80,24 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             float remaining = Mathf.Max(0f, dashDistance - (_body.position.x - _startX) * _direction.x);
             float step = _flight.LimitTravel(_direction, Mathf.Min(remaining, dashSpeed * Time.fixedDeltaTime));
+
             if (step <= 0.001f)
             {
                 _flight.Stop();
                 _moving = false;
+
                 return;
             }
 
             if (!_hit && CanContinue) CheckHit(step);
+
             if (ControlsMovement) _body.linearVelocity = _direction * (step / Time.fixedDeltaTime);
         }
 
         private void CheckHit(float step)
         {
             Vector2 center = _flight.BodyCenter;
+
             Physics2D.BoxCast(center, hitboxSize, 0f, _direction,
                 new ContactFilter2D { useTriggers = true }, _hits, step);
 
@@ -113,6 +120,7 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (!IsUsing || !HasReleased || _moving) return;
 
             if (!IsRecovering)

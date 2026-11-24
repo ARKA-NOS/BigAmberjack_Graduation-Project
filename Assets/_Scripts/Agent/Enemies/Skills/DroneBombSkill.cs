@@ -16,6 +16,7 @@ namespace _Scripts.Agent.Enemies.Skills
 
         private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[1];
         private Vector2 _landingPoint;
+
         public float Range => range;
 
         internal bool CanPlanFrom(Vector2 start, Transform target) => muzzle != null && TryPlan(StartPoint(start), target, out _);
@@ -28,10 +29,12 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool TryPlan(Vector2 origin, Transform target, out Vector2 landing)
         {
             landing = default;
+
             if (bombPrefab == null || Enemy is not ProductionControlDrone drone ||
                 Mathf.Abs(target.position.x - origin.x) > range) return false;
 
             var terrain = new ContactFilter2D { useTriggers = false };
+
             terrain.SetLayerMask(drone.TerrainLayers);
             float targetX = drone.ClampX(target.position.x);
             Vector2 floorProbe = new Vector2(targetX, drone.FloorY + 0.20f);
@@ -39,12 +42,14 @@ namespace _Scripts.Agent.Enemies.Skills
             if (floor.collider == null || floor.normal.y < 0.5f) return false;
 
             landing = floor.point;
+
             return bombPrefab.HasClearArc(origin, landing, terrain, _terrainHits);
         }
 
         protected override void OnUseSkill()
         {
             float previousCooldown = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = previousCooldown;
         }
@@ -54,10 +59,12 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!TryPlan(muzzle.position, CastTarget, out _landingPoint))
             {
                 StopSkill();
+
                 return;
             }
 
             if (preview != null) preview.enabled = true;
+
             visual.Play("BombCharge");
         }
 
@@ -67,8 +74,10 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnReleaseAttack()
         {
             if (preview != null) preview.enabled = false;
+
             var drone = (ProductionControlDrone)Enemy;
             var bomb = Instantiate(bombPrefab, muzzle.position, Quaternion.identity);
+
             SceneManager.MoveGameObjectToScene(bomb.gameObject, Enemy.gameObject.scene);
             bomb.Launch(Enemy, CastTarget, _landingPoint, damage, radius, drone.TerrainLayers, TakeTelegraph());
             NotifyAttackPerformed(muzzle.position);
@@ -79,6 +88,7 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (IsUsing && HasReleased && visual.HasFinished("Bomb")) EndSkill();
         }
 
@@ -87,6 +97,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnStopSkill()
         {
             base.OnStopSkill();
+
             if (preview != null) preview.enabled = false;
         }
     }

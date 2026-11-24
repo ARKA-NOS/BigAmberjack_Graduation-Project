@@ -25,9 +25,11 @@ namespace _Scripts.Agent.Enemies
 
             // 적 생성 뒤 매니저가 생성되어도 사망 시점에 조회할 수 있습니다.
             EnemyKillCountManager manager = ServiceLocator.Get<EnemyKillCountManager>();
+
             if (manager == null || !manager.isActiveAndEnabled)
             {
                 Debug.LogWarning($"{_enemy.name}: 활성 EnemyKillCountManager가 없어 처치 수를 집계하지 못했습니다.", this);
+
                 return;
             }
 

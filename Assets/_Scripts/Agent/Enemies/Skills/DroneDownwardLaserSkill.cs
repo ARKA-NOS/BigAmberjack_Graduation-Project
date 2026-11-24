@@ -39,6 +39,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private static readonly int EndFadeId = Shader.PropertyToID("_EndFadeDistance");
         private static readonly int FloorId = Shader.PropertyToID("_FloorY");
         private const int WarningSegments = 48;
+
         private readonly List<Collider2D> _overlaps = new();
         private readonly RaycastHit2D[] _groundHit = new RaycastHit2D[1];
         private readonly List<Vector2> _warningCloud = new();
@@ -54,18 +55,23 @@ namespace _Scripts.Agent.Enemies.Skills
         private float _startSpeed, _endSpeed, _sweepDuration;
         private bool _isFadingOut;
 
+        public bool DidFire { get; private set; }
+
         public override void InitSkill(ModuleOwner owner)
         {
             base.InitSkill(owner);
             _beamProperties = new MaterialPropertyBlock();
             SetBeamSorting();
+
             if (beam != null) beam.enabled = false;
         }
 
         public bool CanPlanFrom(Vector2 bossPosition)
         {
             if (Enemy is not ProductionControlDrone drone || drone.Arena == null || muzzle == null) return false;
+
             Vector2 origin = bossPosition + (Vector2)(muzzle.position - Enemy.transform.position);
+
             return origin.y > drone.FloorY &&
                 Mathf.Min(origin.x - drone.Arena.LaserLeft.x, drone.Arena.LaserRight.x - origin.x) >
                 Mathf.Max(0f, safeEdgeWidth) + Mathf.Max(0.1f, width) * 0.5f;
@@ -78,6 +84,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnUseSkill()
         {
             float previousCooldown = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = previousCooldown;
         }
@@ -85,6 +92,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void PrepareAttack()
         {
             var drone = (ProductionControlDrone)Enemy;
+
             _origin = muzzle.position;
             _floorY = drone.FloorY;
             _safeLeft = drone.Arena.LaserLeft.x + Mathf.Max(0f, safeEdgeWidth);
@@ -94,6 +102,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _bodyOverlap = Mathf.Max(0f, bodyOverlapDistance);
             float reach = Mathf.Max(0f, Mathf.Min(_origin.x - _safeLeft, _safeRight - _origin.x) - _beamWidth * 0.5f);
             float safeAngle = Mathf.Asin(Mathf.Clamp01(reach / _radius)) * Mathf.Rad2Deg;
+
             _halfAngle = Mathf.Min(Mathf.Clamp(sweepHalfAngle, 0f, 85f), safeAngle);
             _endSpeed = Mathf.Max(0.01f, Mathf.Min(minSpeed, maxSpeed));
             _startSpeed = Mathf.Max(_endSpeed, Mathf.Max(minSpeed, maxSpeed));
@@ -101,6 +110,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(drone.TerrainLayers);
             _didHit = false;
+            DidFire = false;
             _isFadingOut = false;
             BuildWarning();
             visual.Play("LaserCharge");
@@ -111,6 +121,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnReleaseAttack()
         {
             CoolTimeStartTime = _beamStartedAt = Time.time;
+            DidFire = true;
             Telegraph?.Hide();
             visual.Play("Laser");
             SetBeamSorting();
@@ -125,22 +136,30 @@ namespace _Scripts.Agent.Enemies.Skills
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (!IsUsing || !HasReleased) return;
 
             float elapsed = Time.time - _beamStartedAt;
+
             if (!beam.enabled)
             {
                 if (visual.HasFinished("Laser")) EndSkill();
+
                 return;
             }
+
             float angle = EvaluateSweepAngle(elapsed);
+
             UpdateBeam(angle, elapsed);
+
             if (!_isFadingOut)
             {
                 // 프레임이 늦어도 회전 사이를 빠뜨리지 않도록 레이저 폭보다 작은 간격으로 나눕니다.
                 int steps = Mathf.Clamp(Mathf.CeilToInt(Mathf.Abs(angle - _previousAngle) * Mathf.Deg2Rad * _radius /
                     Mathf.Max(0.05f, _beamWidth * 0.5f)), 1, 128);
+
                 for (int i = 1; i <= steps && !_didHit; i++) TryHit(Mathf.Lerp(_previousAngle, angle, i / (float)steps));
+
                 _previousAngle = angle;
 
                 if (elapsed >= _sweepDuration)
@@ -154,6 +173,7 @@ namespace _Scripts.Agent.Enemies.Skills
             {
                 beam.enabled = false;
                 cameraShake?.StopShake();
+
                 if (visual.HasFinished("Laser")) EndSkill();
             }
         }
@@ -161,16 +181,19 @@ namespace _Scripts.Agent.Enemies.Skills
         private float EvaluateSweepAngle(float elapsed)
         {
             if (_sweepDuration <= 0f) return _halfAngle;
+
             float t = Mathf.Clamp01(elapsed / _sweepDuration);
             // SmoothStep으로 감속하는 속도를 적분합니다. 프레임 간격과 무관하게 같은 각도를 얻습니다.
             float integratedSmoothStep = t * t * t * (1f - 0.5f * t);
             float distance = _sweepDuration * (_startSpeed * t + (_endSpeed - _startSpeed) * integratedSmoothStep);
+
             return Mathf.Clamp(-_halfAngle + distance, -_halfAngle, _halfAngle);
         }
 
         private void SetBeamSorting()
         {
             if (beam == null || bodyRenderer == null) return;
+
             beam.sortingLayerID = bodyRenderer.sortingLayerID;
             beam.sortingOrder = bodyRenderer.sortingOrder - 1;
         }
@@ -178,6 +201,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private static Vector2 Direction(float angle)
         {
             float radians = angle * Mathf.Deg2Rad;
+
             return new Vector2(Mathf.Sin(radians), -Mathf.Cos(radians));
         }
 
@@ -185,6 +209,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             float distance = Mathf.Min(_radius, (_origin.y - _floorY) / Mathf.Max(0.001f, -direction.y));
             RaycastHit2D ground = EnemyLobProjectile.FindSurface(_origin, direction, distance, _terrainFilter, _groundHit);
+
             return ground.collider != null ? ground.distance : distance;
         }
 
@@ -192,15 +217,18 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             Vector2 direction = Direction(angle);
             float distance = BeamLength(direction);
+
             // 시작부만 몸체 안으로 연장합니다. 회전 원점과 바닥 쪽 끝점은 그대로 둡니다.
             beam.transform.position = _origin + direction * ((distance - _bodyOverlap) * 0.5f);
             beam.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             Vector3 parentScale = beam.transform.parent != null ? beam.transform.parent.lossyScale : Vector3.one;
+
             beam.transform.localScale = new Vector3(_beamWidth / beam.sprite.bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
                 (distance + _bodyOverlap) / beam.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             Color tint = beam.color;
             float fade = elapsed <= _sweepDuration ? 1f : fadeOutDuration <= 0f ? 0f :
                 1f - Mathf.SmoothStep(0f, 1f, (elapsed - _sweepDuration) / fadeOutDuration);
+
             tint.a = Mathf.Lerp(0.45f, 1f, Mathf.Clamp01(elapsed / 0.055f)) * fade;
             beam.color = tint;
             beam.GetPropertyBlock(_beamProperties);
@@ -215,15 +243,19 @@ namespace _Scripts.Agent.Enemies.Skills
         private void TryHit(float angle)
         {
             if (_didHit) return;
+
             Vector2 direction = Direction(angle);
             float distance = BeamLength(direction);
             Vector2 center = _origin + direction * (distance * 0.5f);
+
             Physics2D.OverlapBox(center, new Vector2(_beamWidth, distance), angle,
                 new ContactFilter2D { useTriggers = true }, _overlaps);
+
             foreach (var hit in _overlaps)
             {
                 if (!EnemyDamageUtility.IsTargetCollider(hit, CastTarget) || hit.bounds.max.y <= _floorY) continue;
                 if (!EnemyDamageUtility.TryApply(hit, CastTarget, Enemy, damage, hit.ClosestPoint(center), direction)) continue;
+
                 _didHit = true;
                 break;
             }
@@ -232,25 +264,34 @@ namespace _Scripts.Agent.Enemies.Skills
         private void BuildWarning()
         {
             _warningCloud.Clear();
+
             for (int i = 0; i <= WarningSegments; i++)
             {
                 Vector2 direction = Direction(Mathf.Lerp(-_halfAngle, _halfAngle, i / (float)WarningSegments));
                 Vector2 side = new Vector2(-direction.y, direction.x) * (_beamWidth * 0.5f);
                 float distance = BeamLength(direction);
                 Vector2 end = _origin + direction * distance;
+
                 _warningCloud.Add(_origin + side); _warningCloud.Add(_origin - side);
                 _warningCloud.Add(end + side); _warningCloud.Add(end - side);
             }
+
             _warningCloud.Sort((a, b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y));
             _warningPolygon.Clear();
+
             foreach (Vector2 point in _warningCloud) AddHullPoint(point, 0);
+
             int lower = _warningPolygon.Count;
+
             for (int i = _warningCloud.Count - 2; i >= 0; i--) AddHullPoint(_warningCloud[i], lower - 1);
+
             if (_warningPolygon.Count > 1) _warningPolygon.RemoveAt(_warningPolygon.Count - 1);
+
             ClipWarning(Vector2.up, _floorY);
             ClipWarning(Vector2.right, _safeLeft);
             ClipWarning(Vector2.left, -_safeRight);
             _warningBounds = new Bounds(_origin, Vector3.zero);
+
             foreach (Vector2 point in _warningPolygon) _warningBounds.Encapsulate(point);
         }
 
@@ -261,25 +302,33 @@ namespace _Scripts.Agent.Enemies.Skills
                 Vector2 a = _warningPolygon[_warningPolygon.Count - 1] - _warningPolygon[_warningPolygon.Count - 2];
                 Vector2 b = point - _warningPolygon[_warningPolygon.Count - 1];
                 if (a.x * b.y - a.y * b.x > 0f) break;
+
                 _warningPolygon.RemoveAt(_warningPolygon.Count - 1);
             }
+
             _warningPolygon.Add(point);
         }
 
         private void ClipWarning(Vector2 normal, float offset)
         {
             if (_warningPolygon.Count == 0) return;
+
             _clipBuffer.Clear();
             Vector2 previous = _warningPolygon[_warningPolygon.Count - 1];
             float previousSide = Vector2.Dot(previous, normal) - offset;
+
             foreach (Vector2 point in _warningPolygon)
             {
                 float side = Vector2.Dot(point, normal) - offset;
+
                 if ((side >= 0f) != (previousSide >= 0f))
                     _clipBuffer.Add(Vector2.Lerp(previous, point, previousSide / (previousSide - side)));
+
                 if (side >= 0f) _clipBuffer.Add(point);
+
                 previous = point; previousSide = side;
             }
+
             _warningPolygon.Clear();
             _warningPolygon.AddRange(_clipBuffer);
         }
@@ -289,14 +338,18 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
+
             if (beam != null) beam.enabled = false;
+
             cameraShake?.StopShake();
         }
 
         protected override void OnStopSkill()
         {
             base.OnStopSkill();
+
             if (beam != null) beam.enabled = false;
+
             cameraShake?.StopShake();
         }
     }

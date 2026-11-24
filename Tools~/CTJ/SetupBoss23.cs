@@ -277,6 +277,7 @@ public static class SetupBoss23
         Set(drone, "detectionRange", 12f);
         Set(drone, "chaseReleaseRange", 16f);
         Set(drone, "moveSpeed", 2.4f);
+        Set(drone, "ascentSpeed", 6f);
         Set(drone, "facingRoot", facing);
         Set(drone, "deathAnimator", animator);
         Child(root.transform, "FlightModule").gameObject.AddComponent<BossFlightModule>();
@@ -374,6 +375,7 @@ public static class SetupBoss23
             Set(salvo, "projectilePrefab", round);
             Set(salvo, "fireState", fireState);
             Set(salvo, "projectileSpeed", speed);
+            Set(salvo, "projectileScale", name == "RegularSalvo" ? 1.35f : 1f);
             Set(salvo, "damage", damage);
             Set(salvo, "projectilesPerSalvo", count);
             SetupSkill(salvo, name, 0.55f, 2.4f, null);

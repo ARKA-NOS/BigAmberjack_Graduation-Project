@@ -17,9 +17,11 @@ namespace _Scripts.Agent.Enemies
         public override void Initialize(ModuleOwner owner)
         {
             base.Initialize(owner);
+
             if (!(owner is EnemyBase))
             {
                 Debug.LogWarning("EnemyVerticalFlipModule은 EnemyBase의 자식 모듈로 배치하세요.", this);
+
                 return;
             }
 
@@ -38,6 +40,7 @@ namespace _Scripts.Agent.Enemies
         public void SetFlipped(bool flipped) => enabled = flipped;
 
         private void OnEnable() => ApplyFlip(true);
+
         private void OnDisable() => ApplyFlip(false);
 
         private void ApplyFlip(bool flipped)
@@ -46,7 +49,9 @@ namespace _Scripts.Agent.Enemies
 
             // 반전 직전 고정한 조준 방향을 새 발사 위치에서 사용하지 않도록 정리합니다.
             if (_skills != null) _skills.StopAttack();
+
             Vector3 scale = _root.localScale;
+
             scale.y = _normalScaleY * (flipped ? -1f : 1f);
             _root.localScale = scale;
             IsFlipped = flipped;

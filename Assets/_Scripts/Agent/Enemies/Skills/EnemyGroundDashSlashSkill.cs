@@ -18,11 +18,13 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField, Range(1, 2)] private int maximumConsecutiveDashes = 1;
 
         private enum Phase { Preparing, Dashing, Slashing, Recovering }
+
         private static readonly int Preparation = Animator.StringToHash("Base Layer.DashPreparation");
         private static readonly int Dash = Animator.StringToHash("Base Layer.Dash");
         private static readonly int Slash = Animator.StringToHash("Base Layer.Slash");
         private static readonly int Recovery = Animator.StringToHash("Base Layer.Recovery");
         private static readonly int Idle = Animator.StringToHash("Base Layer.Idle");
+
         private readonly List<Collider2D> _overlaps = new List<Collider2D>();
         private EnemyMovementModule _movement;
         private Rigidbody2D _body;
@@ -52,6 +54,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool TryPlan(Transform target, out float direction)
         {
             direction = Enemy.FacingDirection;
+
             if (target == null || _movement == null || !_movement.IsGrounded ||
                 Mathf.Abs(_movement.GetTargetHeightDifference(target)) > maximumHeightDifference) return false;
 
@@ -60,6 +63,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 Vector3.up * (_movement.BodyCenter.y - _body.position.y))) return false;
 
             if (Mathf.Abs(offsetX) > 0.01f) direction = Mathf.Sign(offsetX);
+
             return true;
         }
 
@@ -67,6 +71,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             _slashes = 0;
             float lastStrike = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = lastStrike;
         }
@@ -76,6 +81,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!TryPlan(CastTarget, out _direction))
             {
                 StopSkill();
+
                 return;
             }
 
@@ -106,10 +112,13 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             float remaining = (_dashEndX - _body.position.x) * _direction;
             float step = _movement.GetGroundTravelDistance(_direction, Mathf.Min(remaining, dashSpeed * Time.fixedDeltaTime));
+
             if (step > 0.001f && Time.time < _dashDeadline)
             {
                 if (!_hitApplied) StrikeAlongStep(step);
+
                 if (ControlsMovement) _body.linearVelocityX = _direction * step / Time.fixedDeltaTime;
+
                 return;
             }
 
@@ -131,6 +140,7 @@ namespace _Scripts.Agent.Enemies.Skills
             Vector2 origin = _movement.BodyCenter;
             Vector2 direction = Vector2.right * _direction;
             Vector2 center = origin + direction * (step * 0.5f);
+
             Physics2D.OverlapBox(center, new Vector2(step, slashHeight), 0f,
                 new ContactFilter2D { useTriggers = true }, _overlaps);
 
@@ -144,7 +154,9 @@ namespace _Scripts.Agent.Enemies.Skills
 
                 _hitApplied = true;
                 CoolTimeStartTime = Time.time;
+
                 if (ControlsMovement) PlaySlash();
+
                 break;
             }
         }
@@ -152,12 +164,14 @@ namespace _Scripts.Agent.Enemies.Skills
         private void PlaySlash()
         {
             if (Play(Slash)) attackAnimator.Update(0f);
+
             NotifyAttackPerformed(_movement.BodyCenter);
         }
 
         public override void UpdateSkill()
         {
             base.UpdateSkill();
+
             if (!IsUsing || !HasReleased) return;
 
             if (_phase == Phase.Slashing)
@@ -172,6 +186,7 @@ namespace _Scripts.Agent.Enemies.Skills
                     TryPlan(CastTarget, out _))
                 {
                     BeginPreparation();
+
                     return;
                 }
 
@@ -200,6 +215,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             _phase = Phase.Preparing;
             _movement?.Stop();
+
             if (Enemy != null && !Enemy.IsDead) Play(Idle);
         }
 
@@ -209,6 +225,7 @@ namespace _Scripts.Agent.Enemies.Skills
                 attackAnimator.runtimeAnimatorController == null || !attackAnimator.HasState(0, state)) return false;
 
             attackAnimator.Play(state, 0, 0f);
+
             return true;
         }
     }

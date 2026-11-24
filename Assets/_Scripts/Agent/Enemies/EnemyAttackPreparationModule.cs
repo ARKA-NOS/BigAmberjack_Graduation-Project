@@ -63,6 +63,7 @@ namespace _Scripts.Agent.Enemies
             set
             {
                 particlesEnabled = value;
+
                 if (!value) ClearPreparation();
             }
         }
@@ -76,18 +77,21 @@ namespace _Scripts.Agent.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _bodyCollider = owner.GetComponent<Collider2D>();
+
             if (sortingSource == null) sortingSource = owner.GetComponentInChildren<SpriteRenderer>();
         }
 
         internal void BeginPreparation(EnemyAttackSkill skill, float preparationDuration)
         {
             ClearPreparation();
+
             if (!CanGather) return;
 
             float availableTime = Mathf.Max(0f, preparationDuration);
             if (availableTime <= 0f) return;
 
             float leadTime = Mathf.Min(Mathf.Max(0f, completionLeadTime), availableTime * 0.5f);
+
             _duration = Mathf.Min(Mathf.Max(0.05f, gatherTime), availableTime - leadTime);
             _preparingSkill = skill;
             _particleCount = Mathf.Clamp(particleCount, 1, 128);
@@ -96,6 +100,7 @@ namespace _Scripts.Agent.Enemies
             _finishesAt = Time.time + availableTime - leadTime;
             _startsAt = _finishesAt - _duration;
             InitializeParticles();
+
             if (Time.time >= _startsAt) SpawnParticles();
         }
 
@@ -111,13 +116,16 @@ namespace _Scripts.Agent.Enemies
             if (!CanGather || !_preparingSkill.IsPreparing)
             {
                 ClearPreparation();
+
                 return;
             }
 
             FinishGatheringIfDue();
+
             if (_gatheringFinished) return;
 
             if (_particles == null && Time.time >= _startsAt) SpawnParticles();
+
             if (_particles != null)
             {
                 _particles.transform.position = GetCenter();
@@ -129,19 +137,23 @@ namespace _Scripts.Agent.Enemies
         {
             Vector3 center = centerOverride != null ? centerOverride.position :
                 _bodyCollider != null ? _bodyCollider.bounds.center : _enemy.transform.position;
+
             return center + (Vector3)centerOffset;
         }
 
         private void SpawnParticles()
         {
             _particles = LeanPool.Spawn(particlePrefab, GetCenter(), Quaternion.identity);
+
             if (_particles == null) return;
 
             if (_particles.gameObject.scene != gameObject.scene)
                 SceneManager.MoveGameObjectToScene(_particles.gameObject, gameObject.scene);
+
             _particles.transform.localScale = Vector3.one;
             _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             var main = _particles.main;
+
             main.loop = false;
             main.playOnAwake = false;
             main.duration = _duration;
@@ -157,20 +169,27 @@ namespace _Scripts.Agent.Enemies
             main.stopAction = ParticleSystemStopAction.None;
             main.maxParticles = _particleCount;
             var size = _particles.sizeOverLifetime;
+
             size.enabled = false;
             size.separateAxes = false;
             var color = _particles.colorOverLifetime;
+
             color.enabled = false;
             var trails = _particles.trails;
+
             trails.enabled = false;
             var emission = _particles.emission;
+
             emission.enabled = false;
             var shape = _particles.shape;
+
             shape.enabled = false;
 
             var velocity = _particles.velocityOverLifetime;
+
             velocity.enabled = false;
             var renderer = _particles.GetComponent<ParticleSystemRenderer>();
+
             if (renderer != null)
             {
                 // 속도·카메라 이동에 따른 늘이기와 축별 크기 변형을 사용하지 않습니다.
@@ -211,6 +230,7 @@ namespace _Scripts.Agent.Enemies
             {
                 // 연속 입자가 같은 방향에 겹쳐 선처럼 보이지 않도록 각도를 고르게 분산합니다.
                 float angle = angleOffset + i * GoldenAngle + Random.Range(-0.1f, 0.1f);
+
                 _gatheringParticles[i] = new GatheringParticle
                 {
                     StartPosition = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * Random.Range(radiusMin, radiusMax),
@@ -223,6 +243,7 @@ namespace _Scripts.Agent.Enemies
         {
             float interiorRadius = GetInteriorRadius();
             int visibleCount = 0;
+
             for (int i = 0; i < _particleCount; i++)
             {
                 float scheduledAt = _startsAt + (_particleCount > 1
@@ -242,6 +263,7 @@ namespace _Scripts.Agent.Enemies
                 // 마지막 20%는 중심에 도착한 상태에서만 축소·소멸합니다.
                 float absorbed = Mathf.Clamp01((progress - TravelRatio) / (1f - TravelRatio));
                 Color color = particleColor;
+
                 color.a *= Mathf.Clamp01(progress / 0.08f) * (1f - absorbed);
                 _renderParticles[visibleCount++] = new ParticleSystem.Particle
                 {
@@ -262,6 +284,7 @@ namespace _Scripts.Agent.Enemies
         {
             Vector3 extents = _bodyCollider != null ? _bodyCollider.bounds.extents :
                 sortingSource != null ? sortingSource.bounds.extents : Vector3.one * 0.2f;
+
             return Mathf.Max(0.01f, Mathf.Min(extents.x, extents.y) * 0.5f);
         }
 
@@ -283,10 +306,13 @@ namespace _Scripts.Agent.Enemies
         private void ReleaseParticles()
         {
             ParticleSystem particles = _particles;
+
             _particles = null;
+
             if (particles == null) return;
 
             particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
             if (LeanPool.Links.TryGetValue(particles.gameObject, out var pool) && pool != null)
                 LeanPool.Despawn(particles.gameObject);
             else
@@ -294,6 +320,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         private void OnDisable() => ClearPreparation();
+
         private void OnDestroy() => ClearPreparation();
     }
 }

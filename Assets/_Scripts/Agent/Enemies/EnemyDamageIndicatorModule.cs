@@ -22,6 +22,7 @@ namespace _Scripts.Agent.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -38,6 +39,7 @@ namespace _Scripts.Agent.Enemies
         private void Unsubscribe()
         {
             if (_subscribed && _enemy != null) _enemy.DamageReceived -= OnDamageReceived;
+
             _subscribed = false;
         }
 
@@ -45,11 +47,14 @@ namespace _Scripts.Agent.Enemies
         {
             Vector3 origin = _enemy.transform.position;
             Vector3 position = origin;
+
             if (_useHitPoint && IsFinite(point.x) && IsFinite(point.y) &&
                 Vector2.Distance(point, origin) <= _maxHitPointDistance)
                 position = new Vector3(point.x, point.y, origin.z);
+
             if (!HasDirection(direction) && damage.Dealer != null)
                 direction = _enemy.transform.position - damage.Dealer.transform.position;
+
             if (!HasDirection(direction)) direction = -normal;
 
             ShowDamage(damage.DamageAmount, damage.IsCritical, position + (Vector3)_worldOffset, direction);
@@ -60,16 +65,21 @@ namespace _Scripts.Agent.Enemies
         {
             if (!isActiveAndEnabled || _viewModel == null || !IsFinite(damage) || damage <= 0f ||
                 !IsFinite(position.x) || !IsFinite(position.y) || !IsFinite(position.z)) return;
+
             _viewModel.Bind(new DamageIndicatorData(GetInstanceID(), damage, isCritical, position, direction));
         }
 
         private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
         private static bool HasDirection(Vector2 value) =>
             IsFinite(value.x) && IsFinite(value.y) && value.sqrMagnitude > 0.0001f;
+
         private void OnDisable() => Unsubscribe();
+
         private void OnDestroy() => Unsubscribe();
 
 #if UNITY_EDITOR
+
         [ContextMenu("Preview/Normal 24 (Play Mode, No Damage)")]
         private void PreviewNormal()
         {

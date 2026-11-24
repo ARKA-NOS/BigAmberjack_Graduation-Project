@@ -9,6 +9,7 @@ namespace _Scripts.Agent.Enemies.Bosses
     {
         [Tooltip("최고 속도까지 가속하는 시간이며 감속에도 같은 값을 사용합니다. 짧은 이동은 최고 속도를 낮춥니다.")]
         [SerializeField, Min(0.01f)] private float easeDuration = 0.2f;
+
         private Rigidbody2D _body;
         private Vector2 _start;
         private Vector2 _destination;
@@ -18,6 +19,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private float _cruiseTime;
         private float _duration;
         private float _elapsed;
+
         public bool IsMoving { get; private set; }
         public bool HasArrived => _body != null && !IsMoving && Vector2.Distance(_body.position, _destination) <= 0.01f;
 
@@ -49,14 +51,17 @@ namespace _Scripts.Agent.Enemies.Bosses
             _destination = destination;
             _distance = Vector2.Distance(_start, destination);
             _elapsed = 0f;
+
             if (_distance <= 0.0001f)
             {
                 Place(destination);
+
                 return;
             }
 
             float maxSpeed = Mathf.Max(0.01f, speed);
             float ramp = ResolveEaseDuration(easeOverride);
+
             // 가속+감속만으로 목적지를 넘어갈 짧은 거리에서는 최고 속도를 낮추고 등속 구간을 생략합니다.
             _rampTime = Mathf.Min(ramp, Mathf.Sqrt(_distance * ramp / maxSpeed));
             _peakSpeed = maxSpeed * _rampTime / ramp;
@@ -80,6 +85,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             else
             {
                 float remaining = _duration - _elapsed;
+
                 travelled = _distance - 0.5f * acceleration * remaining * remaining;
             }
 
@@ -105,6 +111,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             IsMoving = false;
             _elapsed = 0f;
+
             if (_body == null) return;
 
             _body.linearVelocity = Vector2.zero;

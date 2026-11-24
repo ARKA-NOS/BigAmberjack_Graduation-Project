@@ -46,6 +46,7 @@ namespace _Scripts.Agent.Enemies
             _waiting = false;
             _nextDirection = Random.value < 0.5f ? -1f : 1f;
             _returningToSpawn = returnToSpawnBeforePatrol && Mathf.Abs(_enemy.transform.position.x - _spawnPosition.x) > 0.06f;
+
             if (_returningToSpawn) _destinationX = _spawnPosition.x;
             else ChooseDestination();
         }
@@ -56,15 +57,18 @@ namespace _Scripts.Agent.Enemies
                 return 0f;
 
             if (!_patrolling) BeginPatrol();
+
             if (patrolSpeed <= 0f || (!_returningToSpawn && halfWidth <= 0.06f))
             {
                 _movement.Stop();
+
                 return 0f;
             }
 
             if (_waiting)
             {
                 _movement.Stop();
+
                 if (Time.time < _waitUntil) return 0f;
 
                 _waiting = false;
@@ -72,6 +76,7 @@ namespace _Scripts.Agent.Enemies
             }
 
             if (!_returningToSpawn) _destinationX = Mathf.Clamp(_destinationX, MinX, MaxX);
+
             float direction = _movement.MoveOnGroundTowards(_destinationX, patrolSpeed, out bool blocked);
 
             if (blocked || Mathf.Abs(_enemy.transform.position.x - _destinationX) <= 0.06f)
@@ -80,6 +85,7 @@ namespace _Scripts.Agent.Enemies
                 _movement.Stop();
                 _waiting = true;
                 _waitUntil = Time.time + Mathf.Max(0f, pauseDuration);
+
                 if (blocked) _nextDirection = _destinationX >= _enemy.transform.position.x ? -1f : 1f;
             }
 
@@ -89,12 +95,15 @@ namespace _Scripts.Agent.Enemies
         private void ChooseDestination()
         {
             float x = _enemy.transform.position.x;
+
             // 경계 바로 밖에서는 경계점이 이동 허용 오차 안에 있어 정지만 반복할 수 있습니다.
             // 구간 안쪽을 목적지로 정해 실제로 복귀한 뒤 다음 배회 지점을 선택합니다.
             if (x < MinX) { _destinationX = Center.x; _nextDirection = 1f; return; }
+
             if (x > MaxX) { _destinationX = Center.x; _nextDirection = -1f; return; }
 
             float end = _nextDirection > 0f ? MaxX : MinX;
+
             _destinationX = Mathf.Lerp(x, end, Random.Range(0.5f, 1f));
             _nextDirection = -_nextDirection;
         }
@@ -104,10 +113,12 @@ namespace _Scripts.Agent.Enemies
         private void OnDisable()
         {
             if (_patrolling && _movement != null) _movement.Stop();
+
             _patrolling = false;
         }
 
 #if UNITY_EDITOR
+
         private void OnDrawGizmosSelected()
         {
             EnemyBase owner = GetComponentInParent<EnemyBase>();
@@ -119,6 +130,7 @@ namespace _Scripts.Agent.Enemies
             Vector3 left = new Vector3(center.x - width, y, 0f);
             Vector3 right = new Vector3(center.x + width, y, 0f);
             Color previous = Gizmos.color;
+
             Gizmos.color = Color.cyan;
             Gizmos.DrawLine(left, right);
             Gizmos.DrawLine(left - Vector3.up * 0.4f, left + Vector3.up * 0.4f);

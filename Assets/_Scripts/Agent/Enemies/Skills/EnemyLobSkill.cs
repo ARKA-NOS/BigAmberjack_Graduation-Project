@@ -33,6 +33,7 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void OnUseSkill()
         {
             float previousCooldown = CoolTimeStartTime;
+
             base.OnUseSkill();
             CoolTimeStartTime = previousCooldown;
         }
@@ -40,9 +41,11 @@ namespace _Scripts.Agent.Enemies.Skills
         protected override void PrepareAttack()
         {
             Enemy.FaceTarget();
+
             if (!TryPlanThrow(CastTarget, out _landingPoint))
             {
                 StopSkill();
+
                 return;
             }
 
@@ -52,9 +55,11 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool TryPlanThrow(Transform target, out Vector2 landingPoint)
         {
             landingPoint = default;
+
             if (projectilePrefab == null || throwPoint == null) return false;
 
             var terrain = new ContactFilter2D { useTriggers = false };
+
             terrain.SetLayerMask(terrainLayers);
             RaycastHit2D floor = EnemyLobProjectile.FindSurface(
                 (Vector2)target.position + Vector2.up * 0.15f, Vector2.down, maximumGroundDrop + 0.15f, terrain, _surfaceHit);
@@ -63,9 +68,12 @@ namespace _Scripts.Agent.Enemies.Skills
             // 스킬 선택 시 아직 회전하기 전일 수 있으므로 타깃을 바라본 발사점으로 검사합니다.
             Vector2 launchPoint = throwPoint.position;
             float side = target.position.x - Enemy.transform.position.x;
+
             if (!Mathf.Approximately(side, 0f) && Mathf.Sign(side) != Enemy.FacingDirection)
                 launchPoint.x = 2f * Enemy.transform.position.x - launchPoint.x;
+
             landingPoint = floor.point;
+
             return projectilePrefab.HasClearArc(launchPoint, landingPoint, terrain, _surfaceHit);
         }
 
@@ -76,6 +84,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             Vector2 origin = throwPoint.position;
             var projectile = Instantiate(projectilePrefab, origin, Quaternion.identity);
+
             SceneManager.MoveGameObjectToScene(projectile.gameObject, Enemy.gameObject.scene);
             projectile.Launch(Enemy, CastTarget, _landingPoint, damage, impactRadius, terrainLayers, TakeTelegraph());
             CoolTimeStartTime = Time.time;
@@ -87,7 +96,9 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             // Animator.Play 직후의 프레임에는 이전 상태가 조회될 수 있습니다.
             bool wasReleased = HasReleased;
+
             base.UpdateSkill();
+
             if (!IsUsing || !wasReleased || !HasReleased) return;
 
             if (!IsRecovering)

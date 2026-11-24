@@ -99,6 +99,7 @@ namespace _Scripts.Agent.Enemies
             if (UsesGroundMovement && GetComponentInChildren<EnemyFlightModule>() == null &&
                 GetComponentInChildren<EnemyMovementModule>() == null)
                 gameObject.AddComponent<EnemyMovementModule>();
+
             base.Awake();
 
             _rigidbody = GetComponent<Rigidbody2D>();
@@ -117,6 +118,7 @@ namespace _Scripts.Agent.Enemies
             if (NewHealthModule != null)
             {
                 NewHealthModule.OnHealthChanged += HandleHealthChanged;
+
                 if (NewHealthModule.CurrentHealth <= 0f)
                     Die();
             }
@@ -135,6 +137,7 @@ namespace _Scripts.Agent.Enemies
             if (_turnDelay != null && (IsDead || IsHitReacting ||
                 _skills?.ActiveSkill is EnemyAttackSkill { IsPreparing: false }))
                 _turnDelay.ResetTurn();
+
             if (!IsDead && !IsHitReacting)
                 UpdateAI();
         }
@@ -144,12 +147,16 @@ namespace _Scripts.Agent.Enemies
             if (IsDead)
             {
                 if (IsPlayingDeathReaction && _hitReaction != null) _hitReaction.TickReaction();
+
                 return;
             }
+
             if (_hitReaction != null && _hitReaction.TickReaction()) return;
+
             if (_skills != null && _skills.ActiveSkill is EnemyAttackSkill { ControlsMovement: true } attack)
             {
                 attack.FixedUpdateAttack();
+
                 return;
             }
 
@@ -157,6 +164,7 @@ namespace _Scripts.Agent.Enemies
         }
 
         protected virtual void UpdateAI() => _stateMachine.Update();
+
         protected virtual void FixedUpdateAI() => _stateMachine.FixedUpdate();
 
         protected virtual void InitializeAI()
@@ -173,6 +181,7 @@ namespace _Scripts.Agent.Enemies
             if (target != newTarget)
             {
                 _turnDelay?.ResetTurn();
+
                 if (_skills != null && !HasCommittedAttack) _skills.StopAttack();
             }
 
@@ -186,9 +195,11 @@ namespace _Scripts.Agent.Enemies
             while (!IsDead && gameObject.activeInHierarchy && target == null)
             {
                 PlayerController player = FindFirstObjectByType<PlayerController>();
+
                 if (player != null)
                 {
                     SetTarget(player.transform);
+
                     return;
                 }
 
@@ -209,6 +220,7 @@ namespace _Scripts.Agent.Enemies
 
             Vector2 currentPosition = transform.position;
             Vector2 targetPosition = target.position;
+
             return (targetPosition - currentPosition).sqrMagnitude <= range * range;
         }
 
@@ -217,24 +229,30 @@ namespace _Scripts.Agent.Enemies
             if (_flight != null && _flight.isActiveAndEnabled && target != null)
             {
                 OnMoveDirectionChanged(_flight.Chase(target, moveSpeed));
+
                 return;
             }
+
             if (IsDead || target == null || _movement == null)
             {
                 StopHorizontalMovement();
+
                 return;
             }
 
             bool hasTurnDelay = _turnDelay != null && _turnDelay.isActiveAndEnabled;
+
             if (hasTurnDelay && !TryFaceTarget())
             {
                 StopHorizontalMovement();
+
                 return;
             }
 
             float direction = _keepDistance != null && _keepDistance.isActiveAndEnabled
                 ? _keepDistance.MoveTowardsTarget(target, moveSpeed)
                 : _movement.MoveTowards(target, moveSpeed);
+
             if (!hasTurnDelay) OnMoveDirectionChanged(direction);
         }
 
@@ -252,6 +270,7 @@ namespace _Scripts.Agent.Enemies
         {
             _turnDelay?.ResetTurn();
             StopHorizontalMovement();
+
             if (_flight != null) _flight.BeginPatrol();
             else if (_patrol != null) _patrol.BeginPatrol();
         }
@@ -261,11 +280,14 @@ namespace _Scripts.Agent.Enemies
             if (_flight != null && _flight.isActiveAndEnabled)
             {
                 OnMoveDirectionChanged(_flight.Patrol(moveSpeed));
+
                 return;
             }
+
             if (_patrol == null || !_patrol.isActiveAndEnabled)
             {
                 StopHorizontalMovement();
+
                 return;
             }
 
@@ -275,6 +297,7 @@ namespace _Scripts.Agent.Enemies
         internal void EndPatrol()
         {
             if (_patrol != null) _patrol.EndPatrol();
+
             StopHorizontalMovement();
         }
 
@@ -297,6 +320,7 @@ namespace _Scripts.Agent.Enemies
                 return;
 
             Vector3 scale = facingRoot.localScale;
+
             scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction);
             facingRoot.localScale = scale;
         }
@@ -312,12 +336,16 @@ namespace _Scripts.Agent.Enemies
                 !_turnDelay.TryResolveFacing(FacingDirection, direction, out direction)) return false;
 
             OnMoveDirectionChanged(direction);
+
             return true;
         }
 
         public void OnAttackWarning() => _skills?.OnAttackWarning();
+
         public void OnAttackHit() => _skills?.OnAttackHit();
+
         public void OnAttackFinished() => _skills?.OnAttackFinished();
+
         internal void CancelAttack() => _skills?.StopAttack();
 
         public override void ApplyDamage(
@@ -332,13 +360,16 @@ namespace _Scripts.Agent.Enemies
                 return;
 
             amount = ModifyIncomingDamage(damageData, hitPoint, hitDirection, out bool suppressHitControl);
+
             if (amount <= 0f) return;
 
             var previousHit = _pendingHit;
 
             _pendingHit = (damageData, hitPoint, hitDirection, hitNormal, suppressHitControl);
+
             try { NewHealthModule.ApplyDamage(amount); }
             finally { _pendingHit = previousHit; }
+
             OnHit?.Invoke();
         }
 
@@ -346,6 +377,7 @@ namespace _Scripts.Agent.Enemies
             out bool suppressHitControl)
         {
             suppressHitControl = false;
+
             return damage.DamageAmount;
         }
 
@@ -357,6 +389,7 @@ namespace _Scripts.Agent.Enemies
             {
                 _pendingHit = null;
                 var appliedHit = hit.Value;
+
                 appliedHit.damage.DamageAmount = -delta;
                 hit = appliedHit;
             }
@@ -384,6 +417,7 @@ namespace _Scripts.Agent.Enemies
             IsPlayingDeathReaction = true;
             _deathStartedAt = Time.time;
             EnemyDeathFeedbackSettingsSO feedback = DeathFeedbackSettings;
+
             _fadeDeathImmediately = !completeDeathAnimationBeforeReward && feedback != null && feedback.FadeImmediately;
             _immediateDeathFadeDuration = feedback != null ? feedback.ImmediateFadeDuration : deathFadeDuration;
 
@@ -392,6 +426,7 @@ namespace _Scripts.Agent.Enemies
 
             // 지면용 물리 콜라이더는 마지막 넉백이 끝날 때까지 유지합니다.
             bool hasSolidBody = false;
+
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
             {
                 if (collider.isTrigger)
@@ -412,10 +447,12 @@ namespace _Scripts.Agent.Enemies
             if (_deathFinalized) return;
 
             if (!IsWaitingForDeathLanding) BeginDeathPresentation();
+
             if (_fadeDeathImmediately)
             {
                 // 마지막 피격·사망 이벤트는 그대로 전달하고 연출 종료 대기만 생략합니다.
                 FinishDeath();
+
                 return;
             }
 
@@ -432,9 +469,11 @@ namespace _Scripts.Agent.Enemies
 
             LayerMask terrainLayers = _flight != null ? _flight.TerrainLayers :
                 _movement != null ? _movement.TerrainLayers : LayerMask.GetMask("Ground", "Platform");
+
             _deathGroundFilter = new ContactFilter2D { useTriggers = false };
             _deathGroundFilter.SetLayerMask(terrainLayers);
             _deathGroundContacts ??= new List<ContactPoint2D>(4);
+
             if (HasDeathGroundContact()) return false;
 
             if (_rigidbody.gravityScale <= 0f)
@@ -448,6 +487,7 @@ namespace _Scripts.Agent.Enemies
             if (_rigidbody.linearVelocityY > 0.1f) return false;
 
             _rigidbody.GetContacts(_deathGroundFilter, _deathGroundContacts);
+
             foreach (ContactPoint2D contact in _deathGroundContacts)
                 if (contact.enabled && contact.normal.y >= 0.5f) return true;
 
@@ -478,10 +518,12 @@ namespace _Scripts.Agent.Enemies
             {
                 // 바닥이 없는 낭떠러지에서도 적과 처치 처리가 남지 않도록 대기를 끝냅니다.
                 float deadline = Time.time + DeathLandingTimeout;
+
                 while (!_deathFinalized && Time.time < deadline && !HasDeathGroundContact())
                     await UniTask.NextFrame(cancellationToken);
 
                 if (_deathFinalized) return;
+
                 BeginDeathPresentation();
             }
 
@@ -498,15 +540,20 @@ namespace _Scripts.Agent.Enemies
             _deathFinalized = true;
             IsWaitingForDeathLanding = false;
             IsPlayingDeathReaction = false;
+
             if (_hitReaction != null) _hitReaction.ClearReaction();
+
             _rigidbody.linearVelocity = Vector2.zero;
             _rigidbody.simulated = false;
+
             foreach (Collider2D collider in GetComponentsInChildren<Collider2D>(true))
                 collider.enabled = false;
 
             if (_death != null) _death.ReportDeath();
+
             // 제거/씬 전환이 아닌 실제 사망에서만 지급합니다. 외부 재화 이벤트보다 사망 처리를 먼저 끝냅니다.
             if (!completeDeathAnimationBeforeReward || !isActiveAndEnabled) _currencyReward?.GrantDeathReward();
+
             // 사망 중에는 AI가 IsDead로 멈추며, 비주얼은 페이드가 끝날 때까지 유지합니다.
             if (isActiveAndEnabled) FadeAndDespawnAsync(destroyCancellationToken).Forget();
             else Destroy(gameObject, _fadeDeathImmediately ? 0f : Mathf.Max(0f, deathDespawnDelay - (Time.time - _deathStartedAt)));
@@ -521,9 +568,11 @@ namespace _Scripts.Agent.Enemies
                 while (state.fullPathHash == DeathStateHash && state.normalizedTime < 1f)
                 {
                     await UniTask.NextFrame(cancellationToken);
+
                     if (!gameObject.activeInHierarchy) return;
                     if (deathAnimator == null || !deathAnimator.isActiveAndEnabled ||
                         deathAnimator.runtimeAnimatorController == null) break;
+
                     state = deathAnimator.GetCurrentAnimatorStateInfo(0);
                 }
 
@@ -539,9 +588,11 @@ namespace _Scripts.Agent.Enemies
             else if (!_fadeDeathImmediately)
             {
                 float remaining = deathDespawnDelay - (Time.time - _deathStartedAt);
+
                 if (remaining > 0f)
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(remaining), cancellationToken: cancellationToken);
+
                     if (!gameObject.activeInHierarchy) return;
                 }
             }
@@ -551,6 +602,7 @@ namespace _Scripts.Agent.Enemies
 
             SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
             float[] originalAlphas = new float[sprites.Length];
+
             for (int i = 0; i < sprites.Length; i++)
                 if (sprites[i] != null) originalAlphas[i] = sprites[i].color.a;
 
@@ -567,11 +619,13 @@ namespace _Scripts.Agent.Enemies
                     if (sprites[i] == null) continue;
 
                     Color color = sprites[i].color;
+
                     color.a = originalAlphas[i] * alpha;
                     sprites[i].color = color;
                 }
 
                 await UniTask.NextFrame(cancellationToken);
+
                 if (!gameObject.activeInHierarchy) return;
             }
 
@@ -588,18 +642,22 @@ namespace _Scripts.Agent.Enemies
         {
             // 연출 중 컴포넌트를 꺼도 대기 상태로 남지 않도록 정리합니다.
             if (IsPlayingDeathReaction) FinishDeath();
+
             if (_hitReaction != null) _hitReaction.ClearReaction();
 
             _skills?.StopAttack();
+
             if (_rigidbody != null) StopHorizontalMovement();
         }
 
 #if UNITY_EDITOR
+
         [ContextMenu("Test/Take 2 Damage (Play Mode)")]
         protected void TestTakeDamage()
         {
             if (!Application.isPlaying)
                 return;
+
             ((IDamageable)this).ApplyDamage(new DamageData { DamageAmount = 2f },
                 transform.position, Vector2.zero, Vector2.zero);
         }
@@ -622,6 +680,7 @@ namespace _Scripts.Agent.Enemies
 
             Gizmos.color = Color.red;
             EnemySkillModule skillModule = _skills != null ? _skills : GetComponentInChildren<EnemySkillModule>();
+
             Gizmos.DrawWireSphere(transform.position, skillModule != null ? skillModule.MaximumRange : 0f);
         }
     }

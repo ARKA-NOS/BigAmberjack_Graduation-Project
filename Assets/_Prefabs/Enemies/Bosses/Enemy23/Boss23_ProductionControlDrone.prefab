@@ -980,6 +980,7 @@ MonoBehaviour:
   fireState: Shot
   range: 8
   projectileSpeed: 10
+  projectileScale: 1.35
   damage: 14
   projectilesPerSalvo: 1
   shotInterval: 0.13
@@ -1278,6 +1279,7 @@ MonoBehaviour:
   lowAltitude: 1.05
   highAltitude: 4.55
   laserAltitude: 6.5
+  ascentSpeed: 6
   arenaEdgeMargin: 1.05
   airRecoveryTime: 1.2
   terrainLayers:
@@ -1809,6 +1811,7 @@ MonoBehaviour:
   fireState: RapidShot
   range: 8
   projectileSpeed: 15
+  projectileScale: 1
   damage: 8
   projectilesPerSalvo: 3
   shotInterval: 0.13

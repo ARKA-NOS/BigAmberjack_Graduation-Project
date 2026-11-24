@@ -10,16 +10,19 @@ namespace _Scripts.Agent.Enemies.Bosses
     {
         [Header("Boss")]
         [SerializeField] private string displayName = "보스";
+
         public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? "보스" : displayName;
 
         private readonly List<EnemyProjectile> _ownedProjectiles = new List<EnemyProjectile>();
         private Transform _observedTarget;
         private bool _hadTarget;
+
         public bool IsInvulnerable { get; protected set; }
         protected override bool UsesGroundMovement => false;
         protected virtual bool UpdatesWithoutCombatTarget => false;
         protected BossFlightModule Flight { get; private set; }
         protected EnemySkillModule Skills { get; private set; }
+
         public bool HasCombatTarget
         {
             get
@@ -27,6 +30,7 @@ namespace _Scripts.Agent.Enemies.Bosses
                 if (Target == null || !Target.gameObject.activeInHierarchy) return false;
 
                 Agent agent = Target.GetComponentInParent<Agent>();
+
                 return agent == null || agent.GetModule<INewHealthModule>()?.IsDead != true;
             }
         }
@@ -53,6 +57,7 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             _observedTarget = Target;
             _hadTarget = available;
+
             if (available || UpdatesWithoutCombatTarget) UpdateBoss();
         }
 
@@ -82,6 +87,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         public void TrackProjectile(EnemyProjectile projectile)
         {
             _ownedProjectiles.RemoveAll(item => item == null);
+
             if (projectile != null) _ownedProjectiles.Add(projectile);
         }
 
@@ -114,8 +120,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         }
 
         protected abstract void InitializeBoss();
+
         protected abstract void UpdateBoss();
+
         protected abstract void FixedUpdateBoss();
+
         protected abstract void OnCombatInterrupted();
     }
 }

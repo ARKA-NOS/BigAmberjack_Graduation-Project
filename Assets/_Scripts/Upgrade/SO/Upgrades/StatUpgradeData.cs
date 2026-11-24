@@ -18,6 +18,13 @@ namespace _Scripts.Upgrade.SO.Upgrades
              
              stat.SetModify(this,Modify);
         }
+
+        public override void AgentDowngrade(ModuleOwner owner)
+        {
+             if(!owner.TryGetModule(out IStatModule statModule)) return;
+
+             statModule.GetStat(StatType).RemoveModify(this);
+        }
         
     }
 }

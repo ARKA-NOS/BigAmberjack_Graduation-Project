@@ -12,6 +12,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private Color flashColor = new Color(1f, 1f, 1f, 0.35f);
         [Tooltip("시간 감속의 영향을 받지 않는 실시간입니다.")]
         [SerializeField, Min(0.01f)] private float duration = 0.35f;
+
         private EnemyBase _enemy;
         private EnemyDeathScreenFlash _view;
         private bool _subscribed;
@@ -22,6 +23,7 @@ namespace _Scripts.Agent.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -30,6 +32,7 @@ namespace _Scripts.Agent.Enemies
         private void Subscribe()
         {
             if (_subscribed || _enemy == null) return;
+
             _enemy.DeathStarted += PlayFlash;
             _subscribed = true;
         }
@@ -37,12 +40,14 @@ namespace _Scripts.Agent.Enemies
         private void Unsubscribe()
         {
             if (_subscribed && _enemy != null) _enemy.DeathStarted -= PlayFlash;
+
             _subscribed = false;
         }
 
         private void PlayFlash()
         {
             if (_played || !isActiveAndEnabled || flashPrefab == null) return;
+
             _played = true;
             _view = Instantiate(flashPrefab);
             SceneManager.MoveGameObjectToScene(_view.gameObject, gameObject.scene);
@@ -52,13 +57,16 @@ namespace _Scripts.Agent.Enemies
         private void Release()
         {
             Unsubscribe();
+
             if (_view == null) return;
+
             _view.gameObject.SetActive(false);
             Destroy(_view.gameObject);
             _view = null;
         }
 
         private void OnDisable() => Release();
+
         private void OnDestroy() => Release();
     }
 }

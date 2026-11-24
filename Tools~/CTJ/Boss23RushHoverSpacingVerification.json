@@ -1,0 +1,87 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "ChargeReach",
+        "direction": 1,
+        "initialGap": 1.5,
+        "travel": 6.5,
+        "rearSafe": true,
+        "continuedAfterHit": true
+      },
+      {
+        "pattern": "ChargeReach",
+        "direction": 1,
+        "initialGap": 9,
+        "travel": 6.49999952,
+        "rearSafe": true,
+        "continuedAfterHit": true
+      },
+      {
+        "pattern": "ChargeReach",
+        "direction": -1,
+        "initialGap": 1.5,
+        "travel": 6.5,
+        "rearSafe": true,
+        "continuedAfterHit": true
+      },
+      {
+        "pattern": "ChargeReach",
+        "direction": -1,
+        "initialGap": 9,
+        "travel": 6.5,
+        "rearSafe": true,
+        "continuedAfterHit": true
+      },
+      {
+        "pattern": "SalvoSpacing",
+        "enhanced": false,
+        "scenario": "far",
+        "minX": 0,
+        "endX": 3,
+        "shots": 7,
+        "directionLocked": true
+      },
+      {
+        "pattern": "SalvoSpacing",
+        "enhanced": false,
+        "scenario": "wall",
+        "minX": 0,
+        "endX": 0,
+        "shots": 7,
+        "directionLocked": true
+      },
+      {
+        "pattern": "SalvoSpacing",
+        "enhanced": false,
+        "scenario": "cross",
+        "minX": 0,
+        "endX": 0.5519997,
+        "shots": 7,
+        "directionLocked": true
+      },
+      {
+        "pattern": "SalvoSpacing",
+        "enhanced": false,
+        "scenario": "changeDistance",
+        "minX": -0.5519997,
+        "endX": 2.44800043,
+        "shots": 7,
+        "directionLocked": true
+      },
+      {
+        "pattern": "SalvoSpacing",
+        "enhanced": true,
+        "scenario": "cross",
+        "minX": 0,
+        "endX": 0.130666584,
+        "shots": 36,
+        "directionLocked": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 319,
+  "executeMs": 22714,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_b757df49723e483fbee5df87e378be21"
+}

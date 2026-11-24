@@ -1,0 +1,62 @@
+{
+  "result": {
+    "results": [
+      {
+        "angle": -35,
+        "actualWidth": 0.8,
+        "samples": [
+          {
+            "remaining": 0.2,
+            "left": 0.003921569,
+            "right": 0.003921569
+          },
+          {
+            "remaining": 0.4,
+            "left": 0.0509803928,
+            "right": 0.05490196
+          },
+          {
+            "remaining": 0.7,
+            "left": 0.282352954,
+            "right": 0.282352954
+          },
+          {
+            "remaining": 1.2,
+            "left": 0.596078455,
+            "right": 0.596078455
+          }
+        ]
+      },
+      {
+        "angle": 35,
+        "actualWidth": 0.8,
+        "samples": [
+          {
+            "remaining": 0.2,
+            "left": 0.003921569,
+            "right": 0.003921569
+          },
+          {
+            "remaining": 0.4,
+            "left": 0.05490196,
+            "right": 0.0509803928
+          },
+          {
+            "remaining": 0.7,
+            "left": 0.282352954,
+            "right": 0.282352954
+          },
+          {
+            "remaining": 1.2,
+            "left": 0.596078455,
+            "right": 0.596078455
+          }
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 54,
+  "executeMs": 113,
+  "assemblyName": "PipelineRunScript_VerifyEnemyVisualFix_f7715bceb819439392c657c69801367a"
+}

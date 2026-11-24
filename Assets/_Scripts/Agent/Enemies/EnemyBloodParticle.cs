@@ -36,7 +36,9 @@ namespace _Scripts.Agent.Enemies
         private const int TrailSamples = 12;
         private static readonly ProfilerMarker UpdateMarker = new ProfilerMarker(ProfilerCategory.Scripts, "CTJ.Blood.FixedUpdate");
         private static readonly ProfilerMarker TrailMarker = new ProfilerMarker(ProfilerCategory.Scripts, "CTJ.Blood.Trails");
+
         private enum SurfaceState { Air, Floor, Wall }
+
         private struct Drop
         {
             public Vector2 Position, Velocity, LocalPosition, LocalNormal;
@@ -74,6 +76,7 @@ namespace _Scripts.Agent.Enemies
             int minimum = Mathf.Clamp(particleCount.x, 1, 64);
             int maximum = Mathf.Clamp(particleCount.y, minimum, 64);
             float countScale = Mathf.Clamp(countMultiplier, 1f, 4f);
+
             minimum = Mathf.Clamp(Mathf.RoundToInt(minimum * countScale), 1, 128);
             maximum = Mathf.Clamp(Mathf.RoundToInt(maximum * countScale), minimum, 128);
             _count = Random.Range(minimum, maximum + 1);
@@ -87,8 +90,10 @@ namespace _Scripts.Agent.Enemies
             }
 
             if (trailOpacity > 0f) EnsureTrailRenderer();
+
             // 자동 이동/중력 대신 FixedUpdate에서 한 번만 계산합니다.
             var main = _particles.main;
+
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.simulationSpeed = 0f;
             main.scalingMode = ParticleSystemScalingMode.Shape;
@@ -106,6 +111,7 @@ namespace _Scripts.Agent.Enemies
                 float angle = aim + Mathf.Lerp(-spreadAngle * 0.5f, spreadAngle * 0.5f,
                     (i + Random.value) / _count);
                 Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+
                 _drops[i] = new Drop
                 {
                     Position = (Vector2)transform.position + Random.insideUnitCircle * 0.025f,
@@ -133,11 +139,13 @@ namespace _Scripts.Agent.Enemies
             using var sample = UpdateMarker.Auto();
 
             float dt = Time.fixedDeltaTime;
+
             _age += dt;
 
             for (int i = _count - 1; i >= 0; i--)
             {
                 Drop drop = _drops[i];
+
                 if (_age >= drop.FadeAt + Mathf.Max(0.01f, fadeDuration))
                 {
                     _drops[i] = _drops[--_count];
@@ -158,9 +166,12 @@ namespace _Scripts.Agent.Enemies
                     else
                     {
                         Transform surface = drop.Surface.transform;
+
                         drop.Position = surface.TransformPoint(drop.LocalPosition);
                         Vector2 normal = surface.TransformDirection(drop.LocalNormal).normalized;
+
                         drop.Angle = Mathf.Atan2(-normal.x, normal.y) * Mathf.Rad2Deg;
+
                         if (drop.State == SurfaceState.Wall) Slide(ref drop, normal, dt);
                     }
                 }
@@ -174,6 +185,7 @@ namespace _Scripts.Agent.Enemies
 
                 if (wasAirborne && (drop.Position - previousPosition).sqrMagnitude > 0.000001f)
                     RecordTrail(ref drop);
+
                 _drops[i] = drop;
             }
 
@@ -186,11 +198,13 @@ namespace _Scripts.Agent.Enemies
             if (_trailMesh != null) return;
 
             var trailObject = new GameObject("Blood Trails");
+
             trailObject.layer = gameObject.layer;
             trailObject.transform.SetParent(transform, false);
             var filter = trailObject.AddComponent<MeshFilter>();
             var renderer = trailObject.AddComponent<MeshRenderer>();
             var particleRenderer = GetComponent<ParticleSystemRenderer>();
+
             renderer.sharedMaterial = particleRenderer.sharedMaterial;
             renderer.sortingLayerID = particleRenderer.sortingLayerID;
             renderer.sortingOrder = particleRenderer.sortingOrder - 1;
@@ -202,6 +216,7 @@ namespace _Scripts.Agent.Enemies
         private void RecordTrail(ref Drop drop)
         {
             int index = drop.TrailSlot * TrailSamples + drop.TrailHead;
+
             _trailPositions[index] = drop.Position;
             _trailTimes[index] = _age;
             drop.TrailHead = (drop.TrailHead + 1) % TrailSamples;
@@ -245,6 +260,7 @@ namespace _Scripts.Agent.Enemies
                     Vector2 fromOffset = normal * halfWidth * previousFade;
                     Vector2 toOffset = normal * halfWidth * currentFade;
                     int baseVertex = _trailVertices.Count;
+
                     AddTrailVertex(from - fromOffset, drop.Color, previousFade);
                     AddTrailVertex(from + fromOffset, drop.Color, previousFade);
                     AddTrailVertex(to - toOffset, drop.Color, currentFade);
@@ -276,9 +292,11 @@ namespace _Scripts.Agent.Enemies
         {
             float distance = delta.magnitude;
             if (distance <= 0.00001f) return;
+
             if (!FindTerrain(drop.Position, Radius(drop), delta / distance, distance + Skin, out RaycastHit2D hit))
             {
                 drop.Position += delta;
+
                 return;
             }
 
@@ -313,7 +331,9 @@ namespace _Scripts.Agent.Enemies
         {
             Vector2 tangent = Vector2.down - normal * Vector2.Dot(Vector2.down, normal);
             Vector2 delta = tangent.normalized * wallSlideSpeed * dt;
+
             Move(ref drop, delta);
+
             if (drop.State == SurfaceState.Floor) return;
 
             // 벽 끝을 지나면 공중에서 흘러내리는 대신 중력 낙하로 돌아갑니다.
@@ -358,7 +378,9 @@ namespace _Scripts.Agent.Enemies
             {
                 // simulationSpeed가 0이면 시스템 시간도 멈춥니다. 입자가 끝났음을 명시합니다.
                 _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
                 if (_trailMesh != null) _trailMesh.Clear(false);
+
                 return;
             }
 
@@ -366,9 +388,11 @@ namespace _Scripts.Agent.Enemies
             {
                 Drop drop = _drops[i];
                 Color color = drop.Color;
+
                 color.a *= 1f - Mathf.Clamp01((_age - drop.FadeAt) / Mathf.Max(0.01f, fadeDuration));
                 Vector3 size = drop.State == SurfaceState.Air ? Vector3.one * drop.Size :
                     new Vector3(drop.Size * 1.6f, drop.Size * 0.4f, drop.Size);
+
                 _renderParticles[i] = new ParticleSystem.Particle
                 {
                     position = new Vector3(drop.Position.x, drop.Position.y, _z),
@@ -383,7 +407,9 @@ namespace _Scripts.Agent.Enemies
         private void OnDisable()
         {
             _count = 0;
+
             if (_particles != null) _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
             if (_trailMesh != null) _trailMesh.Clear(false);
         }
 

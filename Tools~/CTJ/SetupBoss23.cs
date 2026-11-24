@@ -25,7 +25,7 @@ public static class SetupBoss23
     private const string EnemyTemplate = Enemies + "/Enemy/Enemy17/Enemy17_IntakeBiter.prefab";
     private const string Effects = Enemies + "/Effects";
     private const float PixelsPerUnit = 28f;
-    private static readonly Vector2 NumberPosition = new Vector2(-17.5f, 10.5f) / PixelsPerUnit;
+    private static readonly Vector2 NumberPosition = new Vector2(-15.5f, 10.5f) / PixelsPerUnit;
     private static readonly Vector2 LampPosition = new Vector2(-11.5f, 18.5f) / PixelsPerUnit;
 
     public static object Create()
@@ -277,6 +277,7 @@ public static class SetupBoss23
         Set(drone, "detectionRange", 12f);
         Set(drone, "chaseReleaseRange", 16f);
         Set(drone, "moveSpeed", 2.4f);
+        Set(drone, "ascentSpeed", 6f);
         Set(drone, "facingRoot", facing);
         Set(drone, "deathAnimator", animator);
         Child(root.transform, "FlightModule").gameObject.AddComponent<BossFlightModule>();
@@ -374,6 +375,7 @@ public static class SetupBoss23
             Set(salvo, "projectilePrefab", round);
             Set(salvo, "fireState", fireState);
             Set(salvo, "projectileSpeed", speed);
+            Set(salvo, "projectileScale", name == "RegularSalvo" ? 1.35f : 1f);
             Set(salvo, "damage", damage);
             Set(salvo, "projectilesPerSalvo", count);
             SetupSkill(salvo, name, 0.55f, 2.4f, null);

@@ -8,6 +8,7 @@ namespace _Scripts.Audio
         [SerializeField] private SoundCueSO _cue;
 
         public void PlaySfx() => ServiceLocator.Get<ISoundManager>()?.PlaySfx(_cue, transform.position);
+
         public void PlayUi() => ServiceLocator.Get<ISoundManager>()?.PlayUi(_cue);
     }
 }

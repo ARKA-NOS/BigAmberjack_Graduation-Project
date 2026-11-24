@@ -15,6 +15,7 @@ namespace _Scripts.UI.Enemy
             count = Mathf.Max(1, count);
             distance = Mathf.Max(0f, distance);
             width = Mathf.Max(0.01f, width);
+
             if (_count == count && _distance == distance && _width == width) return;
 
             _count = count; _distance = distance; _width = width;
@@ -33,6 +34,7 @@ namespace _Scripts.UI.Enemy
                 Vector2 start = -direction * (_width * 0.5f);
                 Vector2 end = direction * (_distance + _width * 0.5f);
                 int first = vh.currentVertCount;
+
                 vh.AddVert(start - side, color, Vector2.zero);
                 vh.AddVert(start + side, color, Vector2.zero);
                 vh.AddVert(end + side, color, Vector2.zero);

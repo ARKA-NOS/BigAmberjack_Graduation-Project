@@ -19,12 +19,15 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float emergeDuration = 0.5f;
         [Tooltip("완전히 전개된 자세에서 대기 자세로 복귀하는 시간(초). 클수록 천천히 들어갑니다.")]
         [SerializeField, Min(0f)] private float retractDuration = 0.6f;
+
         [Header("Launcher Rotation")]
         [Tooltip("런처의 최대 회전 속도(도/초). 조준과 표면 안으로 접는 동작에 모두 적용합니다.")]
         [SerializeField, Min(1f)] private float maxRotationSpeed = 180f;
         [Tooltip("회전이 목표 방향에 부드럽게 수렴하는 시간. 클수록 반응이 완만합니다.")]
         [SerializeField, Min(0.01f)] private float rotationSmoothTime = 0.15f;
+
         private const float StowedAngle = -90f;
+
         private EnemyBase _enemy;
         private float _deployment;
         private float _angularVelocity;
@@ -44,7 +47,9 @@ namespace _Scripts.Agent.Enemies
         {
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (hurtbox != null) { _fullSize = hurtbox.size; _fullOffset = hurtbox.offset; }
+
             _deployment = 0f;
             ResetLauncher();
             ApplyPose();
@@ -55,8 +60,10 @@ namespace _Scripts.Agent.Enemies
             if (_enemy == null || !_enemy.isActiveAndEnabled || _enemy.IsDead || _enemy.IsHitReacting)
             {
                 HoldAim();
+
                 return;
             }
+
             // 공격 중의 회전은 스킬만 요청합니다. 마지막 경고/발사 후 회수에는 방향을 유지합니다.
             if (_enemy.IsAttackInProgress) return;
 
@@ -65,19 +72,24 @@ namespace _Scripts.Agent.Enemies
                 if (_deployment < 1f)
                 {
                     RotateTowards(StowedAngle);
+
                     if (IsStowed) MoveDeployment(1f, emergeDuration);
+
                     ApplyPose();
+
                     return;
                 }
 
                 Collider2D body = _enemy.Target.GetComponent<Collider2D>();
                 Vector2 point = body != null && body.enabled ? (Vector2)body.bounds.center : (Vector2)_enemy.Target.position;
+
                 SetAimDirection(point - AimOrigin);
             }
             else
             {
                 // 포신이 표면 안쪽으로 접힐 때까지 전개 상태를 유지한 다음 함께 수납합니다.
                 RotateTowards(StowedAngle);
+
                 if (IsStowed) MoveDeployment(0f, retractDuration);
             }
 
@@ -97,6 +109,7 @@ namespace _Scripts.Agent.Enemies
                 // 월드 목표 방향을 부모 공간으로 옮겨 상하 반전된 포신도 실제 목표를 향하게 합니다.
                 Vector2 localDirection = launcherPivot.parent != null
                     ? (Vector2)launcherPivot.parent.InverseTransformVector(direction) : direction;
+
                 RotateTowards(Mathf.Atan2(localDirection.y, localDirection.x) * Mathf.Rad2Deg);
             }
         }
@@ -131,19 +144,23 @@ namespace _Scripts.Agent.Enemies
         {
             HoldAim();
             _lastRotationFrame = -1;
+
             if (launcherPivot != null) launcherPivot.localRotation = Quaternion.Euler(0f, 0f, StowedAngle);
         }
 
         private void ApplyPose()
         {
             float remainingDepth = Mathf.Max(0f, buriedDepth) * (1f - Mathf.SmoothStep(0f, 1f, _deployment));
+
             if (riseRoot != null) riseRoot.localPosition = deployedLocalPosition + Vector3.down * remainingDepth;
+
             // 출현/퇴장 중 켜고 끄지 않습니다. 아래로 접힌 외형도 지면 마스크 안에서 함께 움직입니다.
             if (launcherVisual != null) launcherVisual.SetActive(true);
 
             if (hurtbox != null && _fullSize.y > 0f)
             {
                 float visibleHeight = Mathf.Max(0.05f, _fullSize.y - remainingDepth);
+
                 hurtbox.size = new Vector2(_fullSize.x, visibleHeight);
                 hurtbox.offset = _fullOffset + Vector2.down * ((_fullSize.y - visibleHeight) * 0.5f);
             }

@@ -28,6 +28,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField, Min(0f)] private float offscreenHoldTime = 0.1f;
         [SerializeField] private SpriteRenderer bodyVisual;
         [SerializeField, Min(0f)] private float laserHealthThreshold = 1000f;
+
         private StateMachine<RobotEyeBossState> _fsm;
         private BossArenaModule _arena;
         private Vector2 _moveDestination;
@@ -39,6 +40,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private bool _returnAfterExit;
         private float _hiddenUntil;
         private float _returnHeight;
+
         private float BodyRadius => bodyVisual != null ? Mathf.Max(bodyVisual.bounds.extents.x, bodyVisual.bounds.extents.y) : 1f;
         public RobotEyeBossState CurrentState { get; private set; }
         public bool HasUsedLaserPhase { get; private set; }
@@ -46,17 +48,21 @@ namespace _Scripts.Agent.Enemies.Bosses
         public int CompletedTraversals { get; private set; }
         public Vector2 ArenaCenter => _arena.Center;
         public Vector2 LockedMoveDestination => _moveDestination;
+
         protected override void InitializeBoss()
         {
             _arena = GetModule<BossArenaModule>();
             _nextVolleyAt = Time.time + Mathf.Max(0f, firstVolleyDelay);
             _fsm = new StateMachine<RobotEyeBossState>();
+
             foreach (RobotEyeBossState state in System.Enum.GetValues(typeof(RobotEyeBossState)))
                 _fsm.AddState(state, new PatternState(this, state));
+
             if (Flight == null || _arena == null || Skills == null || radialVolley == null || laser == null)
             {
                 Debug.LogError($"{name}: Flight / Arena / SkillModule / 두 보스 스킬 참조를 확인하세요.", this);
                 enabled = false;
+
                 return;
             }
 
@@ -68,6 +74,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         protected override void UpdateBoss()
         {
             if (TryBeginLaserPhase()) return;
+
             _fsm.Update();
         }
 
@@ -95,6 +102,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             CompletedTraversals = 0;
             _returnAfterExit = false;
             Change(RobotEyeBossState.LaserPositioning);
+
             return true;
         }
 
@@ -116,26 +124,33 @@ namespace _Scripts.Agent.Enemies.Bosses
                 case RobotEyeBossState.Dormant:
                     Flight?.Stop();
                     break;
+
                 case RobotEyeBossState.Intro:
                     Flight.MoveTo(_arena.Center, flightSpeed);
                     break;
+
                 case RobotEyeBossState.Waiting:
                     Flight.Stop();
                     break;
+
                 case RobotEyeBossState.RadialVolley:
                     Flight.Stop();
                     _moveDestination = _arena.ClampFlightDestination(Target.position);
                     _skillStarted = Skills.TryUseSpecifiedSkill(radialVolley);
                     break;
+
                 case RobotEyeBossState.MoveToTarget:
                     Flight.MoveTo(_moveDestination, targetMoveSpeed);
                     break;
+
                 case RobotEyeBossState.LaserPositioning:
                     Flight.MoveTo(_arena.GetOutsidePoint(false, BodyRadius), laserPositionSpeed, laserMoveEaseDuration);
                     break;
+
                 case RobotEyeBossState.LaserEntering:
                     Flight.MoveTo(_arena.GetLaserStart(CompletedTraversals), laserPositionSpeed, laserMoveEaseDuration);
                     break;
+
                 case RobotEyeBossState.LaserSweep:
                     Flight.Stop();
                     _sweepMoving = false;
@@ -143,23 +158,30 @@ namespace _Scripts.Agent.Enemies.Bosses
                     laser.ConfigureTraversal(_arena.LaserBounds, transform.position, _sweepDestination);
                     _skillStarted = Skills.TryUseSpecifiedSkill(laser);
                     break;
+
                 case RobotEyeBossState.LaserExiting:
                     Skills.StopAttack();
+
                     // 정상 횡단은 이미 화면 밖으로 향하는 중입니다. 벽에서 MoveTo를 재호출하면 가속이 다시 시작됩니다.
                     if (!_sweepMoving || _returnAfterExit)
                         Flight.MoveTo(_arena.GetOutsidePoint(transform.position.x >= _arena.Center.x, BodyRadius), laserPositionSpeed, laserMoveEaseDuration);
+
                     break;
+
                 case RobotEyeBossState.LaserHidden:
                     Flight.Stop();
                     _hiddenUntil = Time.time + Mathf.Max(0f, offscreenHoldTime);
                     break;
+
                 case RobotEyeBossState.ReturnRising:
                     _returnHeight = _arena.GetAboveScreenY(BodyRadius);
                     Flight.MoveTo(new Vector2(transform.position.x, _returnHeight), laserPositionSpeed, laserMoveEaseDuration);
                     break;
+
                 case RobotEyeBossState.ReturnAbove:
                     Flight.MoveTo(new Vector2(_arena.Center.x, _returnHeight), laserPositionSpeed, laserMoveEaseDuration);
                     break;
+
                 case RobotEyeBossState.ReturnCenter:
                     Skills.StopAttack();
                     Flight.MoveTo(_arena.Center, laserReturnSpeed, laserMoveEaseDuration);
@@ -174,12 +196,17 @@ namespace _Scripts.Agent.Enemies.Bosses
                 case RobotEyeBossState.Dormant:
                     Change(_introFinished ? RobotEyeBossState.Waiting : RobotEyeBossState.Intro);
                     break;
+
                 case RobotEyeBossState.Intro:
                     if (Flight.HasArrived) { _introFinished = true; Change(RobotEyeBossState.Waiting); }
+
                     break;
+
                 case RobotEyeBossState.Waiting:
                     if (Time.time >= _nextVolleyAt) Change(RobotEyeBossState.RadialVolley);
+
                     break;
+
                 case RobotEyeBossState.RadialVolley:
                     if (!_skillStarted && !Skills.IsSkillEnabled(radialVolley)) Rest();
                     else if (!_skillStarted) _skillStarted = Skills.TryUseSpecifiedSkill(radialVolley);
@@ -190,15 +217,22 @@ namespace _Scripts.Agent.Enemies.Bosses
                     }
 
                     break;
+
                 case RobotEyeBossState.MoveToTarget:
                     if (Flight.HasArrived) Rest();
+
                     break;
+
                 case RobotEyeBossState.LaserPositioning:
                     if (Flight.HasArrived) Change(RobotEyeBossState.LaserEntering);
+
                     break;
+
                 case RobotEyeBossState.LaserEntering:
                     if (Flight.HasArrived) Change(RobotEyeBossState.LaserSweep);
+
                     break;
+
                 case RobotEyeBossState.LaserSweep:
                     if (!_skillStarted && !Skills.IsSkillEnabled(laser)) AbortLaser();
                     else if (!_skillStarted) _skillStarted = Skills.TryUseSpecifiedSkill(laser);
@@ -211,19 +245,28 @@ namespace _Scripts.Agent.Enemies.Bosses
                     }
 
                     break;
+
                 case RobotEyeBossState.LaserExiting:
                     if (Flight.HasArrived) Change(RobotEyeBossState.LaserHidden);
+
                     break;
+
                 case RobotEyeBossState.LaserHidden:
                     if (Time.time >= _hiddenUntil)
                         Change(CompletedTraversals >= 3 || _returnAfterExit ? RobotEyeBossState.ReturnRising : RobotEyeBossState.LaserEntering);
+
                     break;
+
                 case RobotEyeBossState.ReturnRising:
                     if (Flight.HasArrived) Change(RobotEyeBossState.ReturnAbove);
+
                     break;
+
                 case RobotEyeBossState.ReturnAbove:
                     if (Flight.HasArrived) Change(RobotEyeBossState.ReturnCenter);
+
                     break;
+
                 case RobotEyeBossState.ReturnCenter:
                     if (Flight.HasArrived)
                     {
@@ -239,9 +282,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void FixedTick(RobotEyeBossState state)
         {
             Flight.Tick();
+
             if (state != RobotEyeBossState.LaserSweep || !laser.IsTraversalReady) return;
 
             laser.TickBeam();
+
             if (!_sweepMoving) return;
 
             bool crossedWall = _sweepDestination.x >= _arena.Center.x
@@ -271,10 +316,15 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             private readonly RobotEyeBoss _boss;
             private readonly RobotEyeBossState _state;
+
             public PatternState(RobotEyeBoss boss, RobotEyeBossState state) { _boss = boss; _state = state; }
+
             public override void Enter() => _boss.Enter(_state);
+
             public override void StateUpdate() => _boss.Tick(_state);
+
             public override void StateFixedUpdate() => _boss.FixedTick(_state);
+
             public override void Exit() { }
         }
     }

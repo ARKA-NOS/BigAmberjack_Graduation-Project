@@ -2,6 +2,7 @@ using _Scripts.UI.MVVM.Bindings;
 using _Scripts.UI.MVVM.Disposables;
 using _Scripts.UI.MVVM.Views;
 using _Scripts.Upgrade.SO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,9 +15,16 @@ namespace _Scripts.UI.UpgradeUI
     public class UpgradeNodeView : ViewBase<UpgradeTreeViewModel>, IPointerEnterHandler
     {
         private const float DimAlpha = 0.5f;
+        private const float IconPadding = 15f;
         private static readonly Color LockedColor = new Color(0.35f, 0.35f, 0.35f, 1f);
 
         [SerializeField] private UpgradeNodeSO upgradeNode;
+
+        [Tooltip("노드 아이콘을 그릴 Image. 비워두면 런타임에 자식으로 만든다.")]
+        [SerializeField] private Image iconImage;
+
+        [Tooltip("이름 텍스트. 비워두면 자식의 TMP_Text를 찾아 숨긴다.")]
+        [SerializeField] private TMP_Text nameText;
 
         private Button _button;
         private CanvasGroup _canvasGroup;
@@ -28,6 +36,8 @@ namespace _Scripts.UI.UpgradeUI
         {
             // 창의 Awake에서 바로 바인드될 수 있으므로 자기 Awake보다 먼저 불려도 되게 여기서 찾는다.
             EnsureComponents();
+
+            ApplyIcon();
 
             _item = vm.GetNode(upgradeNode);
             if (_item == null) return;
@@ -54,6 +64,38 @@ namespace _Scripts.UI.UpgradeUI
 
             if (_button != null && _button.targetGraphic != null)
                 _button.targetGraphic.color = state == UpgradeNodeState.Locked ? LockedColor : Color.white;
+
+            if (iconImage != null)
+                iconImage.color = state == UpgradeNodeState.Locked ? LockedColor : Color.white;
+        }
+
+        // 이름 대신 노드 아이콘을 보여준다. 아이콘이 없는 노드는 이름을 그대로 둔다.
+        private void ApplyIcon()
+        {
+            if (nameText == null) nameText = GetComponentInChildren<TMP_Text>(true);
+            if (iconImage == null) iconImage = CreateIconImage();
+
+            Sprite icon = upgradeNode != null ? upgradeNode.NodeIcon : null;
+            iconImage.sprite = icon;
+            iconImage.enabled = icon != null;
+
+            if (nameText != null) nameText.gameObject.SetActive(icon == null);
+        }
+
+        private Image CreateIconImage()
+        {
+            var child = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+            var rect = (RectTransform)child.transform;
+            rect.SetParent(transform, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(IconPadding, IconPadding);
+            rect.offsetMax = new Vector2(-IconPadding, -IconPadding);
+
+            var image = child.GetComponent<Image>();
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            return image;
         }
 
         private void EnsureComponents()

@@ -43,7 +43,7 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
             
             int index = Random.Range(0, prefabs.Count);
 
-            BossMap map = Instantiate(prefabs[index]);
+            BossMap map = Instantiate(prefabs[index],transform);
 
             MapGenerateEvents.RaiseMapGenerated(index, null, map.StartPos, false);
         }
@@ -51,7 +51,8 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
         private void ClearGeneratedMap()
         {
             Transform trm = gameObject.transform;
-            while (trm.childCount > 0) 
+            int count = trm.childCount;
+            for(int i = 0; i < count; i++)
                 Destroy(trm.GetChild(0).gameObject);
         }
         

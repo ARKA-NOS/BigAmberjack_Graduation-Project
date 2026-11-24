@@ -24,7 +24,7 @@ namespace _Scripts.Maps.New_Map
         private void HandleMapMove(MapMoveEvent evt)
         {
             _currentCount++;
-            if (_currentCount != bossMapCycle)
+            if (_currentCount < bossMapCycle)
             {
                 EventBus<MapGenerateEvent>.Raise(new MapGenerateEvent(true));
                 EventBus<BossMapCreateEvent>.Raise(new BossMapCreateEvent(false));

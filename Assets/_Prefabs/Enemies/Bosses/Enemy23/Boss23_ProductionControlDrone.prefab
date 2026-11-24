@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 494079328644335556}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.625, y: 0.375, z: 0}
+  m_LocalPosition: {x: -0.5535714, y: 0.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b730ad5eb65f41b19f4e410fc0d70001, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemySkillModule
   skills:
   - skill: {fileID: 8487964626767521386}
@@ -357,7 +357,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31dfaa11bc3b4d629e100b203f9e5311, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyHitReactionModule
   enableKnockback: 0
   knockbackSpeed: 0
@@ -419,7 +419,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 486510af03804e6cbdeba10c45a1f620, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyCurrencyRewardModule
   rewardCurrency: {fileID: 11400000, guid: 8640762c579b29e4ea16f10701bef0d1, type: 2}
   rewardAmountStat: {fileID: 11400000, guid: 829d06c7a4914e7c96e6d3b72587ca04, type: 2}
@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0eab0d781a90c874bb1e3f966f94520b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.BossFlightModule
   easeDuration: 0.2
 --- !u!1 &2212077434784776449
@@ -616,7 +616,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage:
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -663,7 +663,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4300c7f53414bfbb53ba33e6c919dc9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyDeathModule
 --- !u!1 &4185700857846809658
 GameObject:
@@ -707,7 +707,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adf7ac3ee0a9cf64596e781ec5aaae9d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.DroneVisualModule
   animator: {fileID: 1930831580426852271}
   shadow: {fileID: 246285615907141071}
@@ -756,7 +756,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 426407b0f9aa39746bd08685893646c1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneBombSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: cded9a09bd7d1fe43846dfd8b14608cf, type: 2}
   <BaseCoolTime>k__BackingField: 4.8
@@ -816,7 +816,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2f01a29db07462ba5b6de92ae4d3551, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.BossArenaModule
   centerAnchor: {fileID: 0}
   halfWidth: 8
@@ -963,7 +963,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bbe4127a96e26f4899a22408141d0d6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneSalvoSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: db1e8881d90e8ab479f1f241be7ecfa6, type: 2}
   <BaseCoolTime>k__BackingField: 2.4
@@ -980,6 +980,7 @@ MonoBehaviour:
   fireState: Shot
   range: 8
   projectileSpeed: 10
+  projectileScale: 1.35
   damage: 14
   projectilesPerSalvo: 1
   shotInterval: 0.13
@@ -994,6 +995,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6422759494966327487}
   - component: {fileID: 5655728798388514575}
+  - component: {fileID: 2163153266953831039}
   m_Layer: 8
   m_Name: DownwardLaser
   m_TagString: Untagged
@@ -1026,7 +1028,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a43340872f2c7b40a7c2f43d0a2973f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneDownwardLaserSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: 197a1f18cfb9c614bb992de45496f5da, type: 2}
   <BaseCoolTime>k__BackingField: 5.5
@@ -1035,15 +1037,39 @@ MonoBehaviour:
   postBlinkDelay: 0
   blinkBeforeAttack: 0
   telegraphOpacity: 1
-  telegraphPrefab: {fileID: 11400001, guid: 9d471adb7a7344f89ab2d30e31d80403, type: 3}
+  telegraphPrefab: {fileID: 7588155225670388891, guid: 6ffdba38d5758784da269ff6653648a0, type: 3}
   preparationWarning: {fileID: 0}
   muzzle: {fileID: 2515968241577514000}
   visual: {fileID: 1212681801938135448}
   beam: {fileID: 7347175744076146290}
-  length: 4.5
+  bodyRenderer: {fileID: 4520948201894991573}
+  cameraShake: {fileID: 2163153266953831039}
+  length: 7.5
   width: 0.8
+  bodyOverlapDistance: 0.35
   damage: 18
-  activeDuration: 0.45
+  maxSpeed: 600
+  minSpeed: 50
+  fadeOutDuration: 0.14
+  sweepHalfAngle: 60
+  safeEdgeWidth: 1.25
+  endFadeDistance: 1
+--- !u!114 &2163153266953831039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959494414919803739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90f8fd23e811482b89fce48b5fd6214e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.BossLaserShake
+  amplitude: 0.25
+  frequency: 32
+  endStrength: 1
+  fadeOutDuration: 0.08
 --- !u!1 &6387401085740248994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1086,7 +1112,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1c9a460acba483d8ce48f70ea98b66c, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: StatSystemAssembly::Lrw.Script.Agent.StatSystem.StatModule
   baseStats: {fileID: 11400000, guid: 08bd7204c73590c4a905b182003fc798, type: 2}
 --- !u!1 &6551205582567555624
@@ -1118,7 +1144,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.35, y: 1.35, z: 1.35}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8194897102444749883}
@@ -1228,7 +1254,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12e973528889503479fd49631eeeb0b7, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.ProductionControlDrone
   OnHit:
     m_PersistentCalls:
@@ -1252,6 +1278,8 @@ MonoBehaviour:
   airPhaseHealthRatio: 0.5
   lowAltitude: 1.05
   highAltitude: 4.55
+  laserAltitude: 6.5
+  ascentSpeed: 6
   arenaEdgeMargin: 1.05
   airRecoveryTime: 1.2
   terrainLayers:
@@ -1299,7 +1327,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ecb260aacdbc9d346848f5b4670d4752, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.EnemySoundModule
   hitCue: {fileID: 11400000, guid: ab9ea74a4208a4d419e01d6b02ddf15d, type: 2}
   deathCue: {fileID: 0}
@@ -1354,7 +1382,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09fd331d9a8767442a2ee098061942ed, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyParticleModule
   fallbackOrigin: {fileID: 3305023180477761871}
   useHitPoint: 1
@@ -1418,7 +1446,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09d1dbe5648ecb34389598922337e57f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CTJ.Enemies.EnemyOutlineModule
   sprites:
   - {fileID: 4520948201894991573}
@@ -1565,7 +1593,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c773fd61330a5b447b4bae9ccb54faa3, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Bosses.BossHealthBarModule
   healthBarPrefab: {fileID: 1039748749629642180, guid: 35a053776b2469c4192a574817c70399, type: 3}
 --- !u!1 &7561207240652072891
@@ -1657,7 +1685,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: d6ed63b35df7a0248b039c7b75eeb4eb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1678,7 +1706,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 12
+  m_SortingOrder: 9
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3404906781920244838, guid: ac7916b204755b14caaf5aab244d6cc8, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1766,7 +1794,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bbe4127a96e26f4899a22408141d0d6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Agent.Enemies.Skills.DroneSalvoSkill
   <SkillSo>k__BackingField: {fileID: 11400000, guid: b28048a5ee13aa7429a8a0b381f9a5b6, type: 2}
   <BaseCoolTime>k__BackingField: 2.4
@@ -1783,6 +1811,7 @@ MonoBehaviour:
   fireState: RapidShot
   range: 8
   projectileSpeed: 15
+  projectileScale: 1
   damage: 8
   projectilesPerSalvo: 3
   shotInterval: 0.13

@@ -9,6 +9,7 @@ namespace _Scripts.Agent.Enemies
         private const float SideTolerance = 0.01f;
 
         [SerializeField, Range(0f, 1f)] private float frontDamageReduction = 0.7f;
+
         private EnemySkillModule _shieldSkills;
 
         protected override void Awake()
@@ -23,7 +24,9 @@ namespace _Scripts.Agent.Enemies
             out bool suppressHitControl)
         {
             bool guardRaised = !IsHitReacting && _shieldSkills?.ActiveSkill is not EnemyAttackSkill { IsRecovering: true };
+
             suppressHitControl = guardRaised && SourceSide(damage, hitPoint, hitDirection) * FacingDirection > SideTolerance;
+
             return suppressHitControl ? damage.DamageAmount * (1f - Mathf.Clamp01(frontDamageReduction)) : damage.DamageAmount;
         }
 
@@ -38,6 +41,7 @@ namespace _Scripts.Agent.Enemies
             }
 
             float contactSide = hitPoint.x - centerX;
+
             return Mathf.Abs(contactSide) > SideTolerance ? contactSide : -hitDirection.x;
         }
     }

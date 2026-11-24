@@ -41,11 +41,11 @@ public static class VerifyBoss23
                             $"Broken reference {node.name}/{field.propertyPath}");
             }
         }
-        var slots = root.GetComponentInChildren<EnemySkillModule>().Skills;
+        var slots = root.GetComponentInChildren<EnemySkillModule>(true).Skills;
         Check(slots.Count == 4 && slots.All(entry => entry.Skill != null && entry.Skill.enabled &&
             entry.Skill.SkillSo != null && !entry.UseForAutomaticSelection) &&
             slots.Select(entry => entry.Skill.SkillSo).Distinct().Count() == 4, "Missing boss skill registration");
-        var animator = root.GetComponentInChildren<Animator>();
+        var animator = root.GetComponentInChildren<Animator>(true);
         Check(animator.transform.Find("ProcessNumber") != null && animator.transform.Find("AlarmLamp") != null,
             "Body markings are outside the Animator hierarchy");
         var clips = animator.runtimeAnimatorController.animationClips;

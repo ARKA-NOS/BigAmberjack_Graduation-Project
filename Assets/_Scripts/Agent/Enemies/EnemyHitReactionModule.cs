@@ -112,7 +112,9 @@ namespace _Scripts.Agent.Enemies
             _originalColors = new Color[sprites.Length];
             _originalMaterials = new Material[sprites.Length];
             _originalProperties = new MaterialPropertyBlock[sprites.Length];
+
             for (int i = 0; i < sprites.Length; i++) _originalProperties[i] = new MaterialPropertyBlock();
+
             _flashProperties = new MaterialPropertyBlock();
 
             // 피격마다 배열을 만들지 않고, 초기화 때 시각 전용 대상을 확보합니다.
@@ -136,6 +138,7 @@ namespace _Scripts.Agent.Enemies
 
             _stunEnd = Mathf.Max(_stunEnd, Time.time + duration);
             _reactionDuration = RemainingReactionTime;
+
             return true;
         }
 
@@ -144,6 +147,7 @@ namespace _Scripts.Agent.Enemies
             if (!Ready) return;
 
             bool protectedFromReaction = suppressHitControl || (_superArmor != null && _superArmor.IsProtected);
+
             if (!protectedFromReaction) TryStun(hitStunDuration);
 
             if (!protectedFromReaction && cancelAttackOnHit && _skills != null &&
@@ -202,6 +206,7 @@ namespace _Scripts.Agent.Enemies
             if (HasDirection(hitDirection.x)) return Mathf.Sign(hitDirection.x);
 
             x = _enemy.Target != null ? _enemy.transform.position.x - _enemy.Target.position.x : 0f;
+
             return HasDirection(x) ? Mathf.Sign(x) : 1f;
         }
 
@@ -214,27 +219,34 @@ namespace _Scripts.Agent.Enemies
             if (!IsStunned) return false;
 
             _enemy.StopHorizontalMovement();
+
             return true;
         }
 
         internal bool TickKnockback()
         {
             if (!_knockingBack) return false;
+
             if (!IsKnockedBack || _body == null || !_body.simulated)
             {
                 EndKnockback();
+
                 return false;
             }
 
             float remaining = Mathf.Clamp01((_knockbackEnd - Time.time) / _knockbackLength);
+
             _body.linearVelocityX = _initialVelocityX * remaining;
+
             return true;
         }
 
         private void LateUpdate()
         {
             TickScalePulse(); // 점멸을 꺼도 스케일 연출은 독립적으로 재생/복원됩니다.
+
             if (!_blinking) return;
+
             if (!Ready || !enableBlink || hitMaterial == null || Time.time >= _blinkEnd)
                 RestoreColor();
         }
@@ -243,16 +255,21 @@ namespace _Scripts.Agent.Enemies
         {
             // 연타 시 이전 변형을 원본으로 다시 저장하지 않아 크기가 누적되지 않습니다.
             RestoreScale();
+
             if (!enableScalePulse || scalePulseAmount <= 0f || scalePulseDuration <= 0f ||
                 _scaleTargets == null || _scaleTargets.Length == 0) return;
 
             // Inspector 범위와 실제 제한을 함께 넓힙니다. 1 미만으로 제한해 0 크기/반전을 막습니다.
             _scaleOffset = Random.Range(0.5f, 1f) * Mathf.Clamp(scalePulseAmount, 0f, 0.8f);
+
             if (Random.value < 0.5f) _scaleOffset = -_scaleOffset;
+
             _scaleStart = Time.time;
             _scaleLength = scalePulseDuration;
+
             for (int i = 0; i < _scaleTargets.Length; i++)
                 if (_scaleTargets[i] != null) _originalScales[i] = _scaleTargets[i].localScale;
+
             _scaling = true;
             ApplyScale(1f);
         }
@@ -262,9 +279,11 @@ namespace _Scripts.Agent.Enemies
             if (!_scaling) return;
 
             float elapsed = Time.time - _scaleStart;
+
             if (!Ready || !enableScalePulse || elapsed >= _scaleLength)
             {
                 RestoreScale();
+
                 return;
             }
 
@@ -275,6 +294,7 @@ namespace _Scripts.Agent.Enemies
         {
             float offset = _scaleOffset * weight;
             Vector3 multiplier = new Vector3(1f + offset, 1f - offset, 1f);
+
             for (int i = 0; i < _scaleTargets.Length; i++)
                 if (_scaleTargets[i] != null)
                     _scaleTargets[i].localScale = Vector3.Scale(_originalScales[i], multiplier);
@@ -286,6 +306,7 @@ namespace _Scripts.Agent.Enemies
 
             for (int i = 0; i < _scaleTargets.Length; i++)
                 if (_scaleTargets[i] != null) _scaleTargets[i].localScale = _originalScales[i];
+
             _scaling = false;
         }
 
@@ -299,6 +320,7 @@ namespace _Scripts.Agent.Enemies
                 if (sprites[i] == null) continue;
 
                 Color color = flash ? hitColor : _originalColors[i];
+
                 color.a = _originalColors[i].a;
                 // 공유 에셋 내용은 수정하지 않고 참조만 교체합니다. 매번 material 복제도 하지 않습니다.
                 sprites[i].sharedMaterial = flash ? hitMaterial : _originalMaterials[i];
@@ -330,6 +352,7 @@ namespace _Scripts.Agent.Enemies
         private void EndKnockback()
         {
             if (_knockingBack && _body != null) _body.linearVelocityX = 0f;
+
             _knockingBack = false;
         }
 

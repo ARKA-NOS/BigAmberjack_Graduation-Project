@@ -41,6 +41,7 @@ namespace _Scripts.Agent.Enemies
         private float _hitUntil;
         private MaterialPropertyBlock _properties;
         private readonly Dictionary<Sprite, Vector4> _uvBounds = new Dictionary<Sprite, Vector4>();
+
         private static readonly int WidthId = Shader.PropertyToID("_OutlineWidth");
         private static readonly int RectId = Shader.PropertyToID("_SpriteUVRect");
         private static readonly int LocalRectId = Shader.PropertyToID("_SpriteLocalRect");
@@ -57,13 +58,16 @@ namespace _Scripts.Agent.Enemies
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
             _health = owner.GetModule<INewHealthModule>();
+
             if (showDuringAttackPreparation) _skills = owner.GetModule<EnemySkillModule>();
+
             if (sprites == null || sprites.Length == 0) sprites = owner.GetComponentsInChildren<SpriteRenderer>(true);
         }
 
         public void AfterInit()
         {
             _initialized = true;
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -97,8 +101,10 @@ namespace _Scripts.Agent.Enemies
                 if (source == null) continue;
 
                 GameObject child = new GameObject("TemporaryOutline") { hideFlags = HideFlags.DontSave };
+
                 child.transform.SetParent(source.transform, false);
                 SpriteRenderer outline = child.AddComponent<SpriteRenderer>();
+
                 outline.enabled = false;
                 _views[i] = new View { Source = source, Outline = outline };
             }
@@ -109,6 +115,7 @@ namespace _Scripts.Agent.Enemies
             if (!_initialized) return;
 
             if (_views == null) CreateViews();
+
             bool preparing = IsShowingPreparation;
             float outlineWidth = preparing ? preparationWidth : width;
             bool drawOutside = preparing || outerSilhouetteOnly;
@@ -116,6 +123,7 @@ namespace _Scripts.Agent.Enemies
                            outlineMaterial != null && outlineWidth > 0f && (preparing || !showOnlyWhenHit || IsShowingHit);
             Color color = CurrentColor;
             int lowestOrder = int.MaxValue;
+
             if (drawOutside)
                 foreach (View view in _views)
                     if (view?.Source != null) lowestOrder = Mathf.Min(lowestOrder, view.Source.sortingOrder);
@@ -125,7 +133,9 @@ namespace _Scripts.Agent.Enemies
                 if (view == null || view.Outline == null) continue;
 
                 SpriteRenderer source = view.Source, outline = view.Outline;
+
                 outline.enabled = visible && source != null && source.enabled && source.gameObject.activeInHierarchy && source.sprite != null;
+
                 if (!outline.enabled) continue;
 
                 outline.gameObject.layer = source.gameObject.layer;
@@ -141,12 +151,14 @@ namespace _Scripts.Agent.Enemies
                 outline.spriteSortPoint = source.spriteSortPoint;
                 outline.sharedMaterial = outlineMaterial;
                 Color tint = color;
+
                 tint.a *= source.color.a;
                 outline.color = tint;
                 _properties.Clear();
                 _properties.SetFloat(WidthId, Mathf.Clamp(outlineWidth, 0f, 6f));
                 _properties.SetVector(RectId, GetUVBounds(source.sprite));
                 Bounds bounds = source.sprite.bounds;
+
                 _properties.SetVector(LocalRectId, new Vector4(bounds.center.x, bounds.center.y, bounds.size.x, bounds.size.y));
                 _properties.SetFloat(OuterId, drawOutside ? 1f : 0f);
                 outline.SetPropertyBlock(_properties);
@@ -166,15 +178,19 @@ namespace _Scripts.Agent.Enemies
             }
 
             _uvBounds.Add(sprite, bounds);
+
             return bounds;
         }
 
         private void OnDisable()
         {
             if (_subscribed) _health.OnHealthChanged -= OnHealthChanged;
+
             _subscribed = false;
             _hitUntil = 0f;
+
             if (_views == null) return;
+
             foreach (View view in _views)
                 if (view?.Outline != null) view.Outline.enabled = false;
         }
@@ -182,7 +198,9 @@ namespace _Scripts.Agent.Enemies
         private void OnDestroy()
         {
             OnDisable();
+
             if (_views == null) return;
+
             foreach (View view in _views)
                 if (view?.Outline != null) Destroy(view.Outline.gameObject);
         }

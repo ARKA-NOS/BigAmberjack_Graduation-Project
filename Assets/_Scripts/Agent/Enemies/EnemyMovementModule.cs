@@ -24,6 +24,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0f)] private float maxLedgeDetour = 3f;
 
         private const float Skin = 0.04f;
+
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>();
         private Rigidbody2D _body;
         private EnemyBase _enemy;
@@ -73,7 +74,9 @@ namespace _Scripts.Agent.Enemies
 
             _terrainFilter = new ContactFilter2D { useTriggers = false };
             _terrainFilter.SetLayerMask(terrainLayers);
+
             if (bodyCollider != null) _lastGroundedFeetY = bodyCollider.bounds.min.y;
+
             if (_enemy == null || _body == null || bodyCollider == null)
                 Debug.LogWarning($"{name}: EnemyMovementModule의 적/물리 몸체/몸체 Collider를 확인하세요.", this);
         }
@@ -83,10 +86,12 @@ namespace _Scripts.Agent.Enemies
             if (!Ready || target == null || !target.gameObject.activeInHierarchy)
             {
                 Stop();
+
                 return 0f;
             }
 
             Vector2 targetPosition = GetTargetFeet(target);
+
             if (_routeTarget != target || (targetPosition - _plannedTarget).sqrMagnitude > 1f)
                 CancelRoute();
 
@@ -94,6 +99,7 @@ namespace _Scripts.Agent.Enemies
             float heightDifference = targetPosition.y - bounds.min.y;
             float gravity = -Physics2D.gravity.y * _body.gravityScale;
             bool grounded = IsGrounded;
+
             if (grounded) _lastGroundedFeetY = bounds.min.y;
 
             // 가장자리 밖에서 수직으로 솟은 뒤, 발이 발판 윗면보다 높아져야 안쪽으로 돌아옵니다.
@@ -124,6 +130,7 @@ namespace _Scripts.Agent.Enemies
                 return chaseDirection;
 
             bool higherTarget = heightDifference > minimumTargetHeight && heightDifference <= jumpHeight;
+
             // 머리 위에 발판이 있으면 바로 뛰지 않고 도달 가능한 가까운 끝으로 돌아갑니다.
             if (higherTarget && CastTerrain(bounds.center, ProbeSize, Vector2.up, jumpHeight, out _))
             {
@@ -135,6 +142,7 @@ namespace _Scripts.Agent.Enemies
 
                 if (_approachingLedge)
                     return SetHorizontal(_approachX, speed);
+
                 return chaseDirection;
             }
 
@@ -144,8 +152,10 @@ namespace _Scripts.Agent.Enemies
             float airTimeToApex = Mathf.Sqrt(2f * jumpHeight / gravity);
             bool closeEnoughToJump = Mathf.Abs(targetPosition.x - _body.position.x) <=
                                      speed * airTimeToApex + bounds.extents.x;
+
             if ((higherTarget && closeEnoughToJump) || obstacle)
                 TryJump(grounded, gravity);
+
             return chaseDirection;
         }
 
@@ -158,6 +168,7 @@ namespace _Scripts.Agent.Enemies
             // v² = 2gh. Rigidbody의 질량이 달라도 지정 높이에 도달하도록 초기 속도를 설정합니다.
             _body.linearVelocityY = Mathf.Sqrt(2f * gravity * jumpHeight);
             _nextJumpTime = Time.time + jumpCooldown;
+
             return true;
         }
 
@@ -166,24 +177,30 @@ namespace _Scripts.Agent.Enemies
         {
             blocked = false;
             CancelRoute();
+
             if (!Ready || !IsGrounded || speed <= 0f)
             {
                 Stop();
+
                 return 0f;
             }
 
             float difference = destinationX - _body.position.x;
+
             if (Mathf.Abs(difference) <= horizontalTolerance)
             {
                 Stop();
+
                 return 0f;
             }
 
             float direction = Mathf.Sign(difference);
+
             if (!CanMoveOnGround(direction, speed))
             {
                 blocked = true;
                 Stop();
+
                 return 0f;
             }
 
@@ -199,6 +216,7 @@ namespace _Scripts.Agent.Enemies
             float lookAhead = Mathf.Max(obstacleCheckDistance, Mathf.Max(0f, speed) * Time.fixedDeltaTime + Skin);
             bool wall = CastTerrain(bodyCollider.bounds.center, ProbeSize, Vector2.right * direction,
                 lookAhead, out RaycastHit2D hit) && Mathf.Abs(hit.normal.x) > 0.5f;
+
             return !wall && HasFloorAhead(direction, speed);
         }
 
@@ -208,6 +226,7 @@ namespace _Scripts.Agent.Enemies
 
             Bounds bounds = bodyCollider.bounds;
             Vector2 travelDirection = Vector2.right * direction;
+
             if (CastTerrain(bounds.center, ProbeSize, travelDirection, distance + Skin, out RaycastHit2D hit,
                     minimumOppositionX: 0.5f))
                 distance = Mathf.Min(distance, Mathf.Max(0f, hit.distance - Skin));
@@ -221,6 +240,7 @@ namespace _Scripts.Agent.Enemies
                 if (!CastTerrain(foot, Vector2.one * Skin, Vector2.down,
                         groundCheckDistance + Skin * 2f, out _, 0.5f))
                     return travelled;
+
                 travelled = next;
             }
 
@@ -230,12 +250,15 @@ namespace _Scripts.Agent.Enemies
         private bool HasFloorAhead(float direction, float speed)
         {
             Bounds bounds = bodyCollider.bounds;
+
             if (IsGrounded) _lastGroundedFeetY = bounds.min.y;
+
             float lookAhead = Mathf.Max(obstacleCheckDistance, Mathf.Max(0f, speed) * Time.fixedDeltaTime + Skin);
             Vector2 nextFoot = new Vector2(bounds.center.x + direction * (bounds.extents.x + lookAhead),
                 bounds.min.y + Skin);
             // 점프 중에도 마지막으로 밟았던 높이까지 확인하여 절벽 아래 바닥을 착지점으로 삼지 않습니다.
             float distance = groundCheckDistance + Skin * 2f + Mathf.Max(0f, bounds.min.y - _lastGroundedFeetY);
+
             return CastTerrain(nextFoot, Vector2.one * Skin, Vector2.down, distance, out _, 0.5f);
         }
 
@@ -270,6 +293,7 @@ namespace _Scripts.Agent.Enemies
                     _plannedTarget = targetFeet;
                     _routeTarget = target;
                     _approachingLedge = true;
+
                     return true;
                 }
             }
@@ -283,14 +307,17 @@ namespace _Scripts.Agent.Enemies
             float direction = Mathf.Abs(difference) <= horizontalTolerance ? 0f : Mathf.Sign(difference);
             // 목표 X를 한 물리 프레임에 지나쳐 좌우로 떨리는 현상을 막습니다.
             float velocity = direction * Mathf.Min(Mathf.Max(0f, speed), Mathf.Abs(difference) / Time.fixedDeltaTime);
+
             // 추격/발판 우회도 배회와 동일하게 앞쪽 지지를 확인합니다.
             if (direction != 0f && !HasFloorAhead(direction, Mathf.Abs(velocity)))
             {
                 _body.linearVelocityX = 0f;
+
                 return 0f;
             }
 
             _body.linearVelocityX = velocity;
+
             return direction;
         }
 
@@ -300,6 +327,7 @@ namespace _Scripts.Agent.Enemies
                 return false;
 
             Vector2 offset = destination - origin;
+
             return offset.sqrMagnitude < 0.0001f ||
                    !CastTerrain(origin, Vector2.one * Skin, offset.normalized, offset.magnitude, out _);
         }
@@ -324,6 +352,7 @@ namespace _Scripts.Agent.Enemies
                     // 실제 몸체 우선. 몸체가 없는 Probe 타깃은 Trigger도 사용할 수 있습니다.
                     if (_targetBody == null || !candidate.isTrigger)
                         _targetBody = candidate;
+
                     if (!candidate.isTrigger)
                         break;
                 }
@@ -338,6 +367,7 @@ namespace _Scripts.Agent.Enemies
         {
             nearest = default;
             float nearestDistance = float.PositiveInfinity;
+
             Physics2D.BoxCast(origin, size, 0f, direction, _terrainFilter, _hits, distance);
 
             foreach (RaycastHit2D hit in _hits)
@@ -361,6 +391,7 @@ namespace _Scripts.Agent.Enemies
         {
             if (_body != null)
                 _body.linearVelocityX = 0f;
+
             CancelRoute();
         }
 

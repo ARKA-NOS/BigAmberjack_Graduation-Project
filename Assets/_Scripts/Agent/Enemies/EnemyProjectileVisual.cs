@@ -12,13 +12,16 @@ namespace _Scripts.Agent.Enemies
         [SerializeField] private Sprite[] impactFrames;
         [SerializeField, Min(1f)] private float impactFramesPerSecond = 18f;
         [SerializeField, Min(0.01f)] private float impactScale = 1.4f;
+
         private float _startedAt;
         private float _impactRate;
+
         public bool IsImpactPlaying { get; private set; }
 
         private void Awake()
         {
             _startedAt = Time.time;
+
             if (visual != null && flightFrames != null && flightFrames.Length > 0) visual.sprite = flightFrames[0];
         }
 
@@ -29,6 +32,7 @@ namespace _Scripts.Agent.Enemies
 
             float rate = IsImpactPlaying ? _impactRate : Mathf.Max(1f, flightFramesPerSecond);
             int frame = Mathf.FloorToInt((Time.time - _startedAt) * rate);
+
             frame = IsImpactPlaying ? Mathf.Min(frame, frames.Length - 1) : frame % frames.Length;
             visual.sprite = frames[frame];
         }
@@ -43,6 +47,7 @@ namespace _Scripts.Agent.Enemies
             transform.position = new Vector3(point.x, point.y, transform.position.z);
             visual.transform.localScale *= Mathf.Max(0.01f, impactScale);
             visual.sprite = impactFrames[0];
+
             return impactFrames.Length / _impactRate;
         }
     }

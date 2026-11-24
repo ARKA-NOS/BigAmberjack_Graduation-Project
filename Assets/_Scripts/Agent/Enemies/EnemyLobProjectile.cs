@@ -22,6 +22,7 @@ namespace _Scripts.Agent.Enemies
         [SerializeField, Min(0.01f)] private float impactEffectScale = 0.75f;
         [SerializeField] private Sprite[] impactFrames;
         [SerializeField, Min(1f)] private float impactFramesPerSecond = 20f;
+
         private const float SurfaceTolerance = 0.025f;
 
         private readonly List<Collider2D> _overlaps = new();
@@ -51,6 +52,7 @@ namespace _Scripts.Agent.Enemies
                 Vector2 to = ArcPoint(origin, landingPoint, i, steps);
                 RaycastHit2D hit = CastSegment(from, to, terrain, hits);
                 if (hit.collider != null) return IsLanding(hit, landingPoint);
+
                 from = to;
             }
 
@@ -75,6 +77,7 @@ namespace _Scripts.Agent.Enemies
             _steps = FlightSteps;
             _launched = true;
             _warning = warning;
+
             if (_warning != null) _warning.transform.SetParent(transform, true);
         }
 
@@ -84,18 +87,23 @@ namespace _Scripts.Agent.Enemies
 
             Vector2 next = ArcPoint(transform.position, _landingPoint, ++_step, _steps);
             RaycastHit2D hit = CastSegment(_position, next, _terrain, _surfaceHit);
+
             if (TryHitInFlight(next, hit, out Vector2 directImpact))
             {
                 FinishFlight(directImpact);
+
                 return;
             }
 
             if (hit.collider == null && _step == _steps)
                 hit = ProbeLanding(_landingPoint, _terrain, _surfaceHit);
+
             if (hit.collider != null || _step >= _steps)
             {
                 bool landed = IsLanding(hit, _landingPoint);
+
                 FinishFlight(landed ? hit.point : (Vector2?)null, splashDamage: landed);
+
                 return;
             }
 
@@ -111,6 +119,7 @@ namespace _Scripts.Agent.Enemies
         private bool TryHitInFlight(Vector2 next, RaycastHit2D terrainHit, out Vector2 impact)
         {
             impact = default;
+
             if (flightHitRadius <= 0f || _target == null) return false;
 
             Vector2 travel = next - _position;
@@ -122,6 +131,7 @@ namespace _Scripts.Agent.Enemies
                 new ContactFilter2D { useTriggers = true }, _flightHits, distance);
             float closestDistance = terrainHit.collider != null ? terrainHit.distance : float.PositiveInfinity;
             RaycastHit2D targetHit = default;
+
             foreach (RaycastHit2D candidate in _flightHits)
             {
                 if (candidate.distance >= closestDistance || !EnemyDamageUtility.IsTargetCollider(candidate.collider, _target))
@@ -135,6 +145,7 @@ namespace _Scripts.Agent.Enemies
                 return false;
 
             impact = targetHit.point;
+
             return EnemyDamageUtility.TryApply(targetHit.collider, _target, _dealer, _damage, impact, travel);
         }
 
@@ -142,14 +153,17 @@ namespace _Scripts.Agent.Enemies
         {
             _launched = false;
             _warning?.Hide();
+
             if (impact is Vector2 point)
             {
                 EnemySoundModule.PlayCue(impactCue, new Vector3(point.x, point.y, transform.position.z));
+
                 if (impactEffect != null)
                     EnemyHitParticle.Spawn(impactEffect, point, Quaternion.Euler(0f, 0f, impactEffectAngle),
                         gameObject.scene, impactEffectScale, 5f);
 
                 if (splashDamage) ApplySplashDamage(point);
+
                 if (PlayImpactAnimation(point)) return;
             }
 
@@ -163,6 +177,7 @@ namespace _Scripts.Agent.Enemies
 
             visual.SetPositionAndRotation(new Vector3(point.x, point.y, transform.position.z), Quaternion.identity);
             AnimateImpactAsync(spriteRenderer, destroyCancellationToken).Forget();
+
             return true;
         }
 
@@ -175,7 +190,9 @@ namespace _Scripts.Agent.Enemies
             {
                 spriteRenderer.sprite = impactFrames[index];
                 await UniTask.NextFrame(cancellationToken);
+
                 if (!gameObject.activeInHierarchy) return;
+
                 index = Mathf.FloorToInt((Time.time - startedAt) * impactFramesPerSecond);
             }
 
@@ -203,12 +220,14 @@ namespace _Scripts.Agent.Enemies
         private Vector2 ArcPoint(Vector2 origin, Vector2 end, int step, int steps)
         {
             float t = step / (float)steps;
+
             return Vector2.Lerp(origin, end, t) + Vector2.up * (4f * arcHeight * t * (1f - t));
         }
 
         private static RaycastHit2D CastSegment(Vector2 from, Vector2 to, ContactFilter2D terrain, RaycastHit2D[] hits)
         {
             Vector2 offset = to - from;
+
             return FindSurface(from, offset.normalized, offset.magnitude, terrain, hits);
         }
 

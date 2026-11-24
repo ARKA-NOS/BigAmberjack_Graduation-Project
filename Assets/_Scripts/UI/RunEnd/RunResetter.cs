@@ -1,7 +1,10 @@
+using _Scripts._Core._Debug;
 using _Scripts._Core._Manager;
 using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using _Scripts.Agent.Players;
 using _Scripts.Agent.Players.PlayerPackSystem;
+using _Scripts.Agent.Players.TitleSystem;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Inventory;
 using _Scripts.Maps;
@@ -10,7 +13,7 @@ using UnityEngine;
 namespace _Scripts.UI.RunEnd
 {
     // 탐험이 끝나 다른 씬으로 넘어가기 직전에, 씬을 넘어 남는 상태를 정리한다.
-    // 플레이어는 사망했을 때만 파괴해서 다음 씬에서 새로 생성되게 하고, 보스 클리어 시에는 유지하되 인벤토리를 비운다.
+    // 플레이어는 사망했을 때만 파괴해서 다음 씬에서 새로 생성되게 하고, 보스 클리어 시에는 유지하되 인벤토리·칭호를 비우고 체력을 채운다.
     public static class RunResetter
     {
         public static void ResetRun(RunEndReason reason)
@@ -21,6 +24,8 @@ namespace _Scripts.UI.RunEnd
             {
                 // 플레이어를 유지하므로 장착 아이템과 그 효과가 다음 런에 남지 않게 인벤토리를 비운다.
                 ClearInventory();
+                ResetTitles();
+                RestoreHealth();
                 RestorePlayerInput();
             }
 
@@ -41,6 +46,27 @@ namespace _Scripts.UI.RunEnd
             ModuleOwner player = ServiceLocator.Get<IPlayerController>() as ModuleOwner;
             if (player != null && player.TryGetModule(out IInventoryModule inventory))
                 inventory.Clear();
+        }
+
+        private static void ResetTitles()
+        {
+            ModuleOwner player = ServiceLocator.Get<IPlayerController>() as ModuleOwner;
+            if (player != null && player.TryGetModule(out ITitleModule titleModule))
+                titleModule.ResetTitles();
+            else
+                FDebug.LogWarning("[RunResetter] 플레이어의 TitleModule을 찾지 못해 칭호를 초기화하지 못했습니다.");
+        }
+
+        private static void RestoreHealth()
+        {
+            ModuleOwner player = ServiceLocator.Get<IPlayerController>() as ModuleOwner;
+            if (player != null && player.TryGetModule(out INewHealthModule health))
+            {
+                health.ApplyHeal(health.MaxHealth);
+                FDebug.Log($"[RunResetter] 체력 회복 {health.CurrentHealth}/{health.MaxHealth}");
+            }
+            else
+                FDebug.LogWarning("[RunResetter] 플레이어의 체력 모듈을 찾지 못해 체력을 회복하지 못했습니다.");
         }
 
         // 결과 화면을 띄울 때 입력을 껐으므로, 플레이어를 유지하는 경우 다시 켜 둔다.

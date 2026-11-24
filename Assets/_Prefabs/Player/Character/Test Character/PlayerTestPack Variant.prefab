@@ -74,12 +74,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  comboStates:
-  - {fileID: 11400000, guid: 665d7dfc82ad32b4abd8acf79c03b02d, type: 2}
-  - {fileID: 11400000, guid: 36424378f9e56df49b3308f09ed8310a, type: 2}
   animatorLayer: 0
   damageCaster: {fileID: 4431319950126978972}
   kbForce: 3
+  attackEffectPrefab: {fileID: 6049528467469964863, guid: 66d7271e8e232814c86d22aa248eaac3, type: 3}
+  attackEffectOffset: {x: 0, y: 0.58}
+  attachEffectToOwner: 1
   attackMoveCurve:
     serializedVersion: 2
     m_Curve:
@@ -195,8 +195,8 @@ MonoBehaviour:
     maxNormalAngle: 0
   castType: 1
   radius: 1
-  boxSize: {x: 1.25, y: 1.6}
-  offSet: {x: -0.1, y: 0.25}
+  boxSize: {x: 2.06, y: 1.6}
+  offSet: {x: -0.4, y: 0.64}
 --- !u!1001 &8857932151561612586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -740,6 +740,10 @@ PrefabInstance:
     - target: {fileID: 1071529533106986372, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1088825504854542265, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 1137386605427799597, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1311,19 +1315,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_Size.x
-      value: 0.56
+      value: 1.24
       objectReference: {fileID: 0}
     - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_Size.y
-      value: 1.6
+      value: 1.72
       objectReference: {fileID: 0}
     - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_Offset.x
-      value: 0.04
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2226722212047703176, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_Offset.y
-      value: 0.34
+      value: 0.62
       objectReference: {fileID: 0}
     - target: {fileID: 2237598686384872389, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1504,7 +1508,7 @@ PrefabInstance:
     - target: {fileID: 2735641778684570531, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -519840530, guid: 005f64720c86b43448253c7d68f5701b, type: 3}
+      objectReference: {fileID: -1023904961, guid: ff2d5fd11b722f141a5fcf803a3d2f5e, type: 3}
     - target: {fileID: 2735641778684570531, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_SortingOrder
       value: 5

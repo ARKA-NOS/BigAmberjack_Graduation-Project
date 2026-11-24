@@ -39,20 +39,27 @@ namespace _Scripts.Maps.New_Map
             
             GenerateMap(mapGenerateSetting);
 
-            EventBus<MapGeneratedEvent>.Subscribe(HandleMapGenerate);
+            EventBus<MapGenerateEvent>.Subscribe(HandleMapGenerate);
         }
 
         private void OnDestroy()
         {
-            EventBus<MapGeneratedEvent>.UnSubscribe(HandleMapGenerate);
+            EventBus<MapGenerateEvent>.UnSubscribe(HandleMapGenerate);
             
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = null;
         }
-        
-        private void HandleMapGenerate(MapGeneratedEvent evt)
-            => GenerateMap(mapGenerateSetting);
+
+        private void HandleMapGenerate(MapGenerateEvent evt)
+        {
+            if (!evt.Active)
+            {
+                ClearGeneratedMap();
+                return;
+            }
+            GenerateMap(mapGenerateSetting);
+        }
         
         #region MapGenerate
 

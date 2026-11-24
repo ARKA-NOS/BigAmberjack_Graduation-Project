@@ -26,11 +26,13 @@ namespace _Scripts.Maps.New_Map
             _currentCount++;
             if (_currentCount != bossMapCycle)
             {
-                EventBus<MapGeneratedEvent>.Raise(new MapGeneratedEvent());
+                EventBus<MapGenerateEvent>.Raise(new MapGenerateEvent(true));
+                EventBus<BossMapCreateEvent>.Raise(new BossMapCreateEvent(false));
             }
             else
             {
-                EventBus<BossMapCreate>.Raise(new BossMapCreate());
+                EventBus<MapGenerateEvent>.Raise(new MapGenerateEvent(false));
+                EventBus<BossMapCreateEvent>.Raise(new BossMapCreateEvent(true));
                 _currentCount = 0;
             }
         }

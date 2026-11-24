@@ -1,5 +1,7 @@
 # Enemy23 공정 통제 드론
 
+사선 레이저 발사음: [Boss23LaserSoundNotes.md](Boss23LaserSoundNotes.md) (2026-11-24, 전용 에너지 빔 Cue 연결).
+
 최근 추가 조정: **[Boss23VisualFixNotes.md](Boss23VisualFixNotes.md)** (2026-11-24, 강화 연사 높이·공중 표시·레이저 단면·픽셀 데미지 숫자).
 
 강화 패턴 기준: [Boss23EnhancedGifNotes.md](Boss23EnhancedGifNotes.md) (런처 교대·공중 4회 사격·폭격 범위 공유).

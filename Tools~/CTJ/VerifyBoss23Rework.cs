@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Enemies;
 using _Scripts.Agent.Enemies.Bosses;
 using _Scripts.Agent.Enemies.Skills;
 using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using _Scripts.Agent.Players;
 using _Scripts.Agent.SkillSystem.NormalSkill;
+using _Scripts.Audio;
 using _Scripts.Testing.Enemy;
 using _Scripts.UI.Enemy;
 using _Scripts.UI.HitFeedback;
@@ -81,6 +83,8 @@ public static class VerifyBoss23Rework
 
     public static Task<object> RunSpacing() => RunInternal(false, 4);
 
+    public static Task<object> RunLaserSound() => RunInternal(false, 5);
+
     public static Task<object> RunEntryOnly() => RunInternal(true);
 
     private static async Task<object> RunInternal(bool entryOnly, int group = 0)
@@ -99,6 +103,68 @@ public static class VerifyBoss23Rework
         {
             try
             {
+                if (group == 5)
+                {
+                    var previousSound = ServiceLocator.Get<ISoundManager>();
+                    GameObject soundRoot = null;
+                    var manager = previousSound as SoundManager;
+                    if (manager == null || !manager.isActiveAndEnabled)
+                    {
+                        soundRoot = new GameObject("Laser sound verification");
+                        soundRoot.SetActive(false);
+                        manager = soundRoot.AddComponent<SoundManager>();
+                        var config = new SerializedObject(manager);
+                        config.FindProperty("_sfxCount").intValue = 4;
+                        config.FindProperty("_uiCount").intValue = 1;
+                        config.ApplyModifiedPropertiesWithoutUndo();
+                        soundRoot.SetActive(true);
+                        manager.Initialize();
+                    }
+
+                    try
+                    {
+                        foreach (bool enhanced in new[] { false, true })
+                        {
+                            await rig.NewBoss(enhanced);
+                            var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Sound/Enemy/yodguard-short-energy-beam-shot-4-482500.mp3");
+                            int sameFrameStarts = 0;
+                            var startStates = new List<object>();
+                            bool validStarts = true;
+                            Action<EnemyAttackSkill, Vector3> onAttack = (skill, point) =>
+                            {
+                                if (skill != rig.Laser) return;
+                                var sources = manager.GetComponentsInChildren<AudioSource>();
+                                bool beamOn = rig.Root.transform.Find("LaserBeam").GetComponent<SpriteRenderer>().enabled;
+                                bool playing = sources.Any(s => s.clip == expected && s.isPlaying && s.time < 0.1f);
+                                validStarts &= beamOn && playing;
+                                startStates.Add(new { beam = rig.Root.transform.Find("LaserBeam").GetComponent<SpriteRenderer>().enabled,
+                                    registered = ReferenceEquals(ServiceLocator.Get<ISoundManager>(), manager),
+                                    sources = sources.Where(s => s.clip == expected).Select(s => new { clip = s.clip.name, playing = s.isPlaying, time = s.time }).ToArray() });
+                                sameFrameStarts++;
+                            };
+                            var attackEvent = typeof(EnemyAttackSkill).GetEvent("AttackPerformed", Private);
+                            attackEvent.GetAddMethod(true).Invoke(rig.Laser, new object[] { onAttack });
+                            var result = await Laser(rig, enhanced);
+                            attackEvent.GetRemoveMethod(true).Invoke(rig.Laser, new object[] { onAttack });
+                            Check(sameFrameStarts == (enhanced ? 2 : 1), "Laser sound release count mismatch");
+                            Check(validStarts, "Laser clip not playing at beam release");
+                            results.Add(new { enhanced, sameFrameStarts, clip = expected.name, startStates,
+                                playingAfterRelease = manager.GetComponentsInChildren<AudioSource>().Any(s => s.clip == expected && s.isPlaying), laser = result });
+                        }
+                    }
+                    finally
+                    {
+                        if (soundRoot != null)
+                        {
+                            soundRoot.SetActive(false);
+                            Object.Destroy(soundRoot);
+                            ServiceLocator.Register<ISoundManager>(previousSound);
+                        }
+                    }
+
+                    return new { results };
+                }
+
                 if (group == 4)
                 {
                     await rig.NewBoss(false);

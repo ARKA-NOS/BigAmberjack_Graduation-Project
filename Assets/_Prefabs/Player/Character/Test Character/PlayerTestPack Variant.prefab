@@ -929,6 +929,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1515396584562429506, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1515396584562429506, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1677937297826497564, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2641,6 +2649,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4725378454954966320, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: moveSoundCues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4725378454954966320, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: 'moveSoundCues.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f4b031441e07d4942bfcad3d3fc06336, type: 2}
+    - target: {fileID: 4725378454954966320, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: 'moveSoundCues.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 2b5caa70de9e54446b64dc925161a097, type: 2}
     - target: {fileID: 4743697386275109883, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -19,8 +19,8 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
         public RoomLink[] GetRoomLink()
             => links;
         
-        public Transform GetPlayerSpawnPoint()
-            => playerSpawnPoint;
+        public Vector3 GetPlayerSpawnPoint()
+            => playerSpawnPoint != null ?  playerSpawnPoint.position : Vector3.zero;
         
         // connected[i]가 links[i]의 연결 여부다. 연결되지 않은 링크는 막는다.
         public void ApplyLinkState(bool[] connected)

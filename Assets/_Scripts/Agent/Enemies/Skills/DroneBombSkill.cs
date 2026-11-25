@@ -42,7 +42,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private ProductionControlDrone _drone;
         private Vector2 _previousTargetPosition, _targetVelocity;
         private int _dropCount;
-        private float _nextDropAt, _interval, _warningTime, _radius, _damage, _animationSpeed;
+        private float _nextDropAt, _interval, _animationSpeed;
         private bool _descending;
         private bool _enhanced;
         private float _hoverSide;
@@ -90,9 +90,6 @@ namespace _Scripts.Agent.Enemies.Skills
             _enhanced = enhanced;
             _dropCount = Mathf.Max(1, enhanced ? lastStandDrops : normalDrops);
             _interval = Mathf.Max(0.05f, enhanced ? lastStandInterval : normalInterval);
-            _warningTime = Mathf.Max(0.05f, enhanced ? lastStandWarningDuration : warningDuration);
-            _radius = normalRadiusPixels / Mathf.Max(1f, pixelsPerUnit);
-            _damage = enhanced ? lastStandDamage : damage;
             _animationSpeed = enhanced ? 2f : 1f;
             float first = enhanced ? lastStandFirstDropTime : firstDropTime;
             _nextDropAt = Time.time + first;
@@ -114,29 +111,44 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             _nextDropAt += _interval;
             float prediction = Mathf.Clamp(_targetVelocity.x * predictionLead, -maxPredictionDistance, maxPredictionDistance);
-            if (!TryPlan(muzzle.position, CastTarget, prediction, out Vector2 landing))
+            var bomb = LaunchTargetBomb(CastTarget, prediction, _enhanced);
+            if (bomb == null)
             {
                 DroppedCount++;
                 return;
             }
 
-            var bomb = Instantiate(bombPrefab, muzzle.position, Quaternion.identity);
-            SceneManager.MoveGameObjectToScene(bomb.gameObject, Enemy.gameObject.scene);
-            bomb.Launch(Enemy, CastTarget, landing, _damage, _radius, _drone.TerrainLayers, null, _warningTime);
             _bombs.Add(bomb);
-
-            if (warningPrefab != null)
-            {
-                var warning = Instantiate(warningPrefab);
-                SceneManager.MoveGameObjectToScene(warning.gameObject, Enemy.gameObject.scene);
-                warning.Bind(bomb, landing, _radius);
-            }
 
             DroppedCount++;
             CoolTimeStartTime = Time.time;
             if (preview != null) preview.enabled = false;
             visual.Play("Bomb", _animationSpeed);
+        }
+
+        // 발악 진입도 기존 포물선, 고정 표적 경고, 피해 및 사운드를 그대로 사용합니다.
+        internal EnemyLobProjectile LaunchTargetBomb(Transform target, float prediction, bool enhanced)
+        {
+            if (muzzle == null || !TryPlan(muzzle.position, target, prediction, out Vector2 landing)) return null;
+
+            var drone = (ProductionControlDrone)Enemy;
+            float radius = normalRadiusPixels / Mathf.Max(1f, pixelsPerUnit);
+            float hitDamage = enhanced ? lastStandDamage : damage;
+            float flightTime = Mathf.Max(0.05f, enhanced ? lastStandWarningDuration : warningDuration);
+            var projectile = Instantiate(bombPrefab, muzzle.position, Quaternion.identity);
+            SceneManager.MoveGameObjectToScene(projectile.gameObject, Enemy.gameObject.scene);
+            projectile.Launch(Enemy, target, landing, hitDamage, radius, drone.TerrainLayers, null, flightTime);
+
+            if (warningPrefab != null)
+            {
+                var warning = Instantiate(warningPrefab);
+                SceneManager.MoveGameObjectToScene(warning.gameObject, Enemy.gameObject.scene);
+                warning.Bind(projectile, landing, radius);
+            }
+
             NotifyAttackPerformed(muzzle.position);
+
+            return projectile;
         }
 
         public override void UpdateSkill()

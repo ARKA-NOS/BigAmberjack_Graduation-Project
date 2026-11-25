@@ -1,0 +1,66 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "LastStandEntry",
+        "boundary": 0.35,
+        "order": [
+          "bomb",
+          "shotgun",
+          "bomb",
+          "shotgun",
+          "bomb",
+          "shotgun",
+          "bomb"
+        ],
+        "bombs": 4,
+        "shots": 9,
+        "laserSweeps": 2,
+        "invulnerableDuringAttacks": true,
+        "formationDuration": 0.8835821,
+        "centerAt": 0.009805679,
+        "innerAt": 0.3611374,
+        "outerAt": 0.6651783,
+        "angularSpeed": 41.99988,
+        "flickerChanges": 14,
+        "fallingDamage": 0,
+        "normalDamage": 9.259262,
+        "groggyDamage": 18.5185242,
+        "groggyDuration": 5.00457764,
+        "fallStartSpeed": 0,
+        "fallEndSpeed": 14.7199917,
+        "shakePeak": 1.09193408,
+        "receivedShakePeak": 1.0919342,
+        "particleCount": 37,
+        "yellow": true,
+        "orange": true,
+        "gettingUpDuration": 0.654579163,
+        "afterGroggyPause": 0.654808044,
+        "resumed": "DroneAirTransitionSkill"
+      },
+      {
+        "pattern": "CenterReturn",
+        "side": -1,
+        "start": -7,
+        "returnedX": -6.16000032,
+        "attackX": -6.11200047,
+        "skill": "Barrage",
+        "interruptedReturn": true
+      },
+      {
+        "pattern": "CenterReturn",
+        "side": 1,
+        "start": 7,
+        "returnedX": 6.11200047,
+        "attackX": 6.11200047,
+        "skill": "Barrage",
+        "interruptedReturn": true
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23GroggyPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 2374,
+  "executeMs": 17216,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_9d798d8cafdf42bc86d6262cacf8221d"
+}

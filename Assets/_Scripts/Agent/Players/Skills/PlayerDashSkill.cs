@@ -1,9 +1,11 @@
 ﻿using _Scripts._Core._Debug;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.FSM;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.Agent.StatSystem;
+using _Scripts.Audio;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
 using DG.Tweening;
@@ -18,6 +20,7 @@ namespace _Scripts.Agent.Players.Skills
         [SerializeField] private StatData dashCountStat;
         [SerializeField] private StatData dashCoolTimeStat;
         [SerializeField] private StatData dashRangeStat;
+        [SerializeField] private SoundCueSO dashSoundCue;
         
         private Stat _dashCountStat;
         private Stat _dashCoolTime;
@@ -34,7 +37,8 @@ namespace _Scripts.Agent.Players.Skills
         private IGroundChecker _groundChecker;
         private IAfterImageEmitter _afterImageEmitter;
         private IAnimationTrigger _animationTrigger;
-        
+
+        private ISoundManager _soundManager;
         private Tween _dashTween;
         private float _lastDashTime = float.NegativeInfinity;
         private int _currentAirDashCount;
@@ -66,7 +70,11 @@ namespace _Scripts.Agent.Players.Skills
             _dashCountStat = statModule.GetStat(dashCountStat);
             _dashCoolTime = statModule.GetStat(dashCoolTimeStat);
             _dashRange = statModule.GetStat(dashRangeStat);
-            
+            _soundManager = ServiceLocator.Get<ISoundManager>();
+
+            FDebug.Assert(_soundManager != null,
+                        $"[MeleeAttackSkill : {owner.name}] ISoundManager is not found");
+
             FDebug.Assert(_playerRb != null, "Player에는 Rigidbody2D가 필요합니다.");
             FDebug.Assert(_afterImageEmitter != null, "Player에는 IAfterImageEmitter 필요합니다.");
             FDebug.Assert(_groundChecker != null, "Player에는 IGroundChecker도 필요합니다.");
@@ -113,7 +121,9 @@ namespace _Scripts.Agent.Players.Skills
             _damageable.SetInvincibility(this, true);
             
             _haveFsm.ChangeState(PlayerStateEnum.DASH);
-            
+
+            _soundManager.PlaySfx(dashSoundCue, transform.position);
+
             direction.Normalize();
             
             _afterImageEmitter.Play(dashTime);

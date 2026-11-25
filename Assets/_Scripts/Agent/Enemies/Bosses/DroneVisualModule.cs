@@ -78,6 +78,16 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (animator != null) animator.speed = 1f;
         }
 
+        internal void SnapToBody()
+        {
+            if (movementVisual == null || _drone == null) return;
+
+            _displayPosition = _drone.transform.TransformPoint(_visualOffset);
+            movementVisual.position = _displayPosition;
+            _hasDisplayPosition = true;
+            _basicHoverBlend = _salvoHoverBlend = 0f;
+        }
+
         private void LateUpdate()
         {
             if (_drone == null) return;
@@ -93,7 +103,8 @@ namespace _Scripts.Agent.Enemies.Bosses
                 float blend = 1f - Mathf.Exp(-movementSmoothing * Time.deltaTime);
                 _displayPosition = Vector3.Lerp(_displayPosition, target, blend);
                 movementVisual.position = _displayPosition;
-                bool hover = !_drone.IsDead && !_drone.IsMoving && _drone.transform.position.y - _drone.FloorY > 2f;
+                bool hover = !_drone.IsDead && !_drone.IsMoving && !_drone.IsEntryShieldForming &&
+                    _drone.transform.position.y - _drone.FloorY > 2f;
                 _basicHoverBlend = Mathf.MoveTowards(_basicHoverBlend, hover ? 1f : 0f, Time.deltaTime * 8f);
                 movementVisual.position += Vector3.up * (Mathf.Sin(Time.time * basicHoverFrequency * 2f * Mathf.PI) * basicHoverAmplitude * _basicHoverBlend);
 

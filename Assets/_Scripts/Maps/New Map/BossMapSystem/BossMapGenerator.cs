@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
 using UnityEngine;

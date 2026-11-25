@@ -1,0 +1,30 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "CenterReturn",
+        "nearWall": true,
+        "side": -1,
+        "start": -6.6,
+        "returnedX": -5.71200037,
+        "attackX": -5.71200037,
+        "skill": "Barrage",
+        "interruptedReturn": true
+      },
+      {
+        "pattern": "CenterReturn",
+        "nearWall": true,
+        "side": 1,
+        "start": 6.6,
+        "returnedX": 5.71200037,
+        "attackX": 5.71200037,
+        "skill": "Barrage",
+        "interruptedReturn": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 484,
+  "executeMs": 964,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_afe35efc67f34bfb8d719d546e008025"
+}

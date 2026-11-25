@@ -20,6 +20,8 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
         {
             EventBus<BossMapCreateEvent>.UnSubscribe(HandleBossMapCreate);
         }
+
+        private BossMap _currentMap;
         
         private void HandleBossMapCreate(BossMapCreateEvent evt)
         {
@@ -43,17 +45,19 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
             
             int index = Random.Range(0, prefabs.Count);
 
-            BossMap map = Instantiate(prefabs[index],transform);
+            _currentMap = Instantiate(prefabs[index],transform);
 
-            MapGenerateEvents.RaiseMapGenerated(index, null, map.StartPos, false);
+            MapGenerateEvents.RaiseMapGenerated(index, null, _currentMap.StartPos, false);
         }
         
         private void ClearGeneratedMap()
         {
-            Transform trm = gameObject.transform;
+            if(_currentMap == null) return;
+            Transform trm = _currentMap.transform;
             int count = trm.childCount;
             for(int i = 0; i < count; i++)
                 Destroy(trm.GetChild(0).gameObject);
+            Destroy(_currentMap.gameObject);
         }
         
         

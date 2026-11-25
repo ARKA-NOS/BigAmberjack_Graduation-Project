@@ -11,8 +11,10 @@ namespace _Scripts.Currency
     public class DeathCurrencyRewarder : MonoBehaviour
     {
         [SerializeField] private CurrencySO rewardCurrency;
-        [SerializeField] private int baseReward = 20;
+        [SerializeField] private int baseReward = 10;
         [SerializeField] private int rewardPerKill = 2;
+        [Tooltip("이 수보다 적게 처치하면 기본 보상까지 전부 지급하지 않는다. 바로 포기·사망해 보상만 받는 것을 막는다.")]
+        [SerializeField] private int minKillsForReward = 1;
 
         private bool _rewarded;
 
@@ -37,7 +39,8 @@ namespace _Scripts.Currency
             FDebug.Log($"[{name}] 사망 보상 {rewardCurrency.CurrencyName} +{amount} (처치 {killCount})", this);
         }
 
-        public int CalculateReward(int killCount) => baseReward + killCount * rewardPerKill;
+        public int CalculateReward(int killCount)
+            => killCount < minKillsForReward ? 0 : baseReward + killCount * rewardPerKill;
 
         private static int GetKillCount()
         {

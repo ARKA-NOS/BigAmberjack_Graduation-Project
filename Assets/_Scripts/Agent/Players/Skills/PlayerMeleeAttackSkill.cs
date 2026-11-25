@@ -24,7 +24,9 @@ namespace _Scripts.Agent.Players.Skills
         [SerializeField] private AnimationCurve animationSpeedCurve;
         //[SerializeField] private StateSo comboStates;
         [SerializeField] private int animatorLayer = 0;
-        
+
+        [SerializeField] private SoundCueSO attackSoundCue;
+
         [Header("DamageCast Setting")]
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
@@ -46,7 +48,6 @@ namespace _Scripts.Agent.Players.Skills
         //[SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
         //[SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
 
-        [SerializeField] private SoundCueSO AttackSoundCue;
 
         private const int CurveAreaSampleCount = 100;
         private const int CurveStepSampleCount = 10;
@@ -177,7 +178,7 @@ namespace _Scripts.Agent.Players.Skills
         private void OnTrigger()
         {
             SpawnAttackEffect();
-            _soundManager.PlaySfx(AttackSoundCue, damageCaster.transform.position);
+            _soundManager.PlaySfx(attackSoundCue, damageCaster.transform.position);
             if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
                 PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
         }

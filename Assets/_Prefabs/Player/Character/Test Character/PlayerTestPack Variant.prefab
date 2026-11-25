@@ -75,6 +75,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   animatorLayer: 0
+  attackSoundCue: {fileID: 11400000, guid: e4e3ef54207d0c34fb1a42890bc665eb, type: 2}
   damageCaster: {fileID: 4431319950126978972}
   kbForce: 3
   attackEffectPrefab: {fileID: 6049528467469964863, guid: 66d7271e8e232814c86d22aa248eaac3, type: 3}
@@ -133,7 +134,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   lungeDistance: 0.5
-  AttackSoundCue: {fileID: 11400000, guid: e4e3ef54207d0c34fb1a42890bc665eb, type: 2}
 --- !u!1 &8695000900061937281
 GameObject:
   m_ObjectHideFlags: 0
@@ -4117,6 +4117,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8394559084903547470, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
+      propertyPath: dashSoundCue
+      value: 
+      objectReference: {fileID: 11400000, guid: d7a98aab6baf3914d9bea3b17e467881, type: 2}
     - target: {fileID: 8471735928314172760, guid: a0cb261d025b1f947b6cd708d6546bc4, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -1,4 +1,4 @@
-using _Scripts.Maps;
+using _Scripts.Maps.New_Map;
 using _Scripts.UI.RunEnd;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,10 +31,10 @@ namespace _Scripts.UI.SettingsUI
             giveUpButton.onClick.RemoveListener(OpenPopup);
         }
 
-        // 탐험 중(씬에 스테이지가 있을 때)에만 포기 행을 보여 준다. 설정 창을 열 때마다 갱신한다.
+        // 탐험 중(씬에 맵 생성기가 있을 때, 보스 맵 포함)에만 포기 행을 보여 준다. 설정 창을 열 때마다 갱신한다.
         public void Refresh()
         {
-            bool inRun = FindAnyObjectByType<LinearStageGenerator>() != null;
+            bool inRun = FindAnyObjectByType<MapGenerator>() != null;
             gameObject.SetActive(inRun);
             if (!inRun) ClosePopup();
         }

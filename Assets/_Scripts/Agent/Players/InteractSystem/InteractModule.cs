@@ -80,11 +80,10 @@ namespace _Scripts.Agent.Players.InteractSystem
             try
             {
                 active = _interact != null;
-                pos = _interact?.Position ?? Vector3.zero;
+                pos = _interact?.Position ?? Vector2.zero;
             }
             catch
             {
-                FDebug.LogWarning("상호작용 객체 소멸함", this);
                 active = false;
                 pos = Vector3.zero;
             }

@@ -1,0 +1,113 @@
+{
+  "result": {
+    "results": [
+      {
+        "enhanced": false,
+        "sameFrameStarts": 1,
+        "clip": "yodguard-short-energy-beam-shot-4-482500",
+        "startStates": [
+          {
+            "beam": true,
+            "registered": true,
+            "sources": [
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 0
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": false,
+                "time": 0
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": false,
+                "time": 0
+              }
+            ]
+          }
+        ],
+        "playingAfterRelease": true,
+        "laser": {
+          "pattern": "Laser",
+          "enhanced": false,
+          "crossings": 1,
+          "releases": 1,
+          "repeatWarningSeen": false,
+          "pauseSeen": false,
+          "speed": 600,
+          "finalAngle": 60.0000038,
+          "damage": 24,
+          "hits": 1
+        }
+      },
+      {
+        "enhanced": true,
+        "sameFrameStarts": 2,
+        "clip": "yodguard-short-energy-beam-shot-4-482500",
+        "startStates": [
+          {
+            "beam": true,
+            "registered": true,
+            "sources": [
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 1.472
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 0
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": false,
+                "time": 0
+              }
+            ]
+          },
+          {
+            "beam": true,
+            "registered": true,
+            "sources": [
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 2.304
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 0.832
+              },
+              {
+                "clip": "yodguard-short-energy-beam-shot-4-482500",
+                "playing": true,
+                "time": 0
+              }
+            ]
+          }
+        ],
+        "playingAfterRelease": true,
+        "laser": {
+          "pattern": "Laser",
+          "enhanced": true,
+          "crossings": 2,
+          "releases": 2,
+          "repeatWarningSeen": false,
+          "pauseSeen": true,
+          "speed": 720,
+          "finalAngle": -60,
+          "damage": 56,
+          "hits": 2
+        }
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 285,
+  "executeMs": 3758,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_694159571a434f4fb94702471b01486a"
+}

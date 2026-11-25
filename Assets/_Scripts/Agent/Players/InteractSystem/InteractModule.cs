@@ -1,6 +1,4 @@
-﻿using System;
-using _Scripts._Core._Debug;
-using _Scripts._Core._EventSystem;
+﻿using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.UI.PlayerUI.InteractUI_system;
@@ -13,7 +11,7 @@ namespace _Scripts.Agent.Players.InteractSystem
         [SerializeField] private LayerMask interactLayer;
         [SerializeField] private float interactDistance = 5;
         
-        [SerializeField] private int resultSize = 10;
+        private const int ResultSize = 64;
         
         private ContactFilter2D contactFilter;
         
@@ -25,7 +23,7 @@ namespace _Scripts.Agent.Players.InteractSystem
         {
             base.Initialize(owner);
             
-            result = new Collider2D[resultSize];
+            result = new Collider2D[ResultSize];
 
             contactFilter.useTriggers = true;
             contactFilter.useLayerMask = true;

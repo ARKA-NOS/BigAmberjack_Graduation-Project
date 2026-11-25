@@ -37,6 +37,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private bool _enhanced;
         private int _volleyCount;
         private float _startedAt, _firstShotAt, _interval, _direction;
+        private float _nextVolleyAt;
         private bool _beganFiring;
         private bool _returnedToIdle;
         private float _recoveryUntil;
@@ -69,6 +70,7 @@ namespace _Scripts.Agent.Enemies.Skills
             _spacingDirection = _spacingDestinationX = _nextSpacingPlanAt = 0f;
             _interval = Mathf.Max(0.01f, _enhanced ? lastStandShotInterval : normalShotInterval);
             _firstShotAt = _enhanced ? lastStandFirstShotTime : Mathf.Max(firstShotTime, chargeEndTime);
+            _nextVolleyAt = _startedAt + _firstShotAt;
             _drone.StopMovement();
             Enemy.FaceTarget();
             _direction = Enemy.FacingDirection;
@@ -134,7 +136,9 @@ namespace _Scripts.Agent.Enemies.Skills
             bool rear = FiredVolleys % 2 != 0;
             Transform launcher = rear && rearMuzzle != null ? rearMuzzle : muzzle;
             float offset = _enhanced ? 0f : Random.Range(-verticalSpawnOffset, verticalSpawnOffset);
-            Vector3 origin = launcher.position + Vector3.up * offset;
+            // 강화는 같은 기준점에서 쏴 앞뒤 총구 간격으로 탄이 쌍으로 뭉쳐 보이지 않게 합니다.
+            // 발사 모션은 기존처럼 앞뒤 런처를 번갈아 재생합니다.
+            Vector3 origin = (_enhanced ? muzzle : launcher).position + Vector3.up * offset;
             int count = _enhanced ? 3 : 1;
 
             for (int i = 0; i < count; i++)
@@ -185,7 +189,12 @@ namespace _Scripts.Agent.Enemies.Skills
             if (elapsed < _firstShotAt) return;
             if (!_beganFiring) BeginFiring();
 
-            while (FiredVolleys < _volleyCount && elapsed >= _firstShotAt + FiredVolleys * _interval) FireVolley();
+            // 프레임이 늦어져도 밀린 여러 회차를 한꺼번에 생성하지 않습니다.
+            if (FiredVolleys < _volleyCount && Time.time >= _nextVolleyAt)
+            {
+                FireVolley();
+                _nextVolleyAt = Time.time + _interval;
+            }
 
             if (FiredVolleys < _volleyCount) return;
 

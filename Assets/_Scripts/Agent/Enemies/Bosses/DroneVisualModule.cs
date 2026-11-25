@@ -17,8 +17,8 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField, Min(0f)] private float basicHoverAmplitude = 0.06f;
         [SerializeField, Min(0f)] private float basicHoverFrequency = 1.4f;
 
-        [Header("Salvo Movement Hover")]
-        [Tooltip("연사 이동 중 비주얼만 띄우는 높이입니다. 물리 몸통의 위치는 유지합니다.")]
+        [Header("Salvo Firing Hover")]
+        [Tooltip("연사 중 비주얼을 띄우는 높이입니다. 수평 이동이 멈춰도 유지하며, 물리 몸통은 바닥에 둡니다.")]
         [SerializeField, Min(0f)] private float salvoHoverHeight = 0.18f;
         [SerializeField, Min(0f)] private float salvoHoverAmplitude = 0.1f;
         [SerializeField, Min(0f)] private float salvoHoverFrequency = 2f;
@@ -92,7 +92,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             if (_drone == null) return;
 
-            bool salvoHover = !_drone.IsDead && _drone.IsSalvoMoving;
+            bool salvoHover = !_drone.IsDead && _drone.IsSalvoFiring;
             _salvoHoverBlend = Mathf.MoveTowards(_salvoHoverBlend, salvoHover ? 1f : 0f, Time.deltaTime * 6f);
 
             if (movementVisual != null)

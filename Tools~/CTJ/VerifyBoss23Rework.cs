@@ -97,6 +97,12 @@ public static class VerifyBoss23Rework
 
     public static Task<object> RunBombSound() => RunInternal(true, 8);
 
+    public static Task<object> RunSalvoAuditBefore() => RunInternal(true, 9);
+
+    public static Task<object> RunSalvoAuditAfter() => RunInternal(true, 10);
+
+    public static Task<object> RunSalvoRegression() => RunInternal(true, 11);
+
     public static object CheckRecoveryAssets()
     {
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
@@ -153,6 +159,28 @@ public static class VerifyBoss23Rework
         {
             try
             {
+                if (group == 11)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await Barrage(rig, enhanced, false, 1f, false));
+                        results.Add(await Barrage(rig, enhanced, true, 1f, false));
+                    }
+                    return new { results };
+                }
+
+                if (group == 9 || group == 10)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await SalvoAudit(rig, enhanced, 1f, enhanced, group == 10));
+                        if (group == 10) results.Add(await SalvoAudit(rig, enhanced, -1f, false, true));
+                    }
+                    return new { results };
+                }
+
                 if (group == 7)
                 {
                     await rig.NewBoss(false);
@@ -495,7 +523,7 @@ public static class VerifyBoss23Rework
             smoothAcceleration = true, endX = r.Root.transform.position.x });
     }
 
-    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall, float direction = 1f)
+    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall, float direction = 1f, bool capturePreview = true)
     {
         r.Prepare(false, direction * 1.5f);
         GameObject blocker = null;
@@ -532,7 +560,7 @@ public static class VerifyBoss23Rework
                 if (r.Barrage.FiredVolleys == (enhanced ? 12 : 7) && animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Idle") && idleAt < 0f)
                     idleAt = t;
 
-                if (t > (enhanced ? 0.48f : 0.58f) + 0.22f && r.Flight.IsMoving && !r.Barrage.IsRecovering)
+                if (t > (enhanced ? 0.48f : 0.58f) + 0.22f && r.Barrage.IsUsing && !r.Barrage.IsRecovering)
                 {
                     float offset = r.Root.transform.Find("Visual").position.y - r.Root.transform.position.y -
                         ((Vector3)Read(visualModule, "_visualOffset")).y;
@@ -543,7 +571,7 @@ public static class VerifyBoss23Rework
                     exhaustSeen |= exhaust.particleCount > 0;
                     Check(Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.001f,
                         "Hover moved the physics body off the floor");
-                    if (!enhanced && !hoverCaptured && offset > 0.23f)
+                    if (capturePreview && !enhanced && !hoverCaptured && offset > 0.23f)
                     {
                         CaptureGround(r.Camera, r.Root.transform.position + Vector3.up * 0.35f, 2f,
                             "Tools~/CTJ/Boss23SalvoHoverPreview.png");
@@ -568,7 +596,12 @@ public static class VerifyBoss23Rework
             Check(Mathf.Abs(events[0].time - start - (enhanced ? 0.48f : 0.58f)) < 0.06f, "First shot time mismatch");
             for (int i = 1; i < events.Length; i++)
                 Check(Mathf.Abs(events[i].time - events[i - 1].time - interval) < 0.04f, "Shot interval mismatch");
-            Check(Mathf.Abs(recoveryAt - (enhanced ? 2.186f : 2.646f)) < 0.08f, "Barrage recovery start mismatch: " + recoveryAt);
+            string lastPose = events.Length % 2 == 0 ? "SalvoRearShot" : "SalvoSingleShot";
+            var tailClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                "Assets/_Graphics/Animations/Enemy/Enemy23/Boss23_ProductionControlDrone_" + lastPose + ".anim");
+            float tailSpeed = new SerializedObject(r.Barrage).FindProperty(enhanced ? "lastStandFiringAnimationSpeed" : "firingAnimationSpeed").floatValue;
+            float naturalRecoveryAt = events.Last().time - start + tailClip.length / tailSpeed;
+            Check(Mathf.Abs(recoveryAt - naturalRecoveryAt) < 0.06f, "Barrage recovery did not follow its last shot animation: " + recoveryAt);
             Check(flashes == count && launchers.Select((name, i) => name == (i % 2 == 0 ? "speedy shot_0" : "speedy shot_1")).All(x => x),
                 "Barrage flashes did not alternate once per volley: " + string.Join(",", launchers));
             Check(idleAt > 0f && Mathf.Abs(idleAt - recoveryAt) < 0.04f, "Barrage did not return to Idle when the last motion ended");
@@ -588,12 +621,12 @@ public static class VerifyBoss23Rework
 
             float retreat = -r.Root.transform.position.x * direction;
             Check(wall ? Mathf.Abs(retreat) < 0.02f : retreat > 1.2f && retreat <= 1.51f, "Blocked retreat or preferred distance rule failed");
-            if (!wall) Check(hoverSeen && exhaustSeen && hoverMax - hoverMin > 0.1f, "Moving salvo hover or exhaust was not visible");
+            Check(hoverSeen && exhaustSeen && hoverMax - hoverMin > 0.1f, "Firing salvo hover or exhaust was not visible");
             Check(ReadFloat(visualModule, "_salvoHoverBlend") < 0.01f, "Hover did not settle after movement ended");
             return new { pattern = "Barrage", enhanced, wall, direction, shots = r.Shots.Count, firstShot = events[0].time - start,
                 interval, idleAt, recoveryAt, retreat, directionLocked = true, damagePerShot = 10f,
                 flashes, launchers, hoverSeen, exhaustSeen, maxVerticalJitter = verticalOffsets.Max(y => Mathf.Abs(y)),
-                hoverRange = wall ? null : new[] { hoverMin, hoverMax } };
+                hoverRange = new[] { hoverMin, hoverMax } };
         }
         finally { if (blocker != null) Object.DestroyImmediate(blocker); }
     }
@@ -1219,6 +1252,87 @@ public static class VerifyBoss23Rework
             groggyDuration = duration, fallStartSpeed = fallSamples.First(), fallEndSpeed = fallSamples.Last(),
             shakePeak, receivedShakePeak, particleCount, yellow, orange, gettingUpDuration, afterGroggyPause,
             resumed = r.Skills.ActiveSkill.GetType().Name };
+    }
+
+    private static async Task<object> SalvoAudit(Rig r, bool enhanced, float direction, bool delay, bool requireFixed)
+    {
+        r.Prepare(false, direction * 1.5f);
+        var visual = r.Root.transform.Find("Visual");
+        var module = r.Root.GetComponentInChildren<DroneVisualModule>();
+        var muzzle = (Transform)new SerializedObject(r.Barrage).FindProperty("muzzle").objectReferenceValue;
+        var perVolley = new List<int>();
+        var perFrame = new Dictionary<int, int>();
+        float originDeviation = 0f, minBlend = 1f;
+        float minHover = float.PositiveInfinity, maxHover = float.NegativeInfinity;
+        int previousShots = 0;
+        bool crossed = false, delayed = false;
+        float frozenX = float.NaN;
+        Action<EnemyAttackSkill, Vector3> handler = (skill, origin) =>
+        {
+            if (skill != r.Barrage) return;
+            int spawned = r.Shots.Count - previousShots;
+            previousShots = r.Shots.Count;
+            perVolley.Add(spawned);
+            int frame = Time.frameCount;
+            perFrame[frame] = perFrame.GetValueOrDefault(frame) + spawned;
+            originDeviation = Mathf.Max(originDeviation, Vector3.Distance(origin, muzzle.position));
+        };
+        var attack = typeof(EnemyAttackSkill).GetEvent("AttackPerformed", Private);
+        attack.GetAddMethod(true).Invoke(r.Barrage, new object[] { handler });
+        try
+        {
+            Check(r.Skills.TryUseSpecifiedSkill(r.Barrage), "Salvo audit did not start");
+            await Until(() =>
+            {
+                if (!crossed && r.Barrage.FiredVolleys >= 2)
+                {
+                    r.Player.transform.position = r.Root.transform.position - Vector3.right * direction * 3f;
+                    crossed = true;
+                }
+                if (delay && !delayed && r.Barrage.FiredVolleys >= 2)
+                {
+                    typeof(DroneSalvoSkill).GetField("_startedAt", Private).SetValue(r.Barrage, ReadFloat(r.Barrage, "_startedAt") - 0.5f);
+                    var next = typeof(DroneSalvoSkill).GetField("_nextVolleyAt", Private);
+                    if (next != null) next.SetValue(r.Barrage, Time.time - 0.5f);
+                    delayed = true;
+                }
+                if (crossed && (bool)Read(r.Barrage, "_movementLocked"))
+                {
+                    if (float.IsNaN(frozenX)) frozenX = r.Root.transform.position.x;
+                    Check(Mathf.Abs(r.Root.transform.position.x - frozenX) < 0.01f, "Salvo resumed horizontal motion behind target");
+                    if (r.Barrage.IsUsing && r.Barrage.FiredVolleys >= 5 && !r.Barrage.IsRecovering)
+                    {
+                        minBlend = Mathf.Min(minBlend, ReadFloat(module, "_salvoHoverBlend"));
+                        float offset = visual.position.y - r.Root.transform.position.y;
+                        minHover = Mathf.Min(minHover, offset);
+                        maxHover = Mathf.Max(maxHover, offset);
+                    }
+                }
+                Check(visual.localScale.x * direction > 0f && Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.02f,
+                    "Salvo facing or physics height changed");
+                return !r.Barrage.IsUsing;
+            }, 6f, "Salvo audit stalled");
+
+            int each = enhanced ? 3 : 1;
+            Check(perVolley.Count == (enhanced ? 12 : 7) && perVolley.All(n => n == each) &&
+                r.Shots.Count == (enhanced ? 36 : 7), "Wrong per-volley or total projectile count");
+            if (enhanced)
+                for (int i = 0; i < 12; i++)
+                    Check(r.Shots.Skip(i * 3).Take(3).Select(s => Mathf.RoundToInt(Mathf.Atan2(s.direction.y, Mathf.Abs(s.direction.x)) * Mathf.Rad2Deg))
+                        .OrderBy(n => n).SequenceEqual(new[] { 0, 12, 24 }), "A volley did not fire once into each lane");
+            float hoverRange = maxHover - minHover;
+            if (requireFixed)
+            {
+                Check(perFrame.Values.Max() == each, "Delayed salvo stacked multiple volleys in one frame");
+                Check(!enhanced || originDeviation < 0.001f, "Enhanced salvo still alternated projectile origins");
+                Check(minBlend > 0.95f && hoverRange > 0.1f, "Stationary salvo lost its hover after target crossed behind: blend=" + minBlend + ", range=" + hoverRange);
+            }
+            return new { enhanced, direction, delayed, volleys = perVolley.Count, projectilesPerVolley = perVolley.ToArray(),
+                totalProjectiles = r.Shots.Count, maxProjectilesPerFrame = perFrame.Values.Max(),
+                maxOriginDeviationFromFront = originDeviation, minHoverBlendAfterCrossing = minBlend, hoverRangeAfterCrossing = hoverRange,
+                fixedHorizontalPosition = frozenX, lockedFacing = true };
+        }
+        finally { attack.GetRemoveMethod(true).Invoke(r.Barrage, new object[] { handler }); }
     }
 
     private static async Task<object> BombImpactSound(Rig r, SoundManager manager, bool enhanced)

@@ -71,7 +71,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         internal LayerMask TerrainLayers => terrainLayers;
         internal BossArenaModule Arena => _arena;
         internal bool IsMoving => (_state == State.EntryFall && !_entryLanded) || (Flight != null && Flight.IsMoving);
-        internal bool IsSalvoMoving => IsMoving && rapidFire != null && rapidFire.IsUsing &&
+        internal bool IsSalvoFiring => rapidFire != null && rapidFire.IsUsing &&
             !rapidFire.IsRecovering && rapidFire.DidFire;
         internal Bounds ContactBounds => new Bounds((Vector2)transform.position + _bodyOffset, _bodySize);
         private Vector2 Home => new Vector2(_arena.Center.x, FloorY + lowAltitude);

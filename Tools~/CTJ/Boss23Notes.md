@@ -1,5 +1,7 @@
 # Enemy23 공정 통제 드론
 
+연사 중첩·정지 호버링: **[Boss23SalvoHoverNotes.md](Boss23SalvoHoverNotes.md)** (2026-11-25, 지연 시 회차 중첩 방지·강화 기준 발사점 통일·뒤로 넘어가도 호버링 유지).
+
 표적 포격 폭발음: [Boss23BombSoundNotes.md](Boss23BombSoundNotes.md) (2026-11-25, PlazmaBoom 착탄음 연결).
 
 후면 스파크·그로기 회복·중앙 복귀: **[Boss23RecoveryNotes.md](Boss23RecoveryNotes.md)** (2026-11-25, 번호 주변 발광 스파크·웅크린 자세·회복 후 휴식·복귀 중 스킬 실행).

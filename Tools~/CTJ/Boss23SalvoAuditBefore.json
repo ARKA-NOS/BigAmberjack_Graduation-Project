@@ -1,0 +1,59 @@
+{
+  "result": {
+    "results": [
+      {
+        "enhanced": false,
+        "direction": 1,
+        "delayed": false,
+        "volleys": 7,
+        "projectilesPerVolley": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "totalProjectiles": 7,
+        "maxProjectilesPerFrame": 1,
+        "maxOriginDeviationFromFront": 1.7788918,
+        "minHoverBlendAfterCrossing": 0,
+        "hoverRangeAfterCrossing": 0,
+        "fixedHorizontalPosition": -0.5519997,
+        "lockedFacing": true
+      },
+      {
+        "enhanced": true,
+        "direction": 1,
+        "delayed": true,
+        "volleys": 12,
+        "projectilesPerVolley": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "totalProjectiles": 36,
+        "maxProjectilesPerFrame": 9,
+        "maxOriginDeviationFromFront": 1.764643,
+        "minHoverBlendAfterCrossing": 0,
+        "hoverRangeAfterCrossing": 0.108279943,
+        "fixedHorizontalPosition": -0.170666561,
+        "lockedFacing": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 2616,
+  "executeMs": 4818,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_8c928f3fae5547f7b1fc6471ae87ffb0"
+}

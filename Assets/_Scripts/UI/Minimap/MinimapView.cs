@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 namespace _Scripts.UI.Minimap
 {
-    // 현재 방의 지형과 플레이어/적/상자/NPC 아이콘을 그린다.
+    // 현재 공간의 지형과 플레이어/적/상자/NPC 아이콘을 그린다.
     // 같은 ViewModel 에셋을 연결한 View 두 개를 두고, 하나는 FollowPlayer(오른쪽 아래 작은 맵), 하나는 FitRoom(전체 맵)으로 쓴다.
     // 꺼져 있다가 켜지면(작은 맵 ↔ 전체 맵 전환) 구독하는 순간 현재 값으로 다시 그린다.
     //
-    // 보여줄 방이 없으면(보스전 등) 배경까지 포함한 Visual Root 전체를 숨긴다.
+    // 보여줄 지형이 없으면(맵 생성 중 등) 배경까지 포함한 Visual Root 전체를 숨긴다.
     //
     // 계층 구조
     //   Minimap (이 컴포넌트)

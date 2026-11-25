@@ -1,23 +1,46 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 namespace _Scripts.UI.Minimap
 {
-    // 방의 지형을 미니맵용 텍스처 한 장으로 굽는다.
-    // 장식 타일은 빼고, 플레이어가 밟거나 막히는 타일(TilemapCollider2D가 붙은 타일맵)만 칠한다.
+    // 타일맵들의 지형을 미니맵용 픽셀 배열로 칠한다. 어떤 타일맵을 칠할지는 IMinimapSource가 고른다.
     public static class MinimapTerrainBaker
     {
-        public static Texture2D Bake(Transform room, Rect worldRect, int pixelsPerUnit, Color32 terrainColor)
+        // 타일이 있는 칸을 모두 감싸는 월드 범위. 타일이 하나도 없으면 false.
+        public static bool TryGetWorldRect(IReadOnlyList<Tilemap> tilemaps, out Rect worldRect)
         {
-            int width = Mathf.Max(1, Mathf.CeilToInt(worldRect.width * pixelsPerUnit));
-            int height = Mathf.Max(1, Mathf.CeilToInt(worldRect.height * pixelsPerUnit));
-            Color32[] pixels = new Color32[width * height];
+            Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
+            Vector2 max = new Vector2(float.MinValue, float.MinValue);
+            bool hasTile = false;
 
-            foreach (Tilemap tilemap in room.GetComponentsInChildren<Tilemap>(true))
+            foreach (Tilemap tilemap in tilemaps)
             {
-                if (!tilemap.TryGetComponent(out TilemapCollider2D _))
+                tilemap.CompressBounds();
+                BoundsInt cells = tilemap.cellBounds;
+
+                if (cells.size.x <= 0 || cells.size.y <= 0)
                     continue;
 
+                Vector2 a = tilemap.CellToWorld(cells.min);
+                Vector2 b = tilemap.CellToWorld(cells.max);
+                min = Vector2.Min(min, Vector2.Min(a, b));
+                max = Vector2.Max(max, Vector2.Max(a, b));
+                hasTile = true;
+            }
+
+            worldRect = hasTile ? Rect.MinMaxRect(min.x, min.y, max.x, max.y) : default;
+            return hasTile;
+        }
+
+        // 아래 줄부터 x 순서인 width * height 배열. 타일이 없는 곳은 투명하다.
+        public static Color32[] Paint(IReadOnlyList<Tilemap> tilemaps, Rect worldRect, int width, int height,
+            int pixelsPerUnit, Color32 terrainColor)
+        {
+            Color32[] pixels = new Color32[width * height];
+
+            foreach (Tilemap tilemap in tilemaps)
+            {
                 foreach (Vector3Int cell in tilemap.cellBounds.allPositionsWithin)
                 {
                     if (!tilemap.HasTile(cell))
@@ -29,16 +52,7 @@ namespace _Scripts.UI.Minimap
                 }
             }
 
-            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
-            {
-                name = $"{room.name}_Minimap",
-                filterMode = FilterMode.Point,
-                wrapMode = TextureWrapMode.Clamp
-            };
-            texture.SetPixels32(pixels);
-            texture.Apply(false, true);
-
-            return texture;
+            return pixels;
         }
 
         private static void FillRect(Color32[] pixels, int width, int height, Vector2 min, Vector2 max, Color32 color)

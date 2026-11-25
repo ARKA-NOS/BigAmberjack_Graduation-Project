@@ -53,10 +53,6 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
         private void ClearGeneratedMap()
         {
             if(_currentMap == null) return;
-            Transform trm = _currentMap.transform;
-            int count = trm.childCount;
-            for(int i = 0; i < count; i++)
-                Destroy(trm.GetChild(0).gameObject);
             Destroy(_currentMap.gameObject);
         }
         

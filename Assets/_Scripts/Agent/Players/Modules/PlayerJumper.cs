@@ -1,5 +1,7 @@
 ﻿using _Scripts._Core._Debug;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.StatSystem;
+using _Scripts.Audio;
 using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -10,12 +12,15 @@ namespace _Scripts.Agent.Players.Modules
         //[SerializeField] private float jumpFor;//12
         [SerializeField] private StatData jumpPowerStatData;
 
+        [SerializeField] private SoundCueSO jumpSoundCue;
+
         [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.5f;
         [SerializeField, Range(0f, 1f)] private float jumpMinPower = 2f;
         [field: SerializeField]
         public float CoyoteTime { get; private set; } = 0.08f;
 
         public bool IsJumpFall { get; set; }
+        private ISoundManager _soundManger;
 
         private Rigidbody2D _playerRb;
         private IStatModule _statModule;
@@ -38,6 +43,9 @@ namespace _Scripts.Agent.Players.Modules
 
             _groundChecker = owner.GetModule<IGroundChecker>();
             FDebug.Assert(_groundChecker != null, "GroundChecker가 없습니다");
+
+            _soundManger = ServiceLocator.Get<ISoundManager>();
+            FDebug.Assert(_soundManger != null, "사운드 매니저를 찾지 못하였습니다.");
         }
 
         private void FixedUpdate()
@@ -63,7 +71,7 @@ namespace _Scripts.Agent.Players.Modules
         {
             if (_playerRb == null)
                 return;
-
+            _soundManger.PlaySfx(jumpSoundCue, transform.position);
             _coyoteConsumed = true;
             _playerRb.linearVelocityY = 0f;
             _playerRb.AddForceY(_jumpPowerStat.Value, ForceMode2D.Impulse);

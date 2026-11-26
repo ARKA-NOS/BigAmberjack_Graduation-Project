@@ -24,10 +24,17 @@ namespace _Scripts.UI.UpgradeUI
 
         private UpgradeTreeViewModel _viewModel;
         private UpgradeNodeView[] _nodeViews;
+        // 창이 HUD 위에 그려지므로, 닫혀 있는 동안에는 클릭을 가로채지 않게 한다.
+        private CanvasGroup _raycastGroup;
+
+        public bool IsOpen { get; private set; }
 
         protected override void Awake()
         {
             base.Awake();
+
+            _raycastGroup = GetComponent<CanvasGroup>();
+            _raycastGroup.blocksRaycasts = false;
 
             _viewModel = ViewModelBase.CreateRuntime<UpgradeTreeViewModel>();
             _nodeViews = GetComponentsInChildren<UpgradeNodeView>(true);
@@ -49,6 +56,8 @@ namespace _Scripts.UI.UpgradeUI
         public override void Open(object data)
         {
             base.Open(data);
+            _raycastGroup.blocksRaycasts = true;
+            IsOpen = true;
 
             if (data is not UpgradeTreeSO treeSo)
             {
@@ -65,6 +74,8 @@ namespace _Scripts.UI.UpgradeUI
 
             ServiceLocator.Get<IPlayerController>().SetInputActive(false);
             _viewModel.Connect(tree);
+            // 이전의 임시 선택은 버린다. 닫을 때 지우면 페이드아웃 중에 화면이 바뀌므로 열 때 지운다.
+            _viewModel.DiscardPending();
 
             if (lineView != null)
             {
@@ -80,6 +91,8 @@ namespace _Scripts.UI.UpgradeUI
         public override void Close()
         {
             base.Close();
+            IsOpen = false;
+            _raycastGroup.blocksRaycasts = false;
             ServiceLocator.Get<IPlayerController>().SetInputActive(true);
         }
     }

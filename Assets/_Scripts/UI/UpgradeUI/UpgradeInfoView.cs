@@ -1,3 +1,4 @@
+using System.Linq;
 using _Scripts.UI.MVVM.Disposables;
 using _Scripts.UI.MVVM.Views;
 using _Scripts.Upgrade.SO;
@@ -7,12 +8,14 @@ using UnityEngine.UI;
 
 namespace _Scripts.UI.UpgradeUI
 {
-    // 선택한(마우스를 올리거나 클릭한) 노드의 아이콘과 설명을 보여준다.
+    // 선택한(마우스를 올리거나 클릭한) 노드의 아이콘, 이름·비용, 설명을 보여준다.
     // ViewModel은 UpgradeTreeWindow가 SetViewModel로 넣는다.
     public class UpgradeInfoView : ViewBase<UpgradeTreeViewModel>
     {
         [SerializeField] private Image iconImage;
         [SerializeField] private TMP_Text descriptionText;
+        [Tooltip("노드 이름과 비용을 보여줄 글자. 없으면 비워 둔다.")]
+        [SerializeField] private TMP_Text nameText;
 
         protected override void OnBind(UpgradeTreeViewModel vm)
         {
@@ -25,6 +28,13 @@ namespace _Scripts.UI.UpgradeUI
             iconImage.sprite = icon;
             iconImage.enabled = icon != null; // 선택 전에는 스프라이트가 없어 흰 사각형으로 보이므로 숨긴다.
             descriptionText.text = node != null ? node.NodeDescription : string.Empty;
+            if (nameText != null) nameText.text = node != null ? FormatName(node) : string.Empty;
+        }
+
+        private static string FormatName(UpgradeNodeSO node)
+        {
+            if (node.UpgradeCost == null || node.UpgradeCost.Length == 0) return node.NodeName;
+            return $"{node.NodeName}  ·  비용 {string.Join(" / ", node.UpgradeCost.Select(cost => cost.Amount))}";
         }
     }
 }

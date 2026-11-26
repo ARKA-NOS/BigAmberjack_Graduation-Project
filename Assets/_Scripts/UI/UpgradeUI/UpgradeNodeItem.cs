@@ -13,15 +13,15 @@ namespace _Scripts.UI.UpgradeUI
         // 정보 패널에 이 노드를 보여준다(마우스를 올렸을 때).
         public Action Select { get; }
 
-        // 구매를 시도한다(클릭했을 때). 정보 패널에도 이 노드가 표시된다.
-        public Action Purchase { get; }
+        // 임시 선택을 켜고 끈다(클릭했을 때). 정보 패널에도 이 노드가 표시된다.
+        public Action Toggle { get; }
 
-        public UpgradeNodeItem(UpgradeNodeSO node, IReadOnlyObservable<UpgradeNodeState> state, Action select, Action purchase)
+        public UpgradeNodeItem(UpgradeNodeSO node, IReadOnlyObservable<UpgradeNodeState> state, Action select, Action toggle)
         {
             Node = node;
             State = state;
             Select = select;
-            Purchase = purchase;
+            Toggle = toggle;
         }
     }
 }

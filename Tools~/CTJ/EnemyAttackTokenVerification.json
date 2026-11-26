@@ -1,0 +1,37 @@
+{
+  "result": {
+    "results": [
+      {
+        "test": "CapacityAndFifo",
+        "maxActive": 2,
+        "fifo": true
+      },
+      {
+        "test": "TimeoutAndRetry",
+        "timeout": 2.00210285,
+        "retryDelay": 0.5,
+        "duplicateRequests": false
+      },
+      {
+        "test": "RangeSightLossAndQueuedDeath",
+        "passed": true
+      },
+      {
+        "test": "HolderDeath",
+        "passed": true
+      },
+      {
+        "test": "HoldThroughRecovery",
+        "passed": true
+      },
+      {
+        "test": "PausedQueueAndManagerShutdown",
+        "passed": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 1599,
+  "executeMs": 4632,
+  "assemblyName": "PipelineRunScript_VerifyEnemyCombatCoordination_2a7fc124b5214a3cb4d52377b6937099"
+}

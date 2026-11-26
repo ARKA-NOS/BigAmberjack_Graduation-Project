@@ -218,6 +218,7 @@ namespace _Scripts.Agent.Enemies.Skills
             HasReleased = false;
             _isRecovering = false;
             CastTarget = null;
+            Enemy?.GetModule<EnemySkillModule>()?.NotifyAttackEnded(this);
         }
 
         protected virtual void OnDisable() => StopSkill();

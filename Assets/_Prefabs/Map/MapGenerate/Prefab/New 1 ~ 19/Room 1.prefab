@@ -1556,37 +1556,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapSettingAsset.RoomLink
   <Direction>k__BackingField: 0
   <LinkSize>k__BackingField: 2
---- !u!1 &4174462726503220315
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5809272979283016926}
-  m_Layer: 0
-  m_Name: Player Spawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5809272979283016926
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4174462726503220315}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1786742882269143830}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4659880778483674706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,7 +1592,6 @@ Transform:
   - {fileID: 4553962473977581100}
   - {fileID: 870544632107207470}
   - {fileID: 6639192533379377699}
-  - {fileID: 5809272979283016926}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1839735485 &3287888562457716963
@@ -3677,4 +3645,5 @@ MonoBehaviour:
   tilemap: {fileID: 3287888562457716963}
   links:
   - {fileID: 8798201847392461377}
-  playerSpawnPoint: {fileID: 5809272979283016926}
+  - {fileID: 8798201847392461377}
+  playerSpawnPoint: {fileID: 0}

@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4180317776579564109}
   - component: {fileID: 3280350746728218047}
   - component: {fileID: 7208125848253188722}
-  - component: {fileID: 6144919931887708876}
-  - component: {fileID: 6201305970403873925}
+  - component: {fileID: 8968531712667359456}
+  - component: {fileID: 1307262729515358401}
   m_Layer: 6
   m_Name: MapWallFiller
   m_TagString: Untagged
@@ -181,7 +181,7 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!66 &6144919931887708876
+--- !u!66 &8968531712667359456
 CompositeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,7 +228,7 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 3893898036940149895}
---- !u!50 &6201305970403873925
+--- !u!50 &1307262729515358401
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0

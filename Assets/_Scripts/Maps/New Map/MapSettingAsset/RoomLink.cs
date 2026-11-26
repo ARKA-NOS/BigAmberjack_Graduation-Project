@@ -7,16 +7,7 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
     {
         [field:SerializeField] public DirEnum Direction { get; private set; }
         [field:SerializeField] public int LinkSize { get; private set; }
-        
-        // 연결되지 않았을 때 켜서 통로를 막는 벽(타일맵 자식 등)
-        [SerializeField] private GameObject sealObject;
-        
-        public void SetConnected(bool connected)
-        {
-            if (sealObject != null)
-                sealObject.SetActive(!connected);
-        }
-        
+
         private void OnDrawGizmos()
         {
             for (int i = -LinkSize; i <= LinkSize; i++)
@@ -35,14 +26,13 @@ namespace _Scripts.Maps.New_Map.MapSettingAsset
             Gizmos.DrawWireCube(pos, Vector3.one);
         }
         
-        private void DrawLineGizmo(Vector3 start, Vector3 end)
+        private void DrawLineGizmo(Vector3 start, Vector3 end, float arrowSize = 0.05f)
         {
             Vector3 dir = end - start;
             Vector3 normalDir = dir.normalized;
             Vector3 arrowStart = end - normalDir * 0.25f;
             Vector3 arrowEnd = end - normalDir * 0.15f;
             
-            const float arrowSize = 0.05f;
             Vector3 triPointA = arrowStart + Quaternion.Euler(0, 0, -90) * normalDir * arrowSize;
             Vector3 triPointB = arrowStart + Quaternion.Euler(0, 0, 90) * normalDir * arrowSize;
             

@@ -3,7 +3,7 @@
     "results": [
       {
         "test": "HitStopOverlap",
-        "elapsed": 0.214931488,
+        "elapsed": 0.221694946,
         "restored": 1
       },
       {
@@ -20,6 +20,7 @@
       },
       {
         "test": "PlayerDamageOnly",
+        "moduleStopTimeScale": 0.12,
         "passed": true
       },
       {
@@ -33,7 +34,7 @@
     ]
   },
   "diagnostics": [],
-  "compileMs": 92,
-  "executeMs": 1090,
-  "assemblyName": "PipelineRunScript_VerifyEnemyCombatCoordination_7251f9a3ea544b2fbc7f279f920ab27a"
+  "compileMs": 195,
+  "executeMs": 1127,
+  "assemblyName": "PipelineRunScript_VerifyEnemyCombatCoordination_2d0a8aee11df487cbf22c3d0ee552211"
 }

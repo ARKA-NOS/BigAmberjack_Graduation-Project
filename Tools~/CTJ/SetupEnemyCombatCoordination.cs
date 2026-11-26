@@ -10,6 +10,23 @@ public static class SetupEnemyCombatCoordination
     private const string ManagerPath = "Assets/_Prefabs/Manager/GameManager.prefab";
     private const string Modules = "Assets/_Prefabs/Enemies/Modules/";
 
+    public static object UpdateTimeFreezeScalePrefab()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Use Edit Mode");
+
+        string path = Modules + "TimeFreezeModule.prefab";
+        GameObject root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var data = new SerializedObject(root.GetComponent<TimeFreezeModule>());
+            data.FindProperty("stopTimeScale").floatValue = 0.05f;
+            data.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            return new { path, duration = data.FindProperty("freezeDuration").floatValue, stopTimeScale = 0.05f };
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
     public static object Run()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Use Edit Mode");

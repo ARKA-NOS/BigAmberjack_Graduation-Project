@@ -10,7 +10,11 @@ namespace _Scripts.Agent.Enemies.Managers
     [DefaultExecutionOrder(-15), DisallowMultipleComponent]
     public sealed class TimeStopService : AbstractManager
     {
-        [SerializeField, Range(0f, 1f)] private float stopTimeScale = 0.05f;
+        private struct HitStop
+        {
+            public float EndTime;
+            public float Scale;
+        }
 
         private sealed class SlowMotion
         {
@@ -20,14 +24,23 @@ namespace _Scripts.Agent.Enemies.Managers
 
         private readonly HashSet<object> _pauseOwners = new HashSet<object>();
         private readonly List<SlowMotion> _slowMotions = new List<SlowMotion>();
+        private readonly List<HitStop> _hitStops = new List<HitStop>();
         private float _baseTimeScale = 1f;
-        private float _endTime;
         private float _lastAppliedScale = 1f;
         private float _lastUnscaledTime;
         private bool _externalPause;
         private bool _subscribed;
 
-        public bool IsStopped => Time.unscaledTime < _endTime;
+        public bool IsStopped
+        {
+            get
+            {
+                foreach (HitStop request in _hitStops)
+                    if (Time.unscaledTime < request.EndTime) return true;
+
+                return false;
+            }
+        }
         public bool IsPaused => _pauseOwners.Count > 0 || _externalPause;
         public float BaseTimeScale => _baseTimeScale;
         private bool IsRegistered => ServiceLocator.Get<TimeStopService>() == this;
@@ -54,14 +67,29 @@ namespace _Scripts.Agent.Enemies.Managers
             _subscribed = true;
         }
 
-        private void HandleHitStop(HitStopEvent evt) => RequestHitStop(evt.Duration);
+        private void HandleHitStop(HitStopEvent evt) => RequestHitStop(evt.Duration, evt.StopTimeScale);
 
-        public void RequestHitStop(float duration)
+        public void RequestHitStop(float duration, float stopTimeScale = 0.05f)
         {
-            if (!IsRegistered || !Valid(duration) || duration <= 0f) return;
+            if (!IsRegistered || !Valid(duration) || duration <= 0f || !Valid(stopTimeScale)) return;
 
-            // 중첩 요청은 먼저 들어온 종료 시간을 줄이지 않습니다.
-            _endTime = Mathf.Max(_endTime, Time.unscaledTime + duration);
+            float endTime = Time.unscaledTime + duration;
+            float scale = Mathf.Clamp01(stopTimeScale);
+
+            // 같은 배율만 종료 시각을 합칩니다. 다른 배율은 각자의 시점에 만료됩니다.
+            for (int i = 0; i < _hitStops.Count; i++)
+            {
+                HitStop request = _hitStops[i];
+                if (request.Scale != scale) continue;
+
+                request.EndTime = Mathf.Max(request.EndTime, endTime);
+                _hitStops[i] = request;
+                RefreshScale();
+
+                return;
+            }
+
+            _hitStops.Add(new HitStop { EndTime = endTime, Scale = scale });
             RefreshScale();
         }
 
@@ -112,6 +140,9 @@ namespace _Scripts.Agent.Enemies.Managers
             float delta = Mathf.Max(0f, Time.unscaledTime - _lastUnscaledTime);
             _lastUnscaledTime = Time.unscaledTime;
 
+            for (int i = _hitStops.Count - 1; i >= 0; i--)
+                if (Time.unscaledTime >= _hitStops[i].EndTime) _hitStops.RemoveAt(i);
+
             // 기존 보스 사망 슬로우의 유지·복귀 시간은 일시정지 중에 소비하지 않습니다.
             if (!IsPaused && _baseTimeScale > 0f)
                 for (int i = _slowMotions.Count - 1; i >= 0; i--)
@@ -141,7 +172,9 @@ namespace _Scripts.Agent.Enemies.Managers
                 scale = Mathf.Min(scale, _baseTimeScale * multiplier);
             }
 
-            if (IsStopped) scale = Mathf.Min(scale, stopTimeScale);
+            foreach (HitStop request in _hitStops)
+                if (Time.unscaledTime < request.EndTime) scale = Mathf.Min(scale, request.Scale);
+
             if (_pauseOwners.Count > 0) scale = 0f;
             ApplyScale(scale);
         }
@@ -172,7 +205,7 @@ namespace _Scripts.Agent.Enemies.Managers
             if (!IsRegistered) return;
 
             ObserveExternalPause();
-            _endTime = 0f;
+            _hitStops.Clear();
             _slowMotions.Clear();
             _pauseOwners.Clear();
             if (!_externalPause) ApplyScale(_baseTimeScale);

@@ -13,6 +13,12 @@ TimeStopService timeService = ServiceLocator.Get<TimeStopService>();
 
 GameManager가 없는 씬에서는 서비스가 null일 수 있다. 해당 씬에도 GameManager를 연결하거나 누락 오류를 안내한다. null일 때 직접 Time.timeScale을 바꾸는 대체 코드를 만들면 쓰기 지점이 다시 분산된다.
 
+## 적 피격 정지의 조절 위치
+
+각 적 프리팹의 `TimeFreezeModule`에서 **Freeze Duration**(실시간 지속 시간)과 **Stop Time Scale**(정지 중의 절대 시간 배율)을 모두 정한다. 기본값은 0.05초·0.05배다. 0배는 완전 정지다. 공용 모듈 프리팹은 `Assets/_Prefabs/Enemies/Modules/TimeFreezeModule.prefab`이며, 특정 적만 다르게 하려면 해당 적의 자식 모듈 값을 오버라이드한다.
+
+TimeStopService는 전달받은 값을 적용·복구한다. 서비스 인스펙터에서 적의 정지 배율을 정하지 않는다. `TimeFreezeModule`은 실제 플레이어 피해 이벤트에 이미 연결되어 있으므로 같은 피격에 추가 호출할 필요가 없다.
+
 | 파일 | 기존 직접 쓰기 | 바꿀 요청 |
 | --- | --- | --- |
 | `Assets/_Scripts/UI/UI_System/PausingWindow.cs` | Freeze의 0배, Unfreeze의 이전 배율 복구 | `SetPaused(this, true/false)` |
@@ -81,11 +87,11 @@ if (timeService != null)
 ## 다른 연출에서 요청할 때
 
 ```csharp
-// 샘플 코드의 HitStopEvent에 해당합니다. Duration은 실시간입니다.
-EventBus<HitStopEvent>.Raise(new HitStopEvent(0.05f));
+// 실시간 0.08초 동안 절대 0.1배속을 요청합니다.
+EventBus<HitStopEvent>.Raise(new HitStopEvent(0.08f, 0.1f));
 
 // 직접 서비스에 요청해도 같습니다.
-timeService.RequestHitStop(0.05f);
+timeService.RequestHitStop(duration: 0.08f, stopTimeScale: 0.1f);
 
 // 보스 사망처럼 유지 후 부드럽게 복귀하는 슬로우.
 timeService.RequestSlowMotion(this, 0.2f, 0.25f, 0.2f);
@@ -93,6 +99,10 @@ timeService.RequestSlowMotion(this, 0.2f, 0.25f, 0.2f);
 timeService.CancelSlowMotion(this);
 ```
 
-이벤트 방식을 사용할 파일은 `using _Scripts._Core._EventSystem;`도 추가한다. TimeFreezeModule은 이미 이 이벤트를 요청하고, EnemyDeathSlowMotionModule도 서비스 요청으로 이관했다. 서비스는 일시정지·피격 정지·사망 슬로우를 조합해 적용하고 비활성화 시 정리한다. `Time.fixedDeltaTime`은 변경하지 않는다.
+이벤트 방식을 사용할 파일은 `using _Scripts._Core._EventSystem;`도 추가한다. 두 번째 인자를 생략하는 기존 호출(`RequestHitStop(0.08f)`, `new HitStopEvent(0.08f)`)은 0.05배속을 사용한다. 원하는 연출 배율이 있으면 두 인자를 명시한다.
+
+다른 배율의 요청이 겹치면 살아 있는 요청 중 가장 느린 배율을 적용하고, 각자의 실시간 종료 시각에 만료한다. 0.05배 요청이 먼저 끝나고 0.3배 요청이 남으면 0.3배로 돌아간다. 동일 배율끼리는 더 늦은 종료 시각까지 연장하며, 지속 시간을 합산하지 않는다.
+
+TimeFreezeModule은 이미 이 이벤트를 요청하고, EnemyDeathSlowMotionModule도 서비스 요청으로 이관했다. 서비스는 일시정지·피격 정지·사망 슬로우를 조합해 적용하고 비활성화 시 정리한다. `Time.fixedDeltaTime`은 변경하지 않는다.
 
 이관 전에는 기존 UI가 직접 설정한 0배 정지를 서비스가 덮어쓰지 않도록 감지한다. 하지만 서비스의 0배 피격 정지와 외부 코드의 0배 일시정지가 같은 순간 겹치는 경우 등은 값만으로 서로 구분할 수 없다. 위 소유권 API로 이관해야 모든 중첩을 정확하게 처리할 수 있다.

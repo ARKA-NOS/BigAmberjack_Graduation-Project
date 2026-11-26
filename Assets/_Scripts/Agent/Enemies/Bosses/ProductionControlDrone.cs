@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using _Scripts.Agent.Enemies.Skills;
 using _Scripts.DevLib.BattleSystem;
 using UnityEngine;
@@ -44,7 +43,6 @@ namespace _Scripts.Agent.Enemies.Bosses
         [SerializeField] private LayerMask terrainLayers = (1 << 6) | (1 << 10);
 
         private readonly RaycastHit2D[] _terrainHits = new RaycastHit2D[16];
-        private readonly List<EnemyAttackSkill> _candidates = new List<EnemyAttackSkill>(3);
         private BossArenaModule _arena;
         private DroneLastStandFeedbackModule _lastStandFeedback;
         private State _state;
@@ -53,6 +51,8 @@ namespace _Scripts.Agent.Enemies.Bosses
         private bool _lastStandEntryPending;
         private bool _entryLaserActive;
         private bool _airPatternIsBomb;
+        private int _groundPatternIndex;
+        private bool _nextAirPatternIsBomb;
         private bool _resumeAirAfterRecovery;
         private float _recoverUntil;
         private float _nextNavigationAt;
@@ -238,49 +238,47 @@ namespace _Scripts.Agent.Enemies.Bosses
 
         private void ChooseGroundPattern()
         {
-            _candidates.Clear();
+            EnemyAttackSkill selected = _groundPatternIndex switch
+            {
+                0 => charge,
+                1 => rapidFire,
+                _ => airTransition
+            };
 
-            if (Ready(charge)) _candidates.Add(charge);
-            if (Ready(rapidFire)) _candidates.Add(rapidFire);
-            if (Ready(airTransition) && AirAttackReadyAtDestination(false)) _candidates.Add(airTransition);
-
-            if (_candidates.Count > 0) StartGround(_candidates[Random.Range(0, _candidates.Count)]);
+            // 지정된 차례가 준비될 때까지 기다려 순서를 건너뛰지 않습니다.
+            if (Ready(selected) && (selected != airTransition || AirAttackReadyAtDestination())) StartGround(selected);
             else Reposition();
         }
 
         private bool Ready(EnemyAttackSkill skill) =>
             skill != null && Skills.IsSkillEnabled(skill) && Skills.CanUseSkill(skill.SkillSo);
 
-        private bool AirAttackReadyAtDestination(bool entry)
+        private bool AirAttackReadyAtDestination()
         {
             if (!TryPlanAirTransition(out Vector2 point)) return false;
-            if (laser != null && Skills.IsSkillEnabled(laser) && laser.RemainingCoolTime <= 0f && laser.CanPlanFrom(point)) return true;
 
-            return !entry && bomb != null && Skills.IsSkillEnabled(bomb) && bomb.RemainingCoolTime <= 0f &&
-                bomb.CanPlanFrom(point, Target);
+            if (_nextAirPatternIsBomb)
+                return bomb != null && Skills.IsSkillEnabled(bomb) && bomb.RemainingCoolTime <= 0f && bomb.CanPlanFrom(point, Target);
+
+            return laser != null && Skills.IsSkillEnabled(laser) && laser.RemainingCoolTime <= 0f && laser.CanPlanFrom(point);
         }
 
         private void StartGround(EnemyAttackSkill skill)
         {
             if (!Skills.TryUseSpecifiedSkill(skill) || !Skills.IsBusy) return;
 
+            _groundPatternIndex = (_groundPatternIndex + 1) % 3;
             Change(skill == airTransition ? State.Ascending : State.GroundAttack);
         }
 
         private void ChooseAirPattern()
         {
-            _candidates.Clear();
-
-            if (Ready(laser)) _candidates.Add(laser);
-            if (!_lastStandEntryPending && Ready(bomb)) _candidates.Add(bomb);
-
-            if (_candidates.Count == 0) return;
-
-            var selected = _candidates[Random.Range(0, _candidates.Count)];
-            if (!Skills.TryUseSpecifiedSkill(selected) || !Skills.IsBusy) return;
+            EnemyAttackSkill selected = _nextAirPatternIsBomb ? bomb : laser;
+            if (!Ready(selected) || !Skills.TryUseSpecifiedSkill(selected) || !Skills.IsBusy) return;
 
             _entryLaserActive = _lastStandEntryPending && selected == laser;
             _airPatternIsBomb = selected == bomb;
+            _nextAirPatternIsBomb = !_nextAirPatternIsBomb;
             Change(State.AirAttack);
         }
 
@@ -436,6 +434,9 @@ namespace _Scripts.Agent.Enemies.Bosses
 
             if (state == State.LastStandEntry)
             {
+                // 발악 진입 연출은 순환에서 제외하고, 이후 강화 추적부터 다시 시작합니다.
+                _groundPatternIndex = 0;
+                _nextAirPatternIsBomb = false;
                 IsInvulnerable = true;
                 _lastStandFeedback.ResetShield();
                 _resumeAirAfterRecovery = false;

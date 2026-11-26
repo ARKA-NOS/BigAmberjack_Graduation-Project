@@ -1,5 +1,9 @@
 # Enemy23 공정 통제 드론
 
+일반·발악 8단계 순차 반복: **[Boss23PatternOrderNotes.md](Boss23PatternOrderNotes.md)** (2026-11-26, 추적 → 연사 → 공중 전환 → 사선 레이저 → 추적 → 연사 → 공중 전환 → 척탄).
+
+공중 표시·착탄음 앞부분 제거·코인 습득음: **[Boss23AirAudioNotes.md](Boss23AirAudioNotes.md)** (2026-11-26, 변형·공중 사격 위치 5px 보정·착탄음 0.3초 제거·코인 도착 즉시 소리 재생).
+
 연사 중첩·정지 호버링: **[Boss23SalvoHoverNotes.md](Boss23SalvoHoverNotes.md)** (2026-11-25, 지연 시 회차 중첩 방지·강화 기준 발사점 통일·뒤로 넘어가도 호버링 유지).
 
 표적 포격 폭발음: [Boss23BombSoundNotes.md](Boss23BombSoundNotes.md) (2026-11-25, PlazmaBoom 착탄음 연결).
@@ -36,7 +40,7 @@
 | 공중 전환 | 변형 후 상승, 기본 도착 후 조준 1발 / 강화 상승 시 5방향·1.2배 진행, 탄당 10 |
 | 사선 레이저 | 피해 24 / 28, 강화 속도 1.2배. 첫 발사 후 쉬고 재경고 없이 반대 방향 발사 |
 | 표적 폭격 | 3발 / 6발, 피해 22 / 26, 경고 1.65 / 1.15초, 반경 75 / 90px (28 PPU) |
-| 무작위 선택 | 지상 추적·연사·공중 전환 → 공중 레이저·폭격 |
+| 순차 선택 | 추적 → 연사 → 공중 전환 → 사선 레이저 → 추적 → 연사 → 공중 전환 → 척탄, 일반·발악 동일 순서 반복 |
 | LAST STAND | 35% 이하에서 무적 보호막·전용 상승·산탄 3회·강화 폭격 4회·강화 레이저 → 가속 낙하·착지 흔들림 → 5초 그로기·받는 피해 2배 → 강화 규칙 사용 |
 
 현재 프리팹: Assets/_Prefabs/Enemies/Bosses/Enemy23/Boss23_ProductionControlDrone.prefab

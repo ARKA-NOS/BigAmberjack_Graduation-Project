@@ -1,0 +1,47 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "FullFsmPatternOrder",
+        "enhanced": false,
+        "skills": [
+          "DroneChargeSkill",
+          "DroneSalvoSkill",
+          "DroneAirTransitionSkill",
+          "DroneDownwardLaserSkill",
+          "DroneChargeSkill",
+          "DroneSalvoSkill",
+          "DroneAirTransitionSkill",
+          "DroneBombSkill",
+          "DroneChargeSkill"
+        ],
+        "startedAt": [
+          0.05177498,
+          3.53935528,
+          7.69385147,
+          12.0924568,
+          15.3847208,
+          18.9073677,
+          23.0739212,
+          27.50803,
+          33.3412437
+        ],
+        "loopedToCharge": true
+      },
+      {
+        "pattern": "CooldownOrder",
+        "checks": 7,
+        "noSkipping": true
+      },
+      {
+        "pattern": "LastStandOrderReset",
+        "startsFromCharge": true,
+        "entryPreserved": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 2118,
+  "executeMs": 16714,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_0df360a4ce274080b10155aeee669ca4"
+}

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players.QuestSystem;
+using _Scripts.Currency;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Maps;
 using _Scripts.Maps.Data;
+using _Scripts.Settings;
 using _Scripts.UI.AlarmUI;
 using UnityEngine;
 
@@ -16,6 +19,10 @@ namespace _Scripts.Agent.Players.TitleSystem
     {
         [SerializeField] private TitleGroupSo[] titleGroups;
 
+        [Header("Equip")]
+        [Tooltip("칭호를 다시 장착할 때마다 내는 비용(칭호별 최초 장착은 무료). 재화가 비어 있거나 수량이 0이면 항상 무료.")]
+        [SerializeField] private Cost equipCost;
+
         [Header("Stage Setting")]
         [Tooltip("첫 MapEnteredEvent가 오기 전까지 쓰는 시작 맵. 비워 두면 Stage가 없는 그룹만 진행한다.")]
         [SerializeField] private RoomDataSO startStage;
@@ -23,6 +30,7 @@ namespace _Scripts.Agent.Players.TitleSystem
         private Dictionary<AbstractTitleSo,Title> _titles;
         private HashSet<AbstractTitleSo> _completedTitles;
         private HashSet<AbstractTitleSo> _equippedTitles;
+        private HashSet<AbstractTitleSo> _everEquippedTitles; // 이번 런에 한 번이라도 장착한 칭호
         private Dictionary<AbstractTitleSo,List<AbstractTitleSo>> _waitingTitles;
         private List<AbstractTitleSo> _allTitles;
         private HashSet<AbstractTitleSo> _stageTitles;
@@ -43,6 +51,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             _titles = new();
             _completedTitles = new();
             _equippedTitles = new();
+            _everEquippedTitles = new();
             _waitingTitles = new();
             _allTitles = new();
             _stageTitles = new();
@@ -75,6 +84,7 @@ namespace _Scripts.Agent.Players.TitleSystem
             _titles.Clear();
             _completedTitles.Clear();
             _equippedTitles.Clear(); // 효과는 위 Downgrade에서 이미 되돌렸다. 장착 표시만 지운다.
+            _everEquippedTitles.Clear();
             _waitingTitles.Clear();
             _questModule.ClearQuests();
 
@@ -214,17 +224,37 @@ namespace _Scripts.Agent.Players.TitleSystem
             OnTitlesChanged?.Invoke();
         }
         
+        // 설정의 "칭호 알림"이 꺼짐이면 알림만 생략한다. 달성 처리와 도감 기록은 그대로다.
         private void SendAlarm(Title title)
-            => AlarmEvents.SendAlarm(
+        {
+            if (ServiceLocator.Get<ISettingsManager>()?.Settings.titleNotice == TitleNoticeOption.Off) return;
+
+            AlarmEvents.SendAlarm(
                 $"퀘스트 완료! : {title.TitleSo.TitleName}",
                 title.TitleSo.TitleDescription,
                 title.TitleSo.TitleIcon
             );
+        }
 
         #region Equip
 
         public bool IsEquipped(AbstractTitleSo title)
             => title != null && _equippedTitles.Contains(title);
+
+        public int GetEquipCost(AbstractTitleSo title)
+        {
+            if (equipCost.Type == null || !_everEquippedTitles.Contains(title)) return 0;
+            return Mathf.Max(0, equipCost.Amount);
+        }
+
+        public bool CanPayEquipCost(AbstractTitleSo title)
+        {
+            int cost = GetEquipCost(title);
+            if (cost <= 0) return true;
+
+            CurrencyData currency = CurrencySystem.GetCurrencyData(equipCost.Type);
+            return currency != null && currency.Has(cost);
+        }
 
         public bool TrySetEquipped(AbstractTitleSo title, bool equipped)
         {
@@ -233,6 +263,10 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             if (equipped)
             {
+                if (!CanPayEquipCost(title)) return false;
+                PayEquipCost(title);
+
+                _everEquippedTitles.Add(title);
                 _equippedTitles.Add(title);
                 title.Upgrade(_owner);
             }
@@ -244,6 +278,13 @@ namespace _Scripts.Agent.Players.TitleSystem
 
             OnEquipChanged?.Invoke();
             return true;
+        }
+
+        private void PayEquipCost(AbstractTitleSo title)
+        {
+            int cost = GetEquipCost(title);
+            if (cost > 0)
+                CurrencySystem.GetCurrencyData(equipCost.Type).Add(-cost);
         }
 
         #endregion

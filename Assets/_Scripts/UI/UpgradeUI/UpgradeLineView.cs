@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace _Scripts.UI.UpgradeUI
 {
-    // 선행 노드 → 다음 노드 사이에 선을 긋는다. 양쪽 노드를 모두 샀으면 활성 색으로 칠한다.
+    // 선행 노드 → 다음 노드 사이에 선을 긋는다. 양쪽 노드를 모두 샀거나 임시 선택했으면 활성 색으로 칠한다.
     // 선 위치는 노드 버튼의 배치에 따라 정해지므로 레이아웃이 끝난 뒤 UpgradeTreeWindow가 Draw를 부른다.
     // ViewModel은 UpgradeTreeWindow가 SetViewModel로 넣는다.
     public class UpgradeLineView : ViewBase<UpgradeTreeViewModel>
@@ -78,7 +78,7 @@ namespace _Scripts.UI.UpgradeUI
 
                 void Recolor(UpgradeNodeState _)
                 {
-                    bool active = fromState.Value == UpgradeNodeState.Purchased && toState.Value == UpgradeNodeState.Purchased;
+                    bool active = IsSelected(fromState.Value) && IsSelected(toState.Value);
                     Color color = active ? activeColor : inactiveColor;
                     foreach (Image image in images) image.color = color;
                 }
@@ -87,6 +87,9 @@ namespace _Scripts.UI.UpgradeUI
                 toState.Subscribe(Recolor).AddTo(_lineSubscriptions);
             }
         }
+
+        private static bool IsSelected(UpgradeNodeState state)
+            => state is UpgradeNodeState.Pending or UpgradeNodeState.Purchased;
 
         // 직각 경로: 가로/세로 중 더 먼 쪽으로 나가서 → 중간에서 꺾고 → 반대 축으로 이동 → 다시 꺾어 도착한다.
         private Line CreateLine(RectTransform from, RectTransform to, UpgradeNodeSO fromNode, UpgradeNodeSO toNode)

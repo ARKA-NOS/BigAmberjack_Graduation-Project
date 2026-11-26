@@ -42,6 +42,10 @@ public static class InspectBoss23VisualFix
     public static object Before() => Sheet("Before");
     public static object After() => Sheet("After");
 
+    public static object AirAudioBefore() => Sheet("20261126Before");
+
+    public static object AirAudioAfter() => Sheet("20261126After");
+
     private static object Sheet(string suffix)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Use Edit Mode");

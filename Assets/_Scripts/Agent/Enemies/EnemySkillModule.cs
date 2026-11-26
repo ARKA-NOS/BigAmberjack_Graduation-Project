@@ -93,6 +93,7 @@ namespace _Scripts.Agent.Enemies
         private EnemyMovementModule _movement;
         private EnemyFlightModule _flight;
         private EnemyKeepDistanceModule _keepDistance;
+        private EnemyAttackTokenModule _attackToken;
 
         private AbstractSkill _activeSkill;
         private Transform _castTarget;
@@ -125,6 +126,7 @@ namespace _Scripts.Agent.Enemies
             _movement = owner.GetModule<EnemyMovementModule>();
             _flight = owner.GetModule<EnemyFlightModule>();
             _keepDistance = owner.GetModule<EnemyKeepDistanceModule>();
+            _attackToken = _enemy is Bosses.BossBase ? null : owner.GetModule<EnemyAttackTokenModule>();
             _registeredSkills.Clear();
             // 공용 AfterInit과 같은 탐색 범위/첫 SO만 등록 규칙을 사용합니다.
             HashSet<SkillSO> keys = new HashSet<SkillSO>();
@@ -152,18 +154,19 @@ namespace _Scripts.Agent.Enemies
 
         public bool TryUseAttack()
         {
+            ReleaseFinishedAttack();
             if (!Ready || IsBusy || _enemy.IsHitReacting) return false;
+
+            // 큐에서 기다리는 동안 다른 스킬의 쿨타임이 끝나도 기존 신청과 FIFO 순서를 유지합니다.
+            AbstractSkill requested = _attackToken != null && _attackToken.isActiveAndEnabled ? _attackToken.RequestedSkill : null;
+            if (requested != null && CanRequestTokenFor(requested) && TryGetEnabledEntry(requested, out SkillEntry waitingEntry))
+                return StartAttack(waitingEntry);
 
             foreach (SkillEntry entry in skills)
             {
                 if (!IsValid(entry) || !entry.UseForAutomaticSelection || !entry.Matches(_enemy, _movement, _flight, _keepDistance) || !CanUseSkill(entry.Skill.SkillSo)) continue;
 
-                _activeSkill = entry.Skill;
-                _castTarget = _enemy.Target;
-                _chargeReleaseTime = Time.time + entry.ChargeDuration;
-                UseSkill(_activeSkill.SkillSo, true);
-
-                return true;
+                return StartAttack(entry);
             }
 
             return false;
@@ -173,17 +176,59 @@ namespace _Scripts.Agent.Enemies
         // Skills 목록의 사용 설정/차징 시간과 공용 등록·쿨타임 검사를 그대로 적용합니다.
         public bool TryUseSpecifiedSkill(AbstractSkill skill)
         {
+            ReleaseFinishedAttack();
             if (!Ready || IsBusy || _enemy.IsHitReacting ||
                 !TryGetEnabledEntry(skill, out SkillEntry entry) ||
                 _enemy.Target == null || !_enemy.Target.gameObject.activeInHierarchy || !CanUseSkill(skill.SkillSo))
                 return false;
 
-            _activeSkill = skill;
+            return StartAttack(entry);
+        }
+
+        private bool StartAttack(SkillEntry entry)
+        {
+            if (_attackToken != null && _attackToken.isActiveAndEnabled && !_attackToken.TryAcquire(entry.Skill)) return false;
+
+            _activeSkill = entry.Skill;
             _castTarget = _enemy.Target;
             _chargeReleaseTime = Time.time + entry.ChargeDuration;
-            UseSkill(skill.SkillSo, true);
+            try { UseSkill(_activeSkill.SkillSo, true); }
+            catch
+            {
+                StopAttack();
+                throw;
+            }
+
+            if (!IsBusy)
+            {
+                ReleaseFinishedAttack();
+
+                return false;
+            }
 
             return true;
+        }
+
+        internal bool CanRequestTokenFor(AbstractSkill skill)
+        {
+            return Ready && !IsBusy && !_enemy.IsHitReacting && _enemy.Target != null &&
+                _enemy.Target.gameObject.activeInHierarchy && TryGetEnabledEntry(skill, out SkillEntry entry) &&
+                (!entry.UseForAutomaticSelection || entry.Matches(_enemy, _movement, _flight, _keepDistance)) &&
+                CanUseSkill(skill.SkillSo);
+        }
+
+        internal void NotifyAttackEnded(EnemyAttackSkill skill)
+        {
+            if (_activeSkill == skill) ReleaseFinishedAttack();
+        }
+
+        private void ReleaseFinishedAttack()
+        {
+            if (_activeSkill == null || IsBusy) return;
+
+            _activeSkill = null;
+            _castTarget = null;
+            _attackToken?.Release();
         }
 
         // 쿨타임과 분리된 구성 검사. 패턴 FSM이 사용 해제된 스킬을 무한히 기다리지 않도록 합니다.
@@ -214,6 +259,7 @@ namespace _Scripts.Agent.Enemies
 
         private void Update()
         {
+            ReleaseFinishedAttack();
             if (!IsBusy) return;
 
             if (!Ready || !IsSkillEnabled(_activeSkill) ||
@@ -234,6 +280,7 @@ namespace _Scripts.Agent.Enemies
             ForceStopCurrentSkill();
             _activeSkill = null;
             _castTarget = null;
+            _attackToken?.Release();
         }
 
         public void OnAttackWarning()

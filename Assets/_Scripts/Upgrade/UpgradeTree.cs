@@ -96,32 +96,38 @@ namespace _Scripts.Upgrade
             => Data.GetValueOrDefault(nodeSo, false);
 
         public bool CanUpgrade(UpgradeNodeSO nodeSo)
+            => CanUpgrade(nodeSo, IsUpgrade);
+
+        // isOwned: 어떤 노드를 가진 것으로 볼지. 임시 선택까지 포함해 판정할 때 바꿔 넣는다.
+        public bool CanUpgrade(UpgradeNodeSO nodeSo, Predicate<UpgradeNodeSO> isOwned)
         {
             if (nodeSo == null || !Data.ContainsKey(nodeSo)) return false;
-            if (Data[nodeSo]) return false;
-
-            UpgradeNodeSO[] prevNodes = nodeSo.PrevNodes;
-            if (prevNodes != null && prevNodes.Length > 0)
-            {
-                bool prevUpgraded = false;
-                foreach (UpgradeNodeSO prev in prevNodes)
-                {
-                    if (!IsUpgrade(prev)) continue;
-                    prevUpgraded = true;
-                    break;
-                }
-                if (!prevUpgraded) return false;
-            }
+            if (isOwned(nodeSo)) return false;
+            if (!HasPrevNode(nodeSo, isOwned)) return false;
 
             if (string.IsNullOrEmpty(nodeSo.ExclusiveGroup)) return true;
 
-            foreach (KeyValuePair<UpgradeNodeSO, bool> pair in Data)
+            foreach (UpgradeNodeSO other in Data.Keys)
             {
-                if (!pair.Value || pair.Key == nodeSo) continue;
-                if (pair.Key.ExclusiveGroup == nodeSo.ExclusiveGroup) return false;
+                if (other == nodeSo || !isOwned(other)) continue;
+                if (other.ExclusiveGroup == nodeSo.ExclusiveGroup) return false;
             }
 
             return true;
+        }
+
+        // 선행 노드가 없거나, 선행 노드 중 하나라도 가지고 있으면 true.
+        public bool HasPrevNode(UpgradeNodeSO nodeSo, Predicate<UpgradeNodeSO> isOwned)
+        {
+            UpgradeNodeSO[] prevNodes = nodeSo.PrevNodes;
+            if (prevNodes == null || prevNodes.Length == 0) return true;
+
+            foreach (UpgradeNodeSO prev in prevNodes)
+            {
+                if (isOwned(prev)) return true;
+            }
+
+            return false;
         }
 
         public void UpgradeOwner(ModuleOwner owner)

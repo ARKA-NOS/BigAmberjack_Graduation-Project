@@ -9,7 +9,7 @@ namespace _Scripts.Audio
     public sealed class SceneMusic : MonoBehaviour
     {
         [SerializeField] private AudioClip _clip;
-
+        
         // SoundManager는 GameManager의 Awake에서 등록되므로 Start에서 부른다.
         private void Start() => ServiceLocator.Get<ISoundManager>()?.PlayMusic(_clip);
     }

@@ -1,0 +1,40 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "CoinPickupSound",
+        "count": 1,
+        "expire": false,
+        "soundRequests": 1,
+        "arrivalSoundAfterSeconds": 0.0186576843,
+        "completedAfterSeconds": 0.5275383,
+        "gold": 3,
+        "noSoundBacklog": true
+      },
+      {
+        "pattern": "CoinPickupSound",
+        "count": 12,
+        "expire": false,
+        "soundRequests": 12,
+        "arrivalSoundAfterSeconds": 0.008169174,
+        "completedAfterSeconds": 0.510625839,
+        "gold": 36,
+        "noSoundBacklog": true
+      },
+      {
+        "pattern": "CoinPickupSound",
+        "count": 1,
+        "expire": true,
+        "soundRequests": 0,
+        "arrivalSoundAfterSeconds": -1,
+        "completedAfterSeconds": 0.0139122009,
+        "gold": 3,
+        "noSoundBacklog": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 347,
+  "executeMs": 1066,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_90b6cd27a9e344279570837953c85c53"
+}

@@ -11,7 +11,7 @@ public static class SetupBoss23BombSound
     public static object Run()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Use Edit Mode");
-        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Sound/Enemy/PlazmaBoom.mp3");
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Prefabs/Enemies/Effects/Audio/Clips/PlazmaBoom_Impact.wav");
         if (clip == null) throw new Exception("PlazmaBoom clip missing");
 
         string path = Folder + "Boss23_BombImpactSound.asset";

@@ -2,6 +2,8 @@
 
 2026-11-25.
 
+**2026-11-26 추가 보정:** 앞부분의 공기 흡입음 0.3초를 제거한 `Assets/_Prefabs/Enemies/Effects/Audio/Clips/PlazmaBoom_Impact.wav`를 참조한다. 원본은 보존하며 음량·피치는 같다. 일반·강화 착탄 시점의 새 클립 재생도 확인했다. 현재 기준은 [Boss23AirAudioNotes.md](Boss23AirAudioNotes.md), 아래는 최초 연결 기록이다.
+
 `Boss23_Bomb.prefab`의 `EnemyLobProjectile > Impact Cue`가 비어 있어 착탄음이 나오지 않았다. 전용 SoundCueSO `Boss23_BombImpactSound.asset`를 만들고 `Assets/_Sound/Enemy/PlazmaBoom.mp3`를 연결했다. 기본 음량은 0.8, 피치는 1이다.
 
 기존 `FinishFlight`가 실제 충돌 지점에서 공용 SoundManager에 재생을 요청하는 기능을 사용한다. 일반 포격·강화 포격·발악 진입 폭격이 같은 폭탄 프리팹을 사용하므로 모두 적용된다. 게임 C# 로직은 추가하지 않았다.

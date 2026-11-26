@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-26",
+  "scene": "Assets/_Scenes/Test/EnemyTestScene.unity",
+  "entry": "VerifyBoss23Rework.RunAirMarkings",
+  "results": [
+    {
+      "pattern": "AirTransition",
+      "enhanced": false,
+      "total": 2.82306719,
+      "shotsAt": [1.28515244, 1.66902065, 2.05146933, 2.43232679],
+      "arrivedAt": 1.28515244,
+      "volleys": 4,
+      "launchers": ["shot_3", "shot_1", "shot_3", "shot_1"],
+      "shots": 4,
+      "damagePerShot": 10,
+      "flyingSeen": true,
+      "idleAfterShot": true,
+      "jetSeen": true,
+      "postAttackDelay": 0.1500001
+    },
+    {
+      "pattern": "AirTransition",
+      "enhanced": true,
+      "total": 2.2419734,
+      "shotsAt": [0.953729153, 1.27460051, 1.59262228, 1.91367006],
+      "arrivedAt": 0.953729153,
+      "volleys": 4,
+      "launchers": ["shot_3", "shot_1", "shot_3", "shot_1"],
+      "shots": 16,
+      "damagePerShot": 10,
+      "flyingSeen": true,
+      "idleAfterShot": true,
+      "jetSeen": true,
+      "postAttackDelay": 0.125
+    },
+    {
+      "pattern": "Descent",
+      "duration": 0.550745,
+      "speed": 10,
+      "idleAfterLanding": true
+    }
+  ],
+  "markerPositionAssertions": "passed during normal/enhanced air transition and descent",
+  "diagnostics": [],
+  "compileMs": 2133,
+  "executeMs": 5680
+}

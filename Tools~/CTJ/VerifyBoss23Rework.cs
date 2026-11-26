@@ -12,6 +12,7 @@ using _Scripts.Agent.Players;
 using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.Audio;
 using _Scripts.DevLib.BattleSystem;
+using _Scripts.Currency;
 using _Scripts.Testing.Enemy;
 using _Scripts.UI.Enemy;
 using _Scripts.UI.HitFeedback;
@@ -103,6 +104,14 @@ public static class VerifyBoss23Rework
 
     public static Task<object> RunSalvoRegression() => RunInternal(true, 11);
 
+    public static Task<object> RunCoinPickupSound() => RunInternal(true, 12);
+
+    public static Task<object> RunAirMarkings() => RunInternal(true, 13);
+
+    public static Task<object> RunNormalPatternOrder() => RunInternal(true, 14);
+
+    public static Task<object> RunEnhancedPatternOrder() => RunInternal(true, 15);
+
     public static object CheckRecoveryAssets()
     {
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
@@ -159,6 +168,31 @@ public static class VerifyBoss23Rework
         {
             try
             {
+                if (group == 14 || group == 15)
+                {
+                    bool enhanced = group == 15;
+                    await rig.NewBoss(enhanced);
+                    results.Add(await PatternOrder(rig, enhanced));
+                    if (!enhanced)
+                    {
+                        results.Add(CooldownOrder(rig));
+                        results.Add(await PhaseOrderReset(rig));
+                    }
+
+                    return new { results };
+                }
+
+                if (group == 13)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await Air(rig, enhanced));
+                    }
+                    results.Add(await Descent(rig));
+                    return new { results };
+                }
+
                 if (group == 11)
                 {
                     foreach (bool enhanced in new[] { false, true })
@@ -213,7 +247,7 @@ public static class VerifyBoss23Rework
                     return new { results, preview = "Tools~/CTJ/Boss23GroggyPreview.png" };
                 }
 
-                if (group == 5 || group == 8)
+                if (group == 5 || group == 8 || group == 12)
                 {
                     var previousSound = ServiceLocator.Get<ISoundManager>();
                     GameObject soundRoot = null;
@@ -233,6 +267,15 @@ public static class VerifyBoss23Rework
 
                     try
                     {
+                        if (group == 12)
+                        {
+                            await rig.NewBoss(false);
+                            results.Add(await CoinPickupSound(rig, manager, 1, false));
+                            results.Add(await CoinPickupSound(rig, manager, 12, false));
+                            results.Add(await CoinPickupSound(rig, manager, 1, true));
+                            return new { results };
+                        }
+
                         if (group == 8)
                         {
                             foreach (bool enhanced in new[] { false, true })
@@ -326,7 +369,7 @@ public static class VerifyBoss23Rework
                 if (entryOnly || group == 0)
                 {
                     await rig.NewBoss(false);
-                    if (!entryOnly || group == 3) results.Add(RandomChoices(rig));
+                    if (!entryOnly || group == 3) results.Add(SequentialChoices(rig));
                     if (group == 3) results.Add(await GroundRest(rig));
                     if (group == 3) results.Add(await AirRest(rig));
                     if (group == 3) results.Add(await BombFlow(rig));
@@ -739,6 +782,7 @@ public static class VerifyBoss23Rework
         await Until(() =>
         {
             var currentSprite = r.Root.GetComponentInChildren<Animator>().GetComponent<SpriteRenderer>().sprite;
+            CheckAirMarkerPosition(r);
             string sprite = AssetDatabase.GetAssetPath(currentSprite);
             flyingSeen |= sprite.Contains("/flying up/moving.png");
             shotSeen |= sprite.Contains("/flying up/shot.png");
@@ -793,7 +837,11 @@ public static class VerifyBoss23Rework
         var field = typeof(ProductionControlDrone).GetField("_state", Private);
         typeof(ProductionControlDrone).GetMethod("Change", Private).Invoke(r.Boss, new[] { Enum.Parse(field.FieldType, "Descend") });
         float start = Time.time;
-        await Until(() => Read(r.Boss, "_state").ToString() == "Recover", 2f, "Normal descent was too slow");
+        await Until(() =>
+        {
+            CheckAirMarkerPosition(r);
+            return Read(r.Boss, "_state").ToString() == "Recover";
+        }, 2f, "Normal descent was too slow");
         float duration = Time.time - start;
         Check(duration < 1.3f && Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.01f, "Descent did not land quickly");
         await Awaitable.NextFrameAsync();
@@ -950,28 +998,119 @@ public static class VerifyBoss23Rework
             descentAt, total = Time.time - startedAt, predictionSeen, fixedMarkers = true, horizontalTravel = maxX - minX };
     }
 
-    private static object RandomChoices(Rig r)
+    private static object SequentialChoices(Rig r)
     {
+        typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private).SetValue(r.Boss, 0);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, false);
         int[] ground = new int[3];
-        for (int i = 0; i < 240; i++)
+        for (int i = 0; i < 12; i++)
         {
             r.Prepare(false, 4f);
             Call(r.Boss, "ChooseGroundPattern");
             var active = r.Skills.ActiveSkill;
-            Check(active == r.Charge || active == r.Barrage || active == r.Air, "Invalid ground candidate");
+            var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air }[i % 3];
+            Check(active == expected, "Ground pattern order mismatch");
             ground[active == r.Charge ? 0 : active == r.Barrage ? 1 : 2]++;
         }
+
         int[] air = new int[2];
-        for (int i = 0; i < 160; i++)
+        for (int i = 0; i < 4; i++)
         {
             r.Prepare(true, 4f);
             Call(r.Boss, "ChooseAirPattern");
             var active = r.Skills.ActiveSkill;
-            Check(active == r.Laser || active == r.Bomb, "Invalid air candidate");
+            EnemyAttackSkill expected = i % 2 == 0 ? r.Laser : r.Bomb;
+            Check(active == expected, "Air pattern order mismatch");
             air[active == r.Laser ? 0 : 1]++;
         }
-        Check(ground.All(x => x > 45 && x < 115) && air.All(x => x > 45 && x < 115), "Random groups are biased or unavailable");
-        return new { pattern = "RandomSelection", ground, air };
+
+        return new { pattern = "SequentialSelection", ground, air };
+    }
+
+    private static async Task<object> PatternOrder(Rig r, bool enhanced)
+    {
+        r.Prepare(false, 4f);
+        r.SetState("Dormant");
+        var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air, r.Laser, r.Charge, r.Barrage, r.Air, r.Bomb, r.Charge };
+        var seen = new List<string>();
+        var starts = new List<float>();
+        EnemyAttackSkill previous = null;
+        float savedScale = Time.timeScale;
+        float startedAt = Time.time;
+
+        try
+        {
+            Time.timeScale = 2f;
+            await Until(() =>
+            {
+                var active = r.Skills.ActiveSkill as EnemyAttackSkill;
+                if (active != previous && active != null)
+                {
+                    Check(active == expected[seen.Count], "FSM order mismatch at " + seen.Count + ": " + active.GetType().Name);
+                    Check(r.Boss.IsLastStand == enhanced, "Pattern changed the combat phase");
+                    seen.Add(active.GetType().Name);
+                    starts.Add(Time.time - startedAt);
+                }
+                previous = active;
+
+                return seen.Count == expected.Length;
+            }, 45f, "Sequential pattern cycle stalled: " + string.Join(",", seen) + ", state=" + Read(r.Boss, "_state"));
+
+            return new { pattern = "FullFsmPatternOrder", enhanced, skills = seen, startedAt = starts, loopedToCharge = true };
+        }
+        finally { Time.timeScale = savedScale; }
+    }
+
+    private static object CooldownOrder(Rig r)
+    {
+        var groundIndex = typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private);
+        var nextBomb = typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private);
+        var cooldown = typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime");
+
+        foreach (int index in new[] { 0, 1, 2 })
+        {
+            r.Prepare(false, 4f);
+            groundIndex.SetValue(r.Boss, index);
+            nextBomb.SetValue(r.Boss, false);
+            var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air }[index];
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseGroundPattern");
+            Check(!r.Skills.IsBusy && (int)groundIndex.GetValue(r.Boss) == index, "Ground cooldown skipped a pattern");
+        }
+
+        foreach (bool bomb in new[] { false, true })
+        {
+            r.Prepare(true, 4f);
+            nextBomb.SetValue(r.Boss, bomb);
+            EnemyAttackSkill expected = bomb ? r.Bomb : r.Laser;
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseAirPattern");
+            Check(!r.Skills.IsBusy && (bool)nextBomb.GetValue(r.Boss) == bomb, "Air cooldown skipped a pattern");
+
+            r.Prepare(false, 4f);
+            groundIndex.SetValue(r.Boss, 2);
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseGroundPattern");
+            Check(!r.Skills.IsBusy && (int)groundIndex.GetValue(r.Boss) == 2, "Ascent ignored its designated air attack cooldown");
+        }
+
+        return new { pattern = "CooldownOrder", checks = 7, noSkipping = true };
+    }
+
+    private static async Task<object> PhaseOrderReset(Rig r)
+    {
+        r.Prepare(false, 4f);
+        typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private).SetValue(r.Boss, 2);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, true);
+        r.SetHealth(0.34f);
+        await Until(() => r.Boss.IsLastStand, 0.3f, "Last Stand threshold was not detected");
+
+        Check((int)Read(r.Boss, "_groundPatternIndex") == 0 && !(bool)Read(r.Boss, "_nextAirPatternIsBomb"),
+            "Last Stand did not reset to the charge/laser cycle");
+        Check(Read(r.Boss, "_state").ToString() == "LastStandEntry" && r.Boss.IsInvulnerable,
+            "Sequential selection bypassed Last Stand entry");
+
+        return new { pattern = "LastStandOrderReset", startsFromCharge = true, entryPreserved = true };
     }
 
     private static async Task<object> GroundRest(Rig r)
@@ -1022,6 +1161,7 @@ public static class VerifyBoss23Rework
     private static async Task<object> BombFlow(Rig r)
     {
         r.Prepare(true, 4f);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, true);
         typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime").SetValue(r.Laser, Time.time + 100f);
         r.SetState("ChooseAir");
         await Until(() => r.Bomb.IsUsing, 0.5f, "FSM did not choose the bomb");
@@ -1335,10 +1475,77 @@ public static class VerifyBoss23Rework
         finally { attack.GetRemoveMethod(true).Invoke(r.Barrage, new object[] { handler }); }
     }
 
+    private static async Task<object> CoinPickupSound(Rig r, SoundManager manager, int count, bool expire)
+    {
+        r.Prepare(false, 4f);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Enemies/Effects/EnemyRewardCoin.prefab");
+        var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Prefabs/Enemies/Effects/Audio/Clips/CoinDrop.wav");
+        var currency = new CurrencyData(null, 0);
+        var coins = new List<EnemyRewardCoin>();
+        ulong before = Convert.ToUInt64(Read(manager, "_playOrder"));
+        float startedAt = Time.time;
+        try
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 center = r.Player.GetComponent<Collider2D>().bounds.center;
+                var coin = Object.Instantiate(prefab, center, Quaternion.identity).GetComponent<EnemyRewardCoin>();
+                coins.Add(coin);
+                typeof(EnemyRewardCoin).GetMethod("SetCollector", Private).Invoke(coin, new object[] { r.Player.transform });
+                typeof(EnemyRewardCoin).GetMethod("Launch", Private).Invoke(coin, new object[] { currency, 3, 0f, 1f });
+                if (expire)
+                    typeof(EnemyRewardCoin).GetField("_aliveTime", Private).SetValue(coin, 100f);
+                else typeof(EnemyRewardCoin).GetMethod("BeginHoming", Private).Invoke(coin, null);
+            }
+            float audioAt = -1f;
+            if (!expire)
+            {
+                await Until(() => coins.All(c => c != null && c.IsCollecting), 0.15f, "Coins did not reach the collector");
+                audioAt = Time.time - startedAt;
+                Check(Convert.ToUInt64(Read(manager, "_playOrder")) - before == (ulong)count,
+                    "Pickup sound was not requested immediately for each coin");
+                Check(currency.Count == 0, "Reward settlement moved ahead of the collect animation");
+                Check(manager.GetComponentsInChildren<AudioSource>().Any(s => s.clip == expected && s.isPlaying && s.time < 0.1f),
+                    "Coin pickup clip did not start on arrival");
+            }
+            await Until(() => coins.All(c => c == null), 0.8f, "Coins did not finish collecting/expire");
+            await Awaitable.NextFrameAsync();
+            ulong calls = Convert.ToUInt64(Read(manager, "_playOrder")) - before;
+            Check(calls == (expire ? 0UL : (ulong)count), "Pickup sound replayed at cleanup or played on timeout");
+            Check(currency.Count == count * 3, "Coin reward was lost or duplicated");
+            return new { pattern = "CoinPickupSound", count, expire, soundRequests = calls, arrivalSoundAfterSeconds = audioAt,
+                completedAfterSeconds = Time.time - startedAt, gold = currency.Count, noSoundBacklog = true };
+        }
+        finally
+        {
+            foreach (var coin in coins) if (coin != null) Object.Destroy(coin.gameObject);
+        }
+    }
+
+    private static void CheckAirMarkerPosition(Rig r)
+    {
+        var animator = r.Root.GetComponentInChildren<Animator>();
+        var sprite = animator.GetComponent<SpriteRenderer>().sprite;
+        if (!AssetDatabase.GetAssetPath(sprite).Contains("/flying up/")) return;
+
+        float expected = sprite.name switch
+        {
+            "transition_0" or "transition back_5" => 8.5f,
+            "transition_1" or "transition back_4" => 5.5f,
+            "transition_2" or "transition back_3" => 4.5f,
+            "transition_3" or "transition back_2" => 10.5f,
+            _ => 15.5f
+        };
+        float number = animator.transform.Find("ProcessNumber").localPosition.y * 28f;
+        float lamp = animator.transform.Find("AlarmLamp").localPosition.y * 28f;
+        Check(Mathf.Abs(number - expected) < 0.01f && Mathf.Abs(lamp - expected - 10f) < 0.01f,
+            "Air marker mismatch during " + sprite.name + ": " + number + "/" + lamp);
+    }
+
     private static async Task<object> BombImpactSound(Rig r, SoundManager manager, bool enhanced)
     {
         r.Prepare(true, 4f);
-        var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Sound/Enemy/PlazmaBoom.mp3");
+        var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Prefabs/Enemies/Effects/Audio/Clips/PlazmaBoom_Impact.wav");
         var projectile = (EnemyLobProjectile)typeof(DroneBombSkill).GetMethod("LaunchTargetBomb", Private)
             .Invoke(r.Bomb, new object[] { r.Player.transform, 0f, enhanced });
         Check(projectile != null && projectile.IsInFlight, "Bomb sound fixture did not launch");

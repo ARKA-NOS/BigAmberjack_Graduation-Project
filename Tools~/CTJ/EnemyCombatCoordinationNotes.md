@@ -16,9 +16,13 @@
 
 ## TimeStopService / TimeFreezeModule
 
-사용자가 전달한 코드의 **실시간 종료 시각과 Mathf.Max를 통한 중첩 연장**을 재사용했다. 프로젝트에 있는 전역 `EventBus`에 `HitStopEvent`를 연결하므로 새 GameEventChannelSO는 필요 없다.
+사용자가 전달한 코드의 **실시간 종료 시각**을 재사용했다. 11월 26일 추가 수정으로 지속 시간과 정지 배율을 모두 요청자가 지정한다. 같은 배율의 중첩은 Mathf.Max로 종료 시각을 연장하고, 다른 배율은 각자의 종료 시각까지 관리한다. 프로젝트의 전역 `EventBus`에 `HitStopEvent`를 연결하므로 새 GameEventChannelSO는 필요 없다.
 
-`TimeFreezeModule`은 `EnemyBase.DamageReceived`를 구독한다. 가해자가 `PlayerController`이고 실제 체력 감소량이 양수일 때만 요청한다. 마지막 사망 타격도 포함한다. 0 피해, 다른 적·가해자 없는 피해, 무적으로 거절된 피해에는 요청하지 않는다. 기본 `Freeze Duration`은 실시간 **0.05초**, 매니저의 `Stop Time Scale`은 **0.05**다. 매니저 값을 0으로 해도 unscaled 시간으로 종료하므로 복구할 수 있다.
+`TimeFreezeModule`은 `EnemyBase.DamageReceived`를 구독한다. 가해자가 `PlayerController`이고 실제 체력 감소량이 양수일 때만 요청한다. 마지막 사망 타격도 포함한다. 0 피해, 다른 적·가해자 없는 피해, 무적으로 거절된 피해에는 요청하지 않는다. **각 적의 모듈**에서 `Freeze Duration`(기본 실시간 **0.05초**)과 `Stop Time Scale`(기본 **0.05**)을 함께 조절한다. 배율을 0으로 해도 unscaled 시간으로 종료하므로 복구할 수 있다. 서비스에는 공통 정지 배율 인스펙터 설정을 두지 않는다.
+
+`RequestHitStop(0.08f, 0.1f)` 또는 `new HitStopEvent(0.08f, 0.1f)`는 실시간 0.08초 동안 Time.timeScale 0.1을 요청한다. 이는 기본 배율에 곱하는 값이 아닌 절대 배율이다. 두 번째 인자를 생략하는 기존 호출은 0.05를 사용한다. 모듈은 항상 자신이 가진 두 값을 모두 전달한다.
+
+여러 요청이 겹치면 살아 있는 요청 중 가장 작은 배율을 적용한다. 예를 들어 0.3배·0.28초와 0.05배·0.08초가 겹치면 처음에는 0.05배, 짧은 요청이 끝나면 0.3배, 나머지도 끝나면 기본 배율로 복구한다. 먼저 끝난 강한 정지가 약한 요청의 남은 시간까지 연장되지는 않는다.
 
 보스 사망 슬로우는 기존 0.2배·유지 0.25초·복귀 0.2초 설정을 같은 서비스로 전달한다. 슬로우와 피격 정지가 겹치면 더 느린 쪽을 적용하고, 피격 정지가 끝나도 남은 사망 슬로우는 유지한다. 일시정지 소유권은 별도로 관리한다. 사망 슬로우의 유지·복귀 시간은 일시정지 중 소비하지 않고, 피격 정지의 종료 시각은 전달한 코드처럼 실시간으로 계산한다.
 
@@ -51,7 +55,7 @@
 ## 직접 테스트
 
 1. `Assets/_Scenes/Test/EnemyTestScene.unity`를 열고 GameManager 프리팹 인스턴스 아래 두 매니저가 활성화되어 있는지 확인한다. 이전에 씬에 풀어 놓은 GameManager라면 사용자가 직접 두 자식을 연결해야 한다. 이번 작업에서 씬을 저장하지 않았다.
-2. 플레이어로 적을 공격한다. 실제 체력 감소 순간에 짧은 정지가 발생하고 자동으로 복구되어야 한다. Freeze Duration과 Stop Time Scale을 조절해 차이를 확인한다. 보스 처치 슬로우도 확인한다.
+2. 적 프리팹의 TimeFreezeModule에서 Freeze Duration과 Stop Time Scale을 조절한 뒤 플레이어로 공격한다. 예를 들어 0.1초·0.2배와 0.1초·0배를 비교한다. 체력 감소 순간에 지정한 배율이 적용되고 자동 복구되어야 한다. 보스 처치 슬로우도 확인한다.
 3. Enemy17을 4마리 이상 배치하고 AttackTokenManager의 Max Token을 1로 잠시 낮춘다. 공격 준비부터 후딜까지 한 마리만 공격해야 한다. 대기 중인 적을 처치하거나 플레이어가 사거리 밖으로 이동해도 다른 적이 계속 공격해야 한다. 이후 Max Token을 2로 되돌린다.
 4. 대기 제한이 잘 보이도록 공격 준비가 긴 적으로 테스트한다. 대기 2초가 끝난 적은 0.5초 후 재요청해야 한다. 실행 중 `ActiveTokenCount/WaitingCount`, 각 적의 `HasToken/IsWaiting` 속성을 디버거에서 확인할 수 있다.
 5. 적 둘을 같은 위치에 배치한다. 지상에서는 수평으로, 비행 적은 공중에서 벌어져야 한다. 절벽 가까이 배치해도 보정 때문에 떨어지면 안 된다. 공격·넉백 중인 적의 모션은 보정이 덮어쓰지 않아야 한다.
@@ -60,17 +64,20 @@
 
 EnemyTestScene의 실제 Play Mode에서 테스트했다. 게임 컴파일 오류·경고 0, 씬 파일 SHA256은 전후 동일하다.
 
-- 시간 제어 7개 묶음: 중첩 요청 약 **0.215초** 유지 후 1배 복귀, 중첩 일시정지, 기존 UI 정지와 공존, 사망 슬로우·피격 정지 중첩, 플레이어의 일반·사망 타격만 정지, 완전 0배 정지 복귀, 서비스 해제 시 복구 통과.
+- 시간 제어 7개 묶음: 같은 배율의 중첩 요청 약 **0.222초** 유지 후 1배 복귀, 중첩 일시정지, 기존 UI 정지와 공존, 사망 슬로우·피격 정지 중첩, 플레이어의 일반·사망 타격에 모듈 배율 **0.12** 전달, 완전 0배 정지 복귀, 서비스 해제 시 복구 통과.
+- 배율별 요청 5개 묶음: 강한 짧은 요청 만료 후 약한 긴 요청으로 복귀, 반대 조합, 동일 배율의 연장·단축 방지, 기본 2배속에서 요청한 절대 0.4배속 적용 후 2배속 복구 통과. 같은 배율 연장은 약 **0.185초**였다.
 - 공격 토큰 6개 묶음: 동시 2개 제한·FIFO, 대기 **약 2.002초** 만료·0.5초 재시도·중복 신청 방지, 사거리/시야 상실·대기 적 사망, 보유 적 사망 즉시 전달, 후딜까지 보유, 일시정지 중 큐 유지·매니저 종료 정리 통과.
 - 간격 유지: 지상 두 적의 목표 **1.31유닛**에 대해 1.5초 후 **1.278유닛**, 비행 두 적은 1.8초 후 **1.251유닛**으로 벌어졌다. 절벽 앞 적은 X **14.54**를 넘지 않고 접지를 유지했다.
 - 적 6개 프리팹의 모듈·스크립트 참조, 보스 토큰 제외, GameManager 자식 중복 없음 확인.
 
-결과: [시간 제어](EnemyTimeControlVerification.json), [토큰](EnemyAttackTokenVerification.json), [간격 유지](EnemySeparationVerification.json). 로컬 진입점은 `VerifyEnemyCombatCoordination.Assets/TimeEffects/Tokens/Separation`이다. 테스트는 런타임 설정과 원래 오브젝트 활성 상태를 복구하고 씬을 저장하지 않는다.
+결과: [시간 제어](EnemyTimeControlVerification.json), [요청별 배율](EnemyTimeFreezeScaleVerification.json), [토큰](EnemyAttackTokenVerification.json), [간격 유지](EnemySeparationVerification.json). 로컬 진입점은 `VerifyEnemyCombatCoordination.Assets/TimeEffects/HitStopScales/Tokens/Separation`이다. 테스트는 런타임 설정과 원래 오브젝트 활성 상태를 복구하고 씬을 저장하지 않는다.
 
 ## 사용한 문법과 이유
 
-- `Time.unscaledTime`과 `Mathf.Max`: 0배 정지 중에도 종료 시각을 계산하고, 겹친 요청이 더 이른 시각으로 종료되지 않게 한다.
-- `EventBus<HitStopEvent>`와 `readonly struct`: 프로젝트의 기존 이벤트 경로로 지속 시간 값을 전달한다. 별도 채널 에셋이나 새 인터페이스는 만들지 않았다.
+- `Time.unscaledTime`과 `Mathf.Max`: 0배 정지 중에도 종료 시각을 계산하고, 같은 배율로 겹친 요청이 더 이른 시각으로 종료되지 않게 한다.
+- `EventBus<HitStopEvent>`와 `readonly struct`: 프로젝트의 기존 이벤트 경로로 지속 시간과 배율을 함께 전달한다. 별도 채널 에셋이나 새 인터페이스는 만들지 않았다.
+- `List<HitStop>`와 `Mathf.Min`: 배율마다 종료 시각을 보관하고, 아직 끝나지 않은 요청 중 가장 작은 배율을 고른다. struct를 목록에서 꺼내 수정하면 복사본이 바뀌므로 수정 후 `_hitStops[i] = request`로 다시 넣는다.
+- 선택적 매개변수 `stopTimeScale = 0.05f`: 기존 한 인자 호출도 컴파일되게 유지한다. 적 모듈은 이 기본값에 의존하지 않고 명시적인 배율을 전달한다.
 - `HashSet`: 토큰 보유자와 일시정지 요청자를 중복 없이 관리한다. 여러 창 중 하나만 닫혀도 나머지 창의 정지는 유지된다.
 - `LinkedList`와 `Dictionary`: FIFO 순서와, 중간에 죽거나 만료된 적의 빠른 제거를 함께 지원한다. 일반 Queue는 중간 원소 제거를 직접 지원하지 않는다.
 - `is not PlayerController`: 실제 플레이어가 가한 피해인지 타입으로 검사한다. 태그 문자열에 의존하지 않는다.

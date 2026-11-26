@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Players.QuestSystem;
 using _Scripts.Currency;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Maps;
 using _Scripts.Maps.Data;
+using _Scripts.Settings;
 using _Scripts.UI.AlarmUI;
 using UnityEngine;
 
@@ -222,12 +224,17 @@ namespace _Scripts.Agent.Players.TitleSystem
             OnTitlesChanged?.Invoke();
         }
         
+        // 설정의 "칭호 알림"이 꺼짐이면 알림만 생략한다. 달성 처리와 도감 기록은 그대로다.
         private void SendAlarm(Title title)
-            => AlarmEvents.SendAlarm(
+        {
+            if (ServiceLocator.Get<ISettingsManager>()?.Settings.titleNotice == TitleNoticeOption.Off) return;
+
+            AlarmEvents.SendAlarm(
                 $"퀘스트 완료! : {title.TitleSo.TitleName}",
                 title.TitleSo.TitleDescription,
                 title.TitleSo.TitleIcon
             );
+        }
 
         #region Equip
 

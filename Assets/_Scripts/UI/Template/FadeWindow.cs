@@ -38,15 +38,12 @@ namespace _Scripts.UI.Template
             }
         }
         
+        // 다음에 열리는 창이 시간을 멈춰도(PausingWindow) 이 창의 페이드아웃이 끝나야 하므로 unscaled 시간을 쓴다.
         private IEnumerator Fade(float targetValue)
         {
-            float currentValue = canvasGroup.alpha;
-            float dir = (targetValue - currentValue) > 0 ? 1 : -1;
-            while (true)
+            while (!Mathf.Approximately(canvasGroup.alpha, targetValue))
             {
-                currentValue = Mathf.Clamp01(currentValue + dir * fadeSpeed * Time.deltaTime);
-                canvasGroup.alpha = currentValue;
-                if(Mathf.Approximately(currentValue,targetValue)) break;
+                canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, targetValue, fadeSpeed * Time.unscaledDeltaTime);
                 yield return null;
             }
 

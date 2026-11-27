@@ -1,0 +1,40 @@
+{
+  "result": {
+    "results": [
+      {
+        "test": "HitStopOverlap",
+        "elapsed": 0.221694946,
+        "restored": 1
+      },
+      {
+        "test": "NestedPauseAndFreezeExpiration",
+        "passed": true
+      },
+      {
+        "test": "ExistingUiPauseCoexistence",
+        "passed": true
+      },
+      {
+        "test": "DeathSlowMotionBridge",
+        "passed": true
+      },
+      {
+        "test": "PlayerDamageOnly",
+        "moduleStopTimeScale": 0.12,
+        "passed": true
+      },
+      {
+        "test": "ZeroScaleFreezeRestores",
+        "passed": true
+      },
+      {
+        "test": "DisabledServiceRestores",
+        "passed": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 195,
+  "executeMs": 1127,
+  "assemblyName": "PipelineRunScript_VerifyEnemyCombatCoordination_2d0a8aee11df487cbf22c3d0ee552211"
+}

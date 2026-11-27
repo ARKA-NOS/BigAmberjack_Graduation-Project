@@ -26,6 +26,12 @@ namespace _Scripts.UI.UpgradeUI
         [Tooltip("이름 텍스트. 비워두면 자식의 TMP_Text를 찾아 숨긴다.")]
         [SerializeField] private TMP_Text nameText;
 
+        [Tooltip("임시 선택했거나 구매한 노드에 켜는 체크 표시.")]
+        [SerializeField] private GameObject checkMark;
+
+        [Tooltip("임시 선택(확정 전)인 노드에 켜는 테두리.")]
+        [SerializeField] private GameObject pendingFrame;
+
         private Button _button;
         private CanvasGroup _canvasGroup;
         private UpgradeNodeItem _item;
@@ -45,7 +51,7 @@ namespace _Scripts.UI.UpgradeUI
             _item.State.Subscribe(ApplyState).AddTo(Disposables);
 
             if (_button != null)
-                _button.BindClick(_item.Purchase).AddTo(Disposables);
+                _button.BindClick(_item.Toggle).AddTo(Disposables);
         }
 
         protected override void OnUnbind()
@@ -60,7 +66,11 @@ namespace _Scripts.UI.UpgradeUI
 
         private void ApplyState(UpgradeNodeState state)
         {
-            _canvasGroup.alpha = state == UpgradeNodeState.Purchased ? 1f : DimAlpha;
+            bool selected = state is UpgradeNodeState.Pending or UpgradeNodeState.Purchased;
+            _canvasGroup.alpha = selected ? 1f : DimAlpha;
+
+            if (checkMark != null) checkMark.SetActive(selected);
+            if (pendingFrame != null) pendingFrame.SetActive(state == UpgradeNodeState.Pending);
 
             if (_button != null && _button.targetGraphic != null)
                 _button.targetGraphic.color = state == UpgradeNodeState.Locked ? LockedColor : Color.white;
@@ -73,7 +83,12 @@ namespace _Scripts.UI.UpgradeUI
         private void ApplyIcon()
         {
             if (nameText == null) nameText = GetComponentInChildren<TMP_Text>(true);
-            if (iconImage == null) iconImage = CreateIconImage();
+            if (iconImage == null)
+            {
+                iconImage = CreateIconImage();
+                // 런타임에 만든 아이콘이 체크 표시를 가리지 않게 맨 뒤로 보낸다.
+                iconImage.transform.SetAsFirstSibling();
+            }
 
             Sprite icon = upgradeNode != null ? upgradeNode.NodeIcon : null;
             iconImage.sprite = icon;

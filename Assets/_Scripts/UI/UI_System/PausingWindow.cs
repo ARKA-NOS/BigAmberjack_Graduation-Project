@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using _Scripts._Core._ServiceLocator;
+using _Scripts.Agent.Enemies.Managers;
 using _Scripts.Agent.Players;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.DevLib.ModuleSystem;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace _Scripts.UI.UI_System
 {
-    // 열려 있는 동안 게임 시간을 멈추고(Time.timeScale = 0) 플레이어 스킬 입력(공격·스킬·대시)을 끄는 창.
+    // 열려 있는 동안 게임 시간을 멈추고(TimeStopService) 플레이어 스킬 입력(공격·스킬·대시)을 끄는 창.
     // 시간이 멈춰도 페이드가 진행되도록 unscaled 시간으로 직접 페이드한다.
     // 닫혀 있는 동안은 레이캐스트를 막지 않아서, 투명해진 창이 뒤에 있는 다른 UI의 클릭을 가로채지 않게 한다.
     // 열고 닫을 때 할 일이 더 있으면 OnOpened/OnClosed를 오버라이드한다.
@@ -19,8 +20,6 @@ namespace _Scripts.UI.UI_System
 
         private ICanInputOnOff _blockedSkillInput;
         private Coroutine _fade;
-        private float _prevTimeScale = 1f;
-        private bool _isFrozen;
 
         public bool IsOpen { get; private set; }
 
@@ -67,23 +66,10 @@ namespace _Scripts.UI.UI_System
             canvasGroup.blocksRaycasts = value;
         }
 
-        // 열기 전 시간 배율을 기억해 두었다가 닫을 때 그대로 되돌린다.
-        private void Freeze()
-        {
-            if (_isFrozen) return;
+        // 일시정지를 요청한 모두가 풀어야 시간이 다시 흐른다. 같은 요청을 여러 번 해도 괜찮다.
+        private void Freeze() => ServiceLocator.Get<TimeStopService>()?.SetPaused(this, true);
 
-            _prevTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-            _isFrozen = true;
-        }
-
-        private void Unfreeze()
-        {
-            if (!_isFrozen) return;
-
-            Time.timeScale = _prevTimeScale;
-            _isFrozen = false;
-        }
+        private void Unfreeze() => ServiceLocator.Get<TimeStopService>()?.SetPaused(this, false);
 
         private void StartFade(float target)
         {

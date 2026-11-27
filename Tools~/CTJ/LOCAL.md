@@ -29,6 +29,8 @@
 
 공용 오디오 코드 전용 `Assets/_Scripts/Audio`는 사용자가 이후 대화에서 별도로 사용을 승인한 영역이다. 기존 승인 범위는 유지하되, 해당 폴더 안에서도 다른 동료가 추가한 코드를 이번 가독성 정리의 대상으로 확장하지 않는다.
 
+2026-11-26 이번 전투 매니저 작업에서는 `Assets/_Prefabs/Manager/GameManager.prefab`에 TimeStopService와 AttackTokenManager 자식 둘을 추가하는 것만 사용자가 별도로 승인했다. 새 매니저 코드는 기존 허용 영역 `Assets/_Scripts/Agent/Enemies/Managers`에 둔다. `Assets/_Scripts/_Core/_Manager/Combat` 생성과 외부 UI·치트·테스트 코드의 시간 제어 변경은 승인하지 않았으며, 해당 변경은 팀원 전달 문서로 안내한다. 씬 파일은 수정하지 않는다.
+
 ## 로컬 도구와 문서
 
 - CTJ용 로컬 도구, 검증 보조 파일, 작업 문서는 `Tools~/CTJ` 안에 둔다.

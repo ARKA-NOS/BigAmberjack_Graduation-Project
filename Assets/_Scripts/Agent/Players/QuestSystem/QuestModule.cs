@@ -62,6 +62,6 @@ namespace _Scripts.Agent.Players.QuestSystem
             }
         }
 
-        
+        public void ClearQuests() => _questDict.Clear();
     }
 }

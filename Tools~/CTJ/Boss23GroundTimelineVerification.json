@@ -1,0 +1,101 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "Movement",
+        "firstSpeed": 2.66666579,
+        "peakSpeed": 6.000006,
+        "lastSpeed": 1.38889968,
+        "smoothAcceleration": true,
+        "endX": 3
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": false,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.6529672,
+          "FirstDash": 1.20368838,
+          "Recovering": 2.21047521
+        },
+        "releases": [
+          1.20368838
+        ],
+        "total": 2.41073155,
+        "damage": 18,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": false,
+        "shots": 7,
+        "firstShot": 0.5826411,
+        "interval": 0.32,
+        "idleAt": 2.81756973,
+        "recoveryAt": 2.810484,
+        "retreat": 3,
+        "directionLocked": true,
+        "damagePerShot": 10
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": true,
+        "shots": 7,
+        "firstShot": 0.580656052,
+        "interval": 0.32,
+        "idleAt": 2.81677628,
+        "recoveryAt": 2.81162834,
+        "retreat": 0,
+        "directionLocked": true,
+        "damagePerShot": 10
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": true,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.452507019,
+          "FirstDash": 0.914319038,
+          "Reaiming": 1.60228825,
+          "SecondDash": 1.9425478,
+          "Recovering": 2.639145
+        },
+        "releases": [
+          0.914319038,
+          1.9425478
+        ],
+        "total": 2.840331,
+        "damage": 44,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "shots": 36,
+        "firstShot": 0.4812355,
+        "interval": 0.144,
+        "idleAt": 2.21247387,
+        "recoveryAt": 2.20208073,
+        "retreat": 3,
+        "directionLocked": true,
+        "damagePerShot": 10
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 1855,
+  "executeMs": 13723,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_c701f32c0a4f44da9a884144ddb2fb43"
+}

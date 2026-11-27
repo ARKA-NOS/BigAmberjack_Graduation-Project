@@ -1,0 +1,115 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "Charge",
+        "enhanced": false,
+        "dashes": 1,
+        "lastX": 3,
+        "ghostPeak": 5,
+        "hits": 1
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": false,
+        "volleys": 7,
+        "shots": 7,
+        "retreat": 3
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": true,
+        "volleys": 7,
+        "shots": 7,
+        "retreat": 0
+      },
+      {
+        "pattern": "AirTransition",
+        "enhanced": false,
+        "height": 6.5,
+        "shots": 0
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": false,
+        "crossings": 1,
+        "speed": 600,
+        "finalAngle": 57.8509445,
+        "hits": 1
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": false,
+        "drops": 3,
+        "interval": 1,
+        "fixedMarkers": 3,
+        "ringShrank": true,
+        "impactHidden": true
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": true,
+        "dashes": 2,
+        "lastX": 0,
+        "ghostPeak": 5,
+        "hits": 2
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "volleys": 12,
+        "shots": 36,
+        "retreat": 3
+      },
+      {
+        "pattern": "AirTransition",
+        "enhanced": true,
+        "height": 6.50000048,
+        "shots": 5
+      },
+      {
+        "pattern": "Laser",
+        "enhanced": true,
+        "crossings": 2,
+        "speed": 750,
+        "finalAngle": -57.8509521,
+        "hits": 2
+      },
+      {
+        "pattern": "Bomb",
+        "enhanced": true,
+        "drops": 6,
+        "interval": 0.5,
+        "fixedMarkers": 6,
+        "ringShrank": true,
+        "impactHidden": true
+      },
+      {
+        "pattern": "RandomSelection",
+        "ground": [
+          82,
+          69,
+          89
+        ],
+        "air": [
+          83,
+          77
+        ]
+      },
+      {
+        "pattern": "LastStandEntry",
+        "boundary": 0.35,
+        "oneWayPreserved": true,
+        "noEntryShotgun": true
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 1493,
+  "executeMs": 31956,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_7ed8a11a713249e88534012703b82c32"
+}

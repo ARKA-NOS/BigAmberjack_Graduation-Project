@@ -30,5 +30,8 @@ namespace _Scripts.Inventory
 
         // 장착 칸을 amount만큼 늘린다(최대 Inventory.EquipmentMaxCapacity).
         bool TryExpandEquipment(int amount = 1);
+
+        // 장착/보관 칸을 모두 비운다. 장착 칸의 효과도 함께 뺀다. 런 정리용이라 IsLocked와 상관없이 동작한다.
+        void Clear();
     }
 }

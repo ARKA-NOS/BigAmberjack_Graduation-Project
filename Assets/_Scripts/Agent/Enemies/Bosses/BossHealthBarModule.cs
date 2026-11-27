@@ -13,6 +13,7 @@ namespace _Scripts.Agent.Enemies.Bosses
     public sealed class BossHealthBarModule : Module
     {
         [SerializeField] private BossHealthBarUI healthBarPrefab;
+
         private BossBase _boss;
         private BossHealthBarUI _view;
         private INewHealthModule _health;
@@ -47,27 +48,33 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void SubscribeHealth()
         {
             UnsubscribeHealth();
+
             if (_boss == null) return;
 
             _health = _boss.GetModule<INewHealthModule>();
+
             if (_health == null) return;
 
             _health.OnDead += CloseView;
+
             if (_health.IsDead || _health.CurrentHealth <= 0f) CloseView();
         }
 
         private void UnsubscribeHealth()
         {
             if (_health != null) _health.OnDead -= CloseView;
+
             _health = null;
         }
 
         private void CreateView()
         {
             if (_closed || _view != null || _boss == null || _boss.IsDead || !isActiveAndEnabled) return;
+
             if (healthBarPrefab == null)
             {
                 Debug.LogWarning($"{name}: Boss Health Bar Prefab을 연결하세요.", this);
+
                 return;
             }
 

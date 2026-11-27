@@ -117,9 +117,11 @@ namespace _Scripts.Agent.Players.CharacterSystem
             }
             
             if (node == null || node.UpgradeData == null) return;
-            if (!_activeTree.IsUpgrade(node)) return;
-            
-            node.UpgradeData.AgentUpgrade(_activeOwner);
+
+            if (_activeTree.IsUpgrade(node))
+                node.UpgradeData.AgentUpgrade(_activeOwner);
+            else
+                node.UpgradeData.AgentDowngrade(_activeOwner);
         }
         
     }

@@ -1,0 +1,97 @@
+{
+  "result": {
+    "enhanced": [
+      {
+        "name": "DroneSalvoSkill",
+        "fields": [
+          "lastStandShotInterval=0.144",
+          "lastStandFirstShotTime=0.48",
+          "lastStandFiringAnimationSpeed=3",
+          "lastStandVolleys=12",
+          "lastStandSpreadAngle=12"
+        ]
+      },
+      {
+        "name": "DroneDownwardLaserSkill",
+        "fields": [
+          "lastStandDamage=28",
+          "lastStandSpeedMultiplier=1.2"
+        ]
+      },
+      {
+        "name": "DroneBombSkill",
+        "fields": [
+          "lastStandDamage=26",
+          "lastStandRadiusPixels=90",
+          "lastStandDrops=6",
+          "lastStandFirstDropTime=0.65",
+          "lastStandInterval=0.508",
+          "lastStandWarningDuration=1.15"
+        ]
+      },
+      {
+        "name": "DroneChargeSkill",
+        "fields": [
+          "lastStandDamage=22",
+          "lastStandFollowDuration=0.45",
+          "lastStandChargeDuration=0.46",
+          "lastStandDashDuration=0.68",
+          "reaimDuration=0.34",
+          "lastStandRecoveryDuration=0.2"
+        ]
+      },
+      {
+        "name": "DroneAirTransitionSkill",
+        "fields": [
+          "lastStandSpeedMultiplier=1.2"
+        ]
+      }
+    ],
+    "protectedClips": [
+      {
+        "name": "BombCharge",
+        "hash": "2D782B7D926B37B9E3F0C478CBEE776241D0674097382CA7F5EF3D32098A8603"
+      },
+      {
+        "name": "Bomb",
+        "hash": "E0266EF54D64B40B23EE9A60A104C39C508BEF068C3AC053740A1F28408174FE"
+      },
+      {
+        "name": "CrouchFire",
+        "hash": "CE998C443ECDA2871D5609AC7EC10F3455ABC56CC5A778EF220CF29472029827"
+      },
+      {
+        "name": "Charge",
+        "hash": "EB34C67752B0FD3345945BEA69D8BF4ECB91BB25998AE02BAACB0C414639ED31"
+      },
+      {
+        "name": "AirIdle",
+        "hash": "AF398B735837B62F2C85F32DE8254229C16BF43AD47FF75707F0AAA73EA59D40"
+      },
+      {
+        "name": "AirShot",
+        "hash": "5AA62C543B5A5663BC9F9C5A2A8A730E8428CFF92A87CC76B1A62F83D79495DA"
+      },
+      {
+        "name": "Rise",
+        "hash": "62FB711883686423355F3E38E2590E25C49E3B0EE56480FD6A5C0BC25ED0EF5B"
+      },
+      {
+        "name": "Descend",
+        "hash": "1DEE1EF85A9EFE51C9A2EC208CA7DA212B93B9493121099D3DEFB37AFEED61C4"
+      },
+      {
+        "name": "Laser",
+        "hash": "72404627F931AE115AD1424837CDDBD4928F940559576907BE833B7F01838467"
+      },
+      {
+        "name": "LaserCharge",
+        "hash": "BD72839108B2C12351A0B91A6B79BEFE93F97D31466D458586C91F175B11796C"
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 66,
+  "executeMs": 10,
+  "assemblyName": "PipelineRunScript_SetupBoss23GifReference_b4d4ae8f48c146e1b396007900a65bf5"
+}

@@ -1,5 +1,7 @@
 ﻿using _Scripts._Core._Debug;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.StatSystem;
+using _Scripts.Audio;
 using _Scripts.DevLib.ModuleSystem;
 using UnityEngine;
 
@@ -8,7 +10,10 @@ namespace _Scripts.Agent.Players.Modules
     public class PlayerMovement : Module, IControlMovement, IAfterInitModule, ICanInputOnOff
     {
         [SerializeField] private StatData moveSpeed;
-        
+
+        [SerializeField] private SoundCueSO[] moveSoundCues;
+        [SerializeField] private float stepInterval = 0.35f;
+
         private Rigidbody2D _playerRb;
         
         private IRenderer _renderer;
@@ -18,6 +23,11 @@ namespace _Scripts.Agent.Players.Modules
         private Stat _moveSpeedStat;
         
         private bool _isMoveLock = false;
+
+        private ISoundManager _soundManager;
+        private IGroundChecker _groundChecker;
+        private float _stepTimer;
+        private int _stepIndex;
         
         public override void Initialize(ModuleOwner owner)
         {
@@ -30,6 +40,12 @@ namespace _Scripts.Agent.Players.Modules
             
             _playerRb = _owner.GetComponent<Rigidbody2D>();
             FDebug.Assert(_playerRb != null,"Rigidbody2D is Not Found");
+
+            _soundManager = ServiceLocator.Get<ISoundManager>();
+            FDebug.Assert(_soundManager != null, "Soundmangaer is not Found");
+
+            _groundChecker = _owner.GetModule<IGroundChecker>();
+            FDebug.Assert(_groundChecker != null, "IGroundChecker is Not Found");
         }
         
         public void AfterInit()
@@ -60,6 +76,32 @@ namespace _Scripts.Agent.Players.Modules
             if (_playerRb == null) return;
             if(_isMoveLock) return;
             _playerRb.linearVelocityX = MovementDirectionX * _moveSpeedStat.Value;
+            UpdateStepSound();
+        }
+
+        private void UpdateStepSound()
+        {
+            bool isWalking = !Mathf.Approximately(MovementDirectionX, 0f)
+                             && _groundChecker != null && _groundChecker.FixedIsGround;
+            if (!isWalking)
+            {
+                _stepTimer = 0f;
+                return;
+            }
+
+            _stepTimer -= Time.fixedDeltaTime;
+            if (_stepTimer > 0f) return;
+
+            _stepTimer = stepInterval;
+            PlayStepSound();
+        }
+
+        private void PlayStepSound()
+        {
+            if (moveSoundCues == null || moveSoundCues.Length == 0) return;
+
+            _soundManager.PlaySfx(moveSoundCues[_stepIndex], transform.position);
+            _stepIndex = (_stepIndex + 1) % moveSoundCues.Length;
         }
         
         public void AddForce(Vector2 force, ForceMode2D impulse = ForceMode2D.Impulse) 

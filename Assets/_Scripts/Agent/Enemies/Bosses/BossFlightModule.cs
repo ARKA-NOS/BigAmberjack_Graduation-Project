@@ -9,6 +9,9 @@ namespace _Scripts.Agent.Enemies.Bosses
     {
         [Tooltip("최고 속도까지 가속하는 시간이며 감속에도 같은 값을 사용합니다. 짧은 이동은 최고 속도를 낮춥니다.")]
         [SerializeField, Min(0.01f)] private float easeDuration = 0.2f;
+        [Tooltip("출발 시 최고 속도로 움직이고 도착할수록 부드럽게 감속합니다. 끄면 기존 가속·등속·감속을 사용합니다.")]
+        [SerializeField] private bool decelerateFromStart;
+
         private Rigidbody2D _body;
         private Vector2 _start;
         private Vector2 _destination;
@@ -18,6 +21,8 @@ namespace _Scripts.Agent.Enemies.Bosses
         private float _cruiseTime;
         private float _duration;
         private float _elapsed;
+        private bool _deceleratingMove;
+
         public bool IsMoving { get; private set; }
         public bool HasArrived => _body != null && !IsMoving && Vector2.Distance(_body.position, _destination) <= 0.01f;
 
@@ -49,20 +54,55 @@ namespace _Scripts.Agent.Enemies.Bosses
             _destination = destination;
             _distance = Vector2.Distance(_start, destination);
             _elapsed = 0f;
+            _deceleratingMove = decelerateFromStart;
+
             if (_distance <= 0.0001f)
             {
                 Place(destination);
+
                 return;
             }
 
             float maxSpeed = Mathf.Max(0.01f, speed);
+
+            if (_deceleratingMove)
+            {
+                _peakSpeed = maxSpeed;
+                _duration = 2f * _distance / maxSpeed;
+                IsMoving = true;
+
+                return;
+            }
+
             float ramp = ResolveEaseDuration(easeOverride);
+
             // 가속+감속만으로 목적지를 넘어갈 짧은 거리에서는 최고 속도를 낮추고 등속 구간을 생략합니다.
             _rampTime = Mathf.Min(ramp, Mathf.Sqrt(_distance * ramp / maxSpeed));
             _peakSpeed = maxSpeed * _rampTime / ramp;
             _cruiseTime = Mathf.Max(0f, _distance / _peakSpeed - _rampTime);
             _duration = 2f * _rampTime + _cruiseTime;
             IsMoving = true;
+        }
+
+        // 타임라인에 지정된 특수 이동. 이동 거리가 지형에 의해 줄어도 동작 시간은 유지합니다.
+        public void MoveToDuration(Vector2 destination, float duration)
+        {
+            if (!decelerateFromStart)
+            {
+                duration = Mathf.Max(0.01f, duration);
+                float ramp = Mathf.Min(ResolveEaseDuration(null), duration * 0.45f);
+                float speed = Vector2.Distance(_body.position, destination) / (duration - ramp);
+                MoveTo(destination, speed, ramp);
+
+                return;
+            }
+
+            MoveTo(destination, 1f);
+            if (!IsMoving) return;
+
+            _deceleratingMove = true;
+            _duration = Mathf.Max(0.01f, duration);
+            _peakSpeed = 2f * _distance / _duration;
         }
 
         public void Tick()
@@ -73,13 +113,20 @@ namespace _Scripts.Agent.Enemies.Bosses
             float travelled;
             float acceleration = _peakSpeed / _rampTime;
 
-            if (_elapsed < _rampTime)
+            if (_deceleratingMove)
+            {
+                // 최고 속도에서 SmoothStep으로 0까지 줄이는 속도를 적분해 정확한 끝점에 도착합니다.
+                float t = _elapsed / _duration;
+                travelled = _distance * (2f * t - 2f * t * t * t + t * t * t * t);
+            }
+            else if (_elapsed < _rampTime)
                 travelled = 0.5f * acceleration * _elapsed * _elapsed;
             else if (_elapsed < _rampTime + _cruiseTime)
                 travelled = _peakSpeed * (_elapsed - 0.5f * _rampTime);
             else
             {
                 float remaining = _duration - _elapsed;
+
                 travelled = _distance - 0.5f * acceleration * remaining * remaining;
             }
 
@@ -105,6 +152,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         {
             IsMoving = false;
             _elapsed = 0f;
+
             if (_body == null) return;
 
             _body.linearVelocity = Vector2.zero;

@@ -23,6 +23,7 @@ namespace _Scripts.Agent.Enemies.Bosses
         private BossLaserSkill _laser;
         private BossArenaModule _arena;
         private Vector2 _velocity;
+
         public float RedBlend { get; private set; }
 
         public override void Initialize(ModuleOwner owner)
@@ -31,12 +32,14 @@ namespace _Scripts.Agent.Enemies.Bosses
             _boss = owner as RobotEyeBoss;
             _laser = owner.GetComponentInChildren<BossLaserSkill>(true);
             _arena = owner.GetModule<BossArenaModule>();
+
             if (_boss == null || globe == null || iris == null || redIris == null || globe.sprite == null ||
                 normalIris == null || afterLaserIris == null || iris.transform.parent != globe.transform ||
                 redIris.transform.parent != iris.transform || _laser == null || _arena == null)
             {
                 Debug.LogError($"{name}: RobotEyeBoss / Globe / Iris / 자식 RedIris / 두 스프라이트 / Laser / Arena를 확인하세요.", this);
                 enabled = false;
+
                 return;
             }
 
@@ -61,6 +64,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             if (firingLaser)
             {
                 Vector2 direction = globe.transform.InverseTransformVector(_laser.BeamDirection);
+
                 destination = center + direction.normalized * GetTravelRadius();
                 _velocity = Vector2.zero;
             }
@@ -68,6 +72,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             {
                 // 월드 위치를 베이스의 로컬 공간으로 옮겨 보스 이동/크기와 무관하게 계산합니다.
                 Vector2 target = globe.transform.InverseTransformPoint(_boss.Target.position);
+
                 destination = center + Vector2.ClampMagnitude(target - center, GetTravelRadius());
             }
 
@@ -75,6 +80,7 @@ namespace _Scripts.Agent.Enemies.Bosses
             Vector2 next = !firingLaser && followSmoothTime > 0f
                 ? Vector2.SmoothDamp(current, destination, ref _velocity, followSmoothTime)
                 : destination;
+
             // 스프라이트/여백 변경이나 보간 중에도 전체 눈동자가 허용 원 안에 남게 합니다.
             PlaceIris(center + Vector2.ClampMagnitude(next - center, GetTravelRadius()));
         }
@@ -87,10 +93,12 @@ namespace _Scripts.Agent.Enemies.Bosses
                 // 베이스의 아래쪽이 아레나 위쪽에 드러날 때부터 중앙 도착까지 붉어집니다.
                 float visibleY = _arena.LaserBounds.max.y + globe.bounds.extents.y;
                 float progress = Mathf.InverseLerp(visibleY, _arena.Center.y, _boss.transform.position.y);
+
                 RedBlend = Mathf.Max(RedBlend, Mathf.SmoothStep(0f, 1f, progress));
             }
 
             Color color = redIris.color;
+
             color.a = RedBlend;
             redIris.color = color;
         }
@@ -103,7 +111,9 @@ namespace _Scripts.Agent.Enemies.Bosses
                 Vector3.Scale(iris.transform.localScale, redIris.transform.localScale));
             float globeRadius = Mathf.Min(extent.x, extent.y);
             float irisRadius = Mathf.Max(Mathf.Abs(irisExtent.x), Mathf.Abs(irisExtent.y));
+
             irisRadius = Mathf.Max(irisRadius, Mathf.Max(Mathf.Abs(redExtent.x), Mathf.Abs(redExtent.y)));
+
             return Mathf.Max(0f, globeRadius - irisRadius - Mathf.Max(0f, paddingPixels) / globe.sprite.pixelsPerUnit);
         }
 
@@ -113,9 +123,11 @@ namespace _Scripts.Agent.Enemies.Bosses
         private void PlaceIris(Vector2 center)
         {
             Vector3 pivotOffset = Vector3.Scale(iris.sprite.bounds.center, iris.transform.localScale);
+
             iris.transform.localPosition = new Vector3(center.x - pivotOffset.x, center.y - pivotOffset.y,
                 iris.transform.localPosition.z);
             Vector3 redCenter = Vector3.Scale(afterLaserIris.bounds.center, redIris.transform.localScale);
+
             redIris.transform.localPosition = new Vector3(iris.sprite.bounds.center.x - redCenter.x,
                 iris.sprite.bounds.center.y - redCenter.y, redIris.transform.localPosition.z);
         }

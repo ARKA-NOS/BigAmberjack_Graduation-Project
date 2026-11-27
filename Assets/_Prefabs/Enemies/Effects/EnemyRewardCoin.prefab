@@ -120,7 +120,8 @@ MonoBehaviour:
   bounceHeightRatio: 0.5
   minimumBounceHeight: 0.8
   fallbackPlayerHeight: 2
-  horizontalRetention: 0.65
+  bounceAngleRange: {x: -30, y: 30}
+  bounceHeightMultiplierRange: {x: 1, y: 1.35}
   initialHomingSpeed: 2.5
   maxHomingSpeed: 16
   homingAcceleration: 35

@@ -12,6 +12,7 @@ namespace _Scripts.Testing.Enemy
         [SerializeField] private RobotEyeBoss boss;
         [SerializeField] private EnemyDamageProbe probe;
         [SerializeField] private Rigidbody2D targetBody;
+
         private bool _jumpRequested;
 
         private void Update()
@@ -29,12 +30,15 @@ namespace _Scripts.Testing.Enemy
             if (keyboard != null)
             {
                 if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) direction--;
+
                 if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) direction++;
             }
 
             targetBody.linearVelocityX = direction * 7f;
+
             if (_jumpRequested && Physics2D.Raycast(targetBody.position, Vector2.down, 0.7f, 1 << LayerMask.NameToLayer("Ground")))
                 targetBody.linearVelocityY = 10f;
+
             _jumpRequested = false;
         }
 
@@ -49,8 +53,11 @@ namespace _Scripts.Testing.Enemy
             {
                 GUILayout.Label($"Boss HP: {boss.GetModule<INewHealthModule>()?.CurrentHealth} / 2500 | {boss.CurrentState}");
                 GUILayout.Label($"Invulnerable: {boss.IsInvulnerable} | Laser used: {boss.HasUsedLaserPhase} | Passes: {boss.CompletedTraversals}/3");
+
                 if (GUILayout.Button("Deal 250 damage")) Hit(250f);
+
                 if (GUILayout.Button("Deal 1500 damage (2500 -> 1000)")) Hit(1500f);
+
                 if (GUILayout.Button("Deal 3000 damage (ignored during invulnerability)")) Hit(3000f);
             }
             else GUILayout.Label("Boss destroyed. Stop/play to restart.");

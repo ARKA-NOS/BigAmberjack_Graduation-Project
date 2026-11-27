@@ -2639,6 +2639,7 @@ GameObject:
   - component: {fileID: 4629403803184430590}
   - component: {fileID: 2034662788396023387}
   - component: {fileID: 1410875503540484554}
+  - component: {fileID: 6835048239517059475}
   m_Layer: 6
   m_Name: TestBossMap
   m_TagString: Untagged
@@ -2708,6 +2709,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SDW.Scripts.Maps.RoomController
   enemySpawnPoints:
   - {fileID: 0}
+--- !u!114 &6835048239517059475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8726047386810142007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ba540a4c48c43b2a215085ffd4b94d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.BossMapSystem.BossMap
+  playerStartTrm: {fileID: 9169105350454586473}
 --- !u!1 &9018410815409726162
 GameObject:
   m_ObjectHideFlags: 0

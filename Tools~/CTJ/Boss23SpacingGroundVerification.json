@@ -1,0 +1,113 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "Movement",
+        "firstSpeed": 2.66666579,
+        "peakSpeed": 6.000006,
+        "lastSpeed": 1.38889968,
+        "smoothAcceleration": true,
+        "endX": 3
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": false,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.6524067,
+          "FirstDash": 1.20236015,
+          "Recovering": 2.22178841
+        },
+        "releases": [
+          1.20236015
+        ],
+        "total": 2.4256,
+        "damage": 18,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true,
+        "warningSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": false,
+        "shots": 7,
+        "firstShot": 0.582939148,
+        "interval": 0.32,
+        "idleAt": 2.65017319,
+        "recoveryAt": 2.64473724,
+        "retreat": 1.5,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "basicFlashCount": 7
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": false,
+        "wall": true,
+        "shots": 7,
+        "firstShot": 0.5817604,
+        "interval": 0.32,
+        "idleAt": 2.647911,
+        "recoveryAt": 2.6427803,
+        "retreat": 0,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "basicFlashCount": 7
+      },
+      {
+        "pattern": "BlockedChargeWarning",
+        "direction": "left",
+        "width": 2.05344987,
+        "scaledBoundsMatch": true,
+        "hiddenOnCancel": true
+      },
+      {
+        "pattern": "Charge",
+        "enhanced": true,
+        "phases": {
+          "Following": 0,
+          "Charging": 0.453731537,
+          "FirstDash": 0.9139633,
+          "Reaiming": 1.59809113,
+          "SecondDash": 1.94130707,
+          "Recovering": 2.637394
+        },
+        "releases": [
+          0.9139633,
+          1.94130707
+        ],
+        "total": 2.83919144,
+        "damage": 44,
+        "directionLocked": true,
+        "hitResistance": true,
+        "idleDuringRecovery": true,
+        "dashAnimationSpeed": 2,
+        "renderSmoothingSeen": true,
+        "warningSeen": true
+      },
+      {
+        "pattern": "Barrage",
+        "enhanced": true,
+        "wall": false,
+        "shots": 36,
+        "firstShot": 0.480575562,
+        "interval": 0.144,
+        "idleAt": 2.196064,
+        "recoveryAt": 2.19129562,
+        "retreat": 1.5,
+        "directionLocked": true,
+        "damagePerShot": 10,
+        "basicFlashCount": null
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 203,
+  "executeMs": 14028,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_bf54386dfda142d6a383e51e32d12665"
+}

@@ -13,6 +13,7 @@ namespace _Scripts.Agent.Enemies
 
         private const float Clearance = 0.025f;
         private const float ArrivalDistance = 0.06f;
+
         private readonly List<RaycastHit2D> _hits = new List<RaycastHit2D>();
         private Rigidbody2D _body;
         private ContactFilter2D _terrain;
@@ -46,12 +47,15 @@ namespace _Scripts.Agent.Enemies
             {
                 if (Vector2.Distance(_body.position, _spawn) > ArrivalDistance)
                     return MoveTowards(_spawn, speed);
+
                 _returning = false;
             }
 
             Vector2 destination = _spawn + Vector2.right * (_patrolDirection * patrolHalfWidth);
             float direction = MoveTowards(destination, speed);
+
             if (direction == 0f) _patrolDirection = -_patrolDirection;
+
             return direction;
         }
 
@@ -61,9 +65,11 @@ namespace _Scripts.Agent.Enemies
         private float MoveTowards(Vector2 destination, float speed)
         {
             Vector2 delta = destination - _body.position;
+
             if (delta.sqrMagnitude <= ArrivalDistance * ArrivalDistance)
             {
                 Stop();
+
                 return 0f;
             }
 
@@ -79,10 +85,12 @@ namespace _Scripts.Agent.Enemies
                 Vector2 vertical = Vector2.up * Mathf.Sign(delta.y);
                 float x = LimitTravel(horizontal, Mathf.Min(Mathf.Abs(delta.x), step));
                 float y = LimitTravel(vertical, Mathf.Min(Mathf.Abs(delta.y), step));
+
                 move = x >= y ? horizontal * x : vertical * y;
             }
 
             _body.linearVelocity = move / Time.fixedDeltaTime;
+
             return Mathf.Abs(move.x) > 0.001f ? Mathf.Sign(move.x) : 0f;
         }
 
@@ -92,12 +100,14 @@ namespace _Scripts.Agent.Enemies
 
             Bounds bounds = bodyCollider.bounds;
             Vector2 size = Vector2.Max((Vector2)bounds.size - Vector2.one * Clearance, Vector2.one * Clearance);
+
             Physics2D.BoxCast(bounds.center, size, 0f, direction, _terrain, _hits, distance + Clearance);
             float allowed = distance;
 
             foreach (var hit in _hits)
             {
                 if (!IsTerrain(hit) || Vector2.Dot(hit.normal, direction) >= -0.001f) continue;
+
                 allowed = Mathf.Min(allowed, Mathf.Max(0f, hit.distance - Clearance));
             }
 
@@ -110,8 +120,10 @@ namespace _Scripts.Agent.Enemies
             if (offset.sqrMagnitude < 0.0001f) return true;
 
             Physics2D.Raycast(origin, offset.normalized, _terrain, _hits, offset.magnitude);
+
             foreach (var hit in _hits)
                 if (IsTerrain(hit)) return false;
+
             return true;
         }
 
@@ -121,6 +133,7 @@ namespace _Scripts.Agent.Enemies
             {
                 _cachedTarget = target;
                 _targetCollider = target.GetComponent<Collider2D>();
+
                 if (_targetCollider == null) _targetCollider = target.GetComponentInChildren<Collider2D>();
             }
 

@@ -89,27 +89,36 @@ namespace _Scripts.Agent.Enemies
         internal float MaximumLifetime => Mathf.Max(0.1f, lifetimeRange.x, lifetimeRange.y) +
             Mathf.Max(0.01f, fadeDuration) + 0.1f;
 
-        internal void Emit(ParticleSystem particles)
+        internal void Emit(ParticleSystem particles, float speedMultiplier = 1f, float countMultiplier = 1f)
         {
             _particles = particles;
             var renderer = particles.GetComponent<ParticleSystemRenderer>();
             var meshes = new Mesh[renderer.meshCount];
             int meshCount = renderer.GetMeshes(meshes);
+
             if (meshCount == 0)
             {
                 particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
                 return;
             }
 
             var vertices = new Vector3[meshCount][];
+
             for (int i = 0; i < meshCount; i++) vertices[i] = meshes[i].vertices;
+
             int attachmentMeshCount = attachmentParticles != null && attachmentParticles != particles
                 ? attachmentParticles.GetComponent<ParticleSystemRenderer>().meshCount
                 : 0;
+
             _attachmentSystem = attachmentMeshCount > 0 ? attachmentParticles : null;
 
             int minimum = Mathf.Clamp(fragmentCount.x, 1, 64);
             int maximum = Mathf.Clamp(fragmentCount.y, minimum, 64);
+            float countScale = Mathf.Clamp(countMultiplier, 1f, 4f);
+
+            minimum = Mathf.Clamp(Mathf.RoundToInt(minimum * countScale), 1, 128);
+            maximum = Mathf.Clamp(Mathf.RoundToInt(maximum * countScale), minimum, 128);
             _count = Random.Range(minimum, maximum + 1);
 
             if (_fragments == null || _fragments.Length < maximum)
@@ -122,6 +131,7 @@ namespace _Scripts.Agent.Enemies
             {
                 if (_renderAttachments == null || _renderAttachments.Length < maximum)
                     _renderAttachments = new ParticleSystem.Particle[maximum];
+
                 ConfigureParticles(_attachmentSystem, maximum);
             }
 
@@ -130,6 +140,7 @@ namespace _Scripts.Agent.Enemies
             _filter.SetLayerMask(terrainLayers);
             _age = 0f;
             Vector3 origin = transform.position;
+
             _z = origin.z;
             float scale = Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.x));
             float aim = Mathf.Atan2(transform.right.y, transform.right.x);
@@ -143,7 +154,7 @@ namespace _Scripts.Agent.Enemies
                 var fragment = new Fragment
                 {
                     Position = (Vector2)origin + Random.insideUnitCircle * 0.025f,
-                    Velocity = direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed,
+                    Velocity = (direction * RandomBetween(speedRange, 0f) + Vector2.up * upwardSpeed) * Mathf.Max(0f, speedMultiplier),
                     Size = new Vector2(size * Random.Range(0.92f, 1.08f), size * Random.Range(0.92f, 1.08f)),
                     Tint = PickBodyColor(totalBodyColorWeight),
                     Angle = Random.Range(0f, 360f),
@@ -153,8 +164,10 @@ namespace _Scripts.Agent.Enemies
                     AttachmentMeshIndex = -1,
                     Radius = size * 0.38f
                 };
+
                 if (attachmentChance > 0f && Random.value <= attachmentChance)
                     AddAttachment(ref fragment, vertices[fragment.MeshIndex], meshCount, attachmentMeshCount);
+
                 _fragments[i] = fragment;
             }
 
@@ -164,6 +177,7 @@ namespace _Scripts.Agent.Enemies
         private static void ConfigureParticles(ParticleSystem particles, int maximum)
         {
             var main = particles.main;
+
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.simulationSpeed = 0f;
             main.scalingMode = ParticleSystemScalingMode.Shape;
@@ -202,12 +216,14 @@ namespace _Scripts.Agent.Enemies
             if (_count == 0 || _particles == null) return;
 
             float dt = Time.fixedDeltaTime;
+
             _age += dt;
             float fade = Mathf.Max(0.01f, fadeDuration);
 
             for (int i = _count - 1; i >= 0; i--)
             {
                 Fragment fragment = _fragments[i];
+
                 if (_age >= fragment.FadeAt + fade)
                 {
                     _fragments[i] = _fragments[--_count];
@@ -232,16 +248,19 @@ namespace _Scripts.Agent.Enemies
 
                 Vector2 direction = fragment.Velocity / speed;
                 float distance = speed * timeLeft;
+
                 if (!TryFindContact(fragment.Position, fragment.Radius, direction, distance,
                         out Vector2 center, out Vector2 normal, out float traveled))
                 {
                     fragment.Position += direction * distance;
+
                     return;
                 }
 
                 fragment.Position = center + normal * Skin;
                 Vector2 normalVelocity = normal * Vector2.Dot(fragment.Velocity, normal);
                 Vector2 tangentVelocity = fragment.Velocity - normalVelocity;
+
                 fragment.Velocity = tangentVelocity * tangentRetention - normalVelocity * bounce;
                 fragment.Spin *= -0.72f;
                 timeLeft -= traveled / speed;
@@ -291,6 +310,7 @@ namespace _Scripts.Agent.Enemies
             if (_count == 0)
             {
                 _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
                 return;
             }
 
@@ -302,19 +322,23 @@ namespace _Scripts.Agent.Enemies
             {
                 Fragment fragment = _fragments[i];
                 float opacity = 1f - Mathf.Clamp01((_age - fragment.FadeAt) / fade);
+
                 _renderParticles[visible++] = RenderParticle(fragment.Position, fragment.Size,
                     fragment.Angle, fragment.Tint, opacity, fragment.MeshIndex, _z);
+
                 if (fragment.AttachmentMeshIndex < 0) continue;
 
                 Vector2 offset = Quaternion.Euler(0f, 0f, fragment.Angle) * fragment.AttachmentOffset;
                 var attachment = RenderParticle(fragment.Position + offset,
                     fragment.Size * fragment.AttachmentScale, fragment.Angle + fragment.AttachmentAngle,
                     fragment.AttachmentTint, opacity, fragment.AttachmentMeshIndex, _z - 0.002f);
+
                 if (_attachmentSystem != null) _renderAttachments[visibleAttachments++] = attachment;
                 else _renderParticles[visible++] = attachment;
             }
 
             _particles.SetParticles(_renderParticles, visible);
+
             if (_attachmentSystem != null) _attachmentSystem.SetParticles(_renderAttachments, visibleAttachments);
         }
 
@@ -331,7 +355,9 @@ namespace _Scripts.Agent.Enemies
                 startLifetime = 1f,
                 remainingLifetime = 1f
             };
+
             particle.SetMeshIndex(meshIndex);
+
             return particle;
         }
 
@@ -344,16 +370,20 @@ namespace _Scripts.Agent.Enemies
         private double PrepareBodyColorWeights()
         {
             _weightByBodyColor.Clear();
+
             if (bodyColorWeights == null) return 0d;
 
             foreach (WeightedColor entry in bodyColorWeights)
             {
                 float weight = entry.Weight;
+
                 _weightByBodyColor[entry.Color] = weight > 0f && !float.IsPositiveInfinity(weight) ? weight : 0f;
             }
 
             double total = 0d;
+
             foreach (float weight in _weightByBodyColor.Values) total += weight;
+
             return total;
         }
 
@@ -370,6 +400,7 @@ namespace _Scripts.Agent.Enemies
 
                 lastColor = entry.Key;
                 roll -= entry.Value;
+
                 if (roll < 0d) return lastColor;
             }
 
@@ -379,6 +410,7 @@ namespace _Scripts.Agent.Enemies
         private void OnDisable()
         {
             _count = 0;
+
             if (_particles != null) _particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }

@@ -17,5 +17,6 @@ namespace _Scripts.Agent.Players.TitleSystem
         [field:SerializeField] public QuestSo[] Quests { get; private set; }
 
         public abstract void Upgrade(ModuleOwner owner);
+        public abstract void Downgrade(ModuleOwner owner);
     }
 }

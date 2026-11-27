@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 4180317776579564109}
   - component: {fileID: 3280350746728218047}
   - component: {fileID: 7208125848253188722}
-  - component: {fileID: 6144919931887708876}
-  - component: {fileID: 6201305970403873925}
+  - component: {fileID: 8968531712667359456}
+  - component: {fileID: 1307262729515358401}
   m_Layer: 6
   m_Name: MapWallFiller
   m_TagString: Untagged
@@ -181,7 +181,7 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!66 &6144919931887708876
+--- !u!66 &8968531712667359456
 CompositeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,7 +228,7 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 3893898036940149895}
---- !u!50 &6201305970403873925
+--- !u!50 &1307262729515358401
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -266,6 +266,7 @@ GameObject:
   - component: {fileID: 5204446549843628040}
   - component: {fileID: 7454044598597863813}
   - component: {fileID: 3468416674376229642}
+  - component: {fileID: 7028696499548219642}
   m_Layer: 0
   m_Name: MapCreater
   m_TagString: Untagged
@@ -315,3 +316,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapGenerator
   mapGenerateSetting: {fileID: 11400000, guid: 19216d08ae56bfe4bbea55643eaf0c9e, type: 2}
   wallFiller: {fileID: 3280350746728218047}
+--- !u!114 &7028696499548219642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8422719585651012051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54330d3e34c44d8fbdc9ff0386d9c1a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.BossMapSystem.BossMapGenerator
+  bossMapListSO: {fileID: 11400000, guid: 900cb39b45594c544b693a5c69bb15a1, type: 2}

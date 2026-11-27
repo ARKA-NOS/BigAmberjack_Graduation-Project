@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Sturdy Health
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Upgrade.SO.UpgradeNodeSO
   <NodeName>k__BackingField: "\uAD73\uAC74\uD55C \uCCB4\uB825"
-  <NodeIcon>k__BackingField: {fileID: 0}
+  <NodeIcon>k__BackingField: {fileID: -5799840975589354061, guid: 35dd3491108c68a48b849d1fda6ed8f2, type: 3}
   <NodeDescription>k__BackingField: "\uCD5C\uB300 \uCCB4\uB825 + 10"
   <PrevNodes>k__BackingField:
   - {fileID: 11400000, guid: 9c856fc19557e19428de16f543e938a9, type: 2}
   <ExclusiveGroup>k__BackingField: 
-  <UpgradeCost>k__BackingField: []
+  <UpgradeCost>k__BackingField:
+  - <Type>k__BackingField: {fileID: 11400000, guid: 4299048890dbda14592a212d72d440fa, type: 2}
+    <Amount>k__BackingField: 100
   <UpgradeData>k__BackingField: {fileID: 11400000, guid: 9f32aa781b92ff84786a31b2d9dfde12, type: 2}

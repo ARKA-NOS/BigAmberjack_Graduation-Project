@@ -28,6 +28,7 @@ namespace _Scripts.Agent.Enemies
 
                 var skill = _skills.ActiveSkill;
                 if (skill == null || !skill.isActiveAndEnabled) return false;
+
                 // 준비/공격 구간은 보호하고, 후딜/쿨타임 대기에는 보호하지 않습니다.
                 return skill is EnemyAttackSkill { IsUsing: true, IsRecovering: false } ||
                        skill is IChargeSkill { IsCharging: true };

@@ -42,6 +42,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private void StopStepBack()
         {
             if (_steppingBack) _movement.Stop();
+
             _steppingBack = false;
         }
     }

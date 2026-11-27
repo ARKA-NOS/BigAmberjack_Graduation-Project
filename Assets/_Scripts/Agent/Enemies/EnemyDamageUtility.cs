@@ -29,7 +29,9 @@ namespace _Scripts.Agent.Enemies
                 DamageAmount = Mathf.Max(0f, amount),
                 DirectedKBForce = Vector2.zero
             };
+
             receiver.ApplyDamage(data, point, hitDirection, -hitDirection);
+
             return true;
         }
     }

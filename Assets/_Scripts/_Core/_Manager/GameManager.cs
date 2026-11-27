@@ -7,7 +7,8 @@ namespace _Scripts._Core._Manager
     {
         private AbstractManager[] _managers;
 
-        private GameManager _instance;
+        private static GameManager _instance;
+        
         private void Awake()
         {
             if (_instance != null)

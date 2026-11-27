@@ -22,5 +22,11 @@ namespace _Scripts.Agent.Players.TitleSystem.Titles
             MeleeHitStackBuff buff = owner.gameObject.AddComponent<MeleeHitStackBuff>();
             buff.Init(owner, statModule.GetStat(statData), valuePerStack, modifyType, duration, maxStack);
         }
+
+        public override void Downgrade(ModuleOwner owner)
+        {
+            foreach (MeleeHitStackBuff buff in owner.GetComponents<MeleeHitStackBuff>())
+                Destroy(buff);
+        }
     }
 }

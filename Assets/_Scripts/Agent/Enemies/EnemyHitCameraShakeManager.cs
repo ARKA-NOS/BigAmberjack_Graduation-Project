@@ -10,6 +10,7 @@ namespace _Scripts.Agent.Enemies
         public static void SetIntensity(float intensity)
         {
             if (float.IsNaN(intensity) || float.IsInfinity(intensity)) return;
+
             Intensity = Mathf.Clamp01(intensity);
         }
 

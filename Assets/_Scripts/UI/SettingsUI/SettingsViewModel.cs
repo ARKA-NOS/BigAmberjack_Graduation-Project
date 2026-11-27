@@ -18,8 +18,6 @@ namespace _Scripts.UI.SettingsUI
             { ScreenModeOption.Fullscreen, ScreenModeOption.Borderless, ScreenModeOption.Windowed };
         private static readonly bool[] OnOff = { true, false };
         private static readonly bool[] OffOn = { false, true };
-        private static readonly TitleNoticeOption[] TitleNotices =
-            { TitleNoticeOption.ProgressAndEarned, TitleNoticeOption.EarnedOnly, TitleNoticeOption.Off };
         private static readonly Vector2Int[] FallbackResolutions = { SettingsData.Default.Resolution };
 
         private readonly Dictionary<CycleSettingId, Observable<string>> _cycleTexts = new();
@@ -146,16 +144,11 @@ namespace _Scripts.UI.SettingsUI
                 d => d.damageNumbers,
                 (d, v) => { d.damageNumbers = v; return d; }),
 
-            [CycleSettingId.TitleNotice] = new SettingOptionCycle<TitleNoticeOption>(
-                TitleNotices,
-                n => n switch
-                {
-                    TitleNoticeOption.EarnedOnly => "획득만",
-                    TitleNoticeOption.Off => "끄기",
-                    _ => "진행·획득"
-                },
-                d => d.titleNotice,
-                (d, v) => { d.titleNotice = v; return d; }),
+            // 화면에서는 켜짐/꺼짐만 고른다. 저장 값이 EarnedOnly인 예전 파일은 켜짐으로 본다.
+            [CycleSettingId.TitleNotice] = new SettingOptionCycle<bool>(
+                OnOff, on => on ? "켜짐" : "꺼짐",
+                d => d.titleNotice != TitleNoticeOption.Off,
+                (d, v) => { d.titleNotice = v ? TitleNoticeOption.ProgressAndEarned : TitleNoticeOption.Off; return d; }),
 
             [CycleSettingId.RunTimer] = new SettingOptionCycle<bool>(
                 OffOn, on => on ? "표시" : "숨기기",

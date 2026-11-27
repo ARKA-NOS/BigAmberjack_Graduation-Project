@@ -45,6 +45,7 @@ namespace _Scripts.Agent.Enemies
             Unsubscribe();
             base.Initialize(owner);
             _enemy = owner as EnemyBase;
+
             if (isActiveAndEnabled) Subscribe();
         }
 
@@ -61,6 +62,7 @@ namespace _Scripts.Agent.Enemies
         private void Unsubscribe()
         {
             if (_subscribed && _enemy != null) _enemy.DamageReceived -= OnDamageReceived;
+
             _subscribed = false;
         }
 
@@ -70,7 +72,9 @@ namespace _Scripts.Agent.Enemies
 
             if (!HasDirection(direction) && damage.Dealer != null)
                 direction = _enemy.transform.position - damage.Dealer.transform.position;
+
             if (!HasDirection(direction)) direction = -normal;
+
             // EnemyBase는 사망 타격의 DamageReceived 전에 IsDead를 확정합니다.
             PlayShake(damage.IsCritical, direction, _enemy.IsDead);
         }
@@ -89,13 +93,30 @@ namespace _Scripts.Agent.Enemies
                 duration *= Mathf.Max(1f, _lethalDurationMultiplier);
             }
 
+            EnemyDeathFeedbackSettingsSO feedback = _enemy != null ? _enemy.DeathFeedbackSettings : null;
+
+            if (feedback != null)
+            {
+                strength *= feedback.HitShakeStrengthMultiplier;
+
+                if (isLethal)
+                {
+                    strength *= feedback.LethalShakeStrengthMultiplier;
+                    duration *= feedback.LethalShakeDurationMultiplier;
+                }
+            }
+
             strength *= EnemyHitCameraShakeManager.Intensity;
+
             if (!IsFinite(strength) || strength <= 0f || !IsFinite(duration) || duration <= 0f) return;
 
             if (!_useHitDirection || !HasDirection(direction)) direction = _fallbackDirection;
+
             if (!HasDirection(direction)) direction = Vector2.right;
+
             Vector2 shakeDirection = direction.normalized;
             float jitter = Mathf.Clamp(_directionJitterDegrees, 0f, 90f);
+
             if (jitter > 0f)
                 shakeDirection = (Vector2)(Quaternion.Euler(0f, 0f, Random.Range(-jitter, jitter)) * (Vector3)shakeDirection);
 
@@ -120,11 +141,15 @@ namespace _Scripts.Agent.Enemies
         }
 
         private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
         private static bool HasDirection(Vector2 value) => IsFinite(value.x) && IsFinite(value.y) && value.sqrMagnitude > 0.0001f;
+
         private void OnDisable() => Unsubscribe();
+
         private void OnDestroy() => Unsubscribe();
 
 #if UNITY_EDITOR
+
         [ContextMenu("Preview/Normal Shake (Play Mode, No Damage)")]
         private void PreviewNormal()
         {

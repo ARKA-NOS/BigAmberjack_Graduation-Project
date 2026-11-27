@@ -48,6 +48,7 @@ namespace _Scripts.Agent.Enemies
             {
                 Vector2 offset = targetPosition - (Vector2)enemy.transform.position;
                 float distance = useHorizontalRange ? Mathf.Abs(offset.x) : offset.magnitude;
+
                 return distance <= MaxRange && (distance >= Mathf.Max(0f, minRange) ||
                     (allowCloseAttackWhenRetreatBlocked && keepDistance != null && keepDistance.IsRetreatBlocked(enemy.Target)));
             }
@@ -79,12 +80,14 @@ namespace _Scripts.Agent.Enemies
 
                 Collider2D body = enemy.Target.GetComponent<Collider2D>();
                 Vector2 aim = body != null ? (Vector2)body.bounds.center : (Vector2)enemy.Target.position;
+
                 return movement.HasClearPath(origin != null ? (Vector2)origin.position : movement.BodyCenter, aim);
             }
         }
 
         [Tooltip("위에서부터 우선순위. 조건과 쿨타임을 만족하는 첫 스킬을 사용합니다. 실행 도중 AI가 다른 스킬로 취소하지는 않습니다.")]
         [SerializeField] private List<SkillEntry> skills = new List<SkillEntry>();
+
         private readonly HashSet<AbstractSkill> _registeredSkills = new HashSet<AbstractSkill>();
         private EnemyBase _enemy;
         private EnemyMovementModule _movement;
@@ -101,13 +104,16 @@ namespace _Scripts.Agent.Enemies
         public bool IsBusy => _activeSkill != null &&
             (_activeSkill.IsUsing || _activeSkill is IChargeSkill { IsCharging: true });
         private bool Ready => isActiveAndEnabled && _enemy != null && _enemy.isActiveAndEnabled && !_enemy.IsDead;
+
         public float MaximumRange
         {
             get
             {
                 float range = 0f;
+
                 foreach (SkillEntry entry in skills)
                     if (entry != null && entry.Enabled && entry.UseForAutomaticSelection) range = Mathf.Max(range, entry.MaxRange);
+
                 return range;
             }
         }
@@ -122,9 +128,11 @@ namespace _Scripts.Agent.Enemies
             _registeredSkills.Clear();
             // 공용 AfterInit과 같은 탐색 범위/첫 SO만 등록 규칙을 사용합니다.
             HashSet<SkillSO> keys = new HashSet<SkillSO>();
+
             foreach (ISkill candidate in GetComponentsInChildren<ISkill>())
                 if (candidate.SkillSo != null && keys.Add(candidate.SkillSo) && candidate is AbstractSkill skill)
                     _registeredSkills.Add(skill);
+
             foreach (SkillEntry entry in skills)
                 if (entry == null || entry.Skill == null || !_registeredSkills.Contains(entry.Skill))
                     Debug.LogWarning($"{name}: 스킬 목록에는 이 모듈 아래의 활성 스킬과 고유 Skill SO를 연결하세요.", this);
@@ -138,6 +146,7 @@ namespace _Scripts.Agent.Enemies
             foreach (SkillEntry entry in skills)
                 if (IsValid(entry) && entry.UseForAutomaticSelection && entry.Matches(_enemy, _movement, _flight, _keepDistance) &&
                     (!entry.RequireUsableToEnterAttack || CanUseSkill(entry.Skill.SkillSo))) return true;
+
             return false;
         }
 
@@ -153,6 +162,7 @@ namespace _Scripts.Agent.Enemies
                 _castTarget = _enemy.Target;
                 _chargeReleaseTime = Time.time + entry.ChargeDuration;
                 UseSkill(_activeSkill.SkillSo, true);
+
                 return true;
             }
 
@@ -172,6 +182,7 @@ namespace _Scripts.Agent.Enemies
             _castTarget = _enemy.Target;
             _chargeReleaseTime = Time.time + entry.ChargeDuration;
             UseSkill(skill.SkillSo, true);
+
             return true;
         }
 
@@ -189,11 +200,13 @@ namespace _Scripts.Agent.Enemies
                 if (IsValid(candidate) && candidate.Skill == skill)
                 {
                     entry = candidate;
+
                     return true;
                 }
             }
 
             entry = null;
+
             return false;
         }
 
@@ -202,11 +215,13 @@ namespace _Scripts.Agent.Enemies
         private void Update()
         {
             if (!IsBusy) return;
+
             if (!Ready || !IsSkillEnabled(_activeSkill) ||
                 (!HasCommittedAttack && (_castTarget == null ||
                 !_castTarget.gameObject.activeInHierarchy || _enemy.Target != _castTarget)))
             {
                 StopAttack();
+
                 return;
             }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mighty Strength
   m_EditorClassIdentifier: Assembly-CSharp::Lrw.Script.Upgrade.SO.UpgradeNodeSO
   <NodeName>k__BackingField: "\uAC15\uB825\uD55C \uD798"
-  <NodeIcon>k__BackingField: {fileID: 0}
+  <NodeIcon>k__BackingField: {fileID: -8544479566902165759, guid: ebd4fe9564e17d647add5ea06d30f102, type: 3}
   <NodeDescription>k__BackingField: "\uBB3C\uB9AC \uACF5\uACA9\uB825 + 10, \uACF5\uACA9
     \uC18D\uB3C4 + 5"
   <PrevNodes>k__BackingField:
@@ -21,5 +21,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 94a6e1c78aac2944e83129c05763f3cd, type: 2}
   - {fileID: 11400000, guid: 09168409fdf27be4f885dfd57ab21559, type: 2}
   <ExclusiveGroup>k__BackingField: 
-  <UpgradeCost>k__BackingField: []
+  <UpgradeCost>k__BackingField:
+  - <Type>k__BackingField: {fileID: 11400000, guid: 4299048890dbda14592a212d72d440fa, type: 2}
+    <Amount>k__BackingField: 100
   <UpgradeData>k__BackingField: {fileID: 0}

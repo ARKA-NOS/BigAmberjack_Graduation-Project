@@ -30,7 +30,7 @@ public static class VerifyBloodTrails
             {
                 instance.GetComponent<EnemyHitParticle>().enabled = false;
                 typeof(EnemyBloodParticle).GetMethod("Emit", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .Invoke(instance.GetComponent<EnemyBloodParticle>(), null);
+                    .Invoke(instance.GetComponent<EnemyBloodParticle>(), new object[] { 1f, 1f });
                 int maxVertices = 0, maxTriangles = 0;
                 float maxAlpha = 0f;
                 for (int frame = 0; frame < 50; frame++)

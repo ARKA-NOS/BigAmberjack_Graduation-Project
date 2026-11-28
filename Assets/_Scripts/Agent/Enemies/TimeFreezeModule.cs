@@ -12,6 +12,8 @@ namespace _Scripts.Agent.Enemies
     {
         [Tooltip("플레이어의 공격으로 실제 HP가 줄었을 때의 정지 시간입니다. 실시간 기준입니다.")]
         [SerializeField, Min(0f)] private float freezeDuration = 0.05f;
+        [Tooltip("정지 중 적용할 Time.timeScale입니다. 0이면 완전 정지, 0.05이면 5% 속도입니다.")]
+        [SerializeField, Range(0f, 1f)] private float stopTimeScale = 0.05f;
 
         private EnemyBase _enemy;
         private bool _subscribed;
@@ -38,7 +40,7 @@ namespace _Scripts.Agent.Enemies
         {
             if (damage.DamageAmount <= 0f || damage.Dealer is not PlayerController || freezeDuration <= 0f) return;
 
-            EventBus<HitStopEvent>.Raise(new HitStopEvent(freezeDuration));
+            EventBus<HitStopEvent>.Raise(new HitStopEvent(freezeDuration, stopTimeScale));
         }
 
         private void Unsubscribe()

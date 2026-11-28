@@ -13,7 +13,7 @@ namespace _Scripts.Maps.New_Map
 {
     /*
      * 생성 파이프라인
-     * 언로드 → 로드 → 배치(MapDeployment, 스레드풀) → 프리팹 생성 → 연결 지점 마감 → 벽 채우기 → 완료 이벤트 → End
+     * 언로드 → 로드 → 배치(MapDeployment, 스레드풀) → 프리팹 생성 → 벽 채우기 → 완료 이벤트 → End
      * 실패하면 프리팹 생성 대신 기본 맵(FallbackMapPrefab)을 만들고, 그 경우에도 벽 채우기와 완료 이벤트는 한 번씩 한다.
      * 시작부터 End까지는 LoadingScope로 묶여 로딩창이 떠 있다.
      */
@@ -116,7 +116,6 @@ namespace _Scripts.Maps.New_Map
             else
             {
                 Room[] instances = await InstantiatePrefabs(deployment.Rooms, ct);
-                SealLinks(instances, deployment.Rooms);
                 rooms = CreateGeneratedRooms(instances, deployment.Rooms);
 
                 FDebug.Log($"[MapGenerator] 생성 완료 Seed={seed}, 방 {rooms.Count}개, 되돌리기 {deployment.Backtracks}회, 전체 재생성 {deployment.FullRetries}회");
@@ -195,16 +194,6 @@ namespace _Scripts.Maps.New_Map
             return room;
         }
 
-        // 6단계: 쓰지 않은 연결 지점은 막고, 연결된 지점은 연다.
-        private static void SealLinks(Room[] instances, List<RoomDeploymentData> roomDataList)
-        {
-            for (int i = 0; i < instances.Length; i++)
-            {
-                if (instances[i] != null)
-                    instances[i].ApplyLinkState(roomDataList[i].ConnectedLinks);
-            }
-        }
-
         private static List<GeneratedRoom> CreateGeneratedRooms(Room[] instances, List<RoomDeploymentData> roomDataList)
         {
             List<GeneratedRoom> rooms = new List<GeneratedRoom>(instances.Length);
@@ -258,7 +247,7 @@ namespace _Scripts.Maps.New_Map
 
         #region Wall
 
-        // 연결 지점 마감 다음 단계: 방 사이와 맵 바깥 가장자리의 빈 칸을 벽 타일로 채운다.
+        // 프리팹 생성 다음 단계: 방 사이와 맵 바깥 가장자리의 빈 칸을 벽 타일로 채운다.
         // 완료 이벤트보다 먼저 해서, 이벤트를 받는 쪽은 벽까지 다 만들어진 맵을 본다.
         private async UniTask FillWalls(MapGenerateSetting mapSetting, List<GeneratedRoom> rooms, CancellationToken ct)
         {
@@ -288,9 +277,9 @@ namespace _Scripts.Maps.New_Map
         #region Event
 
         // 7·8단계: 적·보상 배치와 플레이어 이동은 이 이벤트를 구독한 쪽이 한다.
-        private static void RaiseMapGenerated(int seed, List<GeneratedRoom> rooms, bool isFallback)
-            => MapGenerateEvents.RaiseMapGenerated(seed, rooms, GetPlayerSpawnPosition(rooms), isFallback);
-
+        private void RaiseMapGenerated(int seed, List<GeneratedRoom> rooms, bool isFallback)
+            => MapGenerateEvents.RaiseMapGenerated(seed, rooms, GetPlayerSpawnPosition(rooms), isFallback, wallFiller.WallTilemap);
+        
         // 시작방의 playerSpawnPoint 위치. 시작방을 알 수 없으면 첫 번째 방을 쓴다.
         private static Vector3 GetPlayerSpawnPosition(List<GeneratedRoom> rooms)
         {

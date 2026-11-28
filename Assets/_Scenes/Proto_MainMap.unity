@@ -1214,6 +1214,7 @@ MonoBehaviour:
   rewardCurrency: {fileID: 11400000, guid: 4299048890dbda14592a212d72d440fa, type: 2}
   baseReward: 20
   rewardPerKill: 2
+  minKillsForReward: 1
 --- !u!4 &564454697
 Transform:
   m_ObjectHideFlags: 0
@@ -1373,7 +1374,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 0000000017131d52
+  m_ApplyToSortingLayers: 11861a22ff26ff3d0000000017131d522fd29b77
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

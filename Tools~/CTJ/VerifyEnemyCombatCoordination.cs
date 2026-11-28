@@ -102,6 +102,7 @@ public static class VerifyEnemyCombatCoordination
             rows.Add(new { test = "DeathSlowMotionBridge", passed = true });
 
             EnemyBase enemy = s.Enemy(0f);
+            Field(typeof(TimeFreezeModule), "stopTimeScale").SetValue(enemy.GetModule<TimeFreezeModule>(), 0.12f);
             await Delay(0.08f);
             var health = enemy.GetModule<INewHealthModule>();
             float before = health.CurrentHealth;
@@ -109,20 +110,19 @@ public static class VerifyEnemyCombatCoordination
             Check(health.CurrentHealth < before && !service.IsStopped, "Non-player damage triggered hit stop");
             before = health.CurrentHealth;
             enemy.ApplyDamage(new DamageData { DamageAmount = 1f, Dealer = s.Player }, enemy.transform.position, Vector2.right, Vector2.left);
-            Check(health.CurrentHealth < before && service.IsStopped, "Actual player damage did not trigger hit stop");
+            Check(health.CurrentHealth < before && service.IsStopped && Mathf.Abs(Time.timeScale - 0.12f) < 0.001f,
+                "Actual player damage did not use the module's stop scale");
             await Until(() => !service.IsStopped, 0.3f, "Player hit stop stuck");
             enemy.ApplyDamage(new DamageData { DamageAmount = 0f, Dealer = s.Player }, enemy.transform.position, Vector2.right, Vector2.left);
             Check(!service.IsStopped, "Zero damage triggered hit stop");
             enemy.ApplyDamage(new DamageData { DamageAmount = 10000f, Dealer = s.Player }, enemy.transform.position, Vector2.right, Vector2.left);
             Check(enemy.IsDead && service.IsStopped, "Fatal player damage skipped hit stop");
             await Until(() => !service.IsStopped, 0.3f, "Fatal hit stop did not expire");
-            rows.Add(new { test = "PlayerDamageOnly", passed = true });
+            rows.Add(new { test = "PlayerDamageOnly", moduleStopTimeScale = 0.12f, passed = true });
 
-            Field(typeof(TimeStopService), "stopTimeScale").SetValue(service, 0f);
-            service.RequestHitStop(0.03f);
+            service.RequestHitStop(0.03f, 0f);
             Check(Time.timeScale == 0f, "Full freeze did not stop time");
             await Until(() => !service.IsStopped && Time.timeScale == 1f, 0.3f, "Full freeze could not recover using unscaled time");
-            Field(typeof(TimeStopService), "stopTimeScale").SetValue(service, 0.05f);
             rows.Add(new { test = "ZeroScaleFreezeRestores", passed = true });
 
             service.RequestHitStop(1f);
@@ -131,6 +131,56 @@ public static class VerifyEnemyCombatCoordination
             service.enabled = true;
             rows.Add(new { test = "DisabledServiceRestores", passed = true });
             return new { results = rows };
+        }
+    }
+
+    public static async Task<object> HitStopScales()
+    {
+        using (var s = new Scope())
+        {
+            await Awaitable.NextFrameAsync();
+            var service = s.TimeService;
+            var results = new List<object>();
+
+            service.RequestHitStop(0.28f, 0.3f);
+            EventBus<HitStopEvent>.Raise(new HitStopEvent(0.08f, 0.05f));
+            Check(Mathf.Abs(Time.timeScale - 0.05f) < 0.001f, "Mixed stops did not choose the stronger scale");
+            await Delay(0.12f);
+            Check(service.IsStopped && Mathf.Abs(Time.timeScale - 0.3f) < 0.001f,
+                "Expired strong stop leaked its scale into a longer weak stop");
+            await Until(() => !service.IsStopped && Time.timeScale == 1f, 0.4f, "Mixed stops did not restore base speed");
+            results.Add(new { test = "StrongShortWeakLong", scales = new[] { 0.05f, 0.3f, 1f } });
+
+            service.RequestHitStop(0.20f, 0.05f);
+            service.RequestHitStop(0.05f, 0.4f);
+            await Delay(0.10f);
+            Check(service.IsStopped && Mathf.Abs(Time.timeScale - 0.05f) < 0.001f, "Short weak stop replaced a stronger long stop");
+            await Until(() => !service.IsStopped && Time.timeScale == 1f, 0.3f, "Long strong stop stalled");
+            results.Add(new { test = "StrongLongWeakShort", passed = true });
+
+            float start = Time.unscaledTime;
+            service.RequestHitStop(0.08f, 0.12f);
+            await Delay(0.04f);
+            service.RequestHitStop(0.14f, 0.12f);
+            await Until(() => !service.IsStopped && Time.timeScale == 1f, 0.4f, "Same-scale extension stalled");
+            Check(Time.unscaledTime - start >= 0.17f, "Same-scale request did not extend its deadline");
+            results.Add(new { test = "SameScaleExtends", elapsed = Time.unscaledTime - start });
+
+            service.RequestHitStop(0.18f, 0.1f);
+            await Delay(0.02f);
+            service.RequestHitStop(0.03f, 0.1f);
+            await Delay(0.07f);
+            Check(service.IsStopped && Mathf.Abs(Time.timeScale - 0.1f) < 0.001f, "Same-scale shorter request cut the stop short");
+            await Until(() => !service.IsStopped && Time.timeScale == 1f, 0.3f, "Same-scale stop did not restore");
+            results.Add(new { test = "SameScaleDoesNotShorten", passed = true });
+
+            service.SetBaseTimeScale(2f);
+            service.RequestHitStop(0.04f, 0.4f);
+            Check(Mathf.Abs(Time.timeScale - 0.4f) < 0.001f, "Stop scale was incorrectly multiplied by base speed");
+            await Until(() => !service.IsStopped && Time.timeScale == 2f, 0.3f, "Custom base speed did not restore");
+            service.SetBaseTimeScale(1f);
+            results.Add(new { test = "AbsoluteRequestedScaleAndBaseRestore", passed = true });
+            return new { results };
         }
     }
 

@@ -17,6 +17,8 @@ namespace _Scripts.UI.InventoryUI
 
         private InventorySlotUI _dragging;
 
+        public bool IsDragging => _dragging != null;
+
         private void Awake()
         {
             ghost.raycastTarget = false;

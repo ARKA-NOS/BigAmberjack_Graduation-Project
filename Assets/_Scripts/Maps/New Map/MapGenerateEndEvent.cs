@@ -2,6 +2,7 @@
 using _Scripts._Core._EventSystem;
 using _Scripts.Maps.New_Map.MapGenerateData;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace _Scripts.Maps.New_Map
 {
@@ -36,15 +37,17 @@ namespace _Scripts.Maps.New_Map
     {
         public int Seed { get; private set; }
         public IReadOnlyList<GeneratedRoom> Rooms { get; private set; }
+        public Tilemap WallFiller { get; private set; }
         public Vector3 PlayerSpawnPosition { get; private set; }
         public bool IsFallback { get; private set; }   // 기본 맵을 썼는지
 
-        public MapGenerateEndEvent Init(int seed, IReadOnlyList<GeneratedRoom> rooms, Vector3 playerSpawnPosition, bool isFallback)
+        public MapGenerateEndEvent Init(int seed, IReadOnlyList<GeneratedRoom> rooms, Vector3 playerSpawnPosition, bool isFallback, Tilemap wallFiller)
         {
             Seed = seed;
             Rooms = rooms;
             PlayerSpawnPosition = playerSpawnPosition;
             IsFallback = isFallback;
+            WallFiller = wallFiller;
             return this;
         }
     }
@@ -53,7 +56,7 @@ namespace _Scripts.Maps.New_Map
     {
         private static readonly MapGenerateEndEvent MapGenerateEnd = new();
 
-        public static void RaiseMapGenerated(int seed, IReadOnlyList<GeneratedRoom> rooms, Vector3 playerSpawnPosition, bool isFallback)
-            => EventBus<MapGenerateEndEvent>.Raise(MapGenerateEnd.Init(seed, rooms, playerSpawnPosition, isFallback));
+        public static void RaiseMapGenerated(int seed, IReadOnlyList<GeneratedRoom> rooms, Vector3 playerSpawnPosition, bool isFallback, Tilemap wallFiller)
+            => EventBus<MapGenerateEndEvent>.Raise(MapGenerateEnd.Init(seed, rooms, playerSpawnPosition, isFallback, wallFiller));
     }
 }

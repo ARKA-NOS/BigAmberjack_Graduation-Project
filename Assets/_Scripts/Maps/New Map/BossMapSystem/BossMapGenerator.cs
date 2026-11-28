@@ -46,7 +46,7 @@ namespace _Scripts.Maps.New_Map.BossMapSystem
 
             _currentMap = Instantiate(prefabs[index],transform);
 
-            MapGenerateEvents.RaiseMapGenerated(index, null, _currentMap.StartPos, false);
+            MapGenerateEvents.RaiseMapGenerated(index, null, _currentMap.StartPos, false, null);
         }
         
         private void ClearGeneratedMap()

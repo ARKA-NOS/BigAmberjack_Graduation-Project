@@ -13,6 +13,8 @@ namespace _Scripts._Core._Manager
         {
             if (_instance != null)
             {
+                // 파괴는 프레임 끝에 처리되므로, 자식 매니저와 UI가 켜지지 않게 먼저 끈다.
+                gameObject.SetActive(false);
                 Destroy(gameObject);
                 return;
             }
@@ -41,6 +43,9 @@ namespace _Scripts._Core._Manager
 
         private void GameEnd()
         {
+            // 중복이라 초기화하지 않은 GameManager는 정리할 것이 없다.
+            if (_managers == null) return;
+
             foreach (AbstractManager manager in _managers)
             {
                 manager.GameEnd();

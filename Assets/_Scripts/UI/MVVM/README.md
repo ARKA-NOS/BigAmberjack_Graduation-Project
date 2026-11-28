@@ -363,7 +363,7 @@ public class EnemyHealthConnector : ConnectorBase
 인스펙터 설정이 없는 ViewModel이면 에셋 없이 `CreateRuntime<T>()`로 창마다 하나 만들어 자식 View에 넣는다. 실제 코드는 `UI/UpgradeUI/UpgradeTreeWindow.cs`.
 
 ```csharp
-public class UpgradeTreeWindow : FadeWindow
+public class UpgradeTreeWindow : AbstractWindow
 {
     private UpgradeTreeViewModel _viewModel;
 

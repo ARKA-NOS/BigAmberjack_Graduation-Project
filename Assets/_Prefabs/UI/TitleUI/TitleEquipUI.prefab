@@ -5504,6 +5504,7 @@ GameObject:
   - component: {fileID: 4275465263284507943}
   - component: {fileID: 1240228353383732207}
   - component: {fileID: 5208736908677860241}
+  - component: {fileID: 6042917385520194637}
   m_Layer: 0
   m_Name: TitleEquipUI
   m_TagString: Untagged
@@ -5634,6 +5635,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.PlayerUI.Title_UI.Equip.TitleEquipWindow
   canvasGroup: {fileID: 4275465263284507943}
   fadeSpeed: 3
+  transition: {fileID: 6042917385520194637}
   closeButton: {fileID: 8098520549551378685}
 --- !u!1 &7800169426440889456
 GameObject:
@@ -6367,3 +6369,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6042917385520194637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587357265467005822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 945bf277e46e85c478951e792461889c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Scripts.UI.UI_System.SlideWindowTransition
+  targets:
+  - {fileID: 8139827072826415155}
+  hiddenMargin: 20
+  showDuration: 0.25
+  hideDuration: 0.15
+  showEase: 9
+  hideEase: 8

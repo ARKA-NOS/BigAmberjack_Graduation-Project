@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace _Scripts.UI.AlarmUI
 {
-    // 알람 목록을 화면에 띄운다. 알람마다 AlarmUI를 이 오브젝트 아래에 만들고, 목록에서 빠지면 지운다.
+    // 알람 목록을 화면에 하나씩 띄운다. AlarmUI를 이 오브젝트 아래에 만들고, 목록에서 빠지면 지우고 다음 알람을 띄운다.
     // 알람은 showTime 동안 보였다가 fadeDuration 동안 흐려지고, 다 사라지면 Dismiss로 ViewModel에 알린다.
     public class AlarmListView : ViewBase<AlarmViewModel>
     {
@@ -16,66 +16,43 @@ namespace _Scripts.UI.AlarmUI
         [SerializeField] private float showTime = 3f;
         [SerializeField] private float fadeDuration = 2f;
 
-        // ViewModel의 Alarms와 같은 순서.
-        private readonly List<AlarmUI> _toasts = new();
+        // 지금 떠 있는 알람. 나머지는 ViewModel의 Alarms에서 차례를 기다린다.
+        private AlarmItem _shownAlarm;
+        private AlarmUI _toast;
 
         protected override void OnBind(AlarmViewModel vm)
         {
-            vm.Alarms.Subscribe(change => HandleAlarmsChanged(vm.Alarms, change)).AddTo(Disposables);
+            vm.Alarms.Subscribe(_ => ShowFirst(vm.Alarms)).AddTo(Disposables);
         }
 
         // 꺼질 때 떠 있던 알람은 지운다. 다시 켜지면 아직 남은 알람을 처음부터 다시 보여준다.
         protected override void OnUnbind()
         {
-            ClearToasts();
+            ClearToast();
         }
 
-        private void HandleAlarmsChanged(IReadOnlyList<AlarmItem> alarms, ListChange<AlarmItem> change)
+        // 목록의 맨 앞 알람만 띄운다. 뒤에 추가되기만 했으면 떠 있는 알람은 그대로 둔다.
+        // 알람은 띄울 때부터 시간을 재므로, 기다린 알람도 showTime을 온전히 보여준다.
+        private void ShowFirst(IReadOnlyList<AlarmItem> alarms)
         {
-            switch (change.Kind)
-            {
-                case ListChangeKind.Add:
-                    _toasts.Insert(change.Index, CreateToast(change.NewItem));
-                    break;
+            AlarmItem first = alarms.Count > 0 ? alarms[0] : null;
+            if (first == _shownAlarm) return;
 
-                case ListChangeKind.Remove:
-                    RemoveToast(change.Index);
-                    break;
+            ClearToast();
+            if (first == null) return;
 
-                default:
-                    ClearToasts();
-                    foreach (AlarmItem alarm in alarms)
-                        _toasts.Add(CreateToast(alarm));
-                    break;
-            }
+            _shownAlarm = first;
+            _toast = Instantiate(alarmUI, transform);
+            _toast.Init(first, showTime, fadeDuration);
         }
 
-        private AlarmUI CreateToast(AlarmItem alarm)
+        private void ClearToast()
         {
-            AlarmUI toast = Instantiate(alarmUI, transform);
-            toast.Init(alarm, showTime, fadeDuration);
-            return toast;
-        }
+            if (_toast != null)
+                Destroy(_toast.gameObject);
 
-        private void RemoveToast(int index)
-        {
-            if (index < 0 || index >= _toasts.Count) return;
-
-            if (_toasts[index] != null)
-                Destroy(_toasts[index].gameObject);
-
-            _toasts.RemoveAt(index);
-        }
-
-        private void ClearToasts()
-        {
-            foreach (AlarmUI toast in _toasts)
-            {
-                if (toast != null)
-                    Destroy(toast.gameObject);
-            }
-
-            _toasts.Clear();
+            _toast = null;
+            _shownAlarm = null;
         }
     }
 }

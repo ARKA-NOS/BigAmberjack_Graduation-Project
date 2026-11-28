@@ -17,6 +17,8 @@ namespace _Scripts.UI.UI_System
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private float fadeSpeed = 3f;
+        [Tooltip("열고 닫을 때의 움직임. 비워 두면 페이드만 한다.")]
+        [SerializeField] private WindowTransition transition;
 
         private ICanInputOnOff _blockedSkillInput;
         private Coroutine _fade;
@@ -27,12 +29,14 @@ namespace _Scripts.UI.UI_System
         {
             canvasGroup.alpha = 0f;
             SetInteractable(false);
+            if (transition != null) transition.SnapHidden();
         }
 
         public sealed override void Open(object data)
         {
             IsOpen = true;
             StartFade(1f);
+            if (transition != null) transition.Show();
             SetInteractable(true);
             Freeze();
             BlockSkillInput();
@@ -44,6 +48,7 @@ namespace _Scripts.UI.UI_System
         {
             IsOpen = false;
             StartFade(0f);
+            if (transition != null) transition.Hide();
             SetInteractable(false);
             Unfreeze();
             RestoreSkillInput();

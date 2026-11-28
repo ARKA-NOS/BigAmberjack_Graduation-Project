@@ -79,6 +79,9 @@ MonoBehaviour:
   damageCaster: {fileID: 4431319950126978972}
   kbForce: 3
   attackEffectPrefab: {fileID: 6049528467469964863, guid: 66d7271e8e232814c86d22aa248eaac3, type: 3}
+  comboAttackEffectPrefabs:
+  - {fileID: 0}
+  - {fileID: 6049528467469964863, guid: 22f798aa21cc0d04cb73719eaace0151, type: 3}
   attackEffectOffset: {x: -0.16, y: 0.6}
   attachEffectToOwner: 1
   allowTurnWhileAttacking: 1

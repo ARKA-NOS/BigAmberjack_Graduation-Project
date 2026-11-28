@@ -22,7 +22,11 @@ namespace _Scripts.Agent.Players.Skills
         [Header("Animation Setting")]
         [SerializeField] private float defaultAnimationSpeed = 1f;
         [SerializeField] private AnimationCurve animationSpeedCurve;
-        //[SerializeField] private StateSo comboStates;
+        [SerializeField] private PlayerStateEnum[] comboStates =
+        {
+            PlayerStateEnum.NORMAL_SKILL,
+            PlayerStateEnum.NORMAL_SKILL2
+        };
         [SerializeField] private int animatorLayer = 0;
 
         [SerializeField] private SoundCueSO attackSoundCue;
@@ -33,6 +37,7 @@ namespace _Scripts.Agent.Players.Skills
 
         [Header("Attack Effect")]
         [SerializeField] private PooledAnimationEffect attackEffectPrefab;
+        [SerializeField] private PooledAnimationEffect[] comboAttackEffectPrefabs;
         [SerializeField] private Vector2 attackEffectOffset;
         [SerializeField] private bool attachEffectToOwner = true;
 
@@ -45,8 +50,7 @@ namespace _Scripts.Agent.Players.Skills
         [SerializeField] private float lungeDistance = 1f;
 
         [Header("Combotime")]
-        //[SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
-        //[SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
+        [SerializeField] private float combotime = 0.4f;
 
 
         private const int CurveAreaSampleCount = 100;
@@ -146,20 +150,14 @@ namespace _Scripts.Agent.Players.Skills
 
         protected override void OnUseSkill()
         {
+            float readyTime = CoolTimeStartTime + CoolTime;
             base.OnUseSkill();
-            //bool comboCounterOver = ComboCount >= comboStates.Length;
-            //bool comboWindowExhaust = Time.time >= _lastUsingTime + combotime;
-            //bool moveComboWindowExhaust = Time.time >= _moveAttackLastTime + moveCombotime;
-            //if (comboCounterOver || comboWindowExhaust)
-            //{
-            //    ComboCount = 0;
-            //}
+            bool comboCounterOver = ComboCount >= comboStates.Length;
+            bool comboWindowExhaust = Time.time >= readyTime + combotime;
+            if (comboCounterOver || comboWindowExhaust)
+                ComboCount = 0;
 
-            //if (!Mathf.Approximately(_playerController.PlayerInput.MovementKey.x, 0) && moveComboWindowExhaust)
-            //{
-            //    ComboCount = 1;
-            //}
-            _playerController.ChangeState(PlayerStateEnum.NORMAL_SKILL);
+            _playerController.ChangeState(comboStates[ComboCount]);
             _trigger.OnAttackTrigger += OnTrigger;
             _trigger.OnAnimationEnd += EndSkill;
             _prevSpeed = _animator.speed;
@@ -185,7 +183,8 @@ namespace _Scripts.Agent.Players.Skills
 
         private void SpawnAttackEffect()
         {
-            if (attackEffectPrefab == null) return;
+            PooledAnimationEffect effectPrefab = GetAttackEffectPrefab();
+            if (effectPrefab == null) return;
 
             bool isLeft = _renderer.GetRight().x < 0f;
             Vector3 offset = attackEffectOffset;
@@ -194,9 +193,19 @@ namespace _Scripts.Agent.Players.Skills
             Vector3 position = damageCaster.transform.position + offset;
             Quaternion rotation = Quaternion.Euler(0f, isLeft ? 180f : 0f, 0f);
             Transform parent = attachEffectToOwner ? _animator.transform : null;
-            PooledAnimationEffect effect = LeanPool.Spawn(attackEffectPrefab, position, rotation, parent);
+            PooledAnimationEffect effect = LeanPool.Spawn(effectPrefab, position, rotation, parent);
             if (effect != null)
                 effect.Play(_animator.speed);
+        }
+
+        private PooledAnimationEffect GetAttackEffectPrefab()
+        {
+            if (comboAttackEffectPrefabs != null
+                && ComboCount < comboAttackEffectPrefabs.Length
+                && comboAttackEffectPrefabs[ComboCount] != null)
+                return comboAttackEffectPrefabs[ComboCount];
+
+            return attackEffectPrefab;
         }
 
         private Vector2 GetMouseDirection()
@@ -229,8 +238,7 @@ namespace _Scripts.Agent.Players.Skills
         protected override void OnEndSkill()
         {
             base.OnEndSkill();
-            //ComboCount++;
-            //_moveAttackLastTime = Time.time;
+            ComboCount++;
             SkillEndSetting();
         }
 

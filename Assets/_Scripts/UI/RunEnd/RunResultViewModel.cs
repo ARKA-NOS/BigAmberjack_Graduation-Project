@@ -26,6 +26,8 @@ namespace _Scripts.UI.RunEnd
         protected override void OnDisconnect()
         {
             _source.RunEnded -= HandleRunEnded;
+            // "다음" 없이 결과창이 사라져도(씬 강제 이동 등) 창이 잠긴 채 남지 않게 한다.
+            _source.SetWindowsLocked(false);
             _source = null;
         }
 
@@ -42,6 +44,8 @@ namespace _Scripts.UI.RunEnd
             if (_isEnded) return;
 
             _isEnded = true;
+            // 창을 닫으면 UIManager가 플레이어 입력을 다시 켜므로, 입력을 끄기 전에 잠근다.
+            _source.SetWindowsLocked(true);
             _source.LockPlayerInput();
             _source.PauseGame();
 

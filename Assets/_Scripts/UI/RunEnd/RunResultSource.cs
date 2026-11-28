@@ -10,6 +10,7 @@ using _Scripts.Currency;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.Inventory;
 using _Scripts.Item;
+using _Scripts.UI.UI_System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -89,6 +90,8 @@ namespace _Scripts.UI.RunEnd
             return icons;
         }
 
+        public void SetWindowsLocked(bool locked) => ServiceLocator.Get<IUIWindowLock>()?.SetLocked(locked);
+
         public void LockPlayerInput()
         {
             IPlayerController player = ServiceLocator.Get<IPlayerController>();
@@ -102,6 +105,7 @@ namespace _Scripts.UI.RunEnd
         // nextScene(예: Test Home)으로 이동한다. 비어 있으면 현재 씬을 다시 시작한다.
         public void GoNext(RunEndReason reason)
         {
+            SetWindowsLocked(false);
             ResumeGame();
             RunResetter.ResetRun(reason);
 

@@ -20,6 +20,9 @@ namespace _Scripts.UI.RunEnd
         // 인벤토리 칸 순서대로의 아이템 아이콘. 빈 칸은 null.
         IReadOnlyList<Sprite> GetItemIcons();
 
+        // 결과 화면 위에 다른 창(설정, 인벤토리 등)이 뜨지 않게 막는다. 잠글 때 열려 있던 창은 닫힌다.
+        void SetWindowsLocked(bool locked);
+
         // 결과 화면을 보는 동안 플레이어가 움직이지 않게 입력을 끈다.
         void LockPlayerInput();
 

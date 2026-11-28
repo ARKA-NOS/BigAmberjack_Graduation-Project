@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace _Scripts.UI.UI_System
 {
-    public class UIManager : AbstractManager, IUITicker, IUIWindowState
+    public class UIManager : AbstractManager, IUITicker, IUIWindowState, IUIWindowLock
     {
         [SerializeField] private PlayerInputSo inputSo;
 
@@ -18,6 +18,7 @@ namespace _Scripts.UI.UI_System
             EventBus<UIOpenCloseEvent>.Subscribe(OpenClose);
             ServiceLocator.Register<IUITicker>(this);
             ServiceLocator.Register<IUIWindowState>(this);
+            ServiceLocator.Register<IUIWindowLock>(this);
         }
 
         public override void GameEnd()
@@ -26,9 +27,11 @@ namespace _Scripts.UI.UI_System
             _tickables.Clear();
             ServiceLocator.Register<IUITicker>(new NullUITicker());
             ServiceLocator.Register<IUIWindowState>(new NullUIWindowState());
+            ServiceLocator.Register<IUIWindowLock>(new NullUIWindowLock());
         }
 
         private IWindow _currentWindow;
+        private bool _isLocked;
 
         #region Window State
 
@@ -37,19 +40,31 @@ namespace _Scripts.UI.UI_System
 
         #endregion
 
+        public void SetLocked(bool locked)
+        {
+            _isLocked = locked;
+            if (locked) CloseCurrentWindow();
+        }
+
+        private void CloseCurrentWindow()
+        {
+            if (_currentWindow == null) return;
+
+            inputSo.SetPlayerInputActive(true);
+            _currentWindow.Close();
+            _currentWindow = null;
+            LastCloseFrame = Time.frameCount;
+        }
+
         private void OpenClose(UIOpenCloseEvent evt)
         {
+            if (_isLocked) return;
+
             IWindow prevWindow = _currentWindow;
-            if (_currentWindow != null)
-            {
-                inputSo.SetPlayerInputActive(true);
-                _currentWindow.Close();
-                _currentWindow = null;
-                LastCloseFrame = Time.frameCount;
-            }
-            
+            CloseCurrentWindow();
+
             if (evt.Window == null || evt.Window == prevWindow) return;
-            
+
             inputSo.SetPlayerInputActive(false);
             _currentWindow = evt.Window;
             _currentWindow.Open(evt.Data);

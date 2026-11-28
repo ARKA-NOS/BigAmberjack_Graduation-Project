@@ -12,7 +12,6 @@ namespace _Scripts.Agent.Players.Modules
         [SerializeField] private float passTime = 0.1f;
         
         private WaitForSeconds _wait;
-        private readonly WaitForFixedUpdate _waitFixed = new WaitForFixedUpdate();
         private Collider2D _collider;
         private Coroutine _coroutine;
         
@@ -50,16 +49,9 @@ namespace _Scripts.Agent.Players.Modules
         {
             SetPassPlatform(true);
             yield return _wait;
-            while (IsOverlappingPlatform()) yield return _waitFixed;
             SetPassPlatform(false);
         }
-
-        private bool IsOverlappingPlatform()
-        {
-            Bounds bounds = _collider.bounds;
-            return Physics2D.OverlapBox(bounds.center, bounds.size, 0f, whatIsPlatform) != null;
-        }
-
+        
         private void SetPassPlatform(bool isPass)
         {
             _isPlatformPass = isPass;

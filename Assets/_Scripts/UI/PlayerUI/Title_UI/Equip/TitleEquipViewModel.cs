@@ -259,9 +259,11 @@ namespace _Scripts.UI.PlayerUI.Title_UI.Equip
         private TitleEquipDetailData CreateDetail(Entry entry)
         {
             AbstractTitleSo title = entry.Title;
-            bool canToggle = entry.State == TitleEquipState.Owned;
+            bool owned = entry.State == TitleEquipState.Owned;
+            // 해제는 무료. 장착은 비용을 낼 수 있어야 한다.
+            bool canToggle = owned && (entry.IsEquipped || _equip.CanPayEquipCost(title));
 
-            string buttonLabel = !canToggle ? NotUnlockedLabel : entry.IsEquipped ? "해제" : "장착";
+            string buttonLabel = !owned ? NotUnlockedLabel : entry.IsEquipped ? "해제" : CreateEquipLabel(title);
             Action onToggle = null;
             if (canToggle)
             {
@@ -274,6 +276,14 @@ namespace _Scripts.UI.PlayerUI.Title_UI.Equip
                 entry.IsKnown ? title.UpgradeDescription : LockedText,
                 entry.IsKnown ? title.TitleIcon : null,
                 entry.State, entry.IsEquipped, buttonLabel, canToggle, onToggle);
+        }
+
+        // 최초 장착은 "장착 (무료)", 이후는 "장착 (30 코인)". 코인이 모자라면 "코인 부족 (30 코인)".
+        private string CreateEquipLabel(AbstractTitleSo title)
+        {
+            int cost = _equip.GetEquipCost(title);
+            if (cost <= 0) return "장착 (무료)";
+            return _equip.CanPayEquipCost(title) ? $"장착 ({cost} 코인)" : $"코인 부족 ({cost} 코인)";
         }
 
         // "No. 001 · 1번 맵". 잠긴 칭호는 맵도 숨기고 번호만 보여 준다.

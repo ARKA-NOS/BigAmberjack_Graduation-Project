@@ -14,5 +14,6 @@ namespace _Scripts.Upgrade.SO
         [field:SerializeField] public string ExclusiveGroup { get; private set; }
         [field:SerializeField] public Cost[] UpgradeCost { get; private set; }
         [field:SerializeField] public AbstractUpgradeData UpgradeData { get; private set; }
+        
     }
 }

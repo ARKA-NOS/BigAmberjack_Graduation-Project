@@ -1,0 +1,52 @@
+{
+  "result": {
+    "results": [
+      {
+        "pattern": "LastStandEntry",
+        "boundary": 0.35,
+        "order": [
+          "bomb",
+          "shotgun",
+          "bomb",
+          "shotgun",
+          "bomb",
+          "shotgun",
+          "bomb"
+        ],
+        "bombs": 4,
+        "shots": 9,
+        "laserSweeps": 2,
+        "invulnerableDuringAttacks": true,
+        "formationDuration": 0.9042053,
+        "centerAt": 0.013458252,
+        "innerAt": 0.399078369,
+        "outerAt": 0.7329178,
+        "angularSpeed": 42.0000153,
+        "flickerChanges": 7,
+        "fallingDamage": 0,
+        "normalDamage": 9.259262,
+        "groggyDamage": 18.5185242,
+        "groggyDuration": 5.00019073,
+        "fallStartSpeed": 0.639999747,
+        "fallEndSpeed": 14.7199917,
+        "shakePeak": 1.089439,
+        "receivedShakePeak": 1.0894388,
+        "particleCount": 18,
+        "yellow": true,
+        "orange": true,
+        "resumed": "DroneChargeSkill"
+      },
+      {
+        "pattern": "EntryTargetLostCleanup",
+        "shield": false,
+        "invulnerable": false,
+        "skillActive": false
+      }
+    ],
+    "preview": "Tools~/CTJ/Boss23TargetBombPreview.png"
+  },
+  "diagnostics": [],
+  "compileMs": 1474,
+  "executeMs": 15855,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_f967c0e36eb5468ca1e65b2700c53468"
+}

@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using _Scripts._Core._ServiceLocator;
 using _Scripts.Agent.Enemies;
 using _Scripts.Agent.Enemies.Bosses;
 using _Scripts.Agent.Enemies.Skills;
 using _Scripts.Agent.HealthSystem.NewHealthSystem;
 using _Scripts.Agent.Players;
 using _Scripts.Agent.SkillSystem.NormalSkill;
+using _Scripts.Audio;
+using _Scripts.DevLib.BattleSystem;
+using _Scripts.Currency;
 using _Scripts.Testing.Enemy;
 using _Scripts.UI.Enemy;
 using _Scripts.UI.HitFeedback;
 using UnityEditor;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -27,8 +32,8 @@ public static class VerifyBoss23Rework
     {
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
         var skills = root.GetComponentInChildren<EnemySkillModule>(true).Skills;
-        Check(skills.Count == 5 && skills.All(e => e.Skill != null && e.Skill.SkillSo != null && !e.UseForAutomaticSelection) &&
-            skills.Select(e => e.Skill.SkillSo).Distinct().Count() == 5, "Five unique specified skills required");
+        Check(skills.Count == 6 && skills.All(e => e.Skill != null && e.Skill.SkillSo != null && !e.UseForAutomaticSelection) &&
+            skills.Select(e => e.Skill.SkillSo).Distinct().Count() == 6, "Six unique specified skills required");
         foreach (var node in root.GetComponentsInChildren<Transform>(true))
             Check(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(node.gameObject) == 0, "Missing script: " + node.name);
         Check(root.GetComponentsInChildren<DroneSalvoSkill>(true).Length == 1 && root.GetComponentInChildren<EnemyAfterImageModule>(true) != null,
@@ -52,6 +57,8 @@ public static class VerifyBoss23Rework
             "Single-shot clip contains repeated or rear-barrel flashes");
         Check(new SerializedObject(root.GetComponentInChildren<DroneVisualModule>(true)).FindProperty("basicFlightExhaust").objectReferenceValue != null,
             "Flight exhaust reference missing");
+        var shield = root.GetComponentInChildren<DroneShieldGraphic>(true);
+        Check(shield != null && shield.GetComponent<CanvasRenderer>() != null, "Shield CanvasRenderer missing");
         var charge = new SerializedObject(root.GetComponentInChildren<DroneChargeSkill>(true));
         var warning = (AttackTelegraphUI)charge.FindProperty("telegraphPrefab").objectReferenceValue;
         Check(warning != null && warning.GetComponentsInChildren<UnityEngine.UI.Image>(true).Length == 5,
@@ -81,7 +88,69 @@ public static class VerifyBoss23Rework
 
     public static Task<object> RunSpacing() => RunInternal(false, 4);
 
+    public static Task<object> RunLaserSound() => RunInternal(false, 5);
+
     public static Task<object> RunEntryOnly() => RunInternal(true);
+
+    public static Task<object> RunRecovery() => RunInternal(true, 6);
+
+    public static Task<object> RunCenterWalls() => RunInternal(true, 7);
+
+    public static Task<object> RunBombSound() => RunInternal(true, 8);
+
+    public static Task<object> RunSalvoAuditBefore() => RunInternal(true, 9);
+
+    public static Task<object> RunSalvoAuditAfter() => RunInternal(true, 10);
+
+    public static Task<object> RunSalvoRegression() => RunInternal(true, 11);
+
+    public static Task<object> RunCoinPickupSound() => RunInternal(true, 12);
+
+    public static Task<object> RunAirMarkings() => RunInternal(true, 13);
+
+    public static Task<object> RunNormalPatternOrder() => RunInternal(true, 14);
+
+    public static Task<object> RunEnhancedPatternOrder() => RunInternal(true, 15);
+
+    public static object CheckRecoveryAssets()
+    {
+        var root = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
+        var animator = root.GetComponentInChildren<Animator>(true);
+        var body = animator.GetComponent<SpriteRenderer>();
+        var feedback = root.GetComponentInChildren<DroneLastStandFeedbackModule>(true);
+        var sparks = (ParticleSystem)new SerializedObject(feedback).FindProperty("malfunctionSparks").objectReferenceValue;
+        var renderer = sparks.GetComponent<ParticleSystemRenderer>();
+        Check(sparks.transform.parent.name == "ProcessNumber" && sparks.transform.localPosition == Vector3.zero &&
+            renderer.sortingOrder == body.sortingOrder - 1 && renderer.sortingLayerID == body.sortingLayerID,
+            "Spark anchor/sorting incorrect");
+        Check(renderer.sharedMaterial.shader.name == "Enemy/DroneGroggySpark" &&
+            !ShaderUtil.ShaderHasError(renderer.sharedMaterial.shader), "Spark glow shader missing or failed");
+        Check(sparks.emission.rateOverTime.constant == 110f, "Spark density unchanged");
+        string prefix = "Assets/_Graphics/Animations/Enemy/Enemy23/Boss23_ProductionControlDrone_";
+        var binding = EditorCurveBinding.PPtrCurve("", typeof(SpriteRenderer), "m_Sprite");
+        var numberY = EditorCurveBinding.FloatCurve("ProcessNumber", typeof(Transform), "m_LocalPosition.y");
+        var hold = AssetDatabase.LoadAssetAtPath<AnimationClip>(prefix + "GroggyHold.anim");
+        var recovery = AssetDatabase.LoadAssetAtPath<AnimationClip>(prefix + "GroggyRecover.anim");
+        Check(hold != null && recovery != null && hold.isLooping && !recovery.isLooping, "Groggy clips missing or wrong loop mode");
+        Check(AnimationUtility.GetObjectReferenceCurve(hold, binding).All(k => k.value.name == "transition_4"), "Wrong groggy pose");
+        foreach (string name in new[] { "GroggyHold", "GroggyRecover" })
+            Check(animator.runtimeAnimatorController.animationClips.Any(c => c.name.EndsWith("_" + name)), "Groggy state missing");
+        foreach (string name in new[] { "CrouchFire", "GroundRush", "SalvoSingleShot", "SalvoRearShot" })
+        {
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(prefix + name + ".anim");
+            var frames = AnimationUtility.GetObjectReferenceCurve(clip, binding);
+            var curve = AnimationUtility.GetEditorCurve(clip, numberY);
+            foreach (var key in frames)
+            {
+                var sprite = (Sprite)key.value;
+                float sourceY = sprite.texture.height - sprite.rect.y - sprite.pivot.y - curve.Evaluate(key.time) * 28f;
+                Check(Mathf.Abs(sourceY - 64.5f) < 0.01f, "Number did not compensate crouched sprite pivot: " + name);
+            }
+        }
+        return new { sparkAnchor = sparks.transform.parent.name, sparkRate = sparks.emission.rateOverTime.constant,
+            sparkSorting = renderer.sortingOrder, bodySorting = body.sortingOrder, shaderError = false,
+            crouchNumberSourceY = 64.5f, groggySprite = "transition_4", recoverySeconds = recovery.length };
+    }
 
     private static async Task<object> RunInternal(bool entryOnly, int group = 0)
     {
@@ -99,6 +168,166 @@ public static class VerifyBoss23Rework
         {
             try
             {
+                if (group == 14 || group == 15)
+                {
+                    bool enhanced = group == 15;
+                    await rig.NewBoss(enhanced);
+                    results.Add(await PatternOrder(rig, enhanced));
+                    if (!enhanced)
+                    {
+                        results.Add(CooldownOrder(rig));
+                        results.Add(await PhaseOrderReset(rig));
+                    }
+
+                    return new { results };
+                }
+
+                if (group == 13)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await Air(rig, enhanced));
+                    }
+                    results.Add(await Descent(rig));
+                    return new { results };
+                }
+
+                if (group == 11)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await Barrage(rig, enhanced, false, 1f, false));
+                        results.Add(await Barrage(rig, enhanced, true, 1f, false));
+                    }
+                    return new { results };
+                }
+
+                if (group == 9 || group == 10)
+                {
+                    foreach (bool enhanced in new[] { false, true })
+                    {
+                        await rig.NewBoss(enhanced);
+                        results.Add(await SalvoAudit(rig, enhanced, 1f, enhanced, group == 10));
+                        if (group == 10) results.Add(await SalvoAudit(rig, enhanced, -1f, false, true));
+                    }
+                    return new { results };
+                }
+
+                if (group == 7)
+                {
+                    await rig.NewBoss(false);
+                    var arena = new SerializedObject(rig.Root.GetComponentInChildren<BossArenaModule>());
+                    arena.FindProperty("halfWidth").floatValue = 8f;
+                    arena.ApplyModifiedPropertiesWithoutUndo();
+                    var walls = new GameObject("Center return test walls");
+                    try
+                    {
+                        foreach (float side in new[] { -1f, 1f })
+                        {
+                            var wall = new GameObject("Arena wall") { layer = LayerMask.NameToLayer("Ground") };
+                            wall.transform.SetParent(walls.transform, false);
+                            wall.transform.position = new Vector3(side * 8.25f, 3f, 0f);
+                            wall.AddComponent<BoxCollider2D>().size = new Vector2(0.3f, 6f);
+                        }
+                        foreach (float side in new[] { -1f, 1f }) results.Add(await CenterReturn(rig, side, true));
+                    }
+                    finally { Object.Destroy(walls); }
+                    return new { results };
+                }
+
+                if (group == 6)
+                {
+                    await rig.NewBoss(false);
+                    results.Add(await LastStandEntry(rig));
+                    await rig.NewBoss(false);
+                    results.Add(await CenterReturn(rig, -1f));
+                    results.Add(await CenterReturn(rig, 1f));
+                    return new { results, preview = "Tools~/CTJ/Boss23GroggyPreview.png" };
+                }
+
+                if (group == 5 || group == 8 || group == 12)
+                {
+                    var previousSound = ServiceLocator.Get<ISoundManager>();
+                    GameObject soundRoot = null;
+                    var manager = previousSound as SoundManager;
+                    if (manager == null || !manager.isActiveAndEnabled)
+                    {
+                        soundRoot = new GameObject("Laser sound verification");
+                        soundRoot.SetActive(false);
+                        manager = soundRoot.AddComponent<SoundManager>();
+                        var config = new SerializedObject(manager);
+                        config.FindProperty("_sfxCount").intValue = 4;
+                        config.FindProperty("_uiCount").intValue = 1;
+                        config.ApplyModifiedPropertiesWithoutUndo();
+                        soundRoot.SetActive(true);
+                        manager.Initialize();
+                    }
+
+                    try
+                    {
+                        if (group == 12)
+                        {
+                            await rig.NewBoss(false);
+                            results.Add(await CoinPickupSound(rig, manager, 1, false));
+                            results.Add(await CoinPickupSound(rig, manager, 12, false));
+                            results.Add(await CoinPickupSound(rig, manager, 1, true));
+                            return new { results };
+                        }
+
+                        if (group == 8)
+                        {
+                            foreach (bool enhanced in new[] { false, true })
+                            {
+                                await rig.NewBoss(enhanced);
+                                results.Add(await BombImpactSound(rig, manager, enhanced));
+                            }
+                            return new { results };
+                        }
+
+                        foreach (bool enhanced in new[] { false, true })
+                        {
+                            await rig.NewBoss(enhanced);
+                            var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Sound/Enemy/yodguard-short-energy-beam-shot-4-482500.mp3");
+                            int sameFrameStarts = 0;
+                            var startStates = new List<object>();
+                            bool validStarts = true;
+                            Action<EnemyAttackSkill, Vector3> onAttack = (skill, point) =>
+                            {
+                                if (skill != rig.Laser) return;
+                                var sources = manager.GetComponentsInChildren<AudioSource>();
+                                bool beamOn = rig.Root.transform.Find("LaserBeam").GetComponent<SpriteRenderer>().enabled;
+                                bool playing = sources.Any(s => s.clip == expected && s.isPlaying && s.time < 0.1f);
+                                validStarts &= beamOn && playing;
+                                startStates.Add(new { beam = rig.Root.transform.Find("LaserBeam").GetComponent<SpriteRenderer>().enabled,
+                                    registered = ReferenceEquals(ServiceLocator.Get<ISoundManager>(), manager),
+                                    sources = sources.Where(s => s.clip == expected).Select(s => new { clip = s.clip.name, playing = s.isPlaying, time = s.time }).ToArray() });
+                                sameFrameStarts++;
+                            };
+                            var attackEvent = typeof(EnemyAttackSkill).GetEvent("AttackPerformed", Private);
+                            attackEvent.GetAddMethod(true).Invoke(rig.Laser, new object[] { onAttack });
+                            var result = await Laser(rig, enhanced);
+                            attackEvent.GetRemoveMethod(true).Invoke(rig.Laser, new object[] { onAttack });
+                            Check(sameFrameStarts == (enhanced ? 2 : 1), "Laser sound release count mismatch");
+                            Check(validStarts, "Laser clip not playing at beam release");
+                            results.Add(new { enhanced, sameFrameStarts, clip = expected.name, startStates,
+                                playingAfterRelease = manager.GetComponentsInChildren<AudioSource>().Any(s => s.clip == expected && s.isPlaying), laser = result });
+                        }
+                    }
+                    finally
+                    {
+                        if (soundRoot != null)
+                        {
+                            soundRoot.SetActive(false);
+                            Object.Destroy(soundRoot);
+                            ServiceLocator.Register<ISoundManager>(previousSound);
+                        }
+                    }
+
+                    return new { results };
+                }
+
                 if (group == 4)
                 {
                     await rig.NewBoss(false);
@@ -140,11 +369,13 @@ public static class VerifyBoss23Rework
                 if (entryOnly || group == 0)
                 {
                     await rig.NewBoss(false);
-                    if (!entryOnly || group == 3) results.Add(RandomChoices(rig));
+                    if (!entryOnly || group == 3) results.Add(SequentialChoices(rig));
                     if (group == 3) results.Add(await GroundRest(rig));
                     if (group == 3) results.Add(await AirRest(rig));
                     if (group == 3) results.Add(await BombFlow(rig));
                     results.Add(await LastStandEntry(rig));
+                    await rig.NewBoss(false);
+                    results.Add(await CancelLastStandEntry(rig));
                 }
                 return new { results, preview = "Tools~/CTJ/Boss23TargetBombPreview.png" };
             }
@@ -335,7 +566,7 @@ public static class VerifyBoss23Rework
             smoothAcceleration = true, endX = r.Root.transform.position.x });
     }
 
-    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall, float direction = 1f)
+    private static async Task<object> Barrage(Rig r, bool enhanced, bool wall, float direction = 1f, bool capturePreview = true)
     {
         r.Prepare(false, direction * 1.5f);
         GameObject blocker = null;
@@ -372,7 +603,7 @@ public static class VerifyBoss23Rework
                 if (r.Barrage.FiredVolleys == (enhanced ? 12 : 7) && animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Idle") && idleAt < 0f)
                     idleAt = t;
 
-                if (t > (enhanced ? 0.48f : 0.58f) + 0.22f && r.Flight.IsMoving && !r.Barrage.IsRecovering)
+                if (t > (enhanced ? 0.48f : 0.58f) + 0.22f && r.Barrage.IsUsing && !r.Barrage.IsRecovering)
                 {
                     float offset = r.Root.transform.Find("Visual").position.y - r.Root.transform.position.y -
                         ((Vector3)Read(visualModule, "_visualOffset")).y;
@@ -383,7 +614,7 @@ public static class VerifyBoss23Rework
                     exhaustSeen |= exhaust.particleCount > 0;
                     Check(Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.001f,
                         "Hover moved the physics body off the floor");
-                    if (!enhanced && !hoverCaptured && offset > 0.23f)
+                    if (capturePreview && !enhanced && !hoverCaptured && offset > 0.23f)
                     {
                         CaptureGround(r.Camera, r.Root.transform.position + Vector3.up * 0.35f, 2f,
                             "Tools~/CTJ/Boss23SalvoHoverPreview.png");
@@ -408,7 +639,12 @@ public static class VerifyBoss23Rework
             Check(Mathf.Abs(events[0].time - start - (enhanced ? 0.48f : 0.58f)) < 0.06f, "First shot time mismatch");
             for (int i = 1; i < events.Length; i++)
                 Check(Mathf.Abs(events[i].time - events[i - 1].time - interval) < 0.04f, "Shot interval mismatch");
-            Check(Mathf.Abs(recoveryAt - (enhanced ? 2.186f : 2.646f)) < 0.08f, "Barrage recovery start mismatch: " + recoveryAt);
+            string lastPose = events.Length % 2 == 0 ? "SalvoRearShot" : "SalvoSingleShot";
+            var tailClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                "Assets/_Graphics/Animations/Enemy/Enemy23/Boss23_ProductionControlDrone_" + lastPose + ".anim");
+            float tailSpeed = new SerializedObject(r.Barrage).FindProperty(enhanced ? "lastStandFiringAnimationSpeed" : "firingAnimationSpeed").floatValue;
+            float naturalRecoveryAt = events.Last().time - start + tailClip.length / tailSpeed;
+            Check(Mathf.Abs(recoveryAt - naturalRecoveryAt) < 0.06f, "Barrage recovery did not follow its last shot animation: " + recoveryAt);
             Check(flashes == count && launchers.Select((name, i) => name == (i % 2 == 0 ? "speedy shot_0" : "speedy shot_1")).All(x => x),
                 "Barrage flashes did not alternate once per volley: " + string.Join(",", launchers));
             Check(idleAt > 0f && Mathf.Abs(idleAt - recoveryAt) < 0.04f, "Barrage did not return to Idle when the last motion ended");
@@ -428,12 +664,12 @@ public static class VerifyBoss23Rework
 
             float retreat = -r.Root.transform.position.x * direction;
             Check(wall ? Mathf.Abs(retreat) < 0.02f : retreat > 1.2f && retreat <= 1.51f, "Blocked retreat or preferred distance rule failed");
-            if (!wall) Check(hoverSeen && exhaustSeen && hoverMax - hoverMin > 0.1f, "Moving salvo hover or exhaust was not visible");
+            Check(hoverSeen && exhaustSeen && hoverMax - hoverMin > 0.1f, "Firing salvo hover or exhaust was not visible");
             Check(ReadFloat(visualModule, "_salvoHoverBlend") < 0.01f, "Hover did not settle after movement ended");
             return new { pattern = "Barrage", enhanced, wall, direction, shots = r.Shots.Count, firstShot = events[0].time - start,
                 interval, idleAt, recoveryAt, retreat, directionLocked = true, damagePerShot = 10f,
                 flashes, launchers, hoverSeen, exhaustSeen, maxVerticalJitter = verticalOffsets.Max(y => Mathf.Abs(y)),
-                hoverRange = wall ? null : new[] { hoverMin, hoverMax } };
+                hoverRange = new[] { hoverMin, hoverMax } };
         }
         finally { if (blocker != null) Object.DestroyImmediate(blocker); }
     }
@@ -546,6 +782,7 @@ public static class VerifyBoss23Rework
         await Until(() =>
         {
             var currentSprite = r.Root.GetComponentInChildren<Animator>().GetComponent<SpriteRenderer>().sprite;
+            CheckAirMarkerPosition(r);
             string sprite = AssetDatabase.GetAssetPath(currentSprite);
             flyingSeen |= sprite.Contains("/flying up/moving.png");
             shotSeen |= sprite.Contains("/flying up/shot.png");
@@ -600,7 +837,11 @@ public static class VerifyBoss23Rework
         var field = typeof(ProductionControlDrone).GetField("_state", Private);
         typeof(ProductionControlDrone).GetMethod("Change", Private).Invoke(r.Boss, new[] { Enum.Parse(field.FieldType, "Descend") });
         float start = Time.time;
-        await Until(() => Read(r.Boss, "_state").ToString() == "Recover", 2f, "Normal descent was too slow");
+        await Until(() =>
+        {
+            CheckAirMarkerPosition(r);
+            return Read(r.Boss, "_state").ToString() == "Recover";
+        }, 2f, "Normal descent was too slow");
         float duration = Time.time - start;
         Check(duration < 1.3f && Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.01f, "Descent did not land quickly");
         await Awaitable.NextFrameAsync();
@@ -757,28 +998,119 @@ public static class VerifyBoss23Rework
             descentAt, total = Time.time - startedAt, predictionSeen, fixedMarkers = true, horizontalTravel = maxX - minX };
     }
 
-    private static object RandomChoices(Rig r)
+    private static object SequentialChoices(Rig r)
     {
+        typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private).SetValue(r.Boss, 0);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, false);
         int[] ground = new int[3];
-        for (int i = 0; i < 240; i++)
+        for (int i = 0; i < 12; i++)
         {
             r.Prepare(false, 4f);
             Call(r.Boss, "ChooseGroundPattern");
             var active = r.Skills.ActiveSkill;
-            Check(active == r.Charge || active == r.Barrage || active == r.Air, "Invalid ground candidate");
+            var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air }[i % 3];
+            Check(active == expected, "Ground pattern order mismatch");
             ground[active == r.Charge ? 0 : active == r.Barrage ? 1 : 2]++;
         }
+
         int[] air = new int[2];
-        for (int i = 0; i < 160; i++)
+        for (int i = 0; i < 4; i++)
         {
             r.Prepare(true, 4f);
             Call(r.Boss, "ChooseAirPattern");
             var active = r.Skills.ActiveSkill;
-            Check(active == r.Laser || active == r.Bomb, "Invalid air candidate");
+            EnemyAttackSkill expected = i % 2 == 0 ? r.Laser : r.Bomb;
+            Check(active == expected, "Air pattern order mismatch");
             air[active == r.Laser ? 0 : 1]++;
         }
-        Check(ground.All(x => x > 45 && x < 115) && air.All(x => x > 45 && x < 115), "Random groups are biased or unavailable");
-        return new { pattern = "RandomSelection", ground, air };
+
+        return new { pattern = "SequentialSelection", ground, air };
+    }
+
+    private static async Task<object> PatternOrder(Rig r, bool enhanced)
+    {
+        r.Prepare(false, 4f);
+        r.SetState("Dormant");
+        var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air, r.Laser, r.Charge, r.Barrage, r.Air, r.Bomb, r.Charge };
+        var seen = new List<string>();
+        var starts = new List<float>();
+        EnemyAttackSkill previous = null;
+        float savedScale = Time.timeScale;
+        float startedAt = Time.time;
+
+        try
+        {
+            Time.timeScale = 2f;
+            await Until(() =>
+            {
+                var active = r.Skills.ActiveSkill as EnemyAttackSkill;
+                if (active != previous && active != null)
+                {
+                    Check(active == expected[seen.Count], "FSM order mismatch at " + seen.Count + ": " + active.GetType().Name);
+                    Check(r.Boss.IsLastStand == enhanced, "Pattern changed the combat phase");
+                    seen.Add(active.GetType().Name);
+                    starts.Add(Time.time - startedAt);
+                }
+                previous = active;
+
+                return seen.Count == expected.Length;
+            }, 45f, "Sequential pattern cycle stalled: " + string.Join(",", seen) + ", state=" + Read(r.Boss, "_state"));
+
+            return new { pattern = "FullFsmPatternOrder", enhanced, skills = seen, startedAt = starts, loopedToCharge = true };
+        }
+        finally { Time.timeScale = savedScale; }
+    }
+
+    private static object CooldownOrder(Rig r)
+    {
+        var groundIndex = typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private);
+        var nextBomb = typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private);
+        var cooldown = typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime");
+
+        foreach (int index in new[] { 0, 1, 2 })
+        {
+            r.Prepare(false, 4f);
+            groundIndex.SetValue(r.Boss, index);
+            nextBomb.SetValue(r.Boss, false);
+            var expected = new EnemyAttackSkill[] { r.Charge, r.Barrage, r.Air }[index];
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseGroundPattern");
+            Check(!r.Skills.IsBusy && (int)groundIndex.GetValue(r.Boss) == index, "Ground cooldown skipped a pattern");
+        }
+
+        foreach (bool bomb in new[] { false, true })
+        {
+            r.Prepare(true, 4f);
+            nextBomb.SetValue(r.Boss, bomb);
+            EnemyAttackSkill expected = bomb ? r.Bomb : r.Laser;
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseAirPattern");
+            Check(!r.Skills.IsBusy && (bool)nextBomb.GetValue(r.Boss) == bomb, "Air cooldown skipped a pattern");
+
+            r.Prepare(false, 4f);
+            groundIndex.SetValue(r.Boss, 2);
+            cooldown.SetValue(expected, Time.time + 10f);
+            Call(r.Boss, "ChooseGroundPattern");
+            Check(!r.Skills.IsBusy && (int)groundIndex.GetValue(r.Boss) == 2, "Ascent ignored its designated air attack cooldown");
+        }
+
+        return new { pattern = "CooldownOrder", checks = 7, noSkipping = true };
+    }
+
+    private static async Task<object> PhaseOrderReset(Rig r)
+    {
+        r.Prepare(false, 4f);
+        typeof(ProductionControlDrone).GetField("_groundPatternIndex", Private).SetValue(r.Boss, 2);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, true);
+        r.SetHealth(0.34f);
+        await Until(() => r.Boss.IsLastStand, 0.3f, "Last Stand threshold was not detected");
+
+        Check((int)Read(r.Boss, "_groundPatternIndex") == 0 && !(bool)Read(r.Boss, "_nextAirPatternIsBomb"),
+            "Last Stand did not reset to the charge/laser cycle");
+        Check(Read(r.Boss, "_state").ToString() == "LastStandEntry" && r.Boss.IsInvulnerable,
+            "Sequential selection bypassed Last Stand entry");
+
+        return new { pattern = "LastStandOrderReset", startsFromCharge = true, entryPreserved = true };
     }
 
     private static async Task<object> GroundRest(Rig r)
@@ -812,8 +1144,10 @@ public static class VerifyBoss23Rework
         Check(health.CurrentHealth < before, "Boss was invulnerable during the counterattack window");
         while (Time.time - start < 1.1f)
         {
-            Check(Read(r.Boss, "_state").ToString() == "Recover" && !r.Skills.IsBusy && r.Events.Count == events &&
-                Vector3.Distance(r.Root.transform.position, position) < 0.01f, "Boss attacked or moved during the counterattack window");
+            bool movement = airborne ? Vector3.Distance(r.Root.transform.position, position) < 0.01f :
+                Mathf.Abs(r.Root.transform.position.x) <= Mathf.Abs(position.x) + 0.01f;
+            Check(Read(r.Boss, "_state").ToString() == "Recover" && !r.Skills.IsBusy && r.Events.Count == events && movement,
+                "Boss attacked or failed to return toward center during recovery");
             await Awaitable.NextFrameAsync();
         }
         Check(r.Root.GetComponentInChildren<Animator>().GetCurrentAnimatorStateInfo(0)
@@ -827,6 +1161,7 @@ public static class VerifyBoss23Rework
     private static async Task<object> BombFlow(Rig r)
     {
         r.Prepare(true, 4f);
+        typeof(ProductionControlDrone).GetField("_nextAirPatternIsBomb", Private).SetValue(r.Boss, true);
         typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime").SetValue(r.Laser, Time.time + 100f);
         r.SetState("ChooseAir");
         await Until(() => r.Bomb.IsUsing, 0.5f, "FSM did not choose the bomb");
@@ -840,20 +1175,450 @@ public static class VerifyBoss23Rework
     private static async Task<object> LastStandEntry(Rig r)
     {
         r.Prepare(false, 4f);
+        r.Flight.Place(new Vector2(-3f, 0.9f));
         r.SetHealth(0.36f);
         await Awaitable.NextFrameAsync();
         Check(!r.Boss.IsLastStand, "Last Stand started above 35%");
         r.SetHealth(0.35f);
         await Until(() => r.Boss.IsLastStand, 0.3f, "Last Stand did not latch at 35%");
         Check((bool)Read(r.Boss, "_lastStandEntryPending"), "Entry reservation missing");
+        var entry = r.Root.GetComponentInChildren<DroneLastStandEntrySkill>();
+        var shield = r.Root.GetComponentInChildren<DroneShieldGraphic>(true);
+        var feedback = r.Root.GetComponentInChildren<DroneLastStandFeedbackModule>();
+        var sparks = (ParticleSystem)new SerializedObject(feedback).FindProperty("malfunctionSparks").objectReferenceValue;
+        var health = r.Root.GetComponentInChildren<NewHealthModule>();
+        var hit = new DamageData { DamageAmount = 10f };
+        float before = health.CurrentHealth;
+        r.Boss.ApplyDamage(hit, r.Root.transform.position, Vector2.right, Vector2.left);
+        Check(r.Boss.IsInvulnerable && health.CurrentHealth == before, "Entry did not reject damage");
+        Check(!shield.enabled, "Shield appeared before reaching aerial height");
+        await Until(() => feedback.IsShieldForming, 2f, "Shield formation did not start after ascent");
+        Check(shield.enabled && Mathf.Abs(r.Root.transform.position.y - 4.5f) < 0.02f && !r.Flight.IsMoving,
+            "Shield started before arriving/stopping in the air");
+        Check(!r.Air.IsUsing, "Normal air transformation was used");
+        float formationStarted = Time.time;
+        Vector3 formationPosition = r.Root.transform.position;
+        float centerAt = -1f, innerAt = -1f, outerAt = -1f;
+        bool fadedCenter = false, fadedInner = false, fadedOuter = false;
+        while (!feedback.IsShieldReady && Time.time - formationStarted < 2f)
+        {
+            Check(r.Events.Count == 0 && !r.Flight.IsMoving && Vector3.Distance(formationPosition, r.Root.transform.position) < 0.001f,
+                "Boss moved or attacked before shield completed");
+            float center = ReadFloat(shield, "_centerOpacity");
+            float inner = ReadFloat(shield, "_innerOpacity");
+            float outer = ReadFloat(shield, "_outerOpacity");
+            if (center > 0f && centerAt < 0f) centerAt = Time.time - formationStarted;
+            if (inner > 0f && innerAt < 0f) innerAt = Time.time - formationStarted;
+            if (outer > 0f && outerAt < 0f) outerAt = Time.time - formationStarted;
+            fadedCenter |= center > 0.05f && center < 0.95f;
+            fadedInner |= inner > 0.05f && inner < 0.95f;
+            fadedOuter |= outer > 0.05f && outer < 0.95f;
+            await Awaitable.NextFrameAsync();
+        }
+        Check(feedback.IsShieldReady && centerAt < innerAt && innerAt < outerAt && fadedCenter && fadedInner && fadedOuter,
+            "Shield layers did not fade in sequentially");
+        float formationDuration = Time.time - formationStarted;
+        Check(ReadFloat(shield, "innerArcDegrees") < 359f && ReadFloat(shield, "outerArcDegrees") < 359f,
+            "Shield lines are still full circles");
+        float firstAngle = ReadFloat(shield, "_innerAngle");
+        float angleAt = ReadFloat(feedback, "_shieldElapsed");
+        await Awaitable.NextFrameAsync();
+        await Awaitable.NextFrameAsync();
+        float angularSpeed = Mathf.DeltaAngle(firstAngle, ReadFloat(shield, "_innerAngle")) /
+            (ReadFloat(feedback, "_shieldElapsed") - angleAt);
+        Check(Mathf.Abs(angularSpeed - 42f) < 0.1f, "Shield arc did not rotate at constant configured speed: " + angularSpeed);
+        var bar = Object.FindObjectsByType<BossHealthBarUI>(FindObjectsSortMode.None).First();
+        var label = (UnityEngine.UI.Text)new SerializedObject(bar).FindProperty("invulnerableLabel").objectReferenceValue;
+        Check(label.gameObject.activeInHierarchy, "Boss HP bar did not show invulnerability");
+        CaptureLastStand(r, "Boss23LastStandShieldPreview.png");
+
+        var observedBombs = new HashSet<int>();
+        var landings = new Dictionary<int, Vector2>();
+        int bombs = 0;
+        bool safe = true;
+        float started = Time.time;
+        while (!r.Laser.IsPreparing && Time.time - started < 14f)
+        {
+            Check(!r.Boss.IsGroggy, "Groggy began in the air");
+            safe &= r.Boss.IsInvulnerable && shield.enabled;
+            r.Player.transform.position = new Vector3(4f + Mathf.Sin(Time.time * 2f), 0f, 0f);
+            foreach (var projectile in Object.FindObjectsByType<EnemyLobProjectile>(FindObjectsSortMode.None))
+            {
+                int id = projectile.GetInstanceID();
+                Vector2 landing = (Vector2)Read(projectile, "_landingPoint");
+                if (observedBombs.Add(id))
+                {
+                    bombs++;
+                    landings[id] = landing;
+                    float flightTime = (int)Read(projectile, "_steps") * Time.fixedDeltaTime;
+                    Check(ReadFloat(projectile, "_damage") == 26f && Mathf.Abs(flightTime - 1.15f) <= Time.fixedDeltaTime,
+                        "Entry bomb did not use enhanced damage/speed");
+                }
+                Check(Vector2.Distance(landings[id], landing) < 0.001f, "Bomb target followed the player after warning");
+            }
+            await Awaitable.NextFrameAsync();
+        }
+
+        Check(r.Laser.IsPreparing && entry.DidComplete, "Entry did not return for the laser");
+        CaptureLastStand(r, "Boss23LastStandShieldPreview.png");
+        Check(safe && bombs == 4 && entry.DroppedBombs == 4 && entry.FiredVolleys == 3 && r.Shots.Count == 9,
+            "Shield or entry counts failed: bombs=" + bombs + ", volleys=" + entry.FiredVolleys + ", shots=" + r.Shots.Count);
+        for (int i = 0; i < 3; i++)
+        {
+            var directions = r.Shots.Skip(i * 3).Take(3).Select(s => s.direction).ToArray();
+            float spread = directions.SelectMany(a => directions.Select(b => Vector2.Angle(a, b))).Max();
+            Check(Mathf.Abs(spread - 70f) < 0.1f, "Entry shotgun spread was not wide");
+        }
+        Check(Mathf.Abs(r.Root.transform.position.x) < 0.02f && Mathf.Abs(r.Root.transform.position.y - 4.5f) < 0.02f,
+            "Laser did not start at aerial center");
+        Check((int)Read(r.Laser, "_sweepCount") == 2 && ReadFloat(r.Laser, "_currentDamage") == 28f,
+            "Entry laser was not enhanced");
+        string[] order = r.Events.Where(e => e.skill == entry || e.skill == r.Bomb)
+            .Select(e => e.skill == entry ? "shotgun" : "bomb").ToArray();
+        Check(string.Join(",", order) == "bomb,shotgun,bomb,shotgun,bomb,shotgun,bomb", "Wrong interleaving order");
+
+        await Until(() => Read(r.Boss, "_state").ToString() == "EntryFall", 4f, "Laser did not lead into falling");
+        await Awaitable.NextFrameAsync();
+        Check(shield.enabled && label.gameObject.activeSelf && r.Boss.IsInvulnerable && !r.Boss.IsGroggy && r.Root.transform.position.y > 0.95f,
+            "Shield/HP label or airborne groggy timing is incorrect");
+        Check(r.Events.Count(e => e.skill == r.Laser) == 2, "Enhanced laser did not sweep twice");
+        var listener = r.Camera.gameObject.AddComponent<CinemachineExternalImpulseListener>();
+        listener.ChannelMask = BossLaserShake.ImpulseChannel;
+        listener.Gain = 1f;
+        listener.Use2DDistance = true;
+        listener.ReactionSettings.AmplitudeGain = 0f;
+        before = health.CurrentHealth;
+        r.Boss.ApplyDamage(hit, r.Root.transform.position, Vector2.right, Vector2.left);
+        float fallingDamage = before - health.CurrentHealth;
+        Check(fallingDamage == 0f, "Falling boss should remain invulnerable until landing");
+        var fallSamples = new List<float>();
+        float fallDeadline = Time.time + 1.5f;
+        while (!r.Boss.IsGroggy && Time.time < fallDeadline)
+        {
+            if (Read(r.Boss, "_state").ToString() == "EntryFall") fallSamples.Add(ReadFloat(r.Boss, "_entryFallVelocity"));
+            await Awaitable.NextFrameAsync();
+        }
+        Check(r.Boss.IsGroggy && fallSamples.Count > 2 && fallSamples.Last() > fallSamples.First() * 2f,
+            "Fall did not accelerate into landing");
+        float landedAt = Time.time;
+        Check(Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.02f && !r.Flight.IsMoving, "Groggy started before landing");
+        float shakePeak = 0f;
+        float receivedShakePeak = 0f;
+        var shutdownAlphas = new List<float>();
+        int flickerChanges = 0;
+        int particleCount = 0;
+        bool yellow = false, orange = false;
+        var particles = new ParticleSystem.Particle[80];
+        while (Time.time - landedAt < 0.35f)
+        {
+            CinemachineImpulseManager.Instance.GetImpulseAt(r.Root.transform.position, true, BossLaserShake.ImpulseChannel,
+                out Vector3 shake, out _);
+            shakePeak = Mathf.Max(shakePeak, shake.magnitude);
+            receivedShakePeak = Mathf.Max(receivedShakePeak, ((Vector3)Read(listener, "m_ImpulsePosLastFrame")).magnitude);
+            if (shield.enabled) shutdownAlphas.Add(ReadFloat(shield, "_centerOpacity"));
+            int count = sparks.GetParticles(particles);
+            particleCount = Mathf.Max(particleCount, count);
+            for (int i = 0; i < count; i++)
+            {
+                Color c = particles[i].startColor;
+                yellow |= c.r > 0.9f && c.g > 0.65f;
+                orange |= c.r > 0.9f && c.g < 0.6f;
+            }
+            await Awaitable.NextFrameAsync();
+        }
+        Check(sparks.isPlaying, "Groggy sparks not playing");
+        var bodyRenderer = r.Root.GetComponentInChildren<Animator>().GetComponent<SpriteRenderer>();
+        var sparkRenderer = sparks.GetComponent<ParticleSystemRenderer>();
+        var number = bodyRenderer.transform.Find("ProcessNumber");
+        Check(sparks.transform.parent == number && Vector3.Distance(sparks.transform.position, number.position) < 0.001f &&
+            sparkRenderer.sortingLayerID == bodyRenderer.sortingLayerID && sparkRenderer.sortingOrder < bodyRenderer.sortingOrder,
+            "Sparks did not follow the rear number or render behind the boss");
+        Check(sparkRenderer.sharedMaterial.shader.name == "Enemy/DroneGroggySpark" && particleCount >= 25,
+            "Spark glow/count was not increased");
+        Check(bodyRenderer.sprite.name == "transition_4", "Groggy did not use the lowest crouched pose");
+        for (int i = 1; i < shutdownAlphas.Count; i++)
+            if (Mathf.Abs(shutdownAlphas[i] - shutdownAlphas[i - 1]) > 0.15f) flickerChanges++;
+        Check(!r.Boss.IsInvulnerable && !shield.enabled && !label.gameObject.activeSelf && flickerChanges >= 2,
+            "Shield did not flicker out after landing or invulnerability persisted");
+        Check(shakePeak > 0.1f && receivedShakePeak > 0.1f && particleCount > 0 && yellow && orange,
+            "Landing shake/listener or yellow/orange sparks missing");
+        Vector3 cameraPosition = r.Camera.transform.position;
+        float cameraSize = r.Camera.orthographicSize;
+        r.Camera.transform.position = new Vector3(r.Root.transform.position.x, 1.1f, -10f);
+        r.Camera.orthographicSize = 1.7f;
+        CaptureLastStand(r, "Boss23GroggyPreview.png");
+        r.Camera.transform.position = cameraPosition;
+        r.Camera.orthographicSize = cameraSize;
+        before = health.CurrentHealth;
+        r.Boss.ApplyDamage(hit, r.Root.transform.position, Vector2.right, Vector2.left);
+        float groggyDamage = before - health.CurrentHealth;
+        Check(groggyDamage > 0f, "Groggy damage was blocked");
+        Check(!r.Boss.IsHitReacting && !r.Flight.IsMoving, "Groggy hit caused knockback/stagger");
+        await Until(() => !r.Boss.IsGroggy, 5.3f, "Groggy did not end");
+        float duration = Time.time - landedAt;
+        Check(duration >= 4.95f && duration < 5.15f, "Groggy duration incorrect: " + duration);
+        await Awaitable.NextFrameAsync();
+        Check(!sparks.isPlaying, "Groggy sparks did not stop");
+        Check(Read(r.Boss, "_state").ToString() == "GroggyRecover", "Groggy skipped the getting-up animation");
+        float gettingUpAt = Time.time;
+        var gettingUpSprites = new HashSet<Sprite>();
+        while (Read(r.Boss, "_state").ToString() == "GroggyRecover" && Time.time - gettingUpAt < 1.5f)
+        {
+            Check(!r.Skills.IsBusy && !r.Flight.IsMoving, "Boss moved or attacked while getting up");
+            gettingUpSprites.Add(bodyRenderer.sprite);
+            await Awaitable.NextFrameAsync();
+        }
+        float gettingUpDuration = Time.time - gettingUpAt;
+        Check(Read(r.Boss, "_state").ToString() == "GroggyRest" && gettingUpSprites.Count >= 4,
+            "Getting-up animation was not played through");
+        float restAt = Time.time;
+        while (Read(r.Boss, "_state").ToString() == "GroggyRest" && Time.time - restAt < 1f)
+        {
+            Check(!r.Skills.IsBusy && !r.Flight.IsMoving, "Boss did not pause after getting up");
+            await Awaitable.NextFrameAsync();
+        }
+        float afterGroggyPause = Time.time - restAt;
+        Check(afterGroggyPause >= 0.60f && afterGroggyPause < 0.8f, "Wrong pause after groggy recovery");
+        before = health.CurrentHealth;
+        r.Boss.ApplyDamage(hit, r.Root.transform.position, Vector2.right, Vector2.left);
+        float normalDamage = before - health.CurrentHealth;
+        Check(Mathf.Abs(normalDamage * 2f - groggyDamage) < 0.01f, "Damage multiplier persisted after groggy");
+        await Until(() => r.Skills.IsBusy, 0.5f, "Enhanced random patterns did not resume");
+        Check(r.Skills.ActiveSkill != entry, "Last Stand entry repeated");
+
+        return new { pattern = "LastStandEntry", boundary = 0.35f, order, bombs, shots = r.Shots.Count,
+            laserSweeps = 2, invulnerableDuringAttacks = safe, formationDuration, centerAt, innerAt, outerAt,
+            angularSpeed, flickerChanges, fallingDamage, normalDamage, groggyDamage,
+            groggyDuration = duration, fallStartSpeed = fallSamples.First(), fallEndSpeed = fallSamples.Last(),
+            shakePeak, receivedShakePeak, particleCount, yellow, orange, gettingUpDuration, afterGroggyPause,
+            resumed = r.Skills.ActiveSkill.GetType().Name };
+    }
+
+    private static async Task<object> SalvoAudit(Rig r, bool enhanced, float direction, bool delay, bool requireFixed)
+    {
+        r.Prepare(false, direction * 1.5f);
+        var visual = r.Root.transform.Find("Visual");
+        var module = r.Root.GetComponentInChildren<DroneVisualModule>();
+        var muzzle = (Transform)new SerializedObject(r.Barrage).FindProperty("muzzle").objectReferenceValue;
+        var perVolley = new List<int>();
+        var perFrame = new Dictionary<int, int>();
+        float originDeviation = 0f, minBlend = 1f;
+        float minHover = float.PositiveInfinity, maxHover = float.NegativeInfinity;
+        int previousShots = 0;
+        bool crossed = false, delayed = false;
+        float frozenX = float.NaN;
+        Action<EnemyAttackSkill, Vector3> handler = (skill, origin) =>
+        {
+            if (skill != r.Barrage) return;
+            int spawned = r.Shots.Count - previousShots;
+            previousShots = r.Shots.Count;
+            perVolley.Add(spawned);
+            int frame = Time.frameCount;
+            perFrame[frame] = perFrame.GetValueOrDefault(frame) + spawned;
+            originDeviation = Mathf.Max(originDeviation, Vector3.Distance(origin, muzzle.position));
+        };
+        var attack = typeof(EnemyAttackSkill).GetEvent("AttackPerformed", Private);
+        attack.GetAddMethod(true).Invoke(r.Barrage, new object[] { handler });
+        try
+        {
+            Check(r.Skills.TryUseSpecifiedSkill(r.Barrage), "Salvo audit did not start");
+            await Until(() =>
+            {
+                if (!crossed && r.Barrage.FiredVolleys >= 2)
+                {
+                    r.Player.transform.position = r.Root.transform.position - Vector3.right * direction * 3f;
+                    crossed = true;
+                }
+                if (delay && !delayed && r.Barrage.FiredVolleys >= 2)
+                {
+                    typeof(DroneSalvoSkill).GetField("_startedAt", Private).SetValue(r.Barrage, ReadFloat(r.Barrage, "_startedAt") - 0.5f);
+                    var next = typeof(DroneSalvoSkill).GetField("_nextVolleyAt", Private);
+                    if (next != null) next.SetValue(r.Barrage, Time.time - 0.5f);
+                    delayed = true;
+                }
+                if (crossed && (bool)Read(r.Barrage, "_movementLocked"))
+                {
+                    if (float.IsNaN(frozenX)) frozenX = r.Root.transform.position.x;
+                    Check(Mathf.Abs(r.Root.transform.position.x - frozenX) < 0.01f, "Salvo resumed horizontal motion behind target");
+                    if (r.Barrage.IsUsing && r.Barrage.FiredVolleys >= 5 && !r.Barrage.IsRecovering)
+                    {
+                        minBlend = Mathf.Min(minBlend, ReadFloat(module, "_salvoHoverBlend"));
+                        float offset = visual.position.y - r.Root.transform.position.y;
+                        minHover = Mathf.Min(minHover, offset);
+                        maxHover = Mathf.Max(maxHover, offset);
+                    }
+                }
+                Check(visual.localScale.x * direction > 0f && Mathf.Abs(r.Root.transform.position.y - 0.9f) < 0.02f,
+                    "Salvo facing or physics height changed");
+                return !r.Barrage.IsUsing;
+            }, 6f, "Salvo audit stalled");
+
+            int each = enhanced ? 3 : 1;
+            Check(perVolley.Count == (enhanced ? 12 : 7) && perVolley.All(n => n == each) &&
+                r.Shots.Count == (enhanced ? 36 : 7), "Wrong per-volley or total projectile count");
+            if (enhanced)
+                for (int i = 0; i < 12; i++)
+                    Check(r.Shots.Skip(i * 3).Take(3).Select(s => Mathf.RoundToInt(Mathf.Atan2(s.direction.y, Mathf.Abs(s.direction.x)) * Mathf.Rad2Deg))
+                        .OrderBy(n => n).SequenceEqual(new[] { 0, 12, 24 }), "A volley did not fire once into each lane");
+            float hoverRange = maxHover - minHover;
+            if (requireFixed)
+            {
+                Check(perFrame.Values.Max() == each, "Delayed salvo stacked multiple volleys in one frame");
+                Check(!enhanced || originDeviation < 0.001f, "Enhanced salvo still alternated projectile origins");
+                Check(minBlend > 0.95f && hoverRange > 0.1f, "Stationary salvo lost its hover after target crossed behind: blend=" + minBlend + ", range=" + hoverRange);
+            }
+            return new { enhanced, direction, delayed, volleys = perVolley.Count, projectilesPerVolley = perVolley.ToArray(),
+                totalProjectiles = r.Shots.Count, maxProjectilesPerFrame = perFrame.Values.Max(),
+                maxOriginDeviationFromFront = originDeviation, minHoverBlendAfterCrossing = minBlend, hoverRangeAfterCrossing = hoverRange,
+                fixedHorizontalPosition = frozenX, lockedFacing = true };
+        }
+        finally { attack.GetRemoveMethod(true).Invoke(r.Barrage, new object[] { handler }); }
+    }
+
+    private static async Task<object> CoinPickupSound(Rig r, SoundManager manager, int count, bool expire)
+    {
+        r.Prepare(false, 4f);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Prefabs/Enemies/Effects/EnemyRewardCoin.prefab");
+        var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Prefabs/Enemies/Effects/Audio/Clips/CoinDrop.wav");
+        var currency = new CurrencyData(null, 0);
+        var coins = new List<EnemyRewardCoin>();
+        ulong before = Convert.ToUInt64(Read(manager, "_playOrder"));
+        float startedAt = Time.time;
+        try
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 center = r.Player.GetComponent<Collider2D>().bounds.center;
+                var coin = Object.Instantiate(prefab, center, Quaternion.identity).GetComponent<EnemyRewardCoin>();
+                coins.Add(coin);
+                typeof(EnemyRewardCoin).GetMethod("SetCollector", Private).Invoke(coin, new object[] { r.Player.transform });
+                typeof(EnemyRewardCoin).GetMethod("Launch", Private).Invoke(coin, new object[] { currency, 3, 0f, 1f });
+                if (expire)
+                    typeof(EnemyRewardCoin).GetField("_aliveTime", Private).SetValue(coin, 100f);
+                else typeof(EnemyRewardCoin).GetMethod("BeginHoming", Private).Invoke(coin, null);
+            }
+            float audioAt = -1f;
+            if (!expire)
+            {
+                await Until(() => coins.All(c => c != null && c.IsCollecting), 0.15f, "Coins did not reach the collector");
+                audioAt = Time.time - startedAt;
+                Check(Convert.ToUInt64(Read(manager, "_playOrder")) - before == (ulong)count,
+                    "Pickup sound was not requested immediately for each coin");
+                Check(currency.Count == 0, "Reward settlement moved ahead of the collect animation");
+                Check(manager.GetComponentsInChildren<AudioSource>().Any(s => s.clip == expected && s.isPlaying && s.time < 0.1f),
+                    "Coin pickup clip did not start on arrival");
+            }
+            await Until(() => coins.All(c => c == null), 0.8f, "Coins did not finish collecting/expire");
+            await Awaitable.NextFrameAsync();
+            ulong calls = Convert.ToUInt64(Read(manager, "_playOrder")) - before;
+            Check(calls == (expire ? 0UL : (ulong)count), "Pickup sound replayed at cleanup or played on timeout");
+            Check(currency.Count == count * 3, "Coin reward was lost or duplicated");
+            return new { pattern = "CoinPickupSound", count, expire, soundRequests = calls, arrivalSoundAfterSeconds = audioAt,
+                completedAfterSeconds = Time.time - startedAt, gold = currency.Count, noSoundBacklog = true };
+        }
+        finally
+        {
+            foreach (var coin in coins) if (coin != null) Object.Destroy(coin.gameObject);
+        }
+    }
+
+    private static void CheckAirMarkerPosition(Rig r)
+    {
+        var animator = r.Root.GetComponentInChildren<Animator>();
+        var sprite = animator.GetComponent<SpriteRenderer>().sprite;
+        if (!AssetDatabase.GetAssetPath(sprite).Contains("/flying up/")) return;
+
+        float expected = sprite.name switch
+        {
+            "transition_0" or "transition back_5" => 8.5f,
+            "transition_1" or "transition back_4" => 5.5f,
+            "transition_2" or "transition back_3" => 4.5f,
+            "transition_3" or "transition back_2" => 10.5f,
+            _ => 15.5f
+        };
+        float number = animator.transform.Find("ProcessNumber").localPosition.y * 28f;
+        float lamp = animator.transform.Find("AlarmLamp").localPosition.y * 28f;
+        Check(Mathf.Abs(number - expected) < 0.01f && Mathf.Abs(lamp - expected - 10f) < 0.01f,
+            "Air marker mismatch during " + sprite.name + ": " + number + "/" + lamp);
+    }
+
+    private static async Task<object> BombImpactSound(Rig r, SoundManager manager, bool enhanced)
+    {
+        r.Prepare(true, 4f);
+        var expected = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Prefabs/Enemies/Effects/Audio/Clips/PlazmaBoom_Impact.wav");
+        var projectile = (EnemyLobProjectile)typeof(DroneBombSkill).GetMethod("LaunchTargetBomb", Private)
+            .Invoke(r.Bomb, new object[] { r.Player.transform, 0f, enhanced });
+        Check(projectile != null && projectile.IsInFlight, "Bomb sound fixture did not launch");
+        Vector2 landing = (Vector2)Read(projectile, "_landingPoint");
+        float startedAt = Time.time;
+        await Until(() => projectile == null || !projectile.IsInFlight, 2.5f, "Bomb did not impact");
+        var source = manager.GetComponentsInChildren<AudioSource>().FirstOrDefault(s =>
+            s.clip == expected && s.isPlaying && s.time < 0.1f &&
+            Vector2.Distance(s.transform.position, landing) < 0.03f);
+        Check(source != null, "PlazmaBoom did not start at the impact position/frame");
+        return new { pattern = "BombImpactSound", enhanced, clip = source.clip.name,
+            flightSeconds = Time.time - startedAt, audioTimeAtImpact = source.time,
+            volume = source.volume, pitch = source.pitch, landing = landing.ToString("F2") };
+    }
+
+    private static async Task<object> CenterReturn(Rig r, float side, bool nearWall = false)
+    {
+        r.Prepare(false, side * (nearWall ? 7.5f : 9f));
+        r.Flight.Place(new Vector2(side * (nearWall ? 6.6f : 7f), 0.9f));
+        Physics2D.SyncTransforms();
+        foreach (var entry in r.Skills.Skills)
+            typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime").SetValue(entry.Skill, Time.time + 100f);
         r.SetState("ChooseGround");
-        await Until(() => r.Air.IsUsing, 1f, "Entry did not ascend");
-        await Until(() => r.Laser.IsPreparing, 6f, "Air transition did not force entry laser");
-        Check((int)Read(r.Laser, "_sweepCount") == 1 && ReadFloat(r.Laser, "_startSpeed") == 600f && r.Shots.Count == 0,
-            "Entry should preserve normal ascent and one-way laser");
-        await Until(() => !r.Laser.IsUsing, 2f, "Entry laser stalled");
-        await Until(() => !(bool)Read(r.Boss, "_lastStandEntryPending"), 0.3f, "Entry did not finish");
-        return new { pattern = "LastStandEntry", boundary = 0.35f, oneWayPreserved = true, noEntryShotgun = true };
+        await Until(() => r.Flight.IsMoving, 0.4f, "Boss did not start returning to center while skills cooled down");
+        float start = r.Root.transform.position.x;
+        float until = Time.time + 0.45f;
+        while (Time.time < until) await Awaitable.NextFrameAsync();
+        float returnedX = r.Root.transform.position.x;
+        Check(Mathf.Abs(returnedX) < Mathf.Abs(start) - 0.5f && !r.Skills.IsBusy, "Return moved toward player/wall instead of center");
+        typeof(AbstractCoolTimeSkill).GetProperty("CoolTimeStartTime").SetValue(r.Barrage, float.NegativeInfinity);
+        await Until(() => r.Barrage.IsUsing, 0.4f, "Ready skill waited for the center return to finish");
+        float attackX = r.Root.transform.position.x;
+        Check(Mathf.Abs(attackX) > 4f, "Skill started only after reaching the center");
+        return new { pattern = "CenterReturn", nearWall, side, start, returnedX, attackX, skill = "Barrage", interruptedReturn = true };
+    }
+
+    private static async Task<object> CancelLastStandEntry(Rig r)
+    {
+        r.Prepare(false, 4f);
+        r.SetHealth(0.34f);
+        var entry = r.Root.GetComponentInChildren<DroneLastStandEntrySkill>();
+        var shield = r.Root.GetComponentInChildren<DroneShieldGraphic>(true);
+        await Until(() => entry.IsUsing && shield.enabled, 2f, "Cancellation fixture failed");
+        r.Boss.SetTarget(null);
+        await Awaitable.NextFrameAsync();
+        Check(!r.Boss.IsInvulnerable && !r.Skills.IsBusy && !shield.enabled && !r.Boss.IsGroggy,
+            "Interrupted entry left shield, invulnerability or skill active");
+        return new { pattern = "EntryTargetLostCleanup", shield = false, invulnerable = false, skillActive = false };
+    }
+
+    private static void CaptureLastStand(Rig r, string file)
+    {
+        var target = RenderTexture.GetTemporary(800, 480, 24);
+        var previous = RenderTexture.active;
+        var previousTarget = r.Camera.targetTexture;
+        var image = new Texture2D(800, 480, TextureFormat.RGB24, false);
+        try
+        {
+            Canvas.ForceUpdateCanvases();
+            r.Camera.targetTexture = target;
+            r.Camera.Render();
+            RenderTexture.active = target;
+            image.ReadPixels(new Rect(0, 0, 800, 480), 0, 0);
+            image.Apply();
+            System.IO.File.WriteAllBytes("Tools~/CTJ/" + file, image.EncodeToPNG());
+        }
+        finally
+        {
+            r.Camera.targetTexture = previousTarget;
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(target);
+            Object.Destroy(image);
+        }
     }
 
     private static void Capture(Camera camera, Texture2D sheet, int index, Vector3 point)
@@ -977,6 +1742,9 @@ public static class VerifyBoss23Rework
                 SetHealth(0.34f);
                 await Until(() => Boss.IsLastStand, 0.3f, "Enhanced fixture did not latch phase");
                 typeof(ProductionControlDrone).GetField("_lastStandEntryPending", Private).SetValue(Boss, false);
+                Skills.StopAttack();
+                typeof(BossBase).GetProperty("IsInvulnerable").SetValue(Boss, false);
+                SetState(null);
             }
             else await Awaitable.NextFrameAsync();
             Check(Boss.IsLastStand == enhanced, "Controlled phase setup failed");

@@ -85,7 +85,6 @@ namespace _Scripts.Agent.Enemies
         private float _animationTime;
         private bool _launched;
         private bool _completed;
-        private bool _collectedByPlayer;
         private bool _quitting;
 
         private enum CoinPhase { Scatter, Bounce, Homing, Collect }
@@ -357,8 +356,10 @@ namespace _Scripts.Agent.Enemies
 
         private void BeginCollect(bool collectedByPlayer)
         {
-            _collectedByPlayer = collectedByPlayer;
             _phase = CoinPhase.Collect;
+
+            // 도착 피드백은 소멸 모션을 기다리지 않고 플레이어 중심에 닿은 순간 재생합니다.
+            if (collectedByPlayer) EnemySoundModule.PlayCue(collectCue, transform.position);
 
             if (_trail != null) _trail.StopTrail();
 
@@ -440,12 +441,8 @@ namespace _Scripts.Agent.Enemies
             if (_trail != null) _trail.StopTrail();
 
             _visual.enabled = false;
-            Vector3 pickupPosition = transform.position;
-
             Destroy(gameObject);
             PayReward();
-
-            if (_collectedByPlayer) EnemySoundModule.PlayCue(collectCue, pickupPosition);
         }
 
         private void OnApplicationQuit() => _quitting = true;

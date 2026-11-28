@@ -32,7 +32,10 @@ public static class VerifyEnemyVisualFix
         var label = AssetDatabase.LoadAssetAtPath<GameObject>(Popup).GetComponentInChildren<TMP_Text>(true);
 
         Check(label.font.name == "AmberjackPixel Raster" && label.font.HasCharacters("0123456789"), "Wrong pixel font");
-        Check(label.fontSharedMaterial.shader.name == "TextMeshPro/Mobile/Bitmap", "Font material still uses SDF");
+        Check(label.fontSharedMaterial.shader.name == "Enemy/DamageIndicatorBitmap" &&
+            !ShaderUtil.ShaderHasError(label.fontSharedMaterial.shader), "Bitmap stroke shader invalid");
+        Check(label.fontSize == 56f && Mathf.Abs(label.fontSharedMaterial.GetFloat("_StrokePixels") - 0.25f) < 0.0001f,
+            "Larger/bolder indicator settings missing");
 
         return new { clips, lampRaisePixels = 2, font = label.font.name, fontSize = label.fontSize };
     }
@@ -200,6 +203,8 @@ public static class VerifyEnemyVisualFix
 
             Check(a.text == "10" && b.text == "26", "Damage rounding changed");
             Check(a.font.name == "AmberjackPixel Raster" && b.font == a.font && a.fontSharedMaterial == b.fontSharedMaterial, "Font not shared");
+            Check(a.fontSize == 56f && b.fontSize == 56f && a.fontSharedMaterial.GetFloat("_StrokePixels") > 0f,
+                "Popup size or stroke reverted at runtime");
             Check(a.color == Color.white && b.color.r > 0.9f && b.color.g > 0.7f && b.color.b < 0.3f, "Normal/critical colors changed");
             Check(a.textInfo.characterInfo.Take(a.textInfo.characterCount).All(c => c.fontAsset == a.font), "Pixel font used a fallback");
             float deadline = Time.realtimeSinceStartup + 2f;

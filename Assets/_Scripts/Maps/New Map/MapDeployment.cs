@@ -88,8 +88,7 @@ namespace _Scripts.Maps.New_Map
                     placed.Position,
                     node.Role,
                     node.Id,
-                    placed.ParentIndex,
-                    (bool[])placed.UsedLinks.Clone()));
+                    placed.ParentIndex));
             }
 
             return result;
@@ -151,7 +150,7 @@ namespace _Scripts.Maps.New_Map
                 return null;
             }
 
-            // links 배열 순서가 굽기와 마감의 링크 인덱스이므로 빈 칸이 있으면 두 순서가 어긋난다.
+            // links 배열에 빈 칸이 있으면 프리팹 설정 실수로 보고 배치에서 제외한다.
             RoomLink[] roomLinks = prefab.GetRoomLink();
             if (roomLinks != null && roomLinks.Any(link => link == null))
             {

@@ -405,7 +405,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapSettingAsset.RoomLink
   <Direction>k__BackingField: 1
   <LinkSize>k__BackingField: 2
-  sealObject: {fileID: 70490302967772506}
 --- !u!1 &6278951730169914620
 GameObject:
   m_ObjectHideFlags: 0
@@ -10980,9 +10979,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapSettingAsset.Room
   tilemap: {fileID: 7000000000000000273}
-  links:
-  - {fileID: 1417804885189509115}
-  - {fileID: 8159896547483349417}
   playerSpawnPoint: {fileID: 0}
 --- !u!1 &7000000000000000276
 GameObject:
@@ -16380,7 +16376,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Maps.New_Map.MapSettingAsset.RoomLink
   <Direction>k__BackingField: 0
   <LinkSize>k__BackingField: 2
-  sealObject: {fileID: 6278951730169914620}
 --- !u!1001 &216978728536778055
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
@@ -8,6 +9,7 @@ using _Scripts.Maps.New_Map.MapGenerateData;
 using _Scripts.Maps.New_Map.MapSettingAsset;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace _Scripts.Maps.New_Map
 {
@@ -37,9 +39,12 @@ namespace _Scripts.Maps.New_Map
             if (wallFiller == null)
                 wallFiller = GetComponentInChildren<MapWallFiller>(true);
             
-            GenerateMap(mapGenerateSetting);
-
             EventBus<MapGenerateEvent>.Subscribe(HandleMapGenerate);
+        }
+
+        private void Start()
+        {
+            EventBus<MapMoveEvent>.Raise(new MapMoveEvent());
         }
 
         private void OnDestroy()

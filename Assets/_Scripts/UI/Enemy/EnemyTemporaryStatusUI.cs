@@ -52,6 +52,7 @@ namespace _Scripts.UI.Enemy
 
             _canvas.renderMode = RenderMode.WorldSpace;
             _canvas.enabled = false;
+
             foreach (Graphic graphic in GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
         }
 
@@ -70,6 +71,7 @@ namespace _Scripts.UI.Enemy
         private void Bind()
         {
             Unbind();
+
             if (_enemy == null) return;
 
             _canvasGroup.alpha = 1f;
@@ -89,7 +91,9 @@ namespace _Scripts.UI.Enemy
         private void OnHealthChanged(float current, float delta, float max)
         {
             float fill = max > 0f ? Mathf.Clamp01(current / max) : 0f;
+
             if (healthFill != null) healthFill.fillAmount = fill;
+
             if (current <= 0f && !_playingDeath && !_enemy.IsWaitingForDeathLanding)
                 _canvas.enabled = false;
 
@@ -111,16 +115,19 @@ namespace _Scripts.UI.Enemy
             if (damageLagFill == null || healthFill == null) return;
 
             float target = healthFill.fillAmount;
+
             if (!enableDamageLag || damageLagFill.fillAmount <= target)
             {
                 damageLagFill.fillAmount = target;
                 damageLagFill.enabled = false;
+
                 return;
             }
 
             if (!_enemy.IsWaitingForDeathLanding)
             {
                 float progress = (Time.time - _lagStartsAt) / Mathf.Max(0.01f, damageLagDuration);
+
                 damageLagFill.fillAmount = Mathf.SmoothStep(_lagStartFill, target, progress);
             }
 
@@ -132,6 +139,7 @@ namespace _Scripts.UI.Enemy
             if (!enableDeathAnimation || !_canvas.enabled)
             {
                 _canvas.enabled = false;
+
                 return;
             }
 
@@ -148,12 +156,15 @@ namespace _Scripts.UI.Enemy
             if (_playingDeath)
             {
                 UpdateDeathAnimation();
+
                 return;
             }
 
             bool visible = _enemy != null && _enemy.isActiveAndEnabled && _health != null &&
                 (_enemy.IsWaitingForDeathLanding || (!_enemy.IsDead && !_health.IsDead && _health.CurrentHealth > 0f));
+
             _canvas.enabled = visible;
+
             if (!visible) return;
 
             UpdatePose(0f);
@@ -165,15 +176,18 @@ namespace _Scripts.UI.Enemy
             float elapsed = Time.time - _deathStartedAt;
             float tiltDuration = Mathf.Max(0.01f, deathTiltDuration);
             float fade = (elapsed - tiltDuration) / Mathf.Max(0.01f, deathFadeDuration);
+
             if (!enableDeathAnimation || fade >= 1f)
             {
                 _canvasGroup.alpha = 0f;
                 _playingDeath = false;
                 _canvas.enabled = false;
+
                 return;
             }
 
             float angle = Mathf.SmoothStep(0f, _deathAngle, elapsed / tiltDuration);
+
             UpdatePose(angle);
             UpdateDamageLag();
             _canvasGroup.alpha = Mathf.SmoothStep(1f, 0f, fade);
@@ -182,11 +196,14 @@ namespace _Scripts.UI.Enemy
         private void UpdatePose(float angle)
         {
             Vector2 offset = worldOffset;
+
             if (_verticalFlip != null && _verticalFlip.IsFlipped) offset.y = -offset.y;
+
             _rect.SetPositionAndRotation(_enemy.transform.position + (Vector3)offset, Quaternion.Euler(0f, 0f, angle));
 
             Vector3 parentScale = _rect.parent != null ? _rect.parent.lossyScale : Vector3.one;
             float size = Mathf.Max(0.001f, worldUnitsPerPixel);
+
             // 루트 스케일/좌우 반전과 무관하게 바의 크기와 감소 방향을 유지합니다.
             _rect.localScale = new Vector3(ScaleForParent(size, parentScale.x),
                 ScaleForParent(size, parentScale.y), ScaleForParent(size, parentScale.z));
@@ -198,7 +215,9 @@ namespace _Scripts.UI.Enemy
         private void Unbind()
         {
             if (_enemy != null) _enemy.DeathStarted -= OnDeathStarted;
+
             if (_health != null) _health.OnHealthChanged -= OnHealthChanged;
+
             _health = null;
             _playingDeath = false;
         }
@@ -206,6 +225,7 @@ namespace _Scripts.UI.Enemy
         private void OnDisable()
         {
             Unbind();
+
             if (_canvas != null) _canvas.enabled = false;
         }
 

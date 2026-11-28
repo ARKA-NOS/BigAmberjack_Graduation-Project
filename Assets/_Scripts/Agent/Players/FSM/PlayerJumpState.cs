@@ -1,4 +1,5 @@
-﻿using _Scripts.Agent.Players.Enum;
+﻿using _Scripts._Core._Debug;
+using _Scripts.Agent.Players.Enum;
 using UnityEngine;
 
 namespace _Scripts.Agent.Players.FSM
@@ -9,7 +10,7 @@ namespace _Scripts.Agent.Players.FSM
         public PlayerJumpState(Agent agent, int stateClipHash, int layerIndex) : base(agent, stateClipHash, layerIndex)
         {
             _playerRb = agent.GetComponent<Rigidbody2D>();
-            Debug.Assert(_playerRb != null, "플레이어한테 Rigidbody2D 안 붙였나요??");
+            FDebug.Assert(_playerRb != null, "플레이어한테 Rigidbody2D 안 붙였나요??");
         }
 
         public override void Enter()

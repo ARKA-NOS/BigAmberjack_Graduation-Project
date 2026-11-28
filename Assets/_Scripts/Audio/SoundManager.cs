@@ -45,6 +45,7 @@ namespace _Scripts.Audio
             if (_initialized) return;
 
             _initialized = true;
+
             if (isActiveAndEnabled) Register();
         }
 
@@ -72,6 +73,7 @@ namespace _Scripts.Audio
             if (!IsRegistered) return;
 
             BindSettings();
+
             if (_musicSource.clip == null) PlayMusic(_initialMusic);
         }
 
@@ -80,6 +82,7 @@ namespace _Scripts.Audio
             if (ServiceLocator.Get<ISoundManager>() is SoundManager current && current != null && current != this)
             {
                 Debug.LogWarning("SoundManager is already registered. Keep one active GameManager.", this);
+
                 return;
             }
 
@@ -99,7 +102,9 @@ namespace _Scripts.Audio
         private void BindSettings()
         {
             _settings = ServiceLocator.Get<ISettingsManager>();
+
             if (_settings != null) _settings.OnSettingsChanged += ApplyVolumes;
+
             ApplyVolumes(_settings?.Settings ?? SettingsData.Default);
         }
 
@@ -116,6 +121,7 @@ namespace _Scripts.Audio
         {
             float gain = Mathf.Clamp01(percent / (float)SettingsData.MaxPercent);
             float decibels = gain > 0f ? 20f * Mathf.Log10(gain) : MutedDecibels;
+
             return group != null && group.audioMixer.SetFloat(parameter, decibels) ? 1f : gain;
         }
 
@@ -177,10 +183,12 @@ namespace _Scripts.Audio
         private static Voice FindVoice(Voice[] voices, int priority)
         {
             Voice replacement = null;
+
             foreach (Voice voice in voices)
             {
                 if (!voice.Source.isPlaying) return voice;
                 if (priority > voice.Source.priority) continue;
+
                 if (replacement == null || voice.Source.priority > replacement.Source.priority ||
                     (voice.Source.priority == replacement.Source.priority && voice.PlayOrder < replacement.PlayOrder))
                 {
@@ -194,9 +202,11 @@ namespace _Scripts.Audio
         private Voice[] CreateVoices(int count, string label, AudioMixerGroup output, bool isUi)
         {
             var voices = new Voice[Mathf.Max(1, count)];
+
             for (int i = 0; i < voices.Length; i++)
             {
                 AudioSource source = CreateSource($"{label} {i + 1}", output, isUi);
+
                 if (!isUi)
                 {
                     source.spatialBlend = _sfxSpatialBlend;
@@ -214,12 +224,15 @@ namespace _Scripts.Audio
         private AudioSource CreateSource(string label, AudioMixerGroup output, bool ignoreListenerPause)
         {
             var child = new GameObject(label);
+
             child.transform.SetParent(transform, false);
             AudioSource source = child.AddComponent<AudioSource>();
+
             source.playOnAwake = false;
             source.outputAudioMixerGroup = output;
             source.ignoreListenerPause = ignoreListenerPause;
             source.dopplerLevel = 0f;
+
             return source;
         }
 
@@ -234,10 +247,13 @@ namespace _Scripts.Audio
         private void Release()
         {
             _restartPending = false;
+
             if (_settings != null) _settings.OnSettingsChanged -= ApplyVolumes;
+
             _settings = null;
 
             if (IsRegistered) ServiceLocator.Register<ISoundManager>(NullSoundManager.Instance);
+
             if (_musicSource == null) return;
 
             StopMusic();

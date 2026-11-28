@@ -11,7 +11,7 @@ namespace _Scripts.Agent.Players.InteractSystem
         [SerializeField] private LayerMask interactLayer;
         [SerializeField] private float interactDistance = 5;
         
-        [SerializeField] private int resultSize = 10;
+        private const int ResultSize = 64;
         
         private ContactFilter2D contactFilter;
         
@@ -23,7 +23,7 @@ namespace _Scripts.Agent.Players.InteractSystem
         {
             base.Initialize(owner);
             
-            result = new Collider2D[resultSize];
+            result = new Collider2D[ResultSize];
 
             contactFilter.useTriggers = true;
             contactFilter.useLayerMask = true;
@@ -71,9 +71,22 @@ namespace _Scripts.Agent.Players.InteractSystem
         private void SetInteractUI()
         {
             InteractUISettingEvent evt = InteractUIEvent.InteractUISettingEvent;
+
+            Vector3 pos;
+            bool active;
             
-            evt.Init(_interact != null, (_interact?.Position ?? Vector3.zero));
+            try
+            {
+                active = _interact != null;
+                pos = _interact?.Position ?? Vector2.zero;
+            }
+            catch
+            {
+                active = false;
+                pos = Vector3.zero;
+            }
             
+            evt.Init(active, pos);
             EventBus<InteractUISettingEvent>.Raise(evt);
         }
 

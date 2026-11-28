@@ -1,0 +1,25 @@
+{
+  "result": {
+    "results": [
+      {
+        "test": "GroundSeparation",
+        "distance": 1.27813685,
+        "desired": 1.30999982
+      },
+      {
+        "test": "LedgeProtection",
+        "initialX": 14.54,
+        "finalX": 14.54,
+        "grounded": true
+      },
+      {
+        "test": "AirSeparation",
+        "distance": 1.25105309
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 83,
+  "executeMs": 4327,
+  "assemblyName": "PipelineRunScript_VerifyEnemyCombatCoordination_7e054ade417e49c4b9c38018f2e01996"
+}

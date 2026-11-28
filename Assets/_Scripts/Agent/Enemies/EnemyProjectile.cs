@@ -36,12 +36,14 @@ namespace _Scripts.Agent.Enemies
         }
 
         public float TravelDistance => Speed * Lifetime;
+
         public float Diameter
         {
             get
             {
                 CircleCollider2D circle = GetComponent<CircleCollider2D>();
                 Vector3 scale = transform.lossyScale;
+
                 return circle.radius * 2f * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
             }
         }
@@ -76,10 +78,12 @@ namespace _Scripts.Agent.Enemies
             if (Time.time >= _expiresAt)
             {
                 Consume();
+
                 return;
             }
 
             ContactFilter2D filter = new ContactFilter2D { useTriggers = true };
+
             _collider.Overlap(filter, _overlaps);
 
             // 발사 위치가 벽 안이면 타깃보다 벽을 우선합니다.
@@ -88,6 +92,7 @@ namespace _Scripts.Agent.Enemies
                 if (IsBlockingCollider(overlap))
                 {
                     Consume(true, overlap.ClosestPoint(_body.position));
+
                     return;
                 }
             }
@@ -97,11 +102,13 @@ namespace _Scripts.Agent.Enemies
                 if (EnemyDamageUtility.IsTargetCollider(overlap, _target) && !IsIgnored(overlap))
                 {
                     Hit(overlap, overlap.ClosestPoint(_body.position));
+
                     return;
                 }
             }
 
             float distance = Speed * Time.fixedDeltaTime;
+
             _collider.Cast(_direction, filter, _castHits, distance);
             RaycastHit2D nearestHit = default;
             float nearestDistance = float.PositiveInfinity;
@@ -123,6 +130,7 @@ namespace _Scripts.Agent.Enemies
             if (nearestHit.collider != null)
             {
                 Hit(nearestHit.collider, nearestHit.point);
+
                 return;
             }
 
@@ -160,6 +168,7 @@ namespace _Scripts.Agent.Enemies
             _body.simulated = false;
             // 충돌 연출 중에는 이동과 중복 피해를 막고, 마지막 프레임까지 표시한 뒤 제거합니다.
             float delay = impact && _visual != null && _visual.isActiveAndEnabled ? _visual.PlayImpact(point) : 0f;
+
             Destroy(gameObject, delay);
         }
     }

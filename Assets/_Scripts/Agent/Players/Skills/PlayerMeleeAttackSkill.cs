@@ -1,16 +1,15 @@
 ﻿using _Scripts._Core._Debug;
-using _Scripts.Agent.FSM;
 using _Scripts.Agent.Players.Enum;
 using _Scripts.Agent.Players.Modules;
 using _Scripts.Agent.SkillSystem.NormalSkill;
 using _Scripts.Agent.StatSystem;
-using _Scripts.DevLib.AnimatorSystem;
+using _Scripts.Audio;
 using _Scripts.DevLib.BattleSystem;
 using _Scripts.DevLib.ModuleSystem;
 using _Scripts.VFXSystem.Effect;
 using Lean.Pool;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+using _Scripts._Core._ServiceLocator;
 
 namespace _Scripts.Agent.Players.Skills
 {
@@ -25,7 +24,9 @@ namespace _Scripts.Agent.Players.Skills
         [SerializeField] private AnimationCurve animationSpeedCurve;
         //[SerializeField] private StateSo comboStates;
         [SerializeField] private int animatorLayer = 0;
-        
+
+        [SerializeField] private SoundCueSO attackSoundCue;
+
         [Header("DamageCast Setting")]
         [SerializeField] private AbstractDamageCaster damageCaster;
         [SerializeField] private float kbForce = 3f;
@@ -35,13 +36,18 @@ namespace _Scripts.Agent.Players.Skills
         [SerializeField] private Vector2 attackEffectOffset;
         [SerializeField] private bool attachEffectToOwner = true;
 
+        [Header("Movement While Attacking")]
+        [SerializeField] private bool allowTurnWhileAttacking = true;
+        private const float MovementInputDeadZone = 0.1f;
+
         [Header("AttackMove")]
         [SerializeField] private AnimationCurve attackMoveCurve;
         [SerializeField] private float lungeDistance = 1f;
 
         [Header("Combotime")]
-        [SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
-        [SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
+        //[SerializeField] private float combotime = 0.4f; // 콤보가 이어지는 시간
+        //[SerializeField] private float moveCombotime = 0.4f; // 무빙콤보가 이어지는 시간
+
 
         private const int CurveAreaSampleCount = 100;
         private const int CurveStepSampleCount = 10;
@@ -61,6 +67,8 @@ namespace _Scripts.Agent.Players.Skills
         private PlayerController _playerController;
 
         private float _prevSpeed;
+
+        private ISoundManager _soundManager;
         
         public override float CoolTime => BaseCoolTime / attackSpeedStat.Value;
 
@@ -73,6 +81,7 @@ namespace _Scripts.Agent.Players.Skills
         private bool _isLunge;
 
         public int ComboCount { get; private set; } = 0;
+
 
         public override void InitSkill(ModuleOwner owner)
         {
@@ -99,6 +108,11 @@ namespace _Scripts.Agent.Players.Skills
 
             FDebug.Assert(owner.TryGetModule(out _groundChecker),
                 $"[MeleeAttackSkill : {owner.name}] IGroundChecker is not found");
+
+            _soundManager = ServiceLocator.Get<ISoundManager>();
+
+            FDebug.Assert(_soundManager != null,
+                        $"[MeleeAttackSkill : {owner.name}] ISoundManager is not found");
 
             damageStat = statModule.GetStat(physicalDamage);
             attackSpeedStat = statModule.GetStat(attackSpeed);
@@ -164,6 +178,7 @@ namespace _Scripts.Agent.Players.Skills
         private void OnTrigger()
         {
             SpawnAttackEffect();
+            _soundManager.PlaySfx(attackSoundCue, damageCaster.transform.position);
             if (damageCaster.CastDamage(damageStat.Value, GetMouseDirection(), kbForce))
                 PlayerSkillEvents.RaiseMeleeAttackHit(Owner);
         }
@@ -198,6 +213,17 @@ namespace _Scripts.Agent.Players.Skills
             //AttackMove();
             base.UpdateSkill();
             SetAnimationSpeed();
+            ApplyMovementInput();
+        }
+
+        private void ApplyMovementInput()
+        {
+            float inputX = _playerController.PlayerInput.MovementKey.x;
+            if (Mathf.Abs(inputX) < MovementInputDeadZone) inputX = 0f;
+
+            _movement.SetMovementDirectionX(inputX);
+            if (allowTurnWhileAttacking)
+                _renderer.SetFlip(inputX);
         }
 
         protected override void OnEndSkill()
@@ -260,11 +286,11 @@ namespace _Scripts.Agent.Players.Skills
         }
 
 #if UNITY_EDITOR
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             Vector3 offset = attackEffectOffset;
             Vector3 position = damageCaster.transform.position + offset;
-            Gizmos.DrawWireSphere(position, 1);
+            Gizmos.DrawWireSphere(position, 0.5f);
         }
 #endif
     }

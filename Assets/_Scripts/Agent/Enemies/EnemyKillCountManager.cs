@@ -17,10 +17,12 @@ namespace _Scripts.Agent.Enemies
             if (!isActiveAndEnabled) return;
 
             EnemyKillCountManager current = ServiceLocator.Get<EnemyKillCountManager>();
+
             if (current != null && current != this && current.isActiveAndEnabled)
             {
                 Debug.LogWarning("EnemyKillCountManager는 하나만 활성화해야 합니다. 중복 컴포넌트를 비활성화합니다.", this);
                 enabled = false;
+
                 return;
             }
 
@@ -42,6 +44,7 @@ namespace _Scripts.Agent.Enemies
         private void LogKillCount() => Debug.Log($"총 적 처치 수: {GetKillCount()}", this);
 
         public override void GameEnd() => Unregister();
+
         private void OnDisable() => Unregister();
 
         private void Unregister()

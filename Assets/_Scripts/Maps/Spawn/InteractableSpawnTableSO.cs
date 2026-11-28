@@ -23,17 +23,29 @@ namespace _Scripts.Maps.Spawn
             if (Random.value >= spawnChance)
                 return false;
 
-            prefab = PickByWeight();
-            return prefab != null;
+            InteractableSpawnEntry picked = PickByWeight();
+            if (picked == null)
+                return false;
+
+            // 런당 1회 후보는 뽑히는 순간 이번 런에서 소진된다.
+            if (picked.UniquePerRun)
+                RunSpawnRegistry.MarkConsumed(picked.Prefab);
+
+            prefab = picked.Prefab;
+            return true;
         }
 
-        // 프리팹이 비어 있거나 가중치가 0인 후보는 제외하고, 가중치 비율로 하나를 고른다.
-        private AbstractInteractObject PickByWeight()
+        // 뽑을 수 있는 후보: 프리팹이 있고, 이번 런에 이미 나온 런당 1회 후보가 아닌 것.
+        private static bool IsAvailable(InteractableSpawnEntry entry)
+            => entry != null && entry.Prefab != null && !(entry.UniquePerRun && RunSpawnRegistry.IsConsumed(entry.Prefab));
+
+        // 뽑을 수 없는 후보나 가중치가 0인 후보는 제외하고, 가중치 비율로 하나를 고른다.
+        private InteractableSpawnEntry PickByWeight()
         {
             float totalWeight = 0f;
             foreach (InteractableSpawnEntry entry in candidates)
             {
-                if (entry != null && entry.Prefab != null)
+                if (IsAvailable(entry))
                     totalWeight += entry.Weight;
             }
 
@@ -41,14 +53,14 @@ namespace _Scripts.Maps.Spawn
                 return null;
 
             float roll = Random.value * totalWeight;
-            AbstractInteractObject last = null;
+            InteractableSpawnEntry last = null;
 
             foreach (InteractableSpawnEntry entry in candidates)
             {
-                if (entry == null || entry.Prefab == null || entry.Weight <= 0f)
+                if (!IsAvailable(entry) || entry.Weight <= 0f)
                     continue;
 
-                last = entry.Prefab;
+                last = entry;
                 roll -= entry.Weight;
                 if (roll < 0f)
                     return last;

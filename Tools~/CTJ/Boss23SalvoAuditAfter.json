@@ -1,0 +1,108 @@
+{
+  "result": {
+    "results": [
+      {
+        "enhanced": false,
+        "direction": 1,
+        "delayed": false,
+        "volleys": 7,
+        "projectilesPerVolley": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "totalProjectiles": 7,
+        "maxProjectilesPerFrame": 1,
+        "maxOriginDeviationFromFront": 1.7788918,
+        "minHoverBlendAfterCrossing": 1,
+        "hoverRangeAfterCrossing": 0.199999809,
+        "fixedHorizontalPosition": -0.5519997,
+        "lockedFacing": true
+      },
+      {
+        "enhanced": false,
+        "direction": -1,
+        "delayed": false,
+        "volleys": 7,
+        "projectilesPerVolley": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "totalProjectiles": 7,
+        "maxProjectilesPerFrame": 1,
+        "maxOriginDeviationFromFront": 1.78952885,
+        "minHoverBlendAfterCrossing": 1,
+        "hoverRangeAfterCrossing": 0.199997783,
+        "fixedHorizontalPosition": 0.5519997,
+        "lockedFacing": true
+      },
+      {
+        "enhanced": true,
+        "direction": 1,
+        "delayed": true,
+        "volleys": 12,
+        "projectilesPerVolley": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "totalProjectiles": 36,
+        "maxProjectilesPerFrame": 3,
+        "maxOriginDeviationFromFront": 0,
+        "minHoverBlendAfterCrossing": 1,
+        "hoverRangeAfterCrossing": 0.19999975,
+        "fixedHorizontalPosition": -0.130666584,
+        "lockedFacing": true
+      },
+      {
+        "enhanced": true,
+        "direction": -1,
+        "delayed": false,
+        "volleys": 12,
+        "projectilesPerVolley": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "totalProjectiles": 36,
+        "maxProjectilesPerFrame": 3,
+        "maxOriginDeviationFromFront": 0,
+        "minHoverBlendAfterCrossing": 1,
+        "hoverRangeAfterCrossing": 0.199997246,
+        "fixedHorizontalPosition": 0.170666561,
+        "lockedFacing": true
+      }
+    ]
+  },
+  "diagnostics": [],
+  "compileMs": 446,
+  "executeMs": 10454,
+  "assemblyName": "PipelineRunScript_VerifyBoss23Rework_c7862a1e81a748d0a0afc69a32ac237d"
+}

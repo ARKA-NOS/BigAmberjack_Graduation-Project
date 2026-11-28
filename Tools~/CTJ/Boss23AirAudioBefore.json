@@ -1,0 +1,265 @@
+{
+  "result": {
+    "air": [
+      {
+        "state": "Rise",
+        "sprite": "transition_0",
+        "time": 0,
+        "originTop": 46,
+        "roof": 28,
+        "numberPixels": 8.5,
+        "lampPixels": 18.5,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 8.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_1",
+        "time": 0.09,
+        "originTop": 46,
+        "roof": 31,
+        "numberPixels": 5.5,
+        "lampPixels": 15.500001,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 5.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_2",
+        "time": 0.18,
+        "originTop": 46,
+        "roof": 32,
+        "numberPixels": 4.5,
+        "lampPixels": 14.5,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 4.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_3",
+        "time": 0.27,
+        "originTop": 46,
+        "roof": 26,
+        "numberPixels": 5.5,
+        "lampPixels": 15.500001,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 10.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_4",
+        "time": 0.36,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_5",
+        "time": 0.450000018,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "Rise",
+        "sprite": "transition_5",
+        "time": 0.54,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_0",
+        "time": 0,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_1",
+        "time": 0.09,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_2",
+        "time": 0.18,
+        "originTop": 46,
+        "roof": 26,
+        "numberPixels": 5.5,
+        "lampPixels": 15.500001,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 10.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_3",
+        "time": 0.27,
+        "originTop": 46,
+        "roof": 32,
+        "numberPixels": 4.5,
+        "lampPixels": 14.5,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 4.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_4",
+        "time": 0.36,
+        "originTop": 46,
+        "roof": 31,
+        "numberPixels": 5.5,
+        "lampPixels": 15.500001,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 5.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_5",
+        "time": 0.450000018,
+        "originTop": 46,
+        "roof": 28,
+        "numberPixels": 8.5,
+        "lampPixels": 18.5,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 8.5
+      },
+      {
+        "state": "Descend",
+        "sprite": "transition back_5",
+        "time": 0.54,
+        "originTop": 46,
+        "roof": 28,
+        "numberPixels": 8.5,
+        "lampPixels": 18.5,
+        "depthBelowRoof": 9.5,
+        "targetNumberPixels": 8.5
+      },
+      {
+        "state": "AirIdle",
+        "sprite": "moving_0",
+        "time": 0,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirIdle",
+        "sprite": "moving_0",
+        "time": 0.1,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotFront",
+        "sprite": "shot_3",
+        "time": 0,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotFront",
+        "sprite": "shot_4",
+        "time": 0.055,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotFront",
+        "sprite": "shot_0",
+        "time": 0.16,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotRear",
+        "sprite": "shot_1",
+        "time": 0,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotRear",
+        "sprite": "shot_2",
+        "time": 0.055,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      },
+      {
+        "state": "AirShotRear",
+        "sprite": "shot_0",
+        "time": 0.16,
+        "originTop": 46,
+        "roof": 21,
+        "numberPixels": 10.5,
+        "lampPixels": 20.5,
+        "depthBelowRoof": 14.5,
+        "targetNumberPixels": 15.5
+      }
+    ],
+    "audio": [
+      {
+        "path": "Assets/_Sound/Enemy/PlazmaBoom.mp3",
+        "length": 2.472,
+        "firstSignalSeconds": 0.06988542
+      },
+      {
+        "path": "Assets/_Prefabs/Enemies/Effects/Audio/Clips/CoinDrop.wav",
+        "length": 0.298,
+        "firstSignalSeconds": 0.00589583348
+      }
+    ],
+    "coinCollectDuration": 0.5
+  },
+  "diagnostics": [],
+  "compileMs": 179,
+  "executeMs": 31,
+  "assemblyName": "PipelineRunScript_InspectBoss23AirAudio_fcd75b0cd0f54cd1ac9cc82e5aa54c6a"
+}

@@ -1,0 +1,78 @@
+# 적 시간 정지·공격 토큰·간격 유지
+
+작업일: 2026-11-26.
+
+## 적용 범위
+
+`Assets/_Prefabs/Manager/GameManager.prefab` 아래에 `TimeStopService`와 `AttackTokenManager` 자식을 추가했다. 기존 `AbstractManager.Initialize/GameEnd`와 `ServiceLocator`를 사용하므로 GameManager C# 코드는 수정하지 않았다. 매니저 코드는 허용 영역 `Assets/_Scripts/Agent/Enemies/Managers`에 있다. 외부 UI·치트·테스트 코드와 씬은 수정하지 않았다.
+
+| 대상 | 연결한 모듈 |
+| --- | --- |
+| Enemy17~22 | TimeFreezeModule, EnemyAttackTokenModule, EnemySeparationModule |
+| Enemy23 | TimeFreezeModule. 보스는 공격 토큰·간격 유지에서 제외 |
+| 기존 EnemyDeathSlowMotionModule | 직접 timeScale 변경을 제거하고 TimeStopService에 요청 |
+
+현재 사용하는 Enemy17~23 프리팹에 적용했다. Legacy 프리팹은 이동·수정하지 않았다. 공통 모듈 프리팹은 `Assets/_Prefabs/Enemies/Modules`에 있으므로 새 적을 만들 때 자식으로 연결하면 된다. 같은 타입의 모듈을 중복으로 달지 않는다.
+
+## TimeStopService / TimeFreezeModule
+
+사용자가 전달한 코드의 **실시간 종료 시각과 Mathf.Max를 통한 중첩 연장**을 재사용했다. 프로젝트에 있는 전역 `EventBus`에 `HitStopEvent`를 연결하므로 새 GameEventChannelSO는 필요 없다.
+
+`TimeFreezeModule`은 `EnemyBase.DamageReceived`를 구독한다. 가해자가 `PlayerController`이고 실제 체력 감소량이 양수일 때만 요청한다. 마지막 사망 타격도 포함한다. 0 피해, 다른 적·가해자 없는 피해, 무적으로 거절된 피해에는 요청하지 않는다. 기본 `Freeze Duration`은 실시간 **0.05초**, 매니저의 `Stop Time Scale`은 **0.05**다. 매니저 값을 0으로 해도 unscaled 시간으로 종료하므로 복구할 수 있다.
+
+보스 사망 슬로우는 기존 0.2배·유지 0.25초·복귀 0.2초 설정을 같은 서비스로 전달한다. 슬로우와 피격 정지가 겹치면 더 느린 쪽을 적용하고, 피격 정지가 끝나도 남은 사망 슬로우는 유지한다. 일시정지 소유권은 별도로 관리한다. 사망 슬로우의 유지·복귀 시간은 일시정지 중 소비하지 않고, 피격 정지의 종료 시각은 전달한 코드처럼 실시간으로 계산한다.
+
+**프로젝트 전체의 시간 쓰기 통일은 아직 팀원 작업이 남아 있다.** CTJ 코드의 직접 쓰기는 TimeStopService.ApplyScale 한곳으로 모았지만 외부 네 파일은 사용자 지시에 따라 보존했다. [팀원 전달 문서](TimeControlTeamHandoff.md)의 호출법으로 바꿔야 전역에서 유일한 쓰기 지점이 된다. 기존 UI가 직접 0으로 만든 일시정지는 당장 덮어쓰지 않도록 감지하며, 해당 UI가 복귀한 뒤 만료된 정지 배율을 원복하는 경우도 검증했다. 직접 쓰기와 서비스가 서로 다른 의도를 모두 판별할 수는 없으므로 외부 호출 이관이 최종 해결이다.
+
+## AttackTokenManager / EnemyAttackTokenModule
+
+사용자와 확인한 규칙은 다음과 같다.
+
+- 일반·엘리트 적이 공격 준비를 시작하기 전에 토큰 1개를 받아야 한다. 보스는 제외한다.
+- 토큰은 공격 준비·실제 공격·후딜까지 보유한다. 발사체가 사라질 때까지 보유하지 않는다.
+- 기본 `Max Token`은 **2**, `Wait Timeout`은 게임 시간 **2초**다. 두 값 모두 GameManager 자식의 AttackTokenManager 인스펙터에서 조절한다.
+- 토큰이 없으면 FIFO 큐에 등록한다. 같은 적의 반복 요청은 중복 등록하거나 기존 만료 시간을 연장하지 않는다. 기다리던 스킬의 순서도 유지한다.
+- 반환된 토큰은 큐 앞의 적에게 먼저 예약한다. 예약을 받은 적이 실제로 공격을 시작하기 전에도 조건을 다시 확인한다.
+- 만료되면 큐에서 빠지고, 적 모듈의 `Retry Delay` 기본 **0.5초** 후 공격 조건을 확인해 줄 끝에 다시 등록한다.
+- 사거리·시야·대상·활성 상태를 잃거나 피격으로 공격할 수 없게 되면 대기를 취소한다. 사거리 안에서 기다릴 때는 공격 준비를 시작하지 않고 간격만 유지한다.
+- 사망 시에는 기존 EnemyBase의 StopAttack 경로에서 대기·보유 토큰을 즉시 반납한다. 사망 애니메이션 종료나 공중 사망 착지까지 기다리지 않는다.
+- 공격 취소·컴포넌트 해제·오브젝트 제거에도 반환한다. 매니저를 끄면 큐를 비우고 토큰을 보유한 공격도 취소한다.
+
+게임 시간 기준이므로 일시정지 중에는 큐 만료·재시도 시간을 소비하지 않는다. 실행 중 Max Token을 줄여도 이미 실행 중인 정상 공격은 끝까지 진행하고, 이후 반환되는 토큰부터 새 상한을 적용한다. 0으로 두면 새 일반 적 공격을 허용하지 않는다.
+
+공격 진입은 `EnemySkillModule.TryUseAttack/TryUseSpecifiedSkill`에서 검사한다. `EnemyAttackSkill`의 공통 종료 정리에서 정상 종료·취소를 알리므로 애니메이션 이벤트와 스킬별 후딜 로직은 유지한다. 매니저가 없으면 토큰 모듈이 붙은 적은 경고를 한 번 출력하고 공격을 시작하지 않는다.
+
+## EnemySeparationModule
+
+적끼리 충돌을 켜는 대신 AI 이동 이후 보정 속도를 적용한다. 기본 몸체 사이 여유 `Minimum Gap` **0.15유닛**, 보정 최고 속도 `Separation Speed` **1.5유닛/초**, 가속도 **12**다. 지상 적은 높이 차이 **0.6유닛** 이내의 지상 적과 수평으로 벌어지고, 비행 적은 같은 비행 적과 2D 방향으로 벌어진다. 다른 씬의 적·사망한 적은 제외한다.
+
+같은 위치에서 생성되어도 인스턴스 ID로 서로 반대 방향을 정한다. 공격 준비·공격·후딜, 피격 넉백, 지상 적의 공중 체류 중에는 해당 적을 이동시키지 않는다. 공격 중인 적 가까이에 있는 다른 대기 적은 이동할 수 있다. 지상은 기존 CanMoveOnGround의 벽·절벽 검사, 비행은 기존 LimitTravel의 지형 검사를 통과한 이동만 적용한다.
+
+## 직접 테스트
+
+1. `Assets/_Scenes/Test/EnemyTestScene.unity`를 열고 GameManager 프리팹 인스턴스 아래 두 매니저가 활성화되어 있는지 확인한다. 이전에 씬에 풀어 놓은 GameManager라면 사용자가 직접 두 자식을 연결해야 한다. 이번 작업에서 씬을 저장하지 않았다.
+2. 플레이어로 적을 공격한다. 실제 체력 감소 순간에 짧은 정지가 발생하고 자동으로 복구되어야 한다. Freeze Duration과 Stop Time Scale을 조절해 차이를 확인한다. 보스 처치 슬로우도 확인한다.
+3. Enemy17을 4마리 이상 배치하고 AttackTokenManager의 Max Token을 1로 잠시 낮춘다. 공격 준비부터 후딜까지 한 마리만 공격해야 한다. 대기 중인 적을 처치하거나 플레이어가 사거리 밖으로 이동해도 다른 적이 계속 공격해야 한다. 이후 Max Token을 2로 되돌린다.
+4. 대기 제한이 잘 보이도록 공격 준비가 긴 적으로 테스트한다. 대기 2초가 끝난 적은 0.5초 후 재요청해야 한다. 실행 중 `ActiveTokenCount/WaitingCount`, 각 적의 `HasToken/IsWaiting` 속성을 디버거에서 확인할 수 있다.
+5. 적 둘을 같은 위치에 배치한다. 지상에서는 수평으로, 비행 적은 공중에서 벌어져야 한다. 절벽 가까이 배치해도 보정 때문에 떨어지면 안 된다. 공격·넉백 중인 적의 모션은 보정이 덮어쓰지 않아야 한다.
+
+## 실행 검증 결과
+
+EnemyTestScene의 실제 Play Mode에서 테스트했다. 게임 컴파일 오류·경고 0, 씬 파일 SHA256은 전후 동일하다.
+
+- 시간 제어 7개 묶음: 중첩 요청 약 **0.215초** 유지 후 1배 복귀, 중첩 일시정지, 기존 UI 정지와 공존, 사망 슬로우·피격 정지 중첩, 플레이어의 일반·사망 타격만 정지, 완전 0배 정지 복귀, 서비스 해제 시 복구 통과.
+- 공격 토큰 6개 묶음: 동시 2개 제한·FIFO, 대기 **약 2.002초** 만료·0.5초 재시도·중복 신청 방지, 사거리/시야 상실·대기 적 사망, 보유 적 사망 즉시 전달, 후딜까지 보유, 일시정지 중 큐 유지·매니저 종료 정리 통과.
+- 간격 유지: 지상 두 적의 목표 **1.31유닛**에 대해 1.5초 후 **1.278유닛**, 비행 두 적은 1.8초 후 **1.251유닛**으로 벌어졌다. 절벽 앞 적은 X **14.54**를 넘지 않고 접지를 유지했다.
+- 적 6개 프리팹의 모듈·스크립트 참조, 보스 토큰 제외, GameManager 자식 중복 없음 확인.
+
+결과: [시간 제어](EnemyTimeControlVerification.json), [토큰](EnemyAttackTokenVerification.json), [간격 유지](EnemySeparationVerification.json). 로컬 진입점은 `VerifyEnemyCombatCoordination.Assets/TimeEffects/Tokens/Separation`이다. 테스트는 런타임 설정과 원래 오브젝트 활성 상태를 복구하고 씬을 저장하지 않는다.
+
+## 사용한 문법과 이유
+
+- `Time.unscaledTime`과 `Mathf.Max`: 0배 정지 중에도 종료 시각을 계산하고, 겹친 요청이 더 이른 시각으로 종료되지 않게 한다.
+- `EventBus<HitStopEvent>`와 `readonly struct`: 프로젝트의 기존 이벤트 경로로 지속 시간 값을 전달한다. 별도 채널 에셋이나 새 인터페이스는 만들지 않았다.
+- `HashSet`: 토큰 보유자와 일시정지 요청자를 중복 없이 관리한다. 여러 창 중 하나만 닫혀도 나머지 창의 정지는 유지된다.
+- `LinkedList`와 `Dictionary`: FIFO 순서와, 중간에 죽거나 만료된 적의 빠른 제거를 함께 지원한다. 일반 Queue는 중간 원소 제거를 직접 지원하지 않는다.
+- `is not PlayerController`: 실제 플레이어가 가한 피해인지 타입으로 검사한다. 태그 문자열에 의존하지 않는다.
+- `DefaultExecutionOrder(100)`와 `Vector2.MoveTowards`: AI의 이동 계산 이후 간격을 보정하고, 보정 속도가 갑자기 바뀌는 것을 줄인다.
+- `try/catch`: 스킬 준비 도중 예외가 발생해도 StopAttack으로 정리하여 토큰이 남지 않게 한다. 정상 종료는 기존 공통 스킬 종료 경로를 사용한다.

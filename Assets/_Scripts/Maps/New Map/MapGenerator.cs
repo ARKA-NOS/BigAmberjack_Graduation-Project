@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using _Scripts._Core._Debug;
+using _Scripts._Core._EventSystem;
 using _Scripts.DataStructure;
 using _Scripts.Loading;
 using _Scripts.Maps.New_Map.MapGenerateData;
@@ -35,17 +36,31 @@ namespace _Scripts.Maps.New_Map
         {
             if (wallFiller == null)
                 wallFiller = GetComponentInChildren<MapWallFiller>(true);
-
+            
             GenerateMap(mapGenerateSetting);
+
+            EventBus<MapGenerateEvent>.Subscribe(HandleMapGenerate);
         }
 
         private void OnDestroy()
         {
+            EventBus<MapGenerateEvent>.UnSubscribe(HandleMapGenerate);
+            
             _generateCts?.Cancel();
             _generateCts?.Dispose();
             _generateCts = null;
         }
 
+        private void HandleMapGenerate(MapGenerateEvent evt)
+        {
+            if (!evt.Active)
+            {
+                ClearGeneratedMap();
+                return;
+            }
+            GenerateMap(mapGenerateSetting);
+        }
+        
         #region MapGenerate
 
         public void GenerateMap(MapGenerateSetting mapSetting)
@@ -56,7 +71,7 @@ namespace _Scripts.Maps.New_Map
                 return;
             }
 
-            GenerateMap(mapSetting, Random.Range(1,1000000));
+            GenerateMap(mapSetting, Random.Range(1,100000000));
         }
 
         public void GenerateMap(MapGenerateSetting mapSetting, int seed)
@@ -108,7 +123,7 @@ namespace _Scripts.Maps.New_Map
             }
 
             await FillWalls(mapSetting, rooms, ct);
-
+            
             RaiseMapGenerated(seed, rooms, deployment.IsFallback);
             SetLoadingGauge("InstantiateRoom", 100, 100);
 
@@ -116,7 +131,7 @@ namespace _Scripts.Maps.New_Map
         }
 
         #region Addressable
-
+        
         private async UniTask UnLoadAssets(CancellationToken ct)
         {
             if(prevMapSetting == null) return;
@@ -283,12 +298,7 @@ namespace _Scripts.Maps.New_Map
 
             int startIndex = rooms.FindIndex(r => r.Role == RoomRole.Start);
             Room room = rooms[startIndex >= 0 ? startIndex : 0].Instance;
-
-            Transform point = room.GetPlayerSpawnPoint();
-            if (point != null) return point.position;
-
-            FDebug.LogWarning($"[MapGenerator] {room.name} : playerSpawnPoint가 없어 방 위치를 플레이어 생성 위치로 씁니다.", room);
-            return room.transform.position;
+            return room != null ? room.GetPlayerSpawnPoint() : Vector3.zero;
         }
 
         #endregion

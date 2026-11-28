@@ -21,7 +21,9 @@ namespace _Scripts.Agent.Enemies.Skills
         [SerializeField] private AttackTelegraphUI telegraphPrefab;
         [Tooltip("선택 사항. 마지막 Post Blink Delay 동안 적 비주얼을 단색으로 표시합니다. 범위 UI와는 독립적입니다.")]
         [SerializeField] private EnemyAttackWarningModule preparationWarning;
+
         private enum PreparationPhase { Waiting, Blinking, Holding }
+
         private Stat _attackDelay;
         private PreparationPhase _preparationPhase;
         private float _phaseEndTime;
@@ -29,6 +31,7 @@ namespace _Scripts.Agent.Enemies.Skills
         private float _holdDuration;
         private bool _isRecovering;
         private EnemyAttackPreparationModule _preparationParticles;
+
         protected AttackTelegraphUI Telegraph { get; private set; }
         protected bool HasReleased { get; private set; }
         protected virtual bool ShouldShowTelegraph => true;
@@ -41,11 +44,14 @@ namespace _Scripts.Agent.Enemies.Skills
         public virtual bool ControlsMovement => false;
         public virtual bool CompletesAfterTargetLost => false;
         internal virtual bool FinishesOutsideChaseRange => CompletesAfterTargetLost;
+
         public virtual void FixedUpdateAttack() { }
+
         public float AttackDelay => Mathf.Max(0f, _attackDelay?.Value ?? fallbackAttackDelay);
         public float PostBlinkDelay => Mathf.Max(0f, postBlinkDelay);
         protected EnemyBase Enemy { get; private set; }
         protected Transform CastTarget { get; private set; }
+
         internal event Action<EnemyAttackSkill, Vector3> AttackPerformed;
 
         protected void NotifyAttackPerformed(Vector3 position) => AttackPerformed?.Invoke(this, position);
@@ -58,6 +64,7 @@ namespace _Scripts.Agent.Enemies.Skills
             base.InitSkill(owner);
             Enemy = owner as EnemyBase;
             _preparationParticles = owner.GetModule<EnemyAttackPreparationModule>();
+
             if (attackDelayStat != null && owner.TryGetModule(out IStatModule stats))
                 _attackDelay = stats.GetStat(attackDelayStat);
         }
@@ -76,6 +83,7 @@ namespace _Scripts.Agent.Enemies.Skills
         {
             HasReleased = false;
             _isRecovering = false;
+
             if (Telegraph == null && telegraphPrefab != null)
                 Telegraph = Instantiate(telegraphPrefab, Enemy.transform);
 
@@ -99,6 +107,7 @@ namespace _Scripts.Agent.Enemies.Skills
             if (!CanContinue && !CompletesAfterTargetLost)
             {
                 StopSkill();
+
                 return;
             }
 
@@ -108,11 +117,13 @@ namespace _Scripts.Agent.Enemies.Skills
                 else if (!Telegraph.IsVisible)
                 {
                     Telegraph.Show(telegraphOpacity);
+
                     if (_preparationPhase == PreparationPhase.Blinking) Telegraph.BeginBlink();
                 }
             }
 
             if (Telegraph != null && Telegraph.IsVisible) UpdateTelegraph();
+
             if (!IsPreparing || Time.time < _phaseEndTime) return;
 
             switch (_preparationPhase)
@@ -128,9 +139,11 @@ namespace _Scripts.Agent.Enemies.Skills
                     _preparationPhase = PreparationPhase.Blinking;
                     _phaseEndTime = Time.time + _blinkDuration;
                     break;
+
                 case PreparationPhase.Blinking:
                     BeginHold();
                     break;
+
                 case PreparationPhase.Holding:
                     ReleaseAttack();
                     break;
@@ -140,14 +153,19 @@ namespace _Scripts.Agent.Enemies.Skills
         private void BeginHold()
         {
             Telegraph?.EndBlink();
+
             if (_holdDuration > 0f && preparationWarning != null) preparationWarning.Show();
+
             _preparationPhase = PreparationPhase.Holding;
             _phaseEndTime = Time.time + _holdDuration;
+
             if (_holdDuration <= 0f) ReleaseAttack();
         }
 
         protected virtual void PrepareAttack() { }
+
         protected virtual void UpdateTelegraph() { }
+
         protected virtual void OnReleaseAttack() { }
 
         protected void BeginRecovery()
@@ -158,7 +176,9 @@ namespace _Scripts.Agent.Enemies.Skills
         protected AttackTelegraphUI TakeTelegraph()
         {
             AttackTelegraphUI telegraph = Telegraph;
+
             Telegraph = null;
+
             return telegraph;
         }
 
@@ -169,28 +189,40 @@ namespace _Scripts.Agent.Enemies.Skills
             HasReleased = true;
             // 프레임이 늦어 입자가 남아 있어도 발동 전에 정리하고, 공격 시간은 연장하지 않습니다.
             _preparationParticles?.EndPreparation(this);
+
             if (preparationWarning != null) preparationWarning.Hide();
+
             OnReleaseAttack();
         }
 
         public virtual void OnAttackWarning() { }
+
         public virtual void OnAttackHit() { }
+
         public virtual void OnAttackFinished()
         {
             if (HasReleased) EndSkill();
         }
+
         protected override void OnEndSkill() => ClearAttack();
+
         protected override void OnStopSkill() => ClearAttack();
+
         private void ClearAttack()
         {
             _preparationParticles?.EndPreparation(this);
             Telegraph?.Hide();
+
             if (preparationWarning != null) preparationWarning.Hide();
+
             HasReleased = false;
             _isRecovering = false;
             CastTarget = null;
+            Enemy?.GetModule<EnemySkillModule>()?.NotifyAttackEnded(this);
         }
+
         protected virtual void OnDisable() => StopSkill();
+
         protected virtual void OnDestroy()
         {
             if (Telegraph != null) Destroy(Telegraph.gameObject);

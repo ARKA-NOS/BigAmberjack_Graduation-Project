@@ -4,6 +4,8 @@
 
 위치·크기 분산 추가: 2026-11-23.
 
+현재 폰트: **AmberjackPixel Raster**, 크기 **56**·획 보강 **0.25px**. [크기·굵기 개선 설명](DamageIndicatorReadabilityNotes.md)을 참고한다. 최초 폰트 교체 과정은 [이전 설명](Boss23VisualFixNotes.md)에 있다.
+
 ## 적용 결과
 
 적의 실제 HP가 줄어든 타격마다 숫자가 크게 나타나고, 작아졌다가 다시 커지며 위로 올라가 사라진다. 일반 타격은 흰색, `DamageData.IsCritical == true`인 타격은 노란색과 더 강한 크기 변화로 표시한다.

@@ -8,8 +8,11 @@ namespace _Scripts.Audio
         public static readonly NullSoundManager Instance = new();
 
         public void PlayMusic(AudioClip clip) { }
+
         public void StopMusic() { }
+
         public void PlaySfx(SoundCueSO cue, Vector3 position) { }
+
         public void PlayUi(SoundCueSO cue) { }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

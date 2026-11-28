@@ -11,16 +11,14 @@ namespace _Scripts.Maps.New_Map.MapGenerateData
         public RoomRole Role;
         public string NodeId;          // "Start", "Combat1", "Shop", "RewardCombat1" 처럼 디버그용
         public int ParentIndex;        // 결과 목록 안의 부모 인덱스, 시작방은 -1
-        public bool[] ConnectedLinks;  // Room.links와 같은 순서, 들어오는 링크와 자식에 쓴 링크가 true
 
-        public RoomDeploymentData(Room roomPrefab, Vector2 position, RoomRole role, string nodeId, int parentIndex, bool[] connectedLinks)
+        public RoomDeploymentData(Room roomPrefab, Vector2 position, RoomRole role, string nodeId, int parentIndex)
         {
             RoomPrefab = roomPrefab;
             Position = position;
             Role = role;
             NodeId = nodeId;
             ParentIndex = parentIndex;
-            ConnectedLinks = connectedLinks;
         }
     }
 }

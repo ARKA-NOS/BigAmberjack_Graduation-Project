@@ -4,6 +4,7 @@ using _Scripts._Core._EventSystem;
 using _Scripts._Core._ServiceLocator;
 using _Scripts._Core.SceneSystem;
 using _Scripts.Agent.Enemies;
+using _Scripts.Agent.Enemies.Managers;
 using _Scripts.Agent.Players;
 using _Scripts.Currency;
 using _Scripts.DevLib.ModuleSystem;
@@ -22,8 +23,6 @@ namespace _Scripts.UI.RunEnd
         private readonly CurrencySO _gold;
         private readonly SceneSo _nextScene;
         private Action<RunEndReason> _runEnded;
-        private float _prevTimeScale = 1f;
-        private bool _isPaused;
 
         public RunResultSource(CurrencySO gold, SceneSo nextScene)
         {
@@ -97,15 +96,8 @@ namespace _Scripts.UI.RunEnd
                 player.SetInputActive(false);
         }
 
-        // 이미 멈춰 있으면(다른 창이 멈춘 상태) 그 값을 되돌리지 않도록 처음 한 번만 기억한다.
-        public void PauseGame()
-        {
-            if (_isPaused) return;
-
-            _prevTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-            _isPaused = true;
-        }
+        // 다른 창이 함께 멈춘 상태여도 TimeStopService가 요청자별로 관리한다.
+        public void PauseGame() => ServiceLocator.Get<TimeStopService>()?.SetPaused(this, true);
 
         // nextScene(예: Test Home)으로 이동한다. 비어 있으면 현재 씬을 다시 시작한다.
         public void GoNext(RunEndReason reason)
@@ -119,13 +111,7 @@ namespace _Scripts.UI.RunEnd
                 RestartScene();
         }
 
-        private void ResumeGame()
-        {
-            if (!_isPaused) return;
-
-            Time.timeScale = _prevTimeScale;
-            _isPaused = false;
-        }
+        private void ResumeGame() => ServiceLocator.Get<TimeStopService>()?.SetPaused(this, false);
 
         private void HandleRunEnded(RunEndedEvent evt) => _runEnded?.Invoke(evt.Reason);
 

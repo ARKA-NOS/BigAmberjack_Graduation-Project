@@ -64,6 +64,10 @@ namespace _Scripts.UI.Minimap
                 }
             }
 
+            Tilemap wallFiller = MinimapMapRecorder.WallFiller;
+            if(wallFiller != null)
+                result.Add(wallFiller);
+            
             return result;
         }
 

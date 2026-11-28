@@ -12,7 +12,7 @@ namespace _Scripts.Maps.New_Map
      * - 방 프리팹의 tilemap(배치 겹침 검사에 쓰는 방 영역)에 타일이 있는 칸을 방 칸으로 본다.
      * - 모든 방 칸을 감싸는 사각형을 padding칸만큼 넓히고, 그 안에서 방 칸이 아닌 칸을 모두 채운다.
      *   그래서 방 사이 틈뿐 아니라 맵 바깥 가장자리에도 벽이 생긴다.
-     * - MapGenerator가 생성 과정(프리팹 생성 → 연결 지점 마감 다음)에서 Fill을 호출한다. 타일 설정은 MapGenerateSetting에 있다.
+     * - MapGenerator가 생성 과정(프리팹 생성 다음)에서 Fill을 호출한다. 타일 설정은 MapGenerateSetting에 있다.
      *
      * 사용법: MapGenerator가 있는 Grid 오브젝트 아래에 벽 전용 Tilemap을 만들고 이 컴포넌트를 붙인다.
      *         충돌이 필요하면 같은 오브젝트에 TilemapCollider2D(+ CompositeCollider2D)를 붙인다.
@@ -22,7 +22,7 @@ namespace _Scripts.Maps.New_Map
     {
         private Tilemap _wallTilemap;
 
-        private Tilemap WallTilemap
+        public Tilemap WallTilemap
         {
             get
             {

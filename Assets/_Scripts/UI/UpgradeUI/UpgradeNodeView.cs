@@ -1,3 +1,4 @@
+using _Scripts.UI.Effects;
 using _Scripts.UI.MVVM.Bindings;
 using _Scripts.UI.MVVM.Disposables;
 using _Scripts.UI.MVVM.Views;
@@ -5,6 +6,7 @@ using _Scripts.Upgrade.SO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace _Scripts.UI.UpgradeUI
@@ -26,14 +28,13 @@ namespace _Scripts.UI.UpgradeUI
         [Tooltip("이름 텍스트. 비워두면 자식의 TMP_Text를 찾아 숨긴다.")]
         [SerializeField] private TMP_Text nameText;
 
-        [Tooltip("임시 선택했거나 구매한 노드에 켜는 체크 표시.")]
-        [SerializeField] private GameObject checkMark;
-
-        [Tooltip("임시 선택(확정 전)인 노드에 켜는 테두리.")]
-        [SerializeField] private GameObject pendingFrame;
+        [Tooltip("임시 선택했거나 구매한 노드에 켜는 테두리.")]
+        [FormerlySerializedAs("pendingFrame")]
+        [SerializeField] private GameObject selectedFrame;
 
         private Button _button;
         private CanvasGroup _canvasGroup;
+        private HoverScale _hoverScale;
         private UpgradeNodeItem _item;
 
         public UpgradeNodeSO Node => upgradeNode;
@@ -69,8 +70,10 @@ namespace _Scripts.UI.UpgradeUI
             bool selected = state is UpgradeNodeState.Pending or UpgradeNodeState.Purchased;
             _canvasGroup.alpha = selected ? 1f : DimAlpha;
 
-            if (checkMark != null) checkMark.SetActive(selected);
-            if (pendingFrame != null) pendingFrame.SetActive(state == UpgradeNodeState.Pending);
+            // 잠긴 노드는 호버해도 설명만 보여주고 커지지 않는다.
+            if (_hoverScale != null) _hoverScale.CanGrow = state != UpgradeNodeState.Locked;
+
+            if (selectedFrame != null) selectedFrame.SetActive(selected);
 
             if (_button != null && _button.targetGraphic != null)
                 _button.targetGraphic.color = state == UpgradeNodeState.Locked ? LockedColor : Color.white;
@@ -86,7 +89,7 @@ namespace _Scripts.UI.UpgradeUI
             if (iconImage == null)
             {
                 iconImage = CreateIconImage();
-                // 런타임에 만든 아이콘이 체크 표시를 가리지 않게 맨 뒤로 보낸다.
+                // 런타임에 만든 아이콘이 선택 테두리를 가리지 않게 맨 뒤로 보낸다.
                 iconImage.transform.SetAsFirstSibling();
             }
 
@@ -116,6 +119,7 @@ namespace _Scripts.UI.UpgradeUI
         private void EnsureComponents()
         {
             if (_canvasGroup == null) _canvasGroup = GetComponent<CanvasGroup>();
+            if (_hoverScale == null) _hoverScale = GetComponent<HoverScale>();
 
             if (_button == null && !TryGetComponent(out _button))
                 Debug.LogError($"[{name}] Button is not found", this);

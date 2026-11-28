@@ -5,6 +5,7 @@ using _Scripts.Maps.New_Map;
 using _Scripts.Maps.New_Map.MapGenerateData;
 using _Scripts.Maps.New_Map.MapSettingAsset;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace _Scripts.UI.Minimap
 {
@@ -20,7 +21,7 @@ namespace _Scripts.UI.Minimap
 
         // 마지막 완료 이벤트가 보스 맵의 것인지. 보스 맵은 방 목록 없이 이벤트를 낸다.
         public static bool IsBossMap { get; private set; }
-
+        public static Tilemap WallFiller { get; private set; }
         public static event Action Changed;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -41,7 +42,7 @@ namespace _Scripts.UI.Minimap
         {
             Rooms.Clear();
             IsBossMap = evt.Rooms == null;
-
+            WallFiller = evt.WallFiller;
             if (evt.Rooms != null)
             {
                 foreach (GeneratedRoom room in evt.Rooms)

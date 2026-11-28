@@ -1,3 +1,4 @@
+using _Scripts._Core._Debug;
 using _Scripts._Core._EventSystem;
 using _Scripts.Agent.Players.Skills;
 using _Scripts.Agent.StatSystem;
@@ -16,12 +17,9 @@ namespace _Scripts.Upgrade.Upgrader.Mark
         [Header("Burst Damage")]
         [SerializeField] private AbstractDamageCaster burstCaster;
         [SerializeField] private StatData physicalPower;
-        [SerializeField] private float physicalRatio = 1f;
-        [SerializeField] private StatData magicPower;
-        [SerializeField] private float magicRatio = 1f;
+        [SerializeField] private float physicalRatio = 0.3f;
 
         private Stat _physicalStat;
-        private Stat _magicStat;
         private int _hitCount;
 
         public int Stack { get; private set; }
@@ -36,7 +34,6 @@ namespace _Scripts.Upgrade.Upgrader.Mark
             if (!owner.TryGetModule(out IStatModule statModule)) return;
 
             statModule.TryGetStat(physicalPower, out _physicalStat);
-            statModule.TryGetStat(magicPower, out _magicStat);
         }
 
         protected override void OnActivate()
@@ -58,6 +55,7 @@ namespace _Scripts.Upgrade.Upgrader.Mark
 
             _hitCount = 0;
             Stack++;
+            FDebug.Log($"[Mark] 표식 {Stack}/{maxStack}", this);
 
             if (Stack >= maxStack)
                 Burst();
@@ -69,14 +67,12 @@ namespace _Scripts.Upgrade.Upgrader.Mark
 
             if (burstCaster == null) return;
 
-            burstCaster.CastDamage(GetBurstDamage(), Vector2.zero, 0f);
+            float damage = GetBurstDamage();
+            bool isHit = burstCaster.CastDamage(damage, Vector2.zero, 0f);
+            FDebug.Log($"[Mark] 표식 발동 피해 {damage:F2} (물리 {(_physicalStat != null ? _physicalStat.Value : 0f):F2} x {physicalRatio:F2}), 적중 {isHit}", this);
         }
 
         private float GetBurstDamage()
-        {
-            float physical = _physicalStat != null ? _physicalStat.Value * physicalRatio : 0f;
-            float magic = _magicStat != null ? _magicStat.Value * magicRatio : 0f;
-            return physical + magic;
-        }
+            => _physicalStat != null ? _physicalStat.Value * physicalRatio : 0f;
     }
 }

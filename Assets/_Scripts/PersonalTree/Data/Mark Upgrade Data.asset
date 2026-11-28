@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Mark Upgrade Data
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.Upgrade.SO.Upgrades.MarkUpgradeData
   upgrader: {fileID: 11400000, guid: 6f918292f95e31c4999a092743e5f146, type: 2}
+  statBonuses:
+  - <Stat>k__BackingField: {fileID: 11400000, guid: 9ad6d49ceaff79240bb9b502deaecfb3, type: 2}
+    <Modify>k__BackingField:
+      <Priority>k__BackingField: 0
+      <Value>k__BackingField: 5
+      <ModifyType>k__BackingField: 0
